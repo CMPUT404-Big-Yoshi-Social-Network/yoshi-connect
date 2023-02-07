@@ -8,4 +8,7 @@ app.get('/',(request, response) => {
     response.render("index")
 });
 
+const testRouter = require('./routes/test')
+app.use('/test', testRouter)
+
 app.listen(8080);

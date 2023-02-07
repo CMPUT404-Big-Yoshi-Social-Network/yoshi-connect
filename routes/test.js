@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+router.use(express.static('public/test')) // rendering static pages
+
 router.get('/',(request, response) => {
     console.log("Debug: GET test")
-    response.send("Testing.")
+    response.render("index")
 });
 
 router.get('/test',(request, response) => {

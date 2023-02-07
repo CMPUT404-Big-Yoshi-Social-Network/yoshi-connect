@@ -1,7 +1,12 @@
 const express = require('express');
 const app = express();
+const PORT = process.env.PORT || 8080;
 
 app.use(express.static('public')) // rendering static pages
+
+// Test Router
+const testRouter = require('./routes/test')
+app.use('/test', testRouter)
 
 // Homepage 
 app.get('/',(request, response) => {
@@ -9,8 +14,11 @@ app.get('/',(request, response) => {
     response.render("index")
 });
 
-// Test Router
-const testRouter = require('./routes/test')
-app.use('/test', testRouter)
+// Test post request
+app.post("/post", (req, res) => {
+    console.log("Connected to React");
+    res.redirect("/");
+  });
 
-app.listen(8080);
+
+app.listen(PORT, console.log(`Server listening on port ${PORT}`));

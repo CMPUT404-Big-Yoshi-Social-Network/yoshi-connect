@@ -1,12 +1,21 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
+const path = require('path');
 
 app.use(express.static('public')) // rendering static pages
 
 // Test Router
 const testRouter = require('./routes/test')
 app.use('/test', testRouter)
+
+// Have Node serve the files for our built React app
+app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
+
+// All other GET requests not handled before will return our React app
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../yoshi-react/build', 'index.html'));
+});
 
 // Homepage 
 app.get('/',(request, response) => {

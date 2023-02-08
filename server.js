@@ -3,11 +3,11 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 
-app.use(express.static('public')) // rendering static pages
+app.use(express.static('yoshi-react/public')); // rendering static pages
 
 // Test Router
-const testRouter = require('./routes/test')
-app.use('/test', testRouter)
+const testRouter = require('./routes/test');
+app.use('/test', testRouter);
 
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
@@ -19,8 +19,8 @@ app.get('*', (req, res) => {
 
 // Homepage 
 app.get('/',(request, response) => {
-    console.log("Debug: GET")
-    response.render("index")
+    console.log("Debug: GET");
+    response.render("index");
 });
 
 // Test post request

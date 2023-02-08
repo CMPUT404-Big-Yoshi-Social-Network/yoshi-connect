@@ -26,6 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: yoshi-react/package-lock.json
     - run: npm install
     - run: npm run start
     - run: npm test

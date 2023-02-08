@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -26,7 +26,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: yoshi-react/package-lock.json
-    - run: npm install
-    - run: npm run start
+    - name: Install Dependencies
+      run: npm install
     - run: npm test

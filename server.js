@@ -2,16 +2,16 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(express.static('public')) // rendering static pages
+app.use(express.static('yoshi-react/public')); // rendering static pages
 
 // Test Router
-const testRouter = require('./routes/test')
-app.use('/test', testRouter)
+const testRouter = require('./routes/test');
+app.use('/test', testRouter);
 
 // Homepage 
 app.get('/',(request, response) => {
-    console.log("Debug: GET")
-    response.render("index")
+    console.log("Debug: GET");
+    response.render("index");
 });
 
 // Test post request

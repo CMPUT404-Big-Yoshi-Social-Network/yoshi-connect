@@ -23,8 +23,13 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
+const { authAuthor, authAdmin } = require('./auth')
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
+app.use(getAuthor)
+
+// HARDCODED TO ALWAYS WORK!! FIX W/ DB!
+adminToken = 12345
 
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
@@ -34,15 +39,34 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../yoshi-react/build', 'index.html'));
 });
 
-// Homepage 
+// Home page 
 app.get('/',(req, res) => {
   console.log("Debug: Showing Home page");
   res.render("index");
 });
 
-app.get('/admin',(req, res) => {
+// Some test page you see after logging in 
+app.get('/test', authAuthor, (req, res) => {
+  console.log("Debug: Showing a test page only accessible if you are an author");
+  res.send('Hello, you are signed in.')
+});
+
+// Admin page
+app.get('/admin', authAuthor, authAdmin(adminToken), (req, res) => {
   console.log("Debug: Showing Admin page")
   res.send('Hello fellow Admin!')
 });
+
+/* Middleware */
+
+// Authentication: Checking if the person is an author
+function getAuthor(req, res, next) {
+  const authorId = req.body.authorId
+  if (authorId) {
+    console.log('Debug: Getting the authorId in the database.')
+    // TODO: Get the correct authorid to verify that the person is an author (save this author as req.author -> used in auth.js)
+  }
+  next()
+}
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

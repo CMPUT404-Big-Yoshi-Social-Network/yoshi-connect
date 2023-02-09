@@ -26,10 +26,6 @@ const path = require('path');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 
-// Test Router
-const testRouter = require('./routes/test');
-app.use('/test', testRouter);
-
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
 
@@ -39,16 +35,14 @@ app.get('*', (req, res) => {
 });
 
 // Homepage 
-app.get('/',(request, response) => {
-    console.log("Debug: GET");
-    response.render("index");
+app.get('/',(req, res) => {
+  console.log("Debug: Showing Home page");
+  res.render("index");
 });
 
-// Test post request
-app.post("/post", (req, res) => {
-    console.log("Connected to React");
-    res.redirect("/");
-  });
+app.get('/admin',(req, res) => {
+  console.log("Debug: Showing Admin page")
+  res.send('Hello fellow Admin!')
+});
 
-
-app.listen(PORT, console.log(`Server listening on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

@@ -18,6 +18,7 @@
 - Hari
 
 ## Run Project
+0. Setup a mongodb database and create a .env with the contents ```ATLAS_URI = "the mongodb connection string"```
 1. In the terminal run: ```npm install```
 2. Then run, ```npm start```. This will start up the server on http://localhost:8080/.
 3. After cd into ```cd yoshi-react``` and run, ```npm i react-scripts```.

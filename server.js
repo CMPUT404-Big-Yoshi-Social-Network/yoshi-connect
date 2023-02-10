@@ -67,8 +67,8 @@ app.post('/login', (req, res) => {
 
 app.use(getAuthor) // Checks if the author exists first then proceeds to other pages 
 
-// Some test page you see after logging in 
-app.get('/test', authAuthor, (req, res) => {
+// "public" feed seen after logging in 
+app.get('/feed', authAuthor, (req, res) => {
   console.log("Debug: Showing a test page only accessible if you are an author");
   res.send('Hello, you are signed in.')
 });

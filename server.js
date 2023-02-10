@@ -32,13 +32,10 @@ app.use(express.static('yoshi-react/public')); // rendering static pages
 
 // HARDCODED TO ALWAYS WORK!! FIX W/ DB! 
 adminToken = 12345
+
 //Connect to database
 mongoose.connect(process.env.ATLAS_URI);
 const database = mongoose.connection
-
-// Test Router
-const testRouter = require('./routes/test');
-app.use('/test', testRouter);
 
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));

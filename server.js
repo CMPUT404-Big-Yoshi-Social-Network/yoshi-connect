@@ -19,10 +19,13 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-const express = require('express');
+// Setting up database
 const mongoose = require('mongoose');
 require('dotenv').config()
 mongoose.set('strictQuery', true);
+
+// Setting up app
+const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');

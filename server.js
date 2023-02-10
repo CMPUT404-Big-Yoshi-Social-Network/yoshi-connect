@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config()
+mongoose.set('strictQuery', true);
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');

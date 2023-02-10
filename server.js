@@ -45,6 +45,11 @@ app.get('/',(req, res) => {
   res.render("index");
 });
 
+app.post('/signup', (req, res) => {
+  console.log('Debug: Signing up as an author')
+  res.render("signup/index")
+})
+
 // Some test page you see after logging in 
 app.get('/test', authAuthor, (req, res) => {
   console.log("Debug: Showing a test page only accessible if you are an author");

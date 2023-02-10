@@ -45,10 +45,19 @@ app.get('/',(req, res) => {
   res.render("index");
 });
 
+// Sign up page 
 app.post('/signup', (req, res) => {
   console.log('Debug: Signing up as an author')
   res.render("signup/index")
 })
+// TODO: SAVE THE DATA FROM THE SIGN UP!
+
+// Log in page
+app.post('/login', (req, res) => {
+  console.log('Debug: Login as Author')
+  res.render("login/index")
+})
+// TODO: SHOULD MOVE FROM /LOGIN TO PUBLIC FEED 200 OK ON /TEST FOR EXAMPLE!
 
 // Some test page you see after logging in 
 app.get('/test', authAuthor, (req, res) => {

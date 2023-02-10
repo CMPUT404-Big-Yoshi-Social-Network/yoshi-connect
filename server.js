@@ -1,5 +1,5 @@
 /*
-Copyright 2013 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
+Copyright 2023 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,11 +20,18 @@ Foundation; All Rights Reserved
 */
 
 const express = require('express');
+const mongoose = require('mongoose');
+require('dotenv').config()
+mongoose.set('strictQuery', true);
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
+
+//Connect to database
+mongoose.connect(process.env.ATLAS_URI);
+const database = mongoose.connection
 
 // Test Router
 const testRouter = require('./routes/test');

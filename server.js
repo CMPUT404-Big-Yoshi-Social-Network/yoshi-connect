@@ -19,11 +19,14 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-const express = require('express');
+// Setting up database
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 require('dotenv').config()
 mongoose.set('strictQuery', true);
+
+// Setting up app
+const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
@@ -68,14 +71,14 @@ app.post('/login', (req, res) => {
 
 app.use(getAuthor) // Checks if the author exists first then proceeds to other pages
 
-// Some test page you see after logging in 
-app.get('/test', authAuthor, (req, res) => {
+// "public" feed seen after logging in 
+app.get('/feed', authAuthor, (req, res) => {
   console.log("Debug: Showing a test page only accessible if you are an author");
   res.send('Hello, you are signed in.')
 });
 
 // Admin page
-app.get('/admin', authAuthor, authAdmin(adminToken), (req, res) => {
+app.get('/admin', authAuthor, authAdmin(true), (req, res) => {
   console.log("Debug: Showing Admin page")
   res.send('Hello fellow Admin!')
 });

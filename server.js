@@ -30,7 +30,7 @@ const { authAuthor, authAdmin } = require('./auth')
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 
-// HARDCODED TO ALWAYS WORK!! FIX W/ DB!
+// HARDCODED TO ALWAYS WORK!! FIX W/ DB! 
 adminToken = 12345
 //Connect to database
 mongoose.connect(process.env.ATLAS_URI);

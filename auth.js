@@ -1,9 +1,10 @@
 function authAuthor(req, res, next) {
-    if (req.author == null) {
-        console.log('Debug: Author does not exist.')
-        res.status(403) // 403 Forbidden 
-        return res.send('I am sorry but you are not allowed to see this. Please try to sign up or sign in!')
-    }
+    console.log(req.body)
+    /*If username and password match
+    *   Allow them in
+    * Else
+    *   Return to login with incorrect login
+    */
     next()
 }
 

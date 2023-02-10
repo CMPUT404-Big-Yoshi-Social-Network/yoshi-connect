@@ -21,15 +21,16 @@ Foundation; All Rights Reserved
 
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 require('dotenv').config()
 mongoose.set('strictQuery', true);
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, authAdmin } = require('./auth')
-
+const { create_user } = require('routes/author.js');
 app.use(express.static('yoshi-react/public')); // rendering static pages
-
+app.use(bodyParser.urlencoded({extended: true}));
 // HARDCODED TO ALWAYS WORK!! FIX W/ DB! 
 adminToken = 12345
 
@@ -65,7 +66,7 @@ app.post('/login', (req, res) => {
 })
 // TODO: SHOULD MOVE FROM /LOGIN TO PUBLIC FEED 200 OK ON /TEST FOR EXAMPLE!
 
-app.use(getAuthor) // Checks if the author exists first then proceeds to other pages 
+app.use(getAuthor) // Checks if the author exists first then proceeds to other pages
 
 // Some test page you see after logging in 
 app.get('/test', authAuthor, (req, res) => {

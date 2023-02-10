@@ -13,9 +13,9 @@
 - Tommy Sandanasamy
 
 ## Groups 
-- Justin 
-- Matt
-- Hari
+- [CMPUT404W23T04](https://github.com/RonggangCui/SocialDistribution) 
+- [CMPUT404W23T03 H01](https://github.com/CMPUT404W23-bigger-yoshi/CMPUT404-project-socialdistribution)
+- [CMPUT404W23T15](https://github.com/hbheesetti/CMPUT404-project-socialdistribution)
 
 ## Run Project
 0. Setup a mongodb database and create a .env with the contents ```ATLAS_URI = "the mongodb connection string"```

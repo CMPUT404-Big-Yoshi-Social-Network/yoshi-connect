@@ -38,7 +38,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 adminToken = 12345
 
 //Connect to database
-mongoose.connect(process.env.ATLAS_URI);
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 const database = mongoose.connection
 
 // Have Node serve the files for our built React app

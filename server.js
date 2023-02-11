@@ -86,13 +86,13 @@ app.get('/admin', authAuthor, authAdmin(true), (req, res) => {
 /* Middleware */
 
 // Authentication: Checking if the person is an author
-function getAuthor(req, res, next) {
-  const authorId = req.body.authorId
-  if (authorId) {
+async function getAuthor(req, res, next) {
+  if (req.body.username != undefined && await authors.findOne({username: req.body.username})) {
     console.log('Debug: Getting the authorId in the database.')
     // TODO: Get the correct authorid to verify that the person is an author (save this author as req.author -> used in auth.js)
+    req.author = req.body.username;
   }
-  next()
+  next();
 }
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

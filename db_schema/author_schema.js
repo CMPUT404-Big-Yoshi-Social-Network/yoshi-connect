@@ -7,7 +7,7 @@ const author_scheme = new Schema({
     password: String,
     email: String,
     about: String,
-    pronous: String,
+    pronouns: String,
     Admin: Boolean
 });
 

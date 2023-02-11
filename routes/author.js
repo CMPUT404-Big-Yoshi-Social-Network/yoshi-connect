@@ -1,7 +1,7 @@
 
 const crypto_js = require('crypto-js')
 
-async function register_author(req, res, Author){
+async function register_author(req, res){
     const { getAuthor } = require('../server');
     if(await getAuthor(req, res)){
         res.send("Unsuccessful, User Registration Incomplete");

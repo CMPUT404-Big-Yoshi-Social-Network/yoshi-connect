@@ -40,6 +40,7 @@ adminToken = 12345
 //Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 const database = mongoose.connection
+const authors = database.model('Author', author_scheme);
 
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));

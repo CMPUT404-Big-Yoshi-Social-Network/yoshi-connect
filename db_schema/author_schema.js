@@ -8,7 +8,8 @@ const author_scheme = new Schema({
     email: String,
     about: String,
     pronouns: String,
-    Admin: Boolean
+    admin: Boolean,},
+    {versionKey: false
 });
 
 module.exports = {

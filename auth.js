@@ -1,6 +1,6 @@
 const crypto_js = require('crypto-js')
 
-async function authAuthor(req, res, Author) {
+async function authAuthor(req, res) {
     const { getAuthor } = require('./server');
     const username = req.body.username;
     const password = req.body.password;

@@ -31,16 +31,18 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, authAdmin } = require('./auth')
-const { create_user } = require('routes/author.js');
+const { register_author } = require('./routes/author');
+const {author_scheme} = require('./db_schema/author_schema.js');
+
 app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));
+app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 // HARDCODED TO ALWAYS WORK!! FIX W/ DB! 
-adminToken = 12345
 
 //Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 const database = mongoose.connection
-const authors = database.model('Author', author_scheme);
+const Author = database.model('Author', author_scheme);
 
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
@@ -59,14 +61,15 @@ app.get('/',(req, res) => {
 // Sign up page 
 app.post('/signup', (req, res) => {
   console.log('Debug: Signing up as an author')
-  res.render("signup/index")
+  register_author(req, res);
 })
 // TODO: SAVE THE DATA FROM THE SIGN UP!
 
 // Log in page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
-  res.render("login/index")
+
+  authAuthor(req, res);
 })
 // TODO: SHOULD MOVE FROM /LOGIN TO PUBLIC FEED 200 OK ON /TEST FOR EXAMPLE!
 
@@ -88,12 +91,21 @@ app.get('/admin', authAuthor, authAdmin(true), (req, res) => {
 
 // Authentication: Checking if the person is an author
 async function getAuthor(req, res, next) {
-  if (req.body.username != undefined && await authors.findOne({username: req.body.username})) {
+  if (req.body.username != undefined) {
     console.log('Debug: Getting the authorId in the database.')
     // TODO: Get the correct authorid to verify that the person is an author (save this author as req.author -> used in auth.js)
-    req.author = req.body.username;
+    await Author.findOne({username: req.body.username}, function(err, author){
+      req.author = author;
+    }).clone();
+    return req.body.username;
   }
-  next();
+  if( next ) 
+    next();
+  return undefined;
 }
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
+module.exports={
+  getAuthor
+}

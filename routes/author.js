@@ -13,7 +13,7 @@ async function register_author(req, res, Author){
     //Check to make sure username, password, and email are present
     const username = req.body.username;
     const email = req.body.email;
-    let password = req.body.password;
+    const password = req.body.password;
     if( !username || !email || !password ){
         res.send("Unsuccessful, User Registration Incomplete");
         return;

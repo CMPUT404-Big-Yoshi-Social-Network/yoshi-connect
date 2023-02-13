@@ -12,6 +12,15 @@ const author_scheme = new Schema({
     {versionKey: false
 });
 
+const login_scheme = new Schema({
+    authorId: Number,
+    username: String,
+    token: String,
+    admin: Boolean,},
+    {versionKey: false
+});
+
 module.exports = {
-    author_scheme
+    author_scheme,
+    login_scheme
 }

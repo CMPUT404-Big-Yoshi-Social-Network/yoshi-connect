@@ -30,7 +30,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, authAdmin, authorExists } = require('./auth')
+const { authAuthor, authAdmin } = require('./auth')
 const { register_author } = require('./routes/author');
 const { author_scheme } = require('./db_schema/author_schema.js');
 
@@ -47,23 +47,16 @@ const Author = database.model('Author', author_scheme);
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
 app.use(currAuthor);
 
-app.get('/feed', authorExists, (req, res) => { // TODO: CACHE THE LOGIN SO THIS IS VIEWABLE
-  console.log('Debug: Viewing Public Feed')
-  res.send('You are looking at public feed.')
-})
-
 // Sign up page 
 app.post('/signup', (req, res) => {
   console.log('Debug: Signing up as an author')
   register_author(req, res);
-  res.redirect('/feed') // UPDATE
 })
 
 // Login page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
   authAuthor(req, res)
-  res.redirect('/feed') 
 })
 
 // Admin Login page

@@ -30,7 +30,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, authAdmin } = require('./auth')
+const { authAuthor, authAdmin, authorExists } = require('./auth')
 const { register_author } = require('./routes/author');
 const { author_scheme } = require('./db_schema/author_schema.js');
 
@@ -45,27 +45,32 @@ const Author = database.model('Author', author_scheme);
 
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
+app.use(currAuthor);
+
+app.get('/feed', authorExists, (req, res) => { // TODO: CACHE THE LOGIN SO THIS IS VIEWABLE
+  console.log('Debug: Viewing Public Feed')
+  res.send('You are looking at public feed.')
+})
 
 // Sign up page 
 app.post('/signup', (req, res) => {
   console.log('Debug: Signing up as an author')
   register_author(req, res);
-  res.redirect('/feed');
+  res.redirect('/feed') // UPDATE
 })
 
 // Login page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
-  authAuthor(req, res);
-  res.redirect('/feed'); // Currently if it refreshes, you can still access feed which we want to auth user before going to feed
+  authAuthor(req, res)
+  res.redirect('/feed') 
 })
 
 // Admin Login page
 app.post('/admin', (req, res) => {
   console.log('Debug: Login as Admin')
   authAuthor(req, res);
-  authAdmin(true);
-  res.redirect('/admin/dashboard.html'); // Currently if it refreshes, you can still access feed which we want to auth user before going to feed
+  authAdmin(req, res); // CURRENTLY: Dashboard is accessible for anyone
 })
 
 // All other GET requests not handled before will return our React app
@@ -91,6 +96,14 @@ async function getAuthor(req, res, next) {
   if( next ) 
     next();
   return undefined;
+}
+
+function currAuthor(req, res, next) {
+  const authorId = req.body.authorId;
+  if (authorId) {
+    req.author = Author.find(author => author.id === authorId);
+  }
+  next()
 }
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

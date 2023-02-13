@@ -42,7 +42,7 @@ async function register_author(req, res){
             return;
         }
         console.log("Debug: " + author.username + " added successfully to database");
-        return res.redirect('/feed');
+        return;
     });
     //TODO: Send a JWT or other form of authentication to the client
 }

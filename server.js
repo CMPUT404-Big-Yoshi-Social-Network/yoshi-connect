@@ -38,7 +38,7 @@ app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 
-//Connect to database
+// Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 const database = mongoose.connection
 const Author = database.model('Author', author_scheme);
@@ -50,28 +50,17 @@ app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
 app.post('/signup', (req, res) => {
   console.log('Debug: Signing up as an author')
   register_author(req, res);
+  res.redirect('/feed');
 })
 
 // Log in page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
   authAuthor(req, res);
+  res.redirect('/feed');
 })
-// TODO: SHOULD MOVE FROM /LOGIN TO PUBLIC FEED 200 OK ON /TEST FOR EXAMPLE!
 
-app.use(getAuthor) // Checks if the author exists first then proceeds to other pages
-
-// "public" feed seen after logging in 
-app.get('/feed', authAuthor, (req, res) => {
-  console.log("Debug: You are viewing the public feed.");
-  res.render("feed/index");
-});
-
-// Admin page
-app.get('/admin', authAuthor, authAdmin(true), (req, res) => {
-  console.log("Debug: Showing Admin page")
-  res.render("admin/index");
-});
+app.use(getAuthor) // Checks for username
 
 // All other GET requests not handled before will return our React app
 app.get('*', (req, res) => {

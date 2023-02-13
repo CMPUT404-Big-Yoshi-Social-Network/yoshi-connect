@@ -53,14 +53,12 @@ app.post('/signup', (req, res) => {
   res.redirect('/feed');
 })
 
-// Log in page
+// Login page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
   authAuthor(req, res);
-  res.redirect('/feed');
+  res.redirect('/feed'); // Currently if it refreshes, you can still access feed which we want to auth user before going to feed
 })
-
-app.use(getAuthor) // Checks for username
 
 // All other GET requests not handled before will return our React app
 app.get('*', (req, res) => {

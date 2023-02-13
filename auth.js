@@ -21,7 +21,6 @@ async function authAuthor(req, res) {
     console.log("Client's Hashed password: ", crypto_js.SHA256(password))
     if(p_hashed_password == crypto_js.SHA256(password)){
         console.log("Authentication successful");
-        res.send("Login successful");
         return;
     }
     if(next)
@@ -32,12 +31,11 @@ async function authAuthor(req, res) {
 function authAdmin(isAdmin) {
     return (req, res, next) => {
         console.log('Debug: Checking if the admin header is true for the user.')
-        // TODO: Query from the database the admin keys and see if the user has a admin: true
-        if (req.author.admin == false) {
+        if (req.author.admin != isAdmin) {
             res.status(401) // 401 Unauthorized 
             return res.send('You are not an admin!')
         }
-        next()
+        next();
     }
 }
 

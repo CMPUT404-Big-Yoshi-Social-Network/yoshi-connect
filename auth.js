@@ -31,7 +31,7 @@ async function authAuthor(req, res) {
 function authAdmin(isAdmin) {
     return (req, res, next) => {
         console.log('Debug: Checking if the admin header is true for the user.')
-        if (req.author.admin != isAdmin) {
+        if (req.body.admin != isAdmin) {
             res.status(401) // 401 Unauthorized 
             return res.send('You are not an admin!')
         }

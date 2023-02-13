@@ -60,6 +60,14 @@ app.post('/login', (req, res) => {
   res.redirect('/feed'); // Currently if it refreshes, you can still access feed which we want to auth user before going to feed
 })
 
+// Admin Login page
+app.post('/admin', (req, res) => {
+  console.log('Debug: Login as Admin')
+  authAuthor(req, res);
+  authAdmin(true);
+  res.redirect('/admin/dashboard.html'); // Currently if it refreshes, you can still access feed which we want to auth user before going to feed
+})
+
 // All other GET requests not handled before will return our React app
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../yoshi-react/build', 'index.html'));

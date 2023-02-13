@@ -44,7 +44,6 @@ async function register_author(req, res){
         console.log("Debug: " + author.username + " added successfully to database");
         return;
     });
-    //TODO: Send a JWT or other form of authentication to the client
 }
 
 module.exports={

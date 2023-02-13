@@ -12,7 +12,7 @@ export default function AdminLogin() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/login',
+        url: '/admin',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },

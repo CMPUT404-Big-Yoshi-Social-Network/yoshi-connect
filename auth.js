@@ -9,7 +9,6 @@ const Login = database.model('Login', login_scheme);
 
 async function authAuthor(req, res) {
     const { getAuthor } = require('./server');
-    console.log(req);
     const username = req.body.username;
     const password = req.body.password;
     if(!username || !password){

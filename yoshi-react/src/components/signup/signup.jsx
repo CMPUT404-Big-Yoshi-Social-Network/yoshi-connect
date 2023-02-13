@@ -13,7 +13,7 @@ export default function Signup() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/login',
+        url: '/signup',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },

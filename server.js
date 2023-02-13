@@ -32,12 +32,11 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, authAdmin } = require('./auth')
 const { register_author } = require('./routes/author');
-const {author_scheme} = require('./db_schema/author_schema.js');
+const { author_scheme } = require('./db_schema/author_schema.js');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('views', path.resolve( __dirname, './yoshi-react/public'));
-// HARDCODED TO ALWAYS WORK!! FIX W/ DB! 
 
 //Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
@@ -63,7 +62,6 @@ app.post('/signup', (req, res) => {
   console.log('Debug: Signing up as an author')
   register_author(req, res);
 })
-// TODO: SAVE THE DATA FROM THE SIGN UP!
 
 // Log in page
 app.post('/login', (req, res) => {
@@ -92,12 +90,15 @@ app.get('/admin', authAuthor, authAdmin(true), (req, res) => {
 // Authentication: Checking if the person is an author
 async function getAuthor(req, res, next) {
   if (req.body.username != undefined) {
-    console.log('Debug: Getting the authorId in the database.')
-    // TODO: Get the correct authorid to verify that the person is an author (save this author as req.author -> used in auth.js)
+    console.log('Debug: Getting the username in the database.')
     await Author.findOne({username: req.body.username}, function(err, author){
       req.author = author;
     }).clone();
-    return req.body.username;
+    if (req.author == null) {
+      return false;
+    } else {
+      return req.body.username;
+    }
   }
   if( next ) 
     next();

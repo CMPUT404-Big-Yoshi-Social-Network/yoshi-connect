@@ -12,19 +12,19 @@ async function authAuthor(req, res) {
     const username = req.body.username;
     const password = req.body.password;
     if(!username || !password){
-        console.log("Authentication failed");
+        console.log("Debug: Username or Password not given, Authentication failed");
         return res.json({
-            message: "missing username or password",
-            status: "unsuccessful"
+            message: "You are missing username or password.",
+            status: "Unsuccessful"
         });
     }
 
     const possible_author = await getAuthor(req, res);
     if(!possible_author){
-        console.log("Authentication failed");
+        console.log("Debug: Author does not exist, Authentication failed");
         return res.json({
             username: req.body.username,
-            status: "unsuccessful"
+            status: "Unsuccessful"
         });
     }
     const p_hashed_password = req.author.password;
@@ -32,8 +32,7 @@ async function authAuthor(req, res) {
     console.log("Server's Hashed password: ", p_hashed_password)
     console.log("Client's Hashed password: ", crypto_js.SHA256(password))
     if(p_hashed_password == crypto_js.SHA256(password)){
-        console.log("Authentication successful");
-
+        console.log("Debug: Authentication successful");
         let token = uidgen.generateSync();
         let login = new Login({
             authorId: req.author.authorId,
@@ -52,7 +51,8 @@ async function authAuthor(req, res) {
                 token,
                 username: req.body.username,
                 authorId: req.author.authorId,
-                status: "successful"
+                admin: req.author.admin,
+                status: "Successful"
             });
         });
         return;
@@ -60,27 +60,6 @@ async function authAuthor(req, res) {
     return;
 }
 
-async function authAdmin(req, res) {
-    const { getAuthor } = require('./server');
-    console.log('Debug: Checking if the admin header is true for the user.')
-
-    const possible_author = await getAuthor(req, res);
-
-    if(!possible_author){
-        console.log("Authentication failed");
-        res.send("Admin access Unsuccessful");
-    }
-
-    if (!req.author.admin) {
-        res.status(401) // 401 Unauthorized 
-        return res.send('You are not an admin!');
-    } else {
-        res.status(301) // Bad route?
-        res.redirect('/admin/dashboard.html');
-    }
-}
-
 module.exports = {
-    authAuthor,
-    authAdmin,
+    authAuthor
 }

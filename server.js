@@ -43,8 +43,6 @@ mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 const database = mongoose.connection
 const Author = database.model('Author', author_scheme);
 
-// Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
 app.use(currAuthor);
 
 // Sign up page 
@@ -63,13 +61,7 @@ app.post('/login', (req, res) => {
 app.post('/admin', (req, res) => {
   console.log('Debug: Login as Admin')
   authAuthor(req, res);
-  authAdmin(req, res); // CURRENTLY: Dashboard is accessible for anyone
 })
-
-// All other GET requests not handled before will return our React app
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../yoshi-react/build', 'index.html'));
-});
 
 /* Middleware */
 

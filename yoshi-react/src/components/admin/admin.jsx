@@ -22,8 +22,12 @@ export default function AdminLogin() {
       axios(config)
       .then((response) => {
         console.log("Debug: Token received.");
-        // Local Storage 
-        window.localStorage.setItem("token", response.data.token);
+        console.log(response)
+        if ( response.data.admin ) {
+          window.localStorage.setItem("token", response.data.token);
+        } else {
+          alert("You are not an admin! Get outta here!")
+        }
       })
     }
     return(

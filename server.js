@@ -46,17 +46,6 @@ const Author = database.model('Author', author_scheme);
 // Have Node serve the files for our built React app
 app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
 
-// All other GET requests not handled before will return our React app
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../yoshi-react/build', 'index.html'));
-});
-
-// Home page 
-app.get('/',(req, res) => {
-  console.log("Debug: Showing Home page");
-  res.render("index");
-});
-
 // Sign up page 
 app.post('/signup', (req, res) => {
   console.log('Debug: Signing up as an author')
@@ -66,7 +55,6 @@ app.post('/signup', (req, res) => {
 // Log in page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
-
   authAuthor(req, res);
 })
 // TODO: SHOULD MOVE FROM /LOGIN TO PUBLIC FEED 200 OK ON /TEST FOR EXAMPLE!
@@ -75,14 +63,19 @@ app.use(getAuthor) // Checks if the author exists first then proceeds to other p
 
 // "public" feed seen after logging in 
 app.get('/feed', authAuthor, (req, res) => {
-  console.log("Debug: Showing a test page only accessible if you are an author");
-  res.send('Hello, you are signed in.')
+  console.log("Debug: You are viewing the public feed.");
+  res.render("feed/index");
 });
 
 // Admin page
 app.get('/admin', authAuthor, authAdmin(true), (req, res) => {
   console.log("Debug: Showing Admin page")
-  res.send('Hello fellow Admin!')
+  res.render("admin/index");
+});
+
+// All other GET requests not handled before will return our React app
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../yoshi-react/build', 'index.html'));
 });
 
 /* Middleware */

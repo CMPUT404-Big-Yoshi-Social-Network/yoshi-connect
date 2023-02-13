@@ -36,13 +36,13 @@ async function register_author(req, res){
         admin: false
     });
 
-    author.save((err, author) => {
+    author.save((err, author, next) => {
         if(err){
             console.log(err);
             return;
         }
         console.log("Debug: " + author.username + " added successfully to database");
-        res.send("Successful, User Registration Complete")
+        return res.redirect('/feed');
     });
     //TODO: Send a JWT or other form of authentication to the client
 }

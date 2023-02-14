@@ -1,12 +1,12 @@
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Welcome from "./components/welcome/welcome";
-import Login from "./components/login/login";
-import Signup from "./components/signup/signup";
-import AdminLogin from "./components/admin/admin";
-import AdminDashboard from "./components/admin/admin-dashboard";
-import PublicFeed from "./components/feeds/public";
-import FriendFeed from "./components/feeds/friend";
+import Welcome from "./components/welcome/welcome.jsx";
+import Login from "./components/login/login.jsx";
+import Signup from "./components/signup/signup.jsx";
+import AdminLogin from "./components/admin/admin.jsx";
+import AdminDashboard from "./components/admin/admin-dashboard.jsx";
+import PublicFeed from "./components/feeds/public.jsx";
+import FriendFeed from "./components/feeds/friend.jsx";
 
 const router = createBrowserRouter([ // Still need messages, group chats, etc
   {

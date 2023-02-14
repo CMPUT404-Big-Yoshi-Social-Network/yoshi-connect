@@ -30,7 +30,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, removeLogin } = require('./auth')
+const { authAuthor, removeLogin, checkExpiry } = require('./auth')
 const { register_author } = require('./routes/author');
 const { author_scheme } = require('./db_schema/author_schema.js');
 
@@ -43,7 +43,6 @@ app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 const database = mongoose.connection
-const Author = database.model('Author', author_scheme);
 
 // Sign up page 
 app.post('/signup', (req, res) => {
@@ -69,32 +68,13 @@ app.post('/admin/dashboard', (req, res) => {
 })
 
 app.post('/feed', (req, res) => {
-  console.log('Debug: Logging out as Author')
-  removeLogin(req, res);
+  if (req.body.data.message == 'Logging Out') {
+    console.log('Debug: Logging out as Author')
+    removeLogin(req, res);
+  } else if (req.body.data.message == 'Checking expiry') {
+    console.log('Debug: Checking expiry of token')
+    checkExpiry(req, res);
+  }
 })
 
-/* Middleware */
-
-// Authentication: Checking if the person is an author
-async function getAuthor(req, res, next) {
-  if (req.body.username != undefined) {
-    console.log('Debug: Getting the username in the database.')
-    await Author.findOne({username: req.body.username}, function(err, author){
-      req.author = author;
-    }).clone();
-    if (req.author == null) {
-      return false;
-    } else {
-      return req.body.username;
-    }
-  }
-  if( next ) 
-    next();
-  return undefined;
-}
-
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
-
-module.exports={
-  getAuthor
-}

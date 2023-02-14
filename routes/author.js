@@ -9,12 +9,17 @@ const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 
 async function register_author(req, res){
-    const { getAuthor } = require('../server');
-    if( await getAuthor(req, res) ){
-        console.log("Debug: Author already exists.")
-        res.send("Unsuccessful, User Registration Incomplete");
-        return;
-    }
+    await Author.findOne({username: req.body.username}, function(err, author){
+        if(!author){
+            console.log("Debug: Author does not exist, Authentication failed");
+            return res.json({
+                username: req.body.username,
+                status: "Unsuccessful"
+            });
+        } else {
+            req.author = author;
+        }
+    }).clone()
     console.log("Debug: Author does not exist yet.")
 
     const authorId = (await Author.find().sort({authorId:-1}).limit(1))[0].authorId + 1;

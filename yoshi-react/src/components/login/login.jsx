@@ -1,7 +1,9 @@
 // TODO: CHANGE THIS PLEASE
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 export default function Login() {
+    const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',
       password: ''
@@ -22,8 +24,13 @@ export default function Login() {
       axios(config)
       .then((response) => {
         console.log("Debug: Token received.");
-        // Local Storage 
-        window.localStorage.setItem("token", response.data.token);
+        if ( response.data.status === 'Successful' ) {
+          console.log("Debug: Going to public feed.")
+          window.localStorage.setItem("token", response.data.token);
+          navigate('/feed');
+        } else {
+          alert("You are not an author! Get outta here!")
+        }
       })
     }
     return(

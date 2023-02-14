@@ -54,7 +54,7 @@ app.post('/signup', (req, res) => {
 // Login page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
-  authAuthor(req, res)
+  authAuthor(req, res);
 })
 
 // Admin Login page

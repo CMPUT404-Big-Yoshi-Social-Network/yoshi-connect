@@ -1,7 +1,9 @@
 // TODO: CHANGE THIS PLEASE
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 export default function AdminLogin() { 
+    const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',
       password: ''
@@ -22,9 +24,10 @@ export default function AdminLogin() {
       axios(config)
       .then((response) => {
         console.log("Debug: Token received.");
-        console.log(response)
         if ( response.data.admin ) {
+          console.log("Debug: Going to dashboard.")
           window.localStorage.setItem("token", response.data.token);
+          navigate('/admin/dashboard');
         } else {
           alert("You are not an admin! Get outta here!")
         }

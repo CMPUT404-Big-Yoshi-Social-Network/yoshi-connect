@@ -16,7 +16,8 @@ const login_scheme = new Schema({
     authorId: Number,
     username: String,
     token: String,
-    admin: Boolean,},
+    admin: Boolean,
+    expires: String,},
     {versionKey: false
 });
 

@@ -49,7 +49,8 @@ async function authAuthor(req, res) {
             authorId: req.author.authorId,
             username: req.body.username,
             token: token,
-            admin: req.author.admin
+            admin: req.author.admin,
+            expires: req.headers.expires
         });
 
         login.save((err, login, next) => {

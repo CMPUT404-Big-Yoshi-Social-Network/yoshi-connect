@@ -10,12 +10,17 @@ export default function Login() {
     const getUserpass = (e) => {
       e.preventDefault()
 
+      let justLogged =  new Date();
+      let expiresAt = new Date(justLogged.getTime() + (1 * 60 * 1000)); // Just 1 minute
+
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: '/login',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Date': justLogged,
+          'Expires': expiresAt
         },
         data: data
       }

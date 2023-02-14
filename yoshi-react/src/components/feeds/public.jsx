@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import React, { useEffect } from "react";
 function PublicFeed() {
     const navigate = useNavigate();
@@ -15,7 +16,22 @@ function PublicFeed() {
         checkForAuthor();
     });
     const LogOut = () => {
-        window.localStorage.setItem("token", 'undefined');
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/login',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: window.localStorage.getItem('token')
+        }
+        window.localStorage.setItem('token', 'undefined');
+        axios
+        .post('/feed', config)
+        .then((response) => console.log(response))
+        .catch(err => {
+          console.error(err);
+        });
     }
     return (
         <div>

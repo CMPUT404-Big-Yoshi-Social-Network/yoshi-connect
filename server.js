@@ -68,6 +68,11 @@ app.post('/admin/dashboard', (req, res) => {
   removeLogin(req, res);
 })
 
+app.post('/feed', (req, res) => {
+  console.log('Debug: Logging out as Author')
+  removeLogin(req, res);
+})
+
 /* Middleware */
 
 // Authentication: Checking if the person is an author

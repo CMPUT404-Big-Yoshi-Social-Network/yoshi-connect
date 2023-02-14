@@ -1,6 +1,7 @@
 {
   "name": "yoshi-react",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "proxy": "http://localhost:8080/",
   "dependencies": {

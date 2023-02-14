@@ -7,6 +7,17 @@ mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 const Login = database.model('Login', login_scheme);
 
+async function removeLogin(req, res) {
+    if (req.body.data != undefined) {
+        console.log('Debug: Getting the token in the login database.')
+        Login.deleteOne({token: req.body.data}, function(err, obj) {
+            if (err) throw err;
+            console.log("Debug: Login token deleted");
+        })
+    }
+    return undefined;
+}
+
 async function authAuthor(req, res) {
     const { getAuthor } = require('./server');
     const username = req.body.username;
@@ -61,5 +72,6 @@ async function authAuthor(req, res) {
 }
 
 module.exports = {
-    authAuthor
+    authAuthor,
+    removeLogin
 }

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 function AdminDashboard() {
-    // TODO: CHECK IF THE USER IS ADMIN AND LOGGED IN
     const navigate = useNavigate();
     const checkForAuthor = () => {
         const token = localStorage.getItem('token');
@@ -26,7 +26,22 @@ function AdminDashboard() {
         checkAdmin();
     });
     const LogOut = () => {
-        window.localStorage.setItem("token", 'undefined');
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/admin',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: window.localStorage.getItem('token')
+        }
+        window.localStorage.setItem('token', 'undefined');
+        axios
+        .post('/admin/dashboard', config)
+        .then((response) => console.log(response))
+        .catch(err => {
+          console.error(err);
+        });
     }
     return (
         <div>

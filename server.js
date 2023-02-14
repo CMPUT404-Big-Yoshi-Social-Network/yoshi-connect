@@ -30,12 +30,13 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, authAdmin } = require('./auth')
+const { authAuthor, removeLogin } = require('./auth')
 const { register_author } = require('./routes/author');
 const { author_scheme } = require('./db_schema/author_schema.js');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json())
 app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 
 // Connect to database
@@ -59,6 +60,11 @@ app.post('/login', (req, res) => {
 app.post('/admin', (req, res) => {
   console.log('Debug: Login as Admin')
   authAuthor(req, res);
+})
+
+app.post('/admin/dashboard', (req, res) => {
+  console.log('Debug: Logging out as Admin')
+  removeLogin(req, res);
 })
 
 /* Middleware */

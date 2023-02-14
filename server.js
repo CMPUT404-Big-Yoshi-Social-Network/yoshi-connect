@@ -36,7 +36,8 @@ const { author_scheme } = require('./db_schema/author_schema.js');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 
 // Connect to database

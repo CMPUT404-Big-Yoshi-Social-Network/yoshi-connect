@@ -15,7 +15,7 @@ export default function AdminLogin() {
         maxBodyLength: Infinity,
         url: '/admin',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json'
         },
         data: data
       }

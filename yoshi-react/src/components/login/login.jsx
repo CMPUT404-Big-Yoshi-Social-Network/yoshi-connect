@@ -15,7 +15,7 @@ export default function Login() {
         maxBodyLength: Infinity,
         url: '/login',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json'
         },
         data: data
       }

@@ -5,8 +5,10 @@ import Login from "./components/login/login";
 import Signup from "./components/signup/signup";
 import AdminLogin from "./components/admin/admin";
 import AdminDashboard from "./components/admin/admin-dashboard";
+import PublicFeed from "./components/feeds/public";
+import FriendFeed from "./components/feeds/friend";
 
-const router = createBrowserRouter([
+const router = createBrowserRouter([ // Still need messages, group chats, etc
   {
     path: '/',
     element: <Welcome/>
@@ -26,6 +28,14 @@ const router = createBrowserRouter([
   {
     path: '/admin/dashboard',
     element: <AdminDashboard/>
+  },
+  {
+    path: '/feed',
+    element: <PublicFeed/>
+  },
+  {
+    path: '/friends',
+    element: <FriendFeed/>
   }
 ])
   

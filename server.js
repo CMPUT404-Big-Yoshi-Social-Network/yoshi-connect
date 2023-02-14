@@ -43,8 +43,6 @@ mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 const database = mongoose.connection
 const Author = database.model('Author', author_scheme);
 
-app.use(currAuthor);
-
 // Sign up page 
 app.post('/signup', (req, res) => {
   console.log('Debug: Signing up as an author')
@@ -81,14 +79,6 @@ async function getAuthor(req, res, next) {
   if( next ) 
     next();
   return undefined;
-}
-
-function currAuthor(req, res, next) {
-  const authorId = req.body.authorId;
-  if (authorId) {
-    req.author = Author.find(author => author.id === authorId);
-  }
-  next()
 }
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

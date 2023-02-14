@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 export default function Signup() {
+    const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',
       email: '',
@@ -19,12 +21,19 @@ export default function Signup() {
         data: data
       }
 
-      axios(config)
+      axios
+      .post('/signup', config)
       .then((response) => {
         console.log("Debug: Token received.");
-        // Local Storage 
-        window.localStorage.setItem("token", response.data.token);
+        if ( response.data.status === 'Successful' ) {
+          console.log("Debug: Going to public feed.")
+          window.localStorage.setItem("token", response.data.token);
+          navigate('/feed');
+        }
       })
+      .catch(err => {
+        console.error(err);
+      });
     }
     return(
       <form>

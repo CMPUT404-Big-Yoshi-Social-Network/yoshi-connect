@@ -6,6 +6,7 @@ function PublicFeed() {
         const token = localStorage.getItem('token');
         if (token === 'undefined') {
             console.log("Debug: You are not logged in.")
+            alert("You are not logged in. Please log in!")
             return navigate('/login');
         }
         console.log("Debug: You are logged in.")
@@ -13,10 +14,13 @@ function PublicFeed() {
     useEffect(() => {
         checkForAuthor();
     });
+    const LogOut = () => {
+        window.localStorage.setItem("token", 'undefined');
+    }
     return (
         <div>
             Welcome to the Public Feed. You are signed in.
-            <a href="/login">Log Out</a>
+            <a href="/login" onClick={LogOut}>Log Out</a>
         </div> 
     )
 }

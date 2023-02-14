@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from "react";
 function FriendFeed() {
     const navigate = useNavigate();
     const checkForAuthor = () => {

@@ -27,6 +27,7 @@ export default function AdminLogin() {
         if ( response.data.admin ) {
           console.log("Debug: Going to dashboard.")
           window.localStorage.setItem("token", response.data.token);
+          window.localStorage.setItem("admin", response.data.admin);
           navigate('/admin/dashboard');
         } else {
           alert("You are not an admin! Get outta here!")

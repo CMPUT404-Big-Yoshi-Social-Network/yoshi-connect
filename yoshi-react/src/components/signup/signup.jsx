@@ -26,11 +26,9 @@ export default function Signup() {
         data: data
       }
 
-      axios
-      .post('/signup', config)
+      axios(config)
       .then((response) => {
         console.log("Debug: Token received.");
-        console.log(response)
         if ( response.data.status === 'Successful' ) {
           console.log("Debug: Going to public feed.")
           window.localStorage.setItem("token", response.data.token);

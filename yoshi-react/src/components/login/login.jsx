@@ -5,7 +5,8 @@ export default function Login() {
     const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',
-      password: ''
+      password: '',
+      token: window.localStorage.getItem('token')
     })
     const getUserpass = (e) => {
       e.preventDefault()

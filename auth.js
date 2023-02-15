@@ -60,7 +60,7 @@ async function authAuthor(req, res) {
         });
     }
 
-    await Author.findOne({username: req.body.username}, function(err, author){
+    await Author.findOne({username: req.body.username}, async function(err, author){
         if(!author){
             console.log("Debug: Author does not exist, Authentication failed");
             return res.json({
@@ -76,6 +76,14 @@ async function authAuthor(req, res) {
         console.log("Client's Hashed password: ", crypto_js.SHA256(password))
         if(p_hashed_password == crypto_js.SHA256(password)){
             console.log("Debug: Authentication successful");
+            //Check if login already exists if it does send back the old one else create a new one 
+            if(req.body.token != "undefined"){
+                await Login.deleteOne({token: req.body.token}, function(err, login) {
+                    if (err) throw err;
+                    console.log("Debug: Login token deleted");
+                }).clone
+            }
+        
             let token = uidgen.generateSync();
             let login = new Login({
                 authorId: req.author.authorId,

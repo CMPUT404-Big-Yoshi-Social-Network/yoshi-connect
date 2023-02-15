@@ -11,7 +11,7 @@ export default function Login() {
       e.preventDefault()
 
       let justLogged =  new Date();
-      let expiresAt = new Date(justLogged.getTime() + (1 * 60 * 1000)); // 24 hours (1440 minutes)
+      let expiresAt = new Date(justLogged.getTime() + (1440 * 60 * 1000)); // 24 hours (1440 minutes)
 
       let config = {
         method: 'post',

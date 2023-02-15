@@ -16,6 +16,10 @@ async function removeLogin(req, res) {
             if (err) throw err;
             console.log("Debug: Login token deleted");
         })
+        return res.json({
+            message: "Logged out.",
+            status: "Expired"
+        });
     } else {
         console.log('Debug: Getting the token in the login database.')
         Login.deleteOne({token: req.body.token}, function(err, login) {

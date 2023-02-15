@@ -48,7 +48,7 @@ function PublicFeed() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/',
+            url: '/feed',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -60,16 +60,20 @@ function PublicFeed() {
         window.localStorage.setItem('token', 'undefined');
         axios
         .post('/feed', config)
-        .then((response) => console.log(response))
+        .then((response) => {
+            console.log(response);
+            navigate("/");
+        })
         .catch(err => {
           console.error(err);
         });
+
     }
     return (
         <div>
             Welcome to the Public Feed. You are signed in.
-            <a href="/" onClick={LogOut}>Log Out</a>
-        </div> 
+            <button type="button" onClick={() => LogOut()}>Log Out</button>
+        </div>
     )
 }
 

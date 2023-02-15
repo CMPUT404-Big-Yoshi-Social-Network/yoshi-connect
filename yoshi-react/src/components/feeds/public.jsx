@@ -11,6 +11,7 @@ function PublicFeed() {
             return navigate('/login');
         }
         console.log("Debug: You are logged in.")
+        return true;
     }
     const checkExpiry = () => {
         let config = {
@@ -41,8 +42,10 @@ function PublicFeed() {
         });
     }
     useEffect(() => {
-        checkForAuthor();
-        checkExpiry();
+        let isLogged = checkForAuthor();
+        if (isLogged) {
+            checkExpiry();
+        }
     });
     const LogOut = () => {
         let config = {

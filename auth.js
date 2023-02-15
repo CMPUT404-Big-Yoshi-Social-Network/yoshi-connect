@@ -8,8 +8,19 @@ const database = mongoose.connection;
 const Login = database.model('Login', login_scheme);
 const Author = database.model('Author', author_scheme);
 
-async function removeLogin(req, res) {
+function isPersonal(req, res) {
+    if (req.body.data.token != undefined) {
+        console.log('Debug: Getting the token in the login database.')
+        Login.findOne({token: req.body.data.token}, function(err, login) {
+            if (err) throw err;
+            return res.json({
+                username: login.username
+            });
+        })  
+    }
+}
 
+async function removeLogin(req, res) {
     if (req.body.data.token != undefined) {
         console.log('Debug: Getting the token in the login database.')
         Login.deleteOne({token: req.body.data.token}, function(err, login) {
@@ -97,11 +108,24 @@ async function authAuthor(req, res) {
                 expires: req.headers.expires
             });
 
+            if (req.route.path == '/admin') {
+                if (!req.author.admin) {
+                    console.log("Debug: You are not an admin. Your login will not be cached.")
+                    return res.json({
+                        token,
+                        username: req.body.username,
+                        authorId: req.author.authorId,
+                        admin: req.author.admin,
+                        status: "Unsuccessful"
+                    }); 
+                }
+            }
+
             login.save((err, login, next) => {
                 if (err) {
                     console.log(err);
                     return;
-                }
+                } 
                 console.log("Debug: Login Cached.")
                 return res.json({
                     token,
@@ -120,5 +144,6 @@ async function authAuthor(req, res) {
 module.exports = {
     authAuthor,
     removeLogin,
-    checkExpiry
+    checkExpiry,
+    isPersonal
 }

@@ -9,11 +9,11 @@ const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 
 async function register_author(req, res){
-    await Author.findOne({username: req.body.data.username}, function(err, author){
+    await Author.findOne({username: req.body.username}, function(err, author){
         if(author){
             console.log("Debug: Author does exist, Authentication failed");
             return res.json({
-                username: req.body.data.username,
+                username: req.body.username,
                 status: "Unsuccessful"
             });
         } else {
@@ -25,9 +25,9 @@ async function register_author(req, res){
     const authorId = (await Author.find().sort({authorId:-1}).limit(1))[0].authorId + 1;
 
     //Check to make sure username, password, and email are present
-    const username = req.body.data.username;
-    const email = req.body.data.email;
-    const password = req.body.data.password;
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
     if( !username || !email || !password ){
         console.log("Debug: Did not fill in all the cells.")
         return res.json({
@@ -60,8 +60,8 @@ async function register_author(req, res){
             authorId: authorId,
             username: username,
             token: token,
-            expires: req.headers.expires,
-            admin: false
+            admin: false,
+            expires: req.headers.expires
         });
         login.save((err, login, next) => {
             if (err) {

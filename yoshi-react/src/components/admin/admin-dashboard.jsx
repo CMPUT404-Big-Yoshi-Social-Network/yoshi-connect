@@ -11,6 +11,7 @@ function AdminDashboard() {
             return navigate('/admin');
         }
         console.log("Debug: You are logged in.")
+        return true;
     }
     const checkAdmin = () => {
         const admin = localStorage.getItem('admin');
@@ -20,6 +21,7 @@ function AdminDashboard() {
             return navigate('/admin')
         }
         console.log("Debug: You are an Admin.")
+        return true;
     }
     const checkExpiry = () => {
         let config = {
@@ -50,9 +52,13 @@ function AdminDashboard() {
         });
     }
     useEffect(() => {
-        checkForAuthor();
-        checkAdmin();
-        checkExpiry();
+        let isLogged = checkForAuthor();
+        if (isLogged) {
+            let isAdmin = checkAdmin();
+            if (isAdmin) {
+                checkExpiry();
+            }
+        }
     });
     const LogOut = () => {
         let config = {

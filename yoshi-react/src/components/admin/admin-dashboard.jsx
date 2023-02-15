@@ -21,9 +21,38 @@ function AdminDashboard() {
         }
         console.log("Debug: You are an Admin.")
     }
+    const checkExpiry = () => {
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/admin',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+                token: window.localStorage.getItem('token'),
+                message: 'Checking expiry'
+            }
+        }
+        axios
+        .post('/admin/dashboard', config)
+        .then((response) => {
+            if (response.data.status === "Expired") {
+                console.log("Debug: Your token is expired.")
+                alert("You login is not cached anymore, sorry! Please log in again.")
+                LogOut();
+                navigate('/admin');
+            }
+            console.log('Debug: Your token is not expired.')
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
     useEffect(() => {
         checkForAuthor();
         checkAdmin();
+        checkExpiry();
     });
     const LogOut = () => {
         let config = {
@@ -33,7 +62,10 @@ function AdminDashboard() {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
-            data: window.localStorage.getItem('token')
+            data: {
+                token: window.localStorage.getItem('token'),
+                message: 'Logging Out'
+            }
         }
         window.localStorage.setItem('token', 'undefined');
         axios

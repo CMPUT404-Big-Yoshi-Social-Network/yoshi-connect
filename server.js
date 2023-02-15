@@ -63,8 +63,13 @@ app.post('/admin', (req, res) => {
 })
 
 app.post('/admin/dashboard', (req, res) => {
-  console.log('Debug: Logging out as Admin')
-  removeLogin(req, res);
+  if (req.body.data.message == 'Logging Out') {
+    console.log('Debug: Logging out as Admin')
+    removeLogin(req, res);
+  } else if (req.body.data.message == 'Checking expiry') {
+    console.log('Debug: Checking expiry of token')
+    checkExpiry(req, res);
+  }
 })
 
 app.post('/feed', (req, res) => {

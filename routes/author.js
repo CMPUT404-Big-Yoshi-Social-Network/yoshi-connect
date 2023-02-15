@@ -60,6 +60,7 @@ async function register_author(req, res){
             authorId: authorId,
             username: username,
             token: token,
+            expires: req.headers.expires,
             admin: false
         });
         login.save((err, login, next) => {
@@ -73,6 +74,7 @@ async function register_author(req, res){
                 username: username,
                 authorId: authorId,
                 admin: false,
+
                 status: "Successful"
             });
         })

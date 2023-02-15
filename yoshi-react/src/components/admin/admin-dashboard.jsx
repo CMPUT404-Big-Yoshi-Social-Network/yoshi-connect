@@ -25,7 +25,7 @@ function AdminDashboard() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/admin',
+            url: '/',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -41,7 +41,7 @@ function AdminDashboard() {
                 console.log("Debug: Your token is expired.")
                 alert("You login is not cached anymore, sorry! Please log in again.")
                 LogOut();
-                navigate('/admin');
+                navigate('/');
             }
             console.log('Debug: Your token is not expired.')
         })
@@ -58,7 +58,7 @@ function AdminDashboard() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/admin',
+            url: '/',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -78,7 +78,7 @@ function AdminDashboard() {
     return (
         <div>
             Hello. You are viewing the admin dashboard.
-            <a href="/admin" onClick={LogOut}>Log Out</a>
+            <a href="/" onClick={LogOut}>Log Out</a>
         </div>
     )
 }

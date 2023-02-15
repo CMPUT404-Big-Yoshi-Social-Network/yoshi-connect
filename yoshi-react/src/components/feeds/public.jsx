@@ -16,7 +16,7 @@ function PublicFeed() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/login',
+            url: '/',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -32,7 +32,7 @@ function PublicFeed() {
                 console.log("Debug: Your token is expired.")
                 alert("You login is not cached anymore, sorry! Please log in again.")
                 LogOut();
-                navigate('/login');
+                navigate('/');
             }
             console.log('Debug: Your token is not expired.')
         })
@@ -48,7 +48,7 @@ function PublicFeed() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/login',
+            url: '/',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -68,7 +68,7 @@ function PublicFeed() {
     return (
         <div>
             Welcome to the Public Feed. You are signed in.
-            <a href="/login" onClick={LogOut}>Log Out</a>
+            <a href="/" onClick={LogOut}>Log Out</a>
         </div> 
     )
 }

@@ -73,8 +73,6 @@ async function register_author(req, res){
                 token,
                 username: username,
                 authorId: authorId,
-                admin: false,
-
                 status: "Successful"
             });
         })

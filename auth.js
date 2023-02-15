@@ -93,11 +93,24 @@ async function authAuthor(req, res) {
                 expires: req.headers.expires
             });
 
+            if (req.route.path == '/admin') {
+                if (!req.author.admin) {
+                    console.log("Debug: You are not an admin. Your login will not be cached.")
+                    return res.json({
+                        token,
+                        username: req.body.username,
+                        authorId: req.author.authorId,
+                        admin: req.author.admin,
+                        status: "Unsuccessful"
+                    }); 
+                }
+            }
+
             login.save((err, login, next) => {
                 if (err) {
                     console.log(err);
                     return;
-                }
+                } 
                 console.log("Debug: Login Cached.")
                 return res.json({
                     token,

@@ -8,6 +8,7 @@ import AdminDashboard from "./components/admin/admin-dashboard.jsx";
 import PublicFeed from "./components/feeds/public.jsx";
 import FriendFeed from "./components/feeds/friend.jsx";
 import Profile from "./components/profile/profile.jsx";
+import Messages from "./components/feeds/messages.jsx";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: '/:username', // want by user name 
     element: <Profile/>
+  },
+  {
+    path: '/messages', // want by user name 
+    element: <Messages/>
   }
 ])
   

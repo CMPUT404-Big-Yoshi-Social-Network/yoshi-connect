@@ -19,7 +19,7 @@ export default function AdminLogin() {
         url: '/admin',
         headers: {
           'Content-Type': 'application/json',
-          'Date': justLogged,
+          'Last-Modified': justLogged,
           'Expires': expiresAt
         },
         data: data

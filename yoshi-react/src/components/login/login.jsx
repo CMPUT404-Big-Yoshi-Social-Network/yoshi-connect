@@ -19,7 +19,7 @@ export default function Login() {
         url: '/login',
         headers: {
           'Content-Type': 'application/json',
-          'Date': justLogged,
+          'Last-Modified': justLogged,
           'Expires': expiresAt
         },
         data: data

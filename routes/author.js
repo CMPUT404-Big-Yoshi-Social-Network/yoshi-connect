@@ -9,11 +9,11 @@ const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 
 async function register_author(req, res){
-    await Author.findOne({username: req.body.username}, function(err, author){
-        if(!author){
-            console.log("Debug: Author does not exist, Authentication failed");
+    await Author.findOne({username: req.body.data.username}, function(err, author){
+        if(author){
+            console.log("Debug: Author does exist, Authentication failed");
             return res.json({
-                username: req.body.username,
+                username: req.body.data.username,
                 status: "Unsuccessful"
             });
         } else {

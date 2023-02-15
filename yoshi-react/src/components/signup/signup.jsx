@@ -11,12 +11,17 @@ export default function Signup() {
     const getAccount = (e) => {
       e.preventDefault()
 
+      let justLogged =  new Date();
+      let expiresAt = new Date(justLogged.getTime() + (1440 * 60 * 1000)); // 24 hours (1440 minutes)
+
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/signup',
+        url: '/login',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json',
+          'Last-Modified': justLogged,
+          'Expires': expiresAt
         },
         data: data
       }
@@ -25,6 +30,7 @@ export default function Signup() {
       .post('/signup', config)
       .then((response) => {
         console.log("Debug: Token received.");
+        console.log(response)
         if ( response.data.status === 'Successful' ) {
           console.log("Debug: Going to public feed.")
           window.localStorage.setItem("token", response.data.token);

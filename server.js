@@ -30,9 +30,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, removeLogin, checkExpiry } = require('./auth')
+const { authAuthor, removeLogin, checkExpiry, isPersonal } = require('./auth')
 const { register_author } = require('./routes/author');
-const { author_scheme } = require('./db_schema/author_schema.js');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));
@@ -60,6 +59,19 @@ app.post('/login', (req, res) => {
 app.post('/admin', (req, res) => {
   console.log('Debug: Login as Admin')
   authAuthor(req, res);
+})
+
+app.post('/:username', (req, res) => {
+  if (req.body.data.message == 'Logging Out') {
+    console.log('Debug: Logging out as Author')
+    removeLogin(req, res);
+  } else if (req.body.data.message == 'Checking expiry') {
+    console.log('Debug: Checking expiry of token')
+    checkExpiry(req, res);
+  } else if (req.body.data.message == 'Is it Personal') {
+    console.log('Debug: Checking if Personal or Not')
+    isPersonal(req, res);
+  }
 })
 
 app.post('/admin/dashboard', (req, res) => {

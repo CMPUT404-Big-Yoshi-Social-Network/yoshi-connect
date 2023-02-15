@@ -8,8 +8,19 @@ const database = mongoose.connection;
 const Login = database.model('Login', login_scheme);
 const Author = database.model('Author', author_scheme);
 
-async function removeLogin(req, res) {
+function isPersonal(req, res) {
+    if (req.body.data.token != undefined) {
+        console.log('Debug: Getting the token in the login database.')
+        Login.findOne({token: req.body.data.token}, function(err, login) {
+            if (err) throw err;
+            return res.json({
+                username: login.username
+            });
+        })  
+    }
+}
 
+async function removeLogin(req, res) {
     if (req.body.data.token != undefined) {
         console.log('Debug: Getting the token in the login database.')
         Login.deleteOne({token: req.body.data.token}, function(err, login) {
@@ -129,5 +140,6 @@ async function authAuthor(req, res) {
 module.exports = {
     authAuthor,
     removeLogin,
-    checkExpiry
+    checkExpiry,
+    isPersonal
 }

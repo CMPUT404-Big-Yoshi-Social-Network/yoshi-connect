@@ -53,6 +53,38 @@ function Profile() {
     });
 
     useEffect(() => {
+        const isRealProfile = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    username: username,
+                    message: 'Profile Existence'
+                }
+            }
+            axios
+            .post('/:username', config)
+            .then((response) => {
+                if (response.data.status === "Unsuccessful") {
+                    console.log("Debug: Profile does not exist.");
+                    navigate('/notfound'); // 404 Not Found
+                } else {
+                    console.log('Debug: Profile Exists.')
+                }
+            })
+            .catch(err => {
+              console.error(err);
+            });
+        }
+
+        isRealProfile();
+    }, [username, navigate]);
+
+    useEffect(() => {
         const isPersonal = () => {
             let config = {
                 method: 'post',

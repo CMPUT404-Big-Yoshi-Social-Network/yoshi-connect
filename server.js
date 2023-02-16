@@ -31,7 +31,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, isPersonal } = require('./auth')
-const { register_author } = require('./routes/author');
+const { register_author, doesProfileExist } = require('./routes/author');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));
@@ -76,6 +76,9 @@ app.post('/:username', (req, res) => {
   } else if (req.body.data.message == 'Is it Personal') {
     console.log('Debug: Checking if Personal or Not')
     isPersonal(req, res);
+  } else if (req.body.data.message == 'Profile Existence') {
+    console.log("Debug: Checking if Profile Exists")
+    doesProfileExist(req, res);
   }
 })
 

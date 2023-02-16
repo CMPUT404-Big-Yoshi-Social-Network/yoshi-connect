@@ -5,16 +5,6 @@ function Profile() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [personal, setPersonal] = useState(null);
-    /*
-    const loggedIn = () => {
-        const token = localStorage.getItem('token');
-        if (token === null) {
-            console.log("Debug: You are not logged in.")
-            return navigate('/unauthorized');
-        }
-        console.log("Debug: You are logged in.")
-        return true;
-    }
     const checkExpiry = () => {
         let config = {
             method: 'post',
@@ -29,12 +19,11 @@ function Profile() {
             }
         }
         axios
-        .post('/:username', config)
+        .post('/' + username, config)
         .then((response) => {
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.")
                 alert("You login is not cached anymore, sorry! Please log in again.")
-                LogOut();
                 navigate('/');
             }
             console.log('Debug: Your token is not expired.')
@@ -44,12 +33,14 @@ function Profile() {
         });
     }
     useEffect(() => {
+        /*
         let isLogged = loggedIn();
         if (isLogged) {
             checkExpiry();
         }
+        */
+       checkExpiry();
     });
-    */
     useEffect(() => {
         const isRealProfile = () => {
             let config = {
@@ -58,7 +49,7 @@ function Profile() {
                 url: '/'
             }
             axios
-            .get('/:username', config)
+            .get('/' + username, config)
             .then((response) => {
                 if (response.data.status === "Unsuccessful") {
                     console.log("Debug: Profile does not exist.");

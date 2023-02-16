@@ -124,7 +124,7 @@ async function get_profile(req, res) {
                 }
                 console.log("Debug: Author does exist, Authentication failed");
                 return res.json({
-                    username: "tommy",
+                    username: author.username,
                     personal: true
                 });
             }).clone()

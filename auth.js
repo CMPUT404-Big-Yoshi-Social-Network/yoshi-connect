@@ -50,6 +50,13 @@ async function removeLogin(req, res) {
 }
 
 async function checkExpiry(req, res) {
+    if(req.cookies == undefined){
+        return res.json({
+            message: "Token is expired.",
+            status: "Expired"
+        });
+    }
+
     if (req.cookies["token"] != undefined) {
         console.log('Debug: Checking the Expiry Date of Token')
         Login.findOne({token: req.cookies["token"]}, function(err, login) {
@@ -75,7 +82,7 @@ async function checkExpiry(req, res) {
             }
         })
     }
-    return undefined;
+    return;
 }
 
 function checkAdmin(req, res){

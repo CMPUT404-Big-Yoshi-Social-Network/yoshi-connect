@@ -12,7 +12,6 @@ function Profile() {
             return navigate('/unauthorized');
         }
         console.log("Debug: You are logged in.")
-        return true;
     }
     const checkExpiry = () => {
         let config = {
@@ -43,10 +42,10 @@ function Profile() {
         });
     }
     useEffect(() => {
-        let isLogged = loggedIn();
-        if (isLogged) {
-            checkExpiry()
-        }
+        loggedIn();
+    });
+    useEffect(() => {
+        checkExpiry();
     });
     useEffect(() => {
         const isPersonal = () => {
@@ -67,16 +66,17 @@ function Profile() {
             .then((response) => {
                 if (response.data.username === username) {
                     console.log("Debug: You are viewing your own account.")
-                    return true;
+                    setPersonal(true);
+                } else {
+                    console.log("Debug: You are viewing someone else's account.")
+                    setPersonal(false);
                 }
-                console.log("Debug: You are viewing someone else's account.")
             })
             .catch(err => {
               console.error(err);
             });
         }
-
-        setPersonal(isPersonal())
+        isPersonal();
     }, [setPersonal, username]);
     const LogOut = () => {
         let config = {

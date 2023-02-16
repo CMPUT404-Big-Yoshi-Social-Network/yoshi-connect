@@ -102,7 +102,6 @@ async function register_author(req, res){
 }
 
 async function get_profile(req, res) {
-    console.log(req.cookies);
     if (req.cookies["token"] != null) {
 
         console.log('Debug: Getting the token in the login database.')
@@ -145,6 +144,6 @@ async function get_profile(req, res) {
 
 module.exports={
     register_author,
-    get_profile
+    get_profile,
     doesProfileExist
 }

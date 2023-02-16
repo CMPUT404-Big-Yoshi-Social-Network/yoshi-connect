@@ -43,16 +43,12 @@ const router = createBrowserRouter([
     element: <FriendFeed/>
   },
   {
-    path: '/:username', // want by user name 
+    path: '/users/:username', // want by user name 
     element: <Profile/>
   },
   {
     path: '/messages', // want by user name 
     element: <Messages/>
-  },
-  {
-    path: '/page-not-found', // want by user name 
-    element: <PageNotFound/>   
   },
   {
     path: '/forbidden', // want by user name 
@@ -61,6 +57,10 @@ const router = createBrowserRouter([
   {
     path: '/unauthorized', // want by user name 
     element: <UserUnauthorized/>   
+  },
+  {
+    path: '*', // want by user name 
+    element: <PageNotFound/>   
   }
 ])
   

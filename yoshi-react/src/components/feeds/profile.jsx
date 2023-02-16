@@ -7,7 +7,7 @@ function Profile() {
     const [personal, setPersonal] = useState(null);
     const loggedIn = () => {
         const token = localStorage.getItem('token');
-        if (token === 'undefined') {
+        if (token === null) {
             console.log("Debug: You are not logged in.")
             alert("You are not logged in. Please log in!")
             return navigate('/login');
@@ -92,7 +92,7 @@ function Profile() {
                 message: 'Logging Out'
             }
         }
-        window.localStorage.setItem('token', 'undefined');
+        window.localStorage.removeItem('token');
         axios
         .post('/feed', config)
         .then((response) => console.log(response))

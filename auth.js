@@ -9,7 +9,7 @@ const Login = database.model('Login', login_scheme);
 const Author = database.model('Author', author_scheme);
 
 function isPersonal(req, res) {
-    if (req.body.data.token != undefined) {
+    if (req.body.data.token != null) {
         console.log('Debug: Getting the token in the login database.')
         Login.findOne({token: req.body.data.token}, function(err, login) {
             if (err) throw err;
@@ -21,7 +21,7 @@ function isPersonal(req, res) {
 }
 
 async function removeLogin(req, res) {
-    if (req.body.data.token != undefined) {
+    if (req.body.data.token != null) {
         console.log('Debug: Getting the token in the login database.')
         Login.deleteOne({token: req.body.data.token}, function(err, login) {
             if (err) throw err;
@@ -42,7 +42,7 @@ async function removeLogin(req, res) {
 }
 
 async function checkExpiry(req, res) {
-    if (req.body.data.token != undefined) {
+    if (req.body.data.token != null) {
         console.log('Debug: Checking the Expiry Date of Token')
         Login.findOne({token: req.body.data.token}, function(err, login) {
             if (err) throw err;
@@ -92,7 +92,7 @@ async function authAuthor(req, res) {
         if(p_hashed_password == crypto_js.SHA256(password)){
             console.log("Debug: Authentication successful");
             //Check if login already exists if it does send back the old one else create a new one 
-            if(req.body.token != "undefined"){
+            if(req.body.token != null){
                 await Login.deleteOne({token: req.body.token}, function(err, login) {
                     if (err) throw err;
                     console.log("Debug: Login token deleted");

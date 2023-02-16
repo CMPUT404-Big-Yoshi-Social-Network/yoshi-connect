@@ -4,7 +4,7 @@ function Messages() {
     const navigate = useNavigate();
     const checkForAuthor = () => {
         const token = localStorage.getItem('token');
-        if (token === 'undefined') {
+        if (token === null) {
             console.log("Debug: You are not logged in.")
             alert("You are not logged in. Please log in!")
             return navigate('/login');

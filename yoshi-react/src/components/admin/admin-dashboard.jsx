@@ -5,7 +5,7 @@ function AdminDashboard() {
     const navigate = useNavigate();
     const checkForAuthor = () => {
         const token = localStorage.getItem('token');
-        if (token === 'undefined') {
+        if (token === null) {
             console.log("Debug: You are not logged in.")
             alert("You are not logged in. Please log in!")
             return navigate('/admin');
@@ -15,7 +15,7 @@ function AdminDashboard() {
     }
     const checkAdmin = () => {
         const admin = localStorage.getItem('admin');
-        if (admin === 'undefined') {
+        if (admin === null) {
             console.log("Debug: You are not an admin.")
             alert("You are not an admin! >:(")
             return navigate('/admin')
@@ -73,7 +73,8 @@ function AdminDashboard() {
                 message: 'Logging Out'
             }
         }
-        window.localStorage.setItem('token', 'undefined');
+        window.localStorage.removeItem('token');
+        window.localStorage.removeItem('admin');
         axios
         .post('/admin/dashboard', config)
         .then((response) => {

@@ -108,7 +108,8 @@ async function get_profile(req, res) {
             if (err) throw err;
 
             if(login == undefined){
-                req.send(404);
+                res.sendStatus(404);
+                return;
             }
 
             await Author.findOne({username: req.path.slice(1)}, function(err, author){

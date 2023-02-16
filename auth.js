@@ -21,31 +21,31 @@ function isPersonal(req, res) {
 }
 
 async function removeLogin(req, res) {
-    if (req.body.data.token != null) {
-        console.log('Debug: Getting the token in the login database.')
-        Login.deleteOne({token: req.body.data.token}, function(err, login) {
+    if (req.cookies["token"] != undefined) {
+        console.log('Debug: Getting the token in the login database.');
+        Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
             if (err) throw err;
             console.log("Debug: Login token deleted");
         })
-        return res.json({
-            message: "Logged out.",
-            status: "Expired"
-        });
-    } else {
-        console.log('Debug: Getting the token in the login database.')
-        Login.deleteOne({token: req.body.token}, function(err, login) {
-            if (err) throw err;
-            console.log("Debug: Login token deleted");
-        }) 
     }
-    return undefined;
+    return res.json({
+        message: "Logged out.",
+        status: "Expired"
+    });
 }
 
 async function checkExpiry(req, res) {
-    if (req.body.data.token != null) {
+    console.log(req.cookies["token"]);
+    if (req.cookies["token"] != undefined) {
         console.log('Debug: Checking the Expiry Date of Token')
-        Login.findOne({token: req.body.data.token}, function(err, login) {
+        Login.findOne({token: req.cookies["token"]}, function(err, login) {
             if (err) throw err;
+            if(login == null){
+                return res.json({
+                    message: "Token is expired.",
+                    status: "Expired"
+                });
+            } 
             let expiresAt = new Date(login.expires);
             let current = new Date();
             if (expiresAt.getTime() < current.getTime()) {
@@ -57,6 +57,28 @@ async function checkExpiry(req, res) {
                 return res.json({
                     message: "Token still valid.",
                     status: "Not Expired"
+                });
+            }
+        })
+    }
+    return undefined;
+}
+
+function checkAdmin(req, res){
+    if (req.cookies["token"] != undefined) {
+        console.log('Debug: Checking the admin status of the Token')
+        Login.findOne({token: req.cookies["token"]}, function(err, login) {
+            if (err) throw err;
+            if(login == null){
+                return res.json({
+                    message: "Token is expired.",
+                    status: "Expired"
+                });
+            }
+            if (login.admin === false) {
+                return res.json({
+                    message: "You are not an admin.",
+                    status: "NonAdmin"
                 });
             }
         })
@@ -87,8 +109,6 @@ async function authAuthor(req, res) {
 
         const p_hashed_password = req.author.password;
         console.log("Server's model: ", req.author);
-        console.log("Server's Hashed password: ", p_hashed_password)
-        console.log("Client's Hashed password: ", crypto_js.SHA256(password))
         if(p_hashed_password == crypto_js.SHA256(password)){
             console.log("Debug: Authentication successful");
             //Check if login already exists if it does send back the old one else create a new one 
@@ -98,24 +118,25 @@ async function authAuthor(req, res) {
                     console.log("Debug: Login token deleted");
                 }).clone
             }
-        
+
+            let curr = new Date();
+            let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
             let token = uidgen.generateSync();
+
             let login = new Login({
                 authorId: req.author.authorId,
                 username: req.body.username,
                 token: token,
                 admin: req.author.admin,
-                expires: req.headers.expires
+                expires: expiresAt
             });
 
             if (req.route.path == '/admin') {
                 if (!req.author.admin) {
                     console.log("Debug: You are not an admin. Your login will not be cached.")
                     return res.json({
-                        token,
                         username: req.body.username,
                         authorId: req.author.authorId,
-                        admin: req.author.admin,
                         status: "Unsuccessful"
                     }); 
                 }
@@ -127,11 +148,10 @@ async function authAuthor(req, res) {
                     return;
                 } 
                 console.log("Debug: Login Cached.")
+                res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
                 return res.json({
-                    token,
                     username: req.body.username,
                     authorId: req.author.authorId,
-                    admin: req.author.admin,
                     status: "Successful"
                 });
             });
@@ -145,5 +165,6 @@ module.exports = {
     authAuthor,
     removeLogin,
     checkExpiry,
+    checkAdmin,
     isPersonal
 }

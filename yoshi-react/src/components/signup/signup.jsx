@@ -12,7 +12,6 @@ export default function Signup() {
       e.preventDefault()
 
       let justLogged =  new Date();
-      let expiresAt = new Date(justLogged.getTime() + (1440 * 60 * 1000)); // 24 hours (1440 minutes)
 
       let config = {
         method: 'post',
@@ -21,7 +20,6 @@ export default function Signup() {
         headers: {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged,
-          'Expires': expiresAt
         },
         data: data
       }
@@ -31,7 +29,6 @@ export default function Signup() {
         console.log("Debug: Token received.");
         if ( response.data.status === 'Successful' ) {
           console.log("Debug: Going to public feed.")
-          window.localStorage.setItem("token", response.data.token);
           navigate('/feed');
         }
       })

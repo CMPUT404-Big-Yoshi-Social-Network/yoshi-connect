@@ -5,6 +5,7 @@ function Profile() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [personal, setPersonal] = useState(null);
+    /*
     const loggedIn = () => {
         const token = localStorage.getItem('token');
         if (token === null) {
@@ -15,6 +16,8 @@ function Profile() {
         console.log("Debug: You are logged in.")
         return true;
     }
+    */
+   /*
     const checkExpiry = () => {
         let config = {
             method: 'post',
@@ -43,30 +46,25 @@ function Profile() {
           console.error(err);
         });
     }
+    
     useEffect(() => {
         let isLogged = loggedIn();
         if (isLogged) {
             checkExpiry()
         }
     });
+    */
     useEffect(() => {
         const isPersonal = () => {
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
-                url: '/:username',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    token: window.localStorage.getItem('token'),
-                    message: 'Is it Personal'
-                }
+                url: '/:username'
             }
             axios
-            .post('/:username', config)
+            .get('/:username', config)
             .then((response) => {
-                if (response.data.username === username) {
+                if (response.data.personal === true) {
                     console.log("Debug: You are viewing your own account.")
                     return true;
                 }
@@ -88,11 +86,9 @@ function Profile() {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                token: window.localStorage.getItem('token'),
                 message: 'Logging Out'
             }
         }
-        window.localStorage.removeItem('token');
         axios
         .post('/feed', config)
         .then((response) => console.log(response))

@@ -133,8 +133,8 @@ async function authAuthor(req, res) {
         if(p_hashed_password == crypto_js.SHA256(password)){
             console.log("Debug: Authentication successful");
             //Check if login already exists if it does send back the old one else create a new one 
-            if(req.body.token != null){
-                await Login.deleteOne({token: req.body.token}, function(err, login) {
+            if(req.cookies["token"] != null){
+                await Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
                     if (err) throw err;
                     console.log("Debug: Login token deleted");
                 }).clone

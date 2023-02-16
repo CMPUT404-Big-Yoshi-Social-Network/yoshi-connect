@@ -64,7 +64,7 @@ function AdminDashboard() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/',
+            url: '/admin/dashboard',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -76,7 +76,10 @@ function AdminDashboard() {
         window.localStorage.setItem('token', 'undefined');
         axios
         .post('/admin/dashboard', config)
-        .then((response) => console.log(response))
+        .then((response) => {
+            console.log(response);
+            navigate("/");
+        })
         .catch(err => {
           console.error(err);
         });
@@ -84,7 +87,7 @@ function AdminDashboard() {
     return (
         <div>
             Hello. You are viewing the admin dashboard.
-            <a href="/" onClick={LogOut}>Log Out</a>
+            <button type="button" onClick={() => LogOut()}>Log Out</button>
         </div>
     )
 }

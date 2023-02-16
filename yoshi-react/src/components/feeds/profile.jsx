@@ -51,15 +51,21 @@ function Profile() {
             axios
             .get('/' + username, config)
             .then((response) => {
-                if (response.data.status === "Unsuccessful") {
+                console.log(response.status)
+                if (response.status == 404) {
                     console.log("Debug: Profile does not exist.");
                     navigate('/notfound'); // 404 Not Found
-                } else {
+                } 
+                else {
                     console.log('Debug: Profile Exists.')
                 }
             })
             .catch(err => {
               console.error(err);
+              if (err.response.status == 404) {
+                console.log("Debug: Profile does not exist.");
+                navigate('/notfound'); // 404 Not Found
+            }
             });
         }
 

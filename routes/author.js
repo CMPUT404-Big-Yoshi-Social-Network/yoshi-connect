@@ -108,31 +108,26 @@ async function get_profile(req, res) {
             if (err) throw err;
 
             if(login == undefined){
-                req.send(400);
+                req.send(404);
             }
-            /*
-            if(login.username ===){
 
-            }
-            */
-            username = login.username;
-            await Author.findOne({username: username}, function(err, author){
+            await Author.findOne({username: req.path.slice(1)}, function(err, author){
                 if(!author){
+                    return res.sendStatus(404);
+                }
+                else if(author.username == login.username){
                     return res.json({
-                        username: undefined,
+                        username: author.username,
+                        personal: true
                     });
                 }
-                console.log("Debug: Author does exist, Authentication failed");
-                return res.json({
-                    username: author.username,
-                    personal: true
-                });
+                else if(author.username != login.username){
+                    return res.json({
+                        username: author.username,
+                        personal: false
+                    });
+                }
             }).clone()
-
-            return res.json({
-                username: login.username,
-                personal: false 
-            });
         })
 
     }

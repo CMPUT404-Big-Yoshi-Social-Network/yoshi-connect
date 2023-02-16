@@ -30,7 +30,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, removeLogin, checkExpiry, isPersonal } = require('./auth')
+const { authAuthor, checkUsername, removeLogin, checkExpiry, isPersonal } = require('./auth')
 const { register_author } = require('./routes/author');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
@@ -41,12 +41,17 @@ app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
-const database = mongoose.connection
 
 // Sign up page 
 app.post('/signup', (req, res) => {
-  console.log('Debug: Signing up as an author')
-  register_author(req, res);
+  console.log(req)
+  if (req.body.status == 'Is username in use') {
+    console.log('Debug: Checking if the username is already taken')
+    checkUsername(req, res);
+  } else {
+    console.log('Debug: Signing up as an author')
+    register_author(req, res);
+  }
 })
 
 // Login page

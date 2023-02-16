@@ -31,8 +31,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, removeLogin, checkExpiry, checkAdmin, isPersonal } = require('./auth')
-const { register_author, get_profile } = require('./routes/author');
+const { authAuthor, checkUsername, removeLogin, checkExpiry, checkAdmin, isPersonal } = require('./auth')
+const { register_author, get_profile, doesProfileExist } = require('./routes/author');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));
@@ -43,14 +43,19 @@ app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
-const database = mongoose.connection
 
 
 
 // Sign up page 
 app.post('/signup', (req, res) => {
-  console.log('Debug: Signing up as an author')
-  register_author(req, res);
+  console.log(req)
+  if (req.body.status == 'Is username in use') {
+    console.log('Debug: Checking if the username is already taken')
+    checkUsername(req, res);
+  } else {
+    console.log('Debug: Signing up as an author')
+    register_author(req, res);
+  }
 })
 
 // Login page
@@ -65,13 +70,32 @@ app.post('/admin', (req, res) => {
   authAuthor(req, res);
 })
 
-app.get('/admin/dashboard', (req, res) => {
-  console.log('Debug: Checking expiry of token')
-  checkAdmin(req, res);
+app.post('/:username', (req, res) => {
+  console.log(req.path);
+  if(req.path == '/' || req.path == "/favicon.ico"){
+    return;
+  }
   checkExpiry(req, res);
+  get_profile();
+  if (req.body.data.message == 'Logging Out') {
+    console.log('Debug: Logging out as Author')
+    removeLogin(req, res);
+  } else if (req.body.data.message == 'Checking expiry') {
+    console.log('Debug: Checking expiry of token')
+    checkExpiry(req, res);
+  } else if (req.body.data.message == 'Is it Personal') {
+    console.log('Debug: Checking if Personal or Not')
+    isPersonal(req, res);
+  } else if (req.body.data.message == 'Profile Existence') {
+    console.log("Debug: Checking if Profile Exists")
+    doesProfileExist(req, res);
+  }
 })
 
 app.post('/admin/dashboard', (req, res) => {
+  console.log('Debug: Checking expiry of token')
+  checkAdmin(req, res);
+  checkExpiry(req, res);
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
@@ -87,25 +111,6 @@ app.post('/feed', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
-  }
-})
-
-app.get('/:username', (req, res) => {
-  console.log(req.path);
-  if(req.path == '/' || req.path == "/favicon.ico"){
-    return;
-  }
-  checkExpiry(req, res);
-  get_profile();
-})
-
-app.post('/:username', (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
-    removeLogin(req, res);
-  } else if (req.body.data.message == 'Is it Personal') {
-    console.log('Debug: Checking if Personal or Not')
-    isPersonal(req, res);
   }
 })
 

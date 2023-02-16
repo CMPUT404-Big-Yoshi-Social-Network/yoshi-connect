@@ -8,11 +8,8 @@ export default function Signup() {
       email: '',
       password: ''
     })
-    const getAccount = (e) => {
-      e.preventDefault()
 
-      let justLogged =  new Date();
-
+    const checkUsernameInUse = (username) => {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
@@ -21,20 +18,59 @@ export default function Signup() {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged,
         },
-        data: data
+        data: {
+          username: username,
+          status: 'Is username in use'
+        }
       }
 
       axios(config)
       .then((response) => {
-        console.log("Debug: Token received.");
         if ( response.data.status === 'Successful' ) {
           console.log("Debug: Going to public feed.")
           navigate('/feed');
+          return true;
+        } else {
+          return false;
         }
       })
       .catch(err => {
         console.error(err);
-      });
+      }); 
+    }
+    
+    const getAccount = (e) => {
+      e.preventDefault()
+
+      if (checkUsernameInUse(data.username)) {
+        let justLogged =  new Date();
+
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: '/signup',
+          headers: {
+            'Content-Type': 'application/json',
+            'Last-Modified': justLogged,
+          },
+          data: data
+        }
+
+        axios(config)
+        .then((response) => {
+          console.log("Debug: Token received.");
+          if ( response.data.status === 'Successful' ) {
+            console.log("Debug: Going to public feed.")
+            window.localStorage.setItem("token", response.data.token);
+            navigate('/feed');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+        });
+      } else {
+        alert("Username is already in use. Try again.");
+      }
     }
     return(
       <form>

@@ -5,19 +5,15 @@ function Profile() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [personal, setPersonal] = useState(null);
-    /*
     const loggedIn = () => {
         const token = localStorage.getItem('token');
         if (token === null) {
             console.log("Debug: You are not logged in.")
-            alert("You are not logged in. Please log in!")
-            return navigate('/login');
+            return navigate('/unauthorized');
         }
         console.log("Debug: You are logged in.")
         return true;
     }
-    */
-   /*
     const checkExpiry = () => {
         let config = {
             method: 'post',
@@ -46,14 +42,45 @@ function Profile() {
           console.error(err);
         });
     }
-    
     useEffect(() => {
         let isLogged = loggedIn();
         if (isLogged) {
-            checkExpiry()
+            checkExpiry();
         }
     });
-    */
+
+    useEffect(() => {
+        const isRealProfile = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    username: username,
+                    message: 'Profile Existence'
+                }
+            }
+            axios
+            .post('/:username', config)
+            .then((response) => {
+                if (response.data.status === "Unsuccessful") {
+                    console.log("Debug: Profile does not exist.");
+                    navigate('/notfound'); // 404 Not Found
+                } else {
+                    console.log('Debug: Profile Exists.')
+                }
+            })
+            .catch(err => {
+              console.error(err);
+            });
+        }
+
+        isRealProfile();
+    }, [username, navigate]);
+
     useEffect(() => {
         const isPersonal = () => {
             let config = {
@@ -66,17 +93,19 @@ function Profile() {
             .then((response) => {
                 if (response.data.personal === true) {
                     console.log("Debug: You are viewing your own account.")
-                    return true;
+                    setPersonal(true);
+                } else {
+                    console.log("Debug: You are viewing someone else's account.")
+                    setPersonal(false);
                 }
-                console.log("Debug: You are viewing someone else's account.")
             })
             .catch(err => {
               console.error(err);
             });
         }
-
-        setPersonal(isPersonal())
+        isPersonal();
     }, [setPersonal, username]);
+
     const LogOut = () => {
         let config = {
             method: 'post',
@@ -96,9 +125,11 @@ function Profile() {
           console.error(err);
         });
     }
+    // Check for personal state: 
+    console.log("We are viewing our own profile, true or false? > " + personal);
     return (
         <div>
-            You are viewing profile. Welcome to {username}'s profile! Set state: {personal}. 
+            You are viewing profile. Welcome to {username}'s profile!
         </div> 
     )
 }

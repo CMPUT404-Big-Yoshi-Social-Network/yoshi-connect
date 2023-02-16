@@ -20,6 +20,21 @@ function isPersonal(req, res) {
     }
 }
 
+async function checkUsername(req, res) {
+    await Author.findOne({username: req.body.username}, function(err, author){
+        if(author){
+            console.log("Debug: Username is taken, Authentication failed");
+            return res.json({
+                status: "Unsuccessful"
+            });
+        } else {
+            return res.json({
+                status: "Successful"
+            });
+        }
+    }).clone()
+}
+
 async function removeLogin(req, res) {
     if (req.cookies["token"] != undefined) {
         console.log('Debug: Getting the token in the login database.');
@@ -164,6 +179,7 @@ async function authAuthor(req, res) {
 module.exports = {
     authAuthor,
     removeLogin,
+    checkUsername,
     checkExpiry,
     checkAdmin,
     isPersonal

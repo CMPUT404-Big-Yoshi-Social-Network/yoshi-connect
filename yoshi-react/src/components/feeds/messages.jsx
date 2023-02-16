@@ -6,8 +6,7 @@ function Messages() {
         const token = localStorage.getItem('token');
         if (token === null) {
             console.log("Debug: You are not logged in.")
-            alert("You are not logged in. Please log in!")
-            return navigate('/login');
+            return navigate('/unauthorized');
         }
         console.log("Debug: You are logged in.")
     }

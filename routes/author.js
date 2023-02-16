@@ -8,6 +8,21 @@ const database = mongoose.connection;
 const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 
+async function doesProfileExist(req, res) {
+    await Author.findOne({username: req.body.data.username}, function(err, author){
+        if(author){
+            console.log("Debug: Profile does exist, Authentication failed");
+            return res.json({
+                status: "Successful"
+            });
+        } else {
+            return res.json({
+                status: "Unsuccessful"
+            });
+        }
+    }).clone()
+}
+
 async function register_author(req, res){
     let author_found = await Author.findOne({username: req.body.username}, function(err, author){
         if(!author){
@@ -131,4 +146,5 @@ async function get_profile(req, res) {
 module.exports={
     register_author,
     get_profile
+    doesProfileExist
 }

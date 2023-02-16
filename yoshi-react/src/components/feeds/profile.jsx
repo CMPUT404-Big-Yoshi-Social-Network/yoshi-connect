@@ -5,6 +5,7 @@ function Profile() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [personal, setPersonal] = useState(null);
+
     const loggedIn = () => {
         const token = localStorage.getItem('token');
         if (token === null) {
@@ -12,7 +13,9 @@ function Profile() {
             return navigate('/unauthorized');
         }
         console.log("Debug: You are logged in.")
+        return true;
     }
+
     const checkExpiry = () => {
         let config = {
             method: 'post',
@@ -41,12 +44,14 @@ function Profile() {
           console.error(err);
         });
     }
+
     useEffect(() => {
-        loggedIn();
+        let isLogged = loggedIn();
+        if (isLogged) {
+            checkExpiry();
+        }
     });
-    useEffect(() => {
-        checkExpiry();
-    });
+
     useEffect(() => {
         const isPersonal = () => {
             let config = {
@@ -78,6 +83,7 @@ function Profile() {
         }
         isPersonal();
     }, [setPersonal, username]);
+
     const LogOut = () => {
         let config = {
             method: 'post',
@@ -99,9 +105,11 @@ function Profile() {
           console.error(err);
         });
     }
+    // Check for personal state: 
+    console.log("We are viewing our own profile, true or false? > " + personal);
     return (
         <div>
-            You are viewing profile. Welcome to {username}'s profile! Set state: {personal}. 
+            You are viewing profile. Welcome to {username}'s profile!
         </div> 
     )
 }

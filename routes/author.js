@@ -63,7 +63,7 @@ async function register_author(req, res){
         admin: false
     });
 
-    await author.save((err, author, next) => {
+    await author.save(async (err, author, next) => {
         if(err){
             console.log(err);
             return res.json({
@@ -85,7 +85,7 @@ async function register_author(req, res){
             expires: expiresAt
         });
 
-        login.save((err, login, next) => {
+        await login.save((err, login) => {
             if (err) {
                 console.log(err);
                 return;

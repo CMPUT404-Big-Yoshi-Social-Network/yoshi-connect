@@ -49,14 +49,14 @@ app.get('/favicon.ico', (req, res) => {
 })
 
 // Sign up page 
-app.post('/signup', (req, res) => {
+app.post('/signup', async (req, res) => {
   console.log(req)
   if (req.body.status == 'Is username in use') {
     console.log('Debug: Checking if the username is already taken')
-    checkUsername(req, res);
+    await checkUsername(req, res);
   } else {
     console.log('Debug: Signing up as an author')
-    register_author(req, res);
+    await register_author(req, res);
   }
 })
 

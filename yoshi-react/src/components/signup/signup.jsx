@@ -9,8 +9,7 @@ export default function Signup() {
       password: ''
     })
 
-    const justLogged = new Date();
-    const checkUsernameInUse = (username) => {
+    const checkUsernameInUse = async (username) => {
       let justLogged =  new Date();
 
       let config = {
@@ -27,11 +26,10 @@ export default function Signup() {
         }
       }
 
-      axios(config)
+      const username_free = await axios(config)
       .then((response) => {
         if ( response.data.status === 'Successful' ) {
           console.log("Debug: Going to public feed.")
-          navigate('/feed');
           return true;
         } else {
           return false;
@@ -40,12 +38,13 @@ export default function Signup() {
       .catch(err => {
         console.error(err);
       }); 
+      return username_free
     }
     
-    const getAccount = (e) => {
+    const getAccount = async (e) => {
       e.preventDefault()
-
-      if (checkUsernameInUse(data.username)) {
+      let a = await checkUsernameInUse(data.username);
+      if (a) {
         let justLogged =  new Date();
 
         let config = {

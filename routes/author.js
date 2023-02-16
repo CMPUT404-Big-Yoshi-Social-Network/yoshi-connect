@@ -103,7 +103,6 @@ async function register_author(req, res){
 
 async function get_profile(req, res) {
     if (req.cookies["token"] != null) {
-
         console.log('Debug: Getting the token in the login database.')
         Login.findOne({token: req.cookies["token"]}, async function(err, login) {
             if (err) throw err;

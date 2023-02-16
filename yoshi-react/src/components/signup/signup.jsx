@@ -11,6 +11,8 @@ export default function Signup() {
 
     const justLogged = new Date();
     const checkUsernameInUse = (username) => {
+      let justLogged =  new Date();
+
       let config = {
         method: 'post',
         maxBodyLength: Infinity,

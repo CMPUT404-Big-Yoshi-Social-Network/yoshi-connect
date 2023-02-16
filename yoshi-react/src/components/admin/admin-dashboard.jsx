@@ -7,8 +7,7 @@ function AdminDashboard() {
         const token = localStorage.getItem('token');
         if (token === null) {
             console.log("Debug: You are not logged in.")
-            alert("You are not logged in. Please log in!")
-            return navigate('/admin');
+            return navigate('/forbidden');
         }
         console.log("Debug: You are logged in.")
         return true;
@@ -17,8 +16,7 @@ function AdminDashboard() {
         const admin = localStorage.getItem('admin');
         if (admin === null) {
             console.log("Debug: You are not an admin.")
-            alert("You are not an admin! >:(")
-            return navigate('/admin')
+            return navigate('/forbidden')
         }
         console.log("Debug: You are an Admin.")
         return true;

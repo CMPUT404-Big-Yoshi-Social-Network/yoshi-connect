@@ -9,6 +9,9 @@ import PublicFeed from "./components/feeds/public.jsx";
 import FriendFeed from "./components/feeds/friend.jsx";
 import Profile from "./components/feeds/profile.jsx";
 import Messages from "./components/feeds/messages.jsx";
+import PageNotFound from "./components/user-error/404.jsx";
+import UserForbidden from "./components/user-error/403.jsx";
+import UserUnauthorized from "./components/user-error/401.jsx";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +49,18 @@ const router = createBrowserRouter([
   {
     path: '/messages', // want by user name 
     element: <Messages/>
+  },
+  {
+    path: '/page-not-found', // want by user name 
+    element: <PageNotFound/>   
+  },
+  {
+    path: '/forbidden', // want by user name 
+    element: <UserForbidden/>   
+  },
+  {
+    path: '/unauthorized', // want by user name 
+    element: <UserUnauthorized/>   
   }
 ])
   

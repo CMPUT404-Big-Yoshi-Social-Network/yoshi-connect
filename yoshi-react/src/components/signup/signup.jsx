@@ -9,6 +9,7 @@ export default function Signup() {
       password: ''
     })
 
+    const justLogged = new Date();
     const checkUsernameInUse = (username) => {
       let config = {
         method: 'post',

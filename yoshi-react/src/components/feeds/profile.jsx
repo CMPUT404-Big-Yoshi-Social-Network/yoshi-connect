@@ -5,6 +5,7 @@ function Profile() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [personal, setPersonal] = useState(null);
+    /*
     const loggedIn = () => {
         const token = localStorage.getItem('token');
         if (token === null) {
@@ -48,23 +49,16 @@ function Profile() {
             checkExpiry();
         }
     });
-
+    */
     useEffect(() => {
         const isRealProfile = () => {
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
-                url: '/',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    username: username,
-                    message: 'Profile Existence'
-                }
+                url: '/'
             }
             axios
-            .post('/:username', config)
+            .get('/:username', config)
             .then((response) => {
                 if (response.data.status === "Unsuccessful") {
                     console.log("Debug: Profile does not exist.");
@@ -80,7 +74,7 @@ function Profile() {
 
         isRealProfile();
     }, [username, navigate]);
-
+    /*
     useEffect(() => {
         const isPersonal = () => {
             let config = {
@@ -105,7 +99,7 @@ function Profile() {
         }
         isPersonal();
     }, [setPersonal, username]);
-
+    
     const LogOut = () => {
         let config = {
             method: 'post',
@@ -125,6 +119,7 @@ function Profile() {
           console.error(err);
         });
     }
+    */
     // Check for personal state: 
     console.log("We are viewing our own profile, true or false? > " + personal);
     return (

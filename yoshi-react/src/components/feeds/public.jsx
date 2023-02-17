@@ -3,18 +3,6 @@ import axios from 'axios';
 import React, { useEffect } from "react";
 function PublicFeed() {
     const navigate = useNavigate();
-    //Depracate this
-    /*
-    const checkForAuthor = () => {
-        const token = localStorage.getItem('token');
-        if (token === null) {
-            console.log("Debug: You are not logged in.")
-            return navigate('/unauthorized');
-        }
-        console.log("Debug: You are logged in.")
-        return true;
-    }
-    */
     const checkExpiry = () => {
         let config = {
             method: 'get',
@@ -37,12 +25,6 @@ function PublicFeed() {
         });
     }
     useEffect(() => {
-        /*
-        let isLogged = checkForAuthor();
-        if (isLogged) {
-            checkExpiry();
-        }
-        */
        checkExpiry();
     });
     const LogOut = () => {

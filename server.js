@@ -32,7 +32,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, checkAdmin, isPersonal } = require('./auth')
-const { register_author, get_profile, doesProfileExist } = require('./routes/author');
+const { register_author, get_profile } = require('./routes/author');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
 app.use(bodyParser.urlencoded({extended: true}));

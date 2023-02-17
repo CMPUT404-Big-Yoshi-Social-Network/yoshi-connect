@@ -5,14 +5,12 @@ export default function Login() {
     const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',
-      password: '',
-      token: window.localStorage.getItem('token')
+      password: ''
     })
     const getUserpass = (e) => {
       e.preventDefault()
 
       let justLogged =  new Date();
-      let expiresAt = new Date(justLogged.getTime() + (1440 * 60 * 1000)); // 24 hours (1440 minutes)
 
       let config = {
         method: 'post',
@@ -20,18 +18,16 @@ export default function Login() {
         url: '/login',
         headers: {
           'Content-Type': 'application/json',
-          'Last-Modified': justLogged,
-          'Expires': expiresAt
+          'Last-Modified': justLogged
         },
         data: data
       }
 
       axios(config)
       .then((response) => {
-        console.log("Debug: Token received.");
         if ( response.data.status === 'Successful' ) {
+          console.log("Debug: Token received.");
           console.log("Debug: Going to public feed.")
-          window.localStorage.setItem("token", response.data.token);
           navigate('/feed');
         } else {
           alert("You are not an author! Get outta here!")

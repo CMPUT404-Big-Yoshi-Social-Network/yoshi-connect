@@ -11,7 +11,6 @@ export default function AdminLogin() {
       e.preventDefault()
 
       let justLogged =  new Date();
-      let expiresAt = new Date(justLogged.getTime() + (1440 * 60 * 1000)); // 24 hours (1440 minutes)
 
       let config = {
         method: 'post',
@@ -19,8 +18,7 @@ export default function AdminLogin() {
         url: '/admin',
         headers: {
           'Content-Type': 'application/json',
-          'Last-Modified': justLogged,
-          'Expires': expiresAt
+          'Last-Modified': justLogged
         },
         data: data
       }
@@ -28,10 +26,8 @@ export default function AdminLogin() {
       axios(config)
       .then((response) => {
         console.log("Debug: Token received.");
-        if ( response.data.admin ) {
+        if ( response.data.status === 'Successful') {
           console.log("Debug: Going to dashboard.")
-          window.localStorage.setItem("token", response.data.token);
-          window.localStorage.setItem("admin", response.data.admin);
           navigate('/admin/dashboard');
         } else {
           alert("You are not an admin! Get outta here!")

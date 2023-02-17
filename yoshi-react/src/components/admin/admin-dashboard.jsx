@@ -3,60 +3,41 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 function AdminDashboard() {
     const navigate = useNavigate();
-    const checkForAuthor = () => {
-        const token = localStorage.getItem('token');
-        if (token === null) {
-            console.log("Debug: You are not logged in.")
-            return navigate('/forbidden');
-        }
-        console.log("Debug: You are logged in.")
-        return true;
-    }
-    const checkAdmin = () => {
-        const admin = localStorage.getItem('admin');
-        if (admin === null) {
-            console.log("Debug: You are not an admin.")
-            return navigate('/forbidden')
-        }
-        console.log("Debug: You are an Admin.")
-        return true;
-    }
-    const checkExpiry = () => {
+    const get_dashboard = () => {
+        console.log('Debug: Getting Admin Dashboard')
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: '/',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                token: window.localStorage.getItem('token'),
-                message: 'Checking expiry'
-            }
         }
         axios
-        .post('/admin/dashboard', config)
+        .get('/admin/dashboard', config)
         .then((response) => {
             if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
-                alert("You login is not cached anymore, sorry! Please log in again.")
+                console.log("Debug: Your token is expired.");
+                alert("You login is not cached anymore, sorry! Please log in again.");
                 LogOut();
-                navigate('/');
+                navigate('/login');
+            }
+            else if(response.data.status === "NonAdmin"){
+                console.log("Debug: You're not an admin.")
+                alert("You are not an admin! >:(")
+                navigate('/forbidden');
+            }
+            else {
+                console.log("Successfully logged in");
             }
             console.log('Debug: Your token is not expired.')
         })
         .catch(err => {
-          console.error(err);
+            if (err.response.status === 403) {
+                console.log("Debug: Forbidden.");
+                navigate('/forbidden'); // 403 Forbidden
+            }
         });
     }
     useEffect(() => {
-        let isLogged = checkForAuthor();
-        if (isLogged) {
-            let isAdmin = checkAdmin();
-            if (isAdmin) {
-                checkExpiry();
-            }
-        }
+       get_dashboard();
     });
     const LogOut = () => {
         let config = {
@@ -67,16 +48,12 @@ function AdminDashboard() {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                token: window.localStorage.getItem('token'),
                 message: 'Logging Out'
             }
         }
-        window.localStorage.removeItem('token');
-        window.localStorage.removeItem('admin');
         axios
         .post('/admin/dashboard', config)
         .then((response) => {
-            console.log(response);
             navigate("/");
         })
         .catch(err => {

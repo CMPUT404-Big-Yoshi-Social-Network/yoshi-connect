@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Setting up database
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 require('dotenv').config()
 mongoose.set('strictQuery', true);
 
@@ -30,8 +31,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, checkUsername, removeLogin, checkExpiry, isPersonal } = require('./auth')
-const { register_author, doesProfileExist } = require('./routes/author');
+const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin, isPersonal } = require('./auth')
+const { register_author, get_profile } = require('./routes/author');
 
 // Have Node serve the files for our built React app
 //app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
@@ -39,26 +40,40 @@ app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); // rend
 //app.use('/static', express.static(path.join(__dirname, 'yoshi-react/public')))
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
+
+app.get('/favicon.ico', (req, res) => {
+  res.sendStatus(404);
+})
+
 app.get('/',(request, response) => {
-  console.log("Debug: GET");
   response.render("index");
 });
 
+if(process.env.NODE_ENV === 'production'){
+  //set static folder
+  app.use(express.static('yoshi-react/build'));
+}
+app.get('*', (request, response) => {
+    response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
+});
+
+
 // Sign up page 
-app.post('/signup', (req, res) => {
+app.post('/signup', async (req, res) => {
   console.log(req)
   if (req.body.status == 'Is username in use') {
     console.log('Debug: Checking if the username is already taken')
-    checkUsername(req, res);
+    await checkUsername(req, res);
   } else {
     console.log('Debug: Signing up as an author')
-    register_author(req, res);
+    await register_author(req, res);
   }
 })
 
@@ -74,39 +89,56 @@ app.post('/admin', (req, res) => {
   authAuthor(req, res);
 })
 
-app.post('/:username', (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
-    removeLogin(req, res);
-  } else if (req.body.data.message == 'Checking expiry') {
-    console.log('Debug: Checking expiry of token')
-    checkExpiry(req, res);
-  } else if (req.body.data.message == 'Is it Personal') {
-    console.log('Debug: Checking if Personal or Not')
-    isPersonal(req, res);
-  } else if (req.body.data.message == 'Profile Existence') {
-    console.log("Debug: Checking if Profile Exists")
-    doesProfileExist(req, res);
+app.get('/admin/dashboard', async (req, res) => {
+  console.log('Debug: Checking expiry of token')
+  if(await checkAdmin(req, res) === false){
+    return res.sendStatus(403)
   }
+
+  if((await checkExpiry(req, res)) == "Expired"){
+    return res.json({
+      status: "Unsuccessful",
+      message: "Token expired"
+    })
+  }
+
+  return res.json({
+    status: "Successful",
+    message: "Here's the dashboard"
+  })
 })
 
 app.post('/admin/dashboard', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
-  } else if (req.body.data.message == 'Checking expiry') {
-    console.log('Debug: Checking expiry of token')
-    checkExpiry(req, res);
   }
+})
+
+app.get('/feed', (req, res) => {
+  console.log('Debug: Checking expiry of token')
+  sendCheckExpiry(req, res);
 })
 
 app.post('/feed', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
-  } else if (req.body.data.message == 'Checking expiry') {
-    console.log('Debug: Checking expiry of token')
-    checkExpiry(req, res);
+  }
+})
+
+app.get('/:username', async (req,res) => {
+  let a = await checkExpiry(req);
+  if(a  == "Expired"){
+    return res.sendStatus(401);
+  };
+  get_profile(req, res);
+})
+
+app.post('/:username', (req, res) => {
+  if (req.body.data.message == 'Logging Out') {
+    console.log('Debug: Logging out as Author')
+    removeLogin(req, res);
   }
 })
 

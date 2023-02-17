@@ -3,30 +3,14 @@ import axios from 'axios';
 import React, { useEffect } from "react";
 function PublicFeed() {
     const navigate = useNavigate();
-    const checkForAuthor = () => {
-        const token = localStorage.getItem('token');
-        if (token === null) {
-            console.log("Debug: You are not logged in.")
-            return navigate('/unauthorized');
-        }
-        console.log("Debug: You are logged in.")
-        return true;
-    }
     const checkExpiry = () => {
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
-            url: '/',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                token: window.localStorage.getItem('token'),
-                message: 'Checking expiry'
-            }
+            url: '/feed',
         }
         axios
-        .post('/feed', config)
+        .get('/feed', config)
         .then((response) => {
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.")
@@ -34,17 +18,17 @@ function PublicFeed() {
                 LogOut();
                 navigate('/');
             }
-            console.log('Debug: Your token is not expired.')
+            else{console.log('Debug: Your token is not expired.')}
         })
         .catch(err => {
-          console.error(err);
+            if (err.response.status === 401) {
+                console.log("Debug: Not authorized.");
+                navigate('/unauthorized'); // 401 Not Found
+            }
         });
     }
     useEffect(() => {
-        let isLogged = checkForAuthor();
-        if (isLogged) {
-            checkExpiry();
-        }
+       checkExpiry();
     });
     const LogOut = () => {
         let config = {
@@ -55,11 +39,9 @@ function PublicFeed() {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                token: window.localStorage.getItem('token'),
                 message: 'Logging Out'
             }
         }
-        window.localStorage.removeItem('token');
         axios
         .post('/feed', config)
         .then((response) => {

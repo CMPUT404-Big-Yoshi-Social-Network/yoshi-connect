@@ -8,13 +8,17 @@ export default function Signup() {
       email: '',
       password: ''
     })
-    const checkUsernameInUse = (username) => {
+
+    const checkUsernameInUse = async (username) => {
+      let justLogged =  new Date();
+
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: '/signup',
         headers: {
           'Content-Type': 'application/json',
+          'Last-Modified': justLogged,
         },
         data: {
           username: username,
@@ -22,9 +26,10 @@ export default function Signup() {
         }
       }
 
-      axios(config)
+      const username_free = await axios(config)
       .then((response) => {
         if ( response.data.status === 'Successful' ) {
+          console.log("Debug: Going to public feed.")
           return true;
         } else {
           return false;
@@ -33,13 +38,14 @@ export default function Signup() {
       .catch(err => {
         console.error(err);
       }); 
+      return username_free
     }
-    const getAccount = (e) => {
+    
+    const getAccount = async (e) => {
       e.preventDefault()
-
-      if (checkUsernameInUse(data.username)) {
+      let a = await checkUsernameInUse(data.username);
+      if (a) {
         let justLogged =  new Date();
-        let expiresAt = new Date(justLogged.getTime() + (1440 * 60 * 1000)); // 24 hours (1440 minutes)
 
         let config = {
           method: 'post',
@@ -48,7 +54,6 @@ export default function Signup() {
           headers: {
             'Content-Type': 'application/json',
             'Last-Modified': justLogged,
-            'Expires': expiresAt
           },
           data: data
         }

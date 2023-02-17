@@ -44,6 +44,11 @@ app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
+if(process.env.NODE_ENV === 'production'){
+  //set static folder
+  app.use(express.static('yoshi-react/build'));
+}
+
 app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);
 })
@@ -125,15 +130,11 @@ app.post('/:username', (req, res) => {
   }
 })
 
-app.get('/',(request, response) => {
+app.get('/',(req, res) => {
   response.render("index");
 });
 
-if(process.env.NODE_ENV === 'production'){
-  //set static folder
-  app.use(express.static('yoshi-react/build'));
-}
-app.get('*', (request, response) => {
+app.get('*', (req, res) => {
 	response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 

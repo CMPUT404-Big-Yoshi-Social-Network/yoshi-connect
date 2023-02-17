@@ -85,7 +85,6 @@ async function sendCheckExpiry(req, res){
 }
 
 async function checkAdmin(req, res){
-    console.log(req.cookies["token"] )
     if (req.cookies["token"] != undefined) {
         console.log('Debug: Checking the admin status of the Token')
         await Login.findOne({token: req.cookies["token"]}, async function(err, login) {
@@ -103,6 +102,7 @@ async function checkAdmin(req, res){
     } else {
         return false;
     }
+    return false;
 }
 
 async function authAuthor(req, res) {

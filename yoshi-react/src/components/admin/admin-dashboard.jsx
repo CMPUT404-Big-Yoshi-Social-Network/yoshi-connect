@@ -13,6 +13,7 @@ function AdminDashboard() {
         axios
         .get('/admin/dashboard', config)
         .then((response) => {
+            console.log(response)
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.");
                 alert("You login is not cached anymore, sorry! Please log in again.");

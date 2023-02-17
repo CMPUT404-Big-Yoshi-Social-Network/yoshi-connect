@@ -84,10 +84,11 @@ async function sendCheckExpiry(req, res){
     }
 }
 
-function checkAdmin(req, res){
+async function checkAdmin(req, res){
+    console.log(req.cookies["token"] )
     if (req.cookies["token"] != undefined) {
         console.log('Debug: Checking the admin status of the Token')
-        Login.findOne({token: req.cookies["token"]}, function(err, login) {
+        await Login.findOne({token: req.cookies["token"]}, async function(err, login) {
             if (err) throw err;
             if(login == null){
                 return false;
@@ -98,9 +99,10 @@ function checkAdmin(req, res){
             if (login.admin === true){
                 return true;
             }
-        })
+        }).clone()
+    } else {
+        return false;
     }
-    return false;
 }
 
 async function authAuthor(req, res) {
@@ -133,7 +135,7 @@ async function authAuthor(req, res) {
                 await Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
                     if (err) throw err;
                     console.log("Debug: Login token deleted");
-                }).clone
+                }).clone()
             }
 
             let curr = new Date();

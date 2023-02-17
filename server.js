@@ -79,7 +79,7 @@ app.post('/admin', (req, res) => {
 
 app.get('/admin/dashboard', async (req, res) => {
   console.log('Debug: Checking expiry of token')
-  if(checkAdmin(req, res) === false){
+  if(await checkAdmin(req, res) === false){
     return res.sendStatus(403)
   }
 

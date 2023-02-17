@@ -47,7 +47,7 @@ mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
 // All other GET requests not handled before will return our React app
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../yoshi-react/build', 'index.html'));
+  res.sendFile(path.resolve(__dirname, './yoshi-react/public', 'index.html'));
 });
 
 // Sign up page 

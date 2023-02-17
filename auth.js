@@ -108,8 +108,8 @@ function checkAdmin(req, res){
 }
 
 async function authAuthor(req, res) {
-    const username = req.body.data["username"];
-    const password = req.body.data["password"];
+    const username = req.body.username;
+    const password = req.body.password;
     if(!username || !password){
         console.log("Debug: Username or Password not given, Authentication failed");
         return res.json({
@@ -118,11 +118,11 @@ async function authAuthor(req, res) {
         });
     }
 
-    await Author.findOne({username: username}, async function(err, author){
+    await Author.findOne({username: req.body.username}, async function(err, author){
         if(!author){
             console.log("Debug: Author does not exist, Authentication failed");
             return res.json({
-                username: username,
+                username: req.body.username,
                 status: "Unsuccessful"
             });
         }

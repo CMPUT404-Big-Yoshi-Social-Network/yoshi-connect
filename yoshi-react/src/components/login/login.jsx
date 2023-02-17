@@ -23,8 +23,7 @@ export default function Login() {
         data: data
       }
 
-      axios
-      .post('/login', config)
+      axios(config)
       .then((response) => {
         console.log("Debug: Token received.");
         if ( response.data.status === 'Successful' ) {

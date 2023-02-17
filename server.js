@@ -33,7 +33,8 @@ const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, isPersonal } = require('./auth')
 const { register_author, doesProfileExist } = require('./routes/author');
 
-app.use(express.static('yoshi-react/public')); // rendering static pages
+// app.use(express.static('yoshi-react/public')); // rendering static pages
+app.use('/static', express.static(path.join(__dirname, 'yoshi-react/public')))
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(express.json());

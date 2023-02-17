@@ -21,7 +21,7 @@ function AdminDashboard() {
             else if(response.data.status === "NonAdmin"){
                 console.log("Debug: You're not an admin.")
                 alert("You are not an admin! >:(")
-                navigate('/feed');
+                navigate('/forbidden');
             }
             else {
                 console.log("Successfully logged in");
@@ -29,7 +29,7 @@ function AdminDashboard() {
             console.log('Debug: Your token is not expired.')
         })
         .catch(err => {
-            if (err.response.status === 401) {
+            if (err.response.status === 403) {
                 console.log("Debug: Not authorized.");
                 navigate('/unauthorized'); // 401 Not Found
             }

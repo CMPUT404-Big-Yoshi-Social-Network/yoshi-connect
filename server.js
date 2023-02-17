@@ -113,12 +113,15 @@ app.post('/feed', (req, res) => {
   }
 })
 
-app.get('/:username', (req,res) => {
+app.get('/:username', async (req,res) => {
+  let a = await checkExpiry(req);
+  if(a  == "Expired"){
+    return res.sendStatus(401);
+  };
   get_profile(req, res);
 })
 
 app.post('/:username', (req, res) => {
-  sendCheckExpiry(req, res);
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);

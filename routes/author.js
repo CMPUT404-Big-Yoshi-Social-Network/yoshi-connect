@@ -102,39 +102,40 @@ async function register_author(req, res){
 }
 
 async function get_profile(req, res) {
-    if (req.cookies["token"] != null) {
-        console.log('Debug: Getting the token in the login database.')
-        Login.findOne({token: req.cookies["token"]}, async function(err, login) {
-            if (err) throw err;
+    if(req.cookies == undefined){
+        return res.sendStatus(404);
+    }
+    else if(req.cookies["token"] == undefined){
+        return res.sendStatus(404);
+    }
 
-            if(login == undefined){
-                res.sendStatus(404);
-                return;
+    console.log('Debug: Getting the token in the login database.')
+    Login.findOne({token: req.cookies["token"]}, async function(err, login) {
+        if (err) throw err;
+
+        if(login == undefined){
+            return res.sendStatus(404);
+        }
+
+        await Author.findOne({username: req.path.slice(1)}, function(err, author){
+            if(!author){
+                return res.sendStatus(404);
             }
+            else if(author.username == login.username){
+                return res.json({
+                    username: author.username,
+                    personal: true
+                });
+            }
+            else if(author.username != login.username){
+                return res.json({
+                    username: author.username,
+                    personal: false
+                });
+            }
+        }).clone()
+    })
 
-            await Author.findOne({username: req.path.slice(1)}, function(err, author){
-                if(!author){
-                    return res.sendStatus(404);
-                }
-                else if(author.username == login.username){
-                    return res.json({
-                        username: author.username,
-                        personal: true
-                    });
-                }
-                else if(author.username != login.username){
-                    return res.json({
-                        username: author.username,
-                        personal: false
-                    });
-                }
-            }).clone()
-        })
-
-    }
-    else{
-        //Sent back an error
-    }
 }
 
 module.exports={

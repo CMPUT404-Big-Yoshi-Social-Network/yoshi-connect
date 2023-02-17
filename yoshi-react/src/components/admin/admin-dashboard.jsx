@@ -3,26 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 function AdminDashboard() {
     const navigate = useNavigate();
-    /*
-    const checkForAuthor = () => {
-        if (token === null) {
-            console.log("Debug: You are not logged in.")
-            return navigate('/forbidden');
-        }
-        console.log("Debug: You are logged in.")
-        return true;
-    }
-    const checkAdmin = () => {
-        const admin = localStorage.getItem('admin');
-        if (admin === null) {
-            console.log("Debug: You are not an admin.")
-            return navigate('/forbidden')
-        }
-        console.log("Debug: You are an Admin.")
-        return true;
-    }
-    */
-    const checkExpiry = () => {
+    const get_dashboard = () => {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -35,12 +16,15 @@ function AdminDashboard() {
                 console.log("Debug: Your token is expired.");
                 alert("You login is not cached anymore, sorry! Please log in again.");
                 LogOut();
-                navigate('/');
+                navigate('/login');
             }
             else if(response.data.status === "NonAdmin"){
                 console.log("Debug: You're not an admin.")
                 alert("You are not an admin! >:(")
                 navigate('/feed');
+            }
+            else {
+                console.log("Successfully logged in");
             }
             console.log('Debug: Your token is not expired.')
         })
@@ -49,16 +33,7 @@ function AdminDashboard() {
         });
     }
     useEffect(() => {
-        /*
-        let isLogged = checkForAuthor();
-        if (isLogged) {
-            let isAdmin = checkAdmin();
-            if (isAdmin) {
-                checkExpiry();
-            }
-        }
-        */
-        checkExpiry();
+       get_dashboard();
     });
     const LogOut = () => {
         let config = {

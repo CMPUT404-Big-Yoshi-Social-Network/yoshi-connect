@@ -49,40 +49,42 @@ async function removeLogin(req, res) {
     });
 }
 
-async function checkExpiry(req, res) {
+async function checkExpiry(req) {
     if(req.cookies == undefined){
+        return "Expired"
+    }
+
+    if (req.cookies["token"] != undefined) {
+        console.log('Debug: Checking the Expiry Date of Token')
+        const login = await Login.findOne({token: req.cookies["token"]}).clone();
+        if(login == null)
+            return "Expired";
+        let expiresAt = new Date(login.expires);
+        let current = new Date();
+        if (expiresAt.getTime() < current.getTime()) {
+            return "Expired"
+        } 
+        else {
+            return "Not Expired"
+        }
+    }
+    return "Expired"
+}
+
+async function sendCheckExpiry(req, res){
+    let expiry = await checkExpiry(req);
+    if((expiry) == "Not Expired"){
+        return res.json({
+            message: "Token still valid.",
+            status: "Not Expired"
+        });
+    }
+    else{
         return res.json({
             message: "Token is expired.",
             status: "Expired"
         });
     }
-
-    if (req.cookies["token"] != undefined) {
-        console.log('Debug: Checking the Expiry Date of Token')
-        Login.findOne({token: req.cookies["token"]}, function(err, login) {
-            if (err) throw err;
-            if(login == null){
-                return res.json({
-                    message: "Token is expired.",
-                    status: "Expired"
-                });
-            } 
-            let expiresAt = new Date(login.expires);
-            let current = new Date();
-            if (expiresAt.getTime() < current.getTime()) {
-                return res.json({
-                    message: "Token is expired.",
-                    status: "Expired"
-                });
-            } else {
-                return res.json({
-                    message: "Token still valid.",
-                    status: "Not Expired"
-                });
-            }
-        })
-    }
-    return;
 }
 
 function checkAdmin(req, res){
@@ -91,20 +93,17 @@ function checkAdmin(req, res){
         Login.findOne({token: req.cookies["token"]}, function(err, login) {
             if (err) throw err;
             if(login == null){
-                return res.json({
-                    message: "Token is expired.",
-                    status: "Expired"
-                });
+                return false;
             }
             if (login.admin === false) {
-                return res.json({
-                    message: "You are not an admin.",
-                    status: "NonAdmin"
-                });
+                return false
+            }
+            if (login.admin === true){
+                return true;
             }
         })
     }
-    return undefined;
+    return false;
 }
 
 async function authAuthor(req, res) {
@@ -187,6 +186,7 @@ module.exports = {
     removeLogin,
     checkUsername,
     checkExpiry,
+    sendCheckExpiry,
     checkAdmin,
     isPersonal
 }

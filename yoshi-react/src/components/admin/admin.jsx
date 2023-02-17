@@ -26,7 +26,7 @@ export default function AdminLogin() {
       axios(config)
       .then((response) => {
         console.log("Debug: Token received.");
-        if ( response.data.status ) {
+        if ( response.data.status == 'Successful') {
           console.log("Debug: Going to dashboard.")
           navigate('/admin/dashboard');
         } else {

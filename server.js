@@ -31,7 +31,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, checkUsername, removeLogin, checkExpiry, checkAdmin, isPersonal } = require('./auth')
+const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin, isPersonal } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
 
 app.use(express.static('yoshi-react/public')); // rendering static pages
@@ -72,10 +72,29 @@ app.post('/admin', (req, res) => {
   authAuthor(req, res);
 })
 
-app.post('/admin/dashboard', (req, res) => {
+app.get('/admin/dashboard', async (req, res) => {
   console.log('Debug: Checking expiry of token')
-  checkAdmin(req, res);
-  checkExpiry(req, res);
+  if(await checkAdmin(req, res) === false){
+    return res.json({
+      status: "Unsuccessful",
+      message: "Not admin"
+    })
+  }
+
+  if((await checkExpiry(req, res)) == "Expired"){
+    return res.json({
+      status: "Unsuccessful",
+      message: "Token expired"
+    })
+  }
+
+  return res.json({
+    status: "Successful",
+    message: "Here's the dashboard"
+  })
+})
+
+app.post('/admin/dashboard', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
@@ -84,7 +103,7 @@ app.post('/admin/dashboard', (req, res) => {
 
 app.get('/feed', (req, res) => {
   console.log('Debug: Checking expiry of token')
-  checkExpiry(req, res);
+  sendCheckExpiry(req, res);
 })
 
 app.post('/feed', (req, res) => {
@@ -99,7 +118,7 @@ app.get('/:username', (req,res) => {
 })
 
 app.post('/:username', (req, res) => {
-  checkExpiry(req, res);
+  sendCheckExpiry(req, res);
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);

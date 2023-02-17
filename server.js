@@ -53,8 +53,15 @@ app.get('/favicon.ico', (req, res) => {
 })
 
 app.get('/',(request, response) => {
-  console.log("Debug: GET");
   response.render("index");
+});
+
+if(process.env.NODE_ENV === 'production'){
+  //set static folder
+  app.use(express.static('yoshi-react/build'));
+}
+app.get('*', (request, response) => {
+    response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 
 

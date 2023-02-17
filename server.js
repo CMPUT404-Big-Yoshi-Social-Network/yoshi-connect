@@ -56,6 +56,8 @@ if(process.env.NODE_ENV === 'production'){
 app.get('*', (request, response) => {
 	response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
+
+
 // Sign up page 
 app.post('/signup', (req, res) => {
   console.log(req)

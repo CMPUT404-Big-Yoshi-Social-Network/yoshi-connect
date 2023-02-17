@@ -134,7 +134,7 @@ if(process.env.NODE_ENV === 'production'){
   app.use(express.static('yoshi-react/build'));
 }
 app.get('*', (request, response) => {
-    response.sendFile(path.join(__dirname, 'yoshi-react/src', 'index.js'));
+	response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

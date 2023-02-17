@@ -19,47 +19,47 @@ const router = createBrowserRouter([
     element: <Welcome/>
   },
   {
-    path: '/login',
+    path: '/login/',
     element: <Login/>
   },
   {
-    path: '/signup',
+    path: '/signup/',
     element: <Signup/>
   },
   {
-    path: '/admin',
+    path: '/admin/',
     element: <AdminLogin/>
   },
   {
-    path: '/admin/dashboard',
+    path: '/admin/dashboard/',
     element: <AdminDashboard/>
   },
   {
-    path: '/feed',
+    path: '/feed/',
     element: <PublicFeed/>
   },
   {
-    path: '/friends',
+    path: '/friends/',
     element: <FriendFeed/>
   },
   {
-    path: '/users/:username', 
+    path: '/users/:username/', // want by user name 
     element: <Profile/>
   },
   {
-    path: '/messages', 
+    path: '/messages/', // want by user name 
     element: <Messages/>
   },
   {
-    path: '/forbidden', 
+    path: '/forbidden/', // want by user name 
     element: <UserForbidden/>   
   },
   {
-    path: '/unauthorized', 
+    path: '/unauthorized/', // want by user name 
     element: <UserUnauthorized/>   
   },
   {
-    path: '*' || '/notfound', 
+    path: '*' || '/notfound/', // want by user name 
     element: <PageNotFound/>   
   }
 ])

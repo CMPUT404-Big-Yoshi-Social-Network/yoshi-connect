@@ -33,6 +33,8 @@ const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, isPersonal } = require('./auth')
 const { register_author, doesProfileExist } = require('./routes/author');
 
+// Have Node serve the files for our built React app
+app.use(express.static(path.resolve(__dirname, '/yoshi-react/build')));
 //app.use(express.static(__dirname + '/yoshi-react/public')); // rendering static pages
 //app.use('/static', express.static(path.join(__dirname, 'yoshi-react/public')))
 app.use(bodyParser.urlencoded({extended: true}));
@@ -43,9 +45,10 @@ app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
-app.get('/', function(req, res){
-  res.render('/yoshi-react/public/index.html');
-})
+// All other GET requests not handled before will return our React app
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../yoshi-react/build', 'index.html'));
+});
 
 // Sign up page 
 app.post('/signup', (req, res) => {

@@ -6,11 +6,6 @@ function Profile() {
     const navigate = useNavigate();
     useEffect(() => {
         const isRealProfile = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/'
-            }
             axios
             .get('/' + username)
             .then((response) => {

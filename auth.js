@@ -80,10 +80,7 @@ async function sendCheckExpiry(req, res){
         });
     }
     else{
-        return res.json({
-            message: "Token is expired.",
-            status: "Expired"
-        });
+        return res.sendStatus(401);
     }
 }
 

@@ -75,10 +75,7 @@ app.post('/admin', (req, res) => {
 app.get('/admin/dashboard', async (req, res) => {
   console.log('Debug: Checking expiry of token')
   if(await checkAdmin(req, res) === false){
-    return res.json({
-      status: "Unsuccessful",
-      message: "Not admin"
-    })
+    return res.sendStatus(401)
   }
 
   if((await checkExpiry(req, res)) == "Expired"){

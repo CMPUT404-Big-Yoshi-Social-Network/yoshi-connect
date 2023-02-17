@@ -29,7 +29,10 @@ function AdminDashboard() {
             console.log('Debug: Your token is not expired.')
         })
         .catch(err => {
-          console.error(err);
+            if (err.response.status === 401) {
+                console.log("Debug: Not authorized.");
+                navigate('/unauthorized'); // 401 Not Found
+            }
         });
     }
     useEffect(() => {

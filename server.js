@@ -46,7 +46,7 @@ app.set('views', path.resolve( __dirname, './yoshi-react/src/components'));
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, './yoshi-react/src/components/welcome', 'welcome.jsx'));
+  res.render('welcome.jsx');
 });
 
 // Sign up page 

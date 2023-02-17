@@ -31,13 +31,10 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin, isPersonal } = require('./auth')
+const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
 
-// Have Node serve the files for our built React app
-//app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
-app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); // rendering static pages
-//app.use('/static', express.static(path.join(__dirname, 'yoshi-react/public')))
+app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());

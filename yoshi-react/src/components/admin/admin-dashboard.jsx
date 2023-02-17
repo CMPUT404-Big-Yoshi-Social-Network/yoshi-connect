@@ -30,6 +30,7 @@ function AdminDashboard() {
             console.log('Debug: Your token is not expired.')
         })
         .catch(err => {
+            console.log(err)
             if (err.response.status === 403) {
                 console.log("Debug: Forbidden.");
                 navigate('/forbidden'); // 403 Forbidden

@@ -44,6 +44,10 @@ app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
+app.get('/favicon.ico', (req, res) => {
+  res.sendStatus(404);
+})
+
 // Sign up page 
 app.post('/signup', async (req, res) => {
   console.log(req)
@@ -119,10 +123,6 @@ app.post('/:username', (req, res) => {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
   }
-})
-
-app.get('/favicon.ico', (req, res) => {
-  res.sendStatus(404);
 })
 
 app.get('/',(request, response) => {

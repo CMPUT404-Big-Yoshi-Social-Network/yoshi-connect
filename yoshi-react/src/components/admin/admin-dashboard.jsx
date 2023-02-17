@@ -54,7 +54,6 @@ function AdminDashboard() {
         axios
         .post('/admin/dashboard', config)
         .then((response) => {
-            console.log(response);
             navigate("/");
         })
         .catch(err => {

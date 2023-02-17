@@ -34,33 +34,15 @@ const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
 
-app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
+app.use(express.static(path.resolve(__dirname + '/yoshi-react/src'))); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.set('views', path.resolve( __dirname, './yoshi-react/public'));
+app.set('views', path.resolve( __dirname, './yoshi-react/src'));
 
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
-
-
-app.get('/favicon.ico', (req, res) => {
-  res.sendStatus(404);
-})
-
-app.get('/',(request, response) => {
-  response.render("index");
-});
-
-if(process.env.NODE_ENV === 'production'){
-  //set static folder
-  app.use(express.static('yoshi-react/build'));
-}
-app.get('*', (request, response) => {
-    response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
-});
-
 
 // Sign up page 
 app.post('/signup', async (req, res) => {
@@ -88,7 +70,7 @@ app.post('/admin', (req, res) => {
 
 app.get('/admin/dashboard', async (req, res) => {
   console.log('Debug: Checking expiry of token')
-  if(await checkAdmin(req, res) === false){
+  if(checkAdmin(req, res) === false){
     return res.sendStatus(403)
   }
 
@@ -138,5 +120,21 @@ app.post('/:username', (req, res) => {
     removeLogin(req, res);
   }
 })
+
+app.get('/favicon.ico', (req, res) => {
+  res.sendStatus(404);
+})
+
+app.get('/',(request, response) => {
+  response.render("index");
+});
+
+if(process.env.NODE_ENV === 'production'){
+  //set static folder
+  app.use(express.static('yoshi-react/build'));
+}
+app.get('*', (request, response) => {
+    response.sendFile(path.join(__dirname, 'yoshi-react/src', 'index.js'));
+});
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

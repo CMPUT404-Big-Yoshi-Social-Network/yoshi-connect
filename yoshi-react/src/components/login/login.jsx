@@ -25,8 +25,8 @@ export default function Login() {
 
       axios(config)
       .then((response) => {
-        console.log("Debug: Token received.");
         if ( response.data.status === 'Successful' ) {
+          console.log("Debug: Token received.");
           console.log("Debug: Going to public feed.")
           navigate('/feed');
         } else {

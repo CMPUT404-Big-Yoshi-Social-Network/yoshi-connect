@@ -45,7 +45,6 @@ function PublicFeed() {
         axios
         .post('/feed', config)
         .then((response) => {
-            console.log(response);
             navigate("/");
         })
         .catch(err => {

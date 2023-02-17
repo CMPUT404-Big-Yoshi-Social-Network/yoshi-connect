@@ -46,7 +46,6 @@ app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
 app.get('/',(request, response) => {
-  console.log("Debug: GET");
   response.render("index");
 });
 

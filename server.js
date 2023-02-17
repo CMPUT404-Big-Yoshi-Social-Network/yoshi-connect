@@ -34,7 +34,10 @@ const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin, isPersonal } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
 
-app.use(express.static('yoshi-react/public')); // rendering static pages
+// Have Node serve the files for our built React app
+//app.use(express.static(path.resolve(__dirname, '../yoshi-react/build')));
+app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); // rendering static pages
+//app.use('/static', express.static(path.join(__dirname, 'yoshi-react/public')))
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -44,9 +47,16 @@ app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
+
 app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);
 })
+
+app.get('/',(request, response) => {
+  console.log("Debug: GET");
+  response.render("index");
+});
+
 
 // Sign up page 
 app.post('/signup', async (req, res) => {

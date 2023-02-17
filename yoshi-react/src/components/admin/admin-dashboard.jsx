@@ -4,6 +4,7 @@ import axios from 'axios';
 function AdminDashboard() {
     const navigate = useNavigate();
     const get_dashboard = () => {
+        console.log('Debug: Getting Admin Dashboard')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,

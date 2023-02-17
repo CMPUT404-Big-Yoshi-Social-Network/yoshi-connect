@@ -34,12 +34,12 @@ const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
 
-app.use(express.static(path.resolve(__dirname + '/yoshi-react/src'))); 
+app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.set('views', path.resolve( __dirname, './yoshi-react/src'));
+app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});

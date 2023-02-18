@@ -7,8 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "start:dev": "nodemon server.js",
-    "build": "cd yoshi-react && npm install && npm run build",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix ./yoshi-react && npm run build --prefix npm start --prefix ./yoshi-react"
+    "build": "cd yoshi-react && npm install && npm run build"
   },
   "repository": {
     "type": "git",

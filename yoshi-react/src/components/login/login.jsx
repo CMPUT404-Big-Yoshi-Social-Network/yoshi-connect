@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 export default function Login() {
+    console.log('):')
     const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',

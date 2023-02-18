@@ -128,7 +128,7 @@ app.get('/:username', async (req,res) => {
   get_profile(req, res);
 })
 
-app.post('/api/:username', (req, res) => {
+app.post('/:username', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);

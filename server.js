@@ -65,8 +65,14 @@ app.post('/signup', async (req, res) => {
   }
 })
 
+// Test
+app.get('/login', (req, res) => {
+  res.render('hello.')
+})
+
+
 // Login page
-app.post('/api/login', (req, res) => {
+app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
   authAuthor(req, res);
 })

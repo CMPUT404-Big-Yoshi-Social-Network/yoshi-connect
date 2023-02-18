@@ -134,7 +134,7 @@ app.get('/',(req, res) => {
   res.render("index");
 });
 
-app.get('/*', (req, res) => {
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 

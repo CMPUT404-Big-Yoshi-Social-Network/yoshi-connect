@@ -50,14 +50,14 @@ async function removeLogin(req, res) {
 }
 
 async function checkExpiry(req) {
-    if(req.cookies === undefined){
+    if(req.cookies == undefined){
         return "Expired"
     }
 
     if (req.cookies["token"] != undefined) {
         console.log('Debug: Checking the Expiry Date of Token')
         const login = await Login.findOne({token: req.cookies["token"]}).clone();
-        if(login === null)
+        if(login == null)
             return "Expired";
         let expiresAt = new Date(login.expires);
         let current = new Date();

@@ -1,5 +1,4 @@
 function Welcome() {
-    console.log("WELCOME.")
     return (
         <div>
     Hello. Welcome to Yoshi Connect.

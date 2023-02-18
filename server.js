@@ -67,7 +67,7 @@ app.post('/signup', async (req, res) => {
 
 // Test
 app.get('/login', (req, res) => {
-  res.render('hello.')
+  res.send('hello.')
 })
 
 

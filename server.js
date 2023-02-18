@@ -115,7 +115,7 @@ app.post('/feed', (req, res) => {
   }
 })
 
-app.get('/:username', async (req,res) => {
+app.get('/api/:username', async (req,res) => {
   let a = await checkExpiry(req);
   if(a  == "Expired"){
     return res.sendStatus(401);

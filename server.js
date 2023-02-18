@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.set('views', path.resolve( __dirname, './yoshi-react/build'));
+app.set('views', path.resolve( __dirname, './yoshi-react/public'));
 
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
@@ -131,11 +131,11 @@ app.post('/:username', (req, res) => {
 })
 
 app.get('/',(req, res) => {
-  response.render("index");
+  res.render("index");
 });
 
 app.get('/*', (req, res) => {
-  response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 
 

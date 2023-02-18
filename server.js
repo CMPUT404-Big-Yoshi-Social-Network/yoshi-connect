@@ -65,14 +65,6 @@ app.post('/signup', async (req, res) => {
   }
 })
 
-app.get('/login', (req, res) => {
-  console.log('Return login page')
-  var options = {
-    root: path.join(__dirname)
-  };
-  return res.sendFile("yoshi-react/src/components/login/login.jsx", options);
-})
-
 // Login page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')

@@ -87,20 +87,13 @@ async function sendCheckExpiry(req, res){
 async function checkAdmin(req, res){
     if (req.cookies["token"] != undefined) {
         console.log('Debug: Checking the admin status of the Token')
-        await Login.findOne({token: req.cookies["token"]}, async function(err, login) {
-            if (err) throw err;
-            if(login == null){
-                return false;
-            }
-            if (login.admin === false) {
-                return false
-            }
-            if (login.admin === true){
-                return true;
-            }
-        }).clone()
-    } else {
-        return false;
+        const login_session = await Login.findOne({token: req.cookies["token"]});
+        if(login_session == null)
+            return false;
+        if (login_session.admin === false)
+            return false;
+        if (login_session.admin === true)
+            return true;
     }
     return false;
 }

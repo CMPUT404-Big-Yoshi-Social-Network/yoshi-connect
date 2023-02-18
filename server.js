@@ -65,14 +65,6 @@ app.post('/signup', async (req, res) => {
   }
 })
 
-app.get('/login', (req, res) => {
-  console.log('Return login page')
-  var options = {
-    root: path.join(__dirname)
-  };
-  return res.sendFile("yoshi-react/src/components/login/login.jsx", options);
-})
-
 // Login page
 app.post('/login', (req, res) => {
   console.log('Debug: Login as Author')
@@ -150,7 +142,7 @@ app.get('/',(req, res) => {
   res.render("index");
 });
 
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 

@@ -103,9 +103,17 @@ app.post('/admin/dashboard', (req, res) => {
   }
 })
 
-app.get('/feed', (req, res) => {
+app.get('/feed', async (req, res) => {
   console.log('Debug: Checking expiry of token')
-  sendCheckExpiry(req, res);
+  if(await checkExpiry(req, res) === "Not Expired"){
+    var options = {
+      root: path.join(__dirname)
+    };
+    return res.sendFile("yoshi-react/src/components/feeds/public.jsx", options);
+  }
+  else{
+    return res.sendStatus(403);
+  }
 })
 
 app.post('/feed', (req, res) => {

@@ -115,7 +115,7 @@ app.post('/feed', (req, res) => {
   }
 })
 
-app.get('/:username', async (req,res) => {
+app.get('/api/:username', async (req,res) => {
   let a = await checkExpiry(req);
   if(a  == "Expired"){
     return res.sendStatus(401);
@@ -134,11 +134,8 @@ app.get('/',(req, res) => {
   response.render("index");
 });
 
-app.get('/*', (req, res) => {
-  let url = path.join(__dirname, './yoshi-react/build', 'index.html');
-  if (!url.startsWith('/app/')) // we're on local windows
-    url = url.substring(1);
-  res.sendFile(url);
+app.get('*', (req, res) => {
+	response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

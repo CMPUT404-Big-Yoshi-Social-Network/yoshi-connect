@@ -47,11 +47,6 @@ mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 if (process.env.NODE_ENV === "development") {
 
   app.use(express.static("./yoshi-react/build"));
-
-  app.get('*', (req, res) => {
-    response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
-  });
-
 }
 
 app.get('/favicon.ico', (req, res) => {
@@ -138,5 +133,10 @@ app.post('/:username', (req, res) => {
 app.get('/',(req, res) => {
   response.render("index");
 });
+
+app.get('/*', (req, res) => {
+  response.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
+});
+
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

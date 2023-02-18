@@ -110,12 +110,12 @@ async function get_profile(req, res) {
     }
 
     console.log('Debug: Getting the token in the login database.')
-    const login = await Login.findOne({token: req.cookies["token"]});
+    const login_session = await Login.findOne({token: req.cookies["token"]});
     if(!login){
         return res.sendStatus(401);
     }
 
-    const author = await Author.findOne({username: req.path.slice(1)})
+    const author_of_session = await Author.findOne({username: req.path.slice(1)})
     if(!author){
         return res.sendStatus(404);
     }

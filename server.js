@@ -41,6 +41,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
+
+import Login from "./components/login/login.jsx";
+
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
@@ -63,6 +66,10 @@ app.post('/signup', async (req, res) => {
     console.log('Debug: Signing up as an author')
     await register_author(req, res);
   }
+})
+
+app.get('/login', (req, res) => {
+  return res.send(Login.Login());
 })
 
 // Login page

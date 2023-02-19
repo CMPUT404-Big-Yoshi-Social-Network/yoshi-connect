@@ -157,10 +157,6 @@ async function authAuthor(req, res) {
 
         login_saved = await login.save();
         if(login == login_saved){
-            if (err) {
-                console.log(err);
-                return;
-            } 
             console.log("Debug: Login Cached.")
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
             return res.json({

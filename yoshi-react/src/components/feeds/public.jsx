@@ -10,7 +10,7 @@ function PublicFeed() {
             url: '/feed',
         }
         axios
-        .get('/feed', config)
+        .get('/api/feed', config)
         .then((response) => {
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.")

@@ -103,7 +103,7 @@ app.post('/admin/dashboard', (req, res) => {
   }
 })
 
-app.get('/feed', (req, res) => {
+app.get('/api/feed', (req, res) => {
   console.log('Debug: Checking expiry of token')
   sendCheckExpiry(req, res);
 })
@@ -134,7 +134,7 @@ app.get('/',(req, res) => {
   res.render("index");
 });
 
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 

@@ -65,15 +65,15 @@ app.post('/server/signup', async (req, res) => {
 })
 
 // Login page
-app.post('/server/login', (req, res) => {
+app.post('/server/login', async (req, res) => {
   console.log('Debug: Login as Author')
-  authAuthor(req, res);
+  await authAuthor(req, res);
 })
 
 // Admin Login page
-app.post('/server/admin', (req, res) => {
+app.post('/server/admin', async (req, res) => {
   console.log('Debug: Login as Admin')
-  authAuthor(req, res);
+  await authAuthor(req, res);
 })
 
 app.get('/server/admin/dashboard', async (req, res) => {

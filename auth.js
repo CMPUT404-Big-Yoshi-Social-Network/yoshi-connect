@@ -109,68 +109,66 @@ async function authAuthor(req, res) {
         });
     }
 
-    await Author.findOne({username: req.body.username}, async function(err, author){
-        if(!author){
-            console.log("Debug: Author does not exist, Authentication failed");
-            return res.json({
-                username: req.body.username,
-                status: "Unsuccessful"
-            });
+    const author = await Author.findOne({username: req.body.username});
+
+    if(!author){
+        console.log("Debug: Author does not exist, Authentication failed");
+        return res.json({
+            username: req.body.username,
+            status: "Unsuccessful"
+        });
+    }
+    req.author = author;
+
+    const p_hashed_password = req.author.password;
+    console.log("Server's model: ", req.author);
+    if(p_hashed_password == crypto_js.SHA256(password)){
+        console.log("Debug: Authentication successful");
+        //Check if login already exists if it does send back the old one else create a new one 
+        if(req.cookies["token"] != null){
+            await Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
+                if (err) throw err;
+                console.log("Debug: Login token deleted");
+            }).clone()
         }
-        req.author = author;
 
-        const p_hashed_password = req.author.password;
-        console.log("Server's model: ", req.author);
-        if(p_hashed_password == crypto_js.SHA256(password)){
-            console.log("Debug: Authentication successful");
-            //Check if login already exists if it does send back the old one else create a new one 
-            if(req.cookies["token"] != null){
-                await Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
-                    if (err) throw err;
-                    console.log("Debug: Login token deleted");
-                }).clone()
-            }
+        let curr = new Date();
+        let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
+        let token = uidgen.generateSync();
 
-            let curr = new Date();
-            let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
-            let token = uidgen.generateSync();
+        let login = new Login({
+            authorId: req.author.authorId,
+            username: req.body.username,
+            token: token,
+            admin: req.author.admin,
+            expires: expiresAt
+        });
 
-            let login = new Login({
-                authorId: req.author.authorId,
-                username: req.body.username,
-                token: token,
-                admin: req.author.admin,
-                expires: expiresAt
-            });
-
-            if (req.route.path == '/admin') {
-                if (!req.author.admin) {
-                    console.log("Debug: You are not an admin. Your login will not be cached.")
-                    return res.json({
-                        username: req.body.username,
-                        authorId: req.author.authorId,
-                        status: "Unsuccessful"
-                    }); 
-                }
-            }
-
-            login.save((err, login, next) => {
-                if (err) {
-                    console.log(err);
-                    return;
-                } 
-                console.log("Debug: Login Cached.")
-                res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
+        if (req.route.path == '/admin') {
+            if (!req.author.admin) {
+                console.log("Debug: You are not an admin. Your login will not be cached.")
                 return res.json({
                     username: req.body.username,
                     authorId: req.author.authorId,
-                    status: "Successful"
-                });
-            });
-            return;
+                    status: "Unsuccessful"
+                }); 
+            }
         }
-    }).clone()
-    return;
+
+        await login.save((err, login, next) => {
+            if (err) {
+                console.log(err);
+                return;
+            } 
+            console.log("Debug: Login Cached.")
+            res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
+            return res.json({
+                username: req.body.username,
+                authorId: req.author.authorId,
+                status: "Successful"
+            });
+        });
+    }
 }
 
 module.exports = {

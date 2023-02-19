@@ -155,7 +155,8 @@ async function authAuthor(req, res) {
             }
         }
 
-        await login.save((err, login, next) => {
+        login_saved = await login.save();
+        if(login == login_saved){
             if (err) {
                 console.log(err);
                 return;
@@ -167,8 +168,16 @@ async function authAuthor(req, res) {
                 authorId: req.author.authorId,
                 status: "Successful"
             });
+        }
+        return res.json({
+            username: req.body.username,
+            status: "Unsuccessful"
         });
     }
+    return res.json({
+        username: req.body.username,
+        status: "Unsuccessful"
+    });
 }
 
 module.exports = {

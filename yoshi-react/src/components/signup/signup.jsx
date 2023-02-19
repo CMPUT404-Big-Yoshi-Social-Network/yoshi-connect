@@ -15,7 +15,7 @@ export default function Signup() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/signup',
+        url: '/server/signup',
         headers: {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged,

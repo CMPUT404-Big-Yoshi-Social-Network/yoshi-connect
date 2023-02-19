@@ -16,7 +16,7 @@ export default function Login() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/login',
+        url: '/server/login',
         headers: {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged

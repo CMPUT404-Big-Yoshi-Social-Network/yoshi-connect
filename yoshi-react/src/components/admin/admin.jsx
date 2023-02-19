@@ -15,7 +15,7 @@ export default function AdminLogin() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/admin',
+        url: '/server/admin',
         headers: {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged

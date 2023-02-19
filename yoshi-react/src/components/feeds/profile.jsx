@@ -7,7 +7,7 @@ function Profile() {
     useEffect(() => {
         const isRealProfile = () => {
             axios
-            .get('/' + username)
+            .get('/server/users/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
             })

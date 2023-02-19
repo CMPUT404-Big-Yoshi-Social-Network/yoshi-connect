@@ -45,7 +45,6 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
 if (process.env.NODE_ENV === "development") {
-
   app.use(express.static("./yoshi-react/build"));
 }
 
@@ -54,7 +53,7 @@ app.get('/favicon.ico', (req, res) => {
 })
 
 // Sign up page 
-app.post('/signup', async (req, res) => {
+app.post('/server/signup', async (req, res) => {
   console.log(req)
   if (req.body.status == 'Is username in use') {
     console.log('Debug: Checking if the username is already taken')
@@ -66,18 +65,18 @@ app.post('/signup', async (req, res) => {
 })
 
 // Login page
-app.post('/login', (req, res) => {
+app.post('/server/login', (req, res) => {
   console.log('Debug: Login as Author')
   authAuthor(req, res);
 })
 
 // Admin Login page
-app.post('/admin', (req, res) => {
+app.post('/server/admin', (req, res) => {
   console.log('Debug: Login as Admin')
   authAuthor(req, res);
 })
 
-app.get('/admin/dashboard', async (req, res) => {
+app.get('/server/admin/dashboard', async (req, res) => {
   console.log('Debug: Checking expiry of token')
   if(await checkAdmin(req, res) === false){
     return res.sendStatus(403)
@@ -96,26 +95,26 @@ app.get('/admin/dashboard', async (req, res) => {
   })
 })
 
-app.post('/admin/dashboard', (req, res) => {
+app.post('/server/admin/dashboard', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
   }
 })
 
-app.get('/api/feed', (req, res) => {
+app.get('/server/feed', (req, res) => {
   console.log('Debug: Checking expiry of token')
   sendCheckExpiry(req, res);
 })
 
-app.post('/feed', (req, res) => {
+app.post('/server/feed', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
   }
 })
 
-app.get('/api/:username', async (req,res) => {
+app.get('/server/users/:username', async (req,res) => {
   let a = await checkExpiry(req);
   if(a  == "Expired"){
     return res.sendStatus(401);
@@ -123,7 +122,7 @@ app.get('/api/:username', async (req,res) => {
   get_profile(req, res);
 })
 
-app.post('/:username', (req, res) => {
+app.post('/server/users/:username', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);

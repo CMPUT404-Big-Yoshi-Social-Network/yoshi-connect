@@ -11,7 +11,7 @@ function AdminDashboard() {
             url: '/',
         }
         axios
-        .get('/admin/dashboard', config)
+        .get('/server/admin/dashboard', config)
         .then((response) => {
             console.log(response)
             if (response.data.status === "Expired") {
@@ -44,7 +44,7 @@ function AdminDashboard() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/admin/dashboard',
+            url: '/server/admin/dashboard',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -53,7 +53,7 @@ function AdminDashboard() {
             }
         }
         axios
-        .post('/admin/dashboard', config)
+        .post('/server/admin/dashboard', config)
         .then((response) => {
             navigate("/");
         })

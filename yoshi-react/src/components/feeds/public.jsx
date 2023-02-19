@@ -43,7 +43,7 @@ function PublicFeed() {
             }
         }
         axios
-        .post('/feed', config)
+        .post('/server/feed', config)
         .then((response) => {
             navigate("/");
         })

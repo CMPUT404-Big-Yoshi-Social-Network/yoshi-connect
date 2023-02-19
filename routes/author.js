@@ -110,32 +110,29 @@ async function get_profile(req, res) {
     }
 
     console.log('Debug: Getting the token in the login database.')
-    Login.findOne({token: req.cookies["token"]}, async function(err, login) {
-        if (err) throw err;
+    const login = Login.findOne({token: req.cookies["token"]});
 
-        if(login == undefined){
-            return res.sendStatus(404);
-        }
+    if(login == undefined){
+        return res.sendStatus(404);
+    }
 
-        await Author.findOne({username: req.path.slice(1)}, function(err, author){
-            if(!author){
-                return res.sendStatus(404);
-            }
-            else if(author.username == login.username){
-                return res.json({
-                    username: author.username,
-                    personal: true
-                });
-            }
-            else if(author.username != login.username){
-                return res.json({
-                    username: author.username,
-                    personal: false
-                });
-            }
-        }).clone()
-    })
+    const author = await Author.findOne({username: req.path.split("/")[req.path.split("/").length - 1]})
 
+    if(!author){
+        return res.sendStatus(404);
+    }
+    else if(author.username == login.username){
+        return res.json({
+            username: author.username,
+            personal: true
+        });
+    }
+    else if(author.username != login.username){
+        return res.json({
+            username: author.username,
+            personal: false
+        });
+    }
 }
 
 module.exports={

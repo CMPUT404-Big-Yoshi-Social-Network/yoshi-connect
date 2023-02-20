@@ -122,12 +122,14 @@ async function get_profile(req, res) {
         return res.sendStatus(404);
     }
     else if(author.username == login.username){
+        console.log("Debug: This is your personal account.")
         return res.json({
             username: author.username,
             personal: true
         });
     }
     else if(author.username != login.username){
+        console.log("Debug: This is not your personal account.")
         return res.json({
             username: author.username,
             personal: false

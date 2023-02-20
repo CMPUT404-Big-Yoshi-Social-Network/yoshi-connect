@@ -6,7 +6,6 @@ function AuthorNavBar() {
     return (
         <Navbar className="flex-column">
             <Container>
-                <Navbar.Brand href="/feed">YoshiConnect</Navbar.Brand>
                 <Nav>
                     {/* <div>
                         <Nav.Link href="/users/:username">{username}</Nav.Link> TODO: Needs to fetch username 

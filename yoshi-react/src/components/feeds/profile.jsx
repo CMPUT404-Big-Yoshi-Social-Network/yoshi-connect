@@ -4,9 +4,7 @@ import { useState } from 'react';
 import axios from 'axios';
 function Profile() {
     const { username } = useParams();
-    const [friend, setFriend] = useState({
-        friend: 'Add Friend'
-    })
+    const [personal, setPersonal] = useState(null)
     const navigate = useNavigate();
     useEffect(() => {
         const isRealProfile = () => {
@@ -14,12 +12,8 @@ function Profile() {
             .get('/server/users/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
-                if (response.data.personal === false) {
-                    setFriend({
-                        ...friend,
-                        friend: 'Unfriend'
-                      })
-                }
+                // FOR SOME REASON IT IS FALSE?
+                setPersonal(response.data.personal);
             })
             .catch(err => {
                 if (err.response.status === 404) {
@@ -32,35 +26,15 @@ function Profile() {
                 }
             });
         }
-
         isRealProfile();
-    }, [username, friend, navigate]);
+    }, [username, personal, navigate]);
     const ChangeFriendState = () => {
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                message: 'Logging Out'
-            }
-        }
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            navigate("/");
-        })
-        .catch(err => {
-          console.error(err);
-        });
-
+        ;
     }
     return (
         <div>
             You are viewing profile. Welcome to {username}'s profile!
-            <button type="button" onClick={() => ChangeFriendState()}>{ friend.friend }</button>
+            { !{personal} ? <button type="button" id='friend' onClick={() => ChangeFriendState()}>Need to Change Between UnFriend and Add Friend</button> : null}
         </div> 
     )
 }

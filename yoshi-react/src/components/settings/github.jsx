@@ -1,23 +1,23 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from "react";
-function Settings() {
+function GitHub() {
     const navigate = useNavigate();
-    const loggedIn = () => {
+    const checkForAuthor = () => {
         const token = localStorage.getItem('token');
         if (token === null) {
             console.log("Debug: You are not logged in.")
-            return navigate('/login');
+            return navigate('/unauthorized');
         }
         console.log("Debug: You are logged in.")
     }
     useEffect(() => {
-        loggedIn();
+        checkForAuthor();
     });
     return (
         <div>
-            You are viewing your settings. DEFAULT SHOULD BE ACCOUNT DETAILS!
-        </div> 
+            Viewing GitHub details
+        </div>
     )
 }
 
-export default Settings;
+export default GitHub;

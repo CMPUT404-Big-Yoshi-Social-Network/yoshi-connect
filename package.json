@@ -22,12 +22,14 @@
   "homepage": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect#readme",
   "dependencies": {
     "axios": "^0.27.2",
+    "bootstrap": "^5.2.3",
     "cookie-parser": "^1.4.6",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "install": "^0.13.0",
     "mongoose": "^6.9.1",
+    "react-bootstrap": "^2.7.2",
     "react-router-dom": "^6.8.1",
     "uid-generator": "^2.0.0"
   },

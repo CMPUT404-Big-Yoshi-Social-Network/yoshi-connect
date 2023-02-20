@@ -13,7 +13,6 @@ function AdminDashboard() {
         axios
         .get('/server/admin/dashboard', config)
         .then((response) => {
-            console.log(response)
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.");
                 LogOut();

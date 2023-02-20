@@ -14,7 +14,7 @@ function Profile() {
             .get('/server/users/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
-                if (response.data.personal === true) {
+                if (response.data.personal === false) {
                     setFriend({
                         ...friend,
                         friend: 'Unfriend'

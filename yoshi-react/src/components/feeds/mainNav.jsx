@@ -6,7 +6,7 @@ function MainNav() {
     return (
         // TODO: Need to Add Search functionality and Notification Functionality
         // Might need to query notifications and use map (refer to changingNav.jsx
-        <Navbar className="flex-column">
+        <Navbar>
             <Container>
                 <Navbar.Brand href="/feed">YoshiConnect</Navbar.Brand>
                 <Nav>

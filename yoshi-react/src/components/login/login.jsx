@@ -30,8 +30,6 @@ export default function Login() {
           console.log("Debug: Token received.");
           console.log("Debug: Going to public feed.")
           navigate('/feed');
-        } else {
-          alert("You are not an author! Get outta here!")
         }
       })
     }

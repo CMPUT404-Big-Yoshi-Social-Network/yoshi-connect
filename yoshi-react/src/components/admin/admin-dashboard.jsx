@@ -16,13 +16,11 @@ function AdminDashboard() {
             console.log(response)
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.");
-                alert("You login is not cached anymore, sorry! Please log in again.");
                 LogOut();
                 navigate('/login');
             }
             else if(response.data.status === "NonAdmin"){
                 console.log("Debug: You're not an admin.")
-                alert("You are not an admin! >:(")
                 navigate('/forbidden');
             }
             else {

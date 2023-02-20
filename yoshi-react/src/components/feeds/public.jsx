@@ -14,7 +14,6 @@ function PublicFeed() {
         .then((response) => {
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.")
-                alert("You login is not cached anymore, sorry! Please log in again.")
                 LogOut();
                 navigate('/');
             }

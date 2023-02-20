@@ -29,9 +29,7 @@ export default function AdminLogin() {
         if ( response.data.status === 'Successful') {
           console.log("Debug: Going to dashboard.")
           return navigate('/admin/dashboard/');
-        } else {
-          alert("You are not an admin! Get outta here!")
-        }
+        } 
       })
     }
     return(

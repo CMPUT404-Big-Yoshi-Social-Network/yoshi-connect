@@ -70,8 +70,6 @@ export default function Signup() {
         .catch(err => {
           console.error(err);
         });
-      } else {
-        alert("Username is already in use. Try again.");
       }
     }
     return(

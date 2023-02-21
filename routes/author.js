@@ -110,7 +110,7 @@ async function get_profile(req, res) {
     }
 
     console.log('Debug: Getting the token in the login database.')
-    const login = Login.findOne({token: req.cookies["token"]});
+    const login = await Login.findOne({token: req.cookies["token"]});
 
     if(login == undefined){
         return res.sendStatus(404);

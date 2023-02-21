@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-export default function LogOut() {
+function LogOut() {
     const navigate = useNavigate();
     let config = {
         method: 'post',
@@ -25,6 +25,7 @@ export default function LogOut() {
 
 }
 
-module.exports = {
-    LogOut
-}
+export default LogOut;
+// module.exports = {
+//     LogOut
+// }

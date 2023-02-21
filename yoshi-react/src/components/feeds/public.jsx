@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect } from "react";
-import MainNav from './MainNav.jsx';
+import MainNav from './mainNav.jsx';
+import LogOut from './logOut.js';
 
 function PublicFeed() {
     const navigate = useNavigate();
-    const { LogOut } = require('./logOut')
     const checkExpiry = () => {
         let config = {
             method: 'get',
@@ -35,7 +35,7 @@ function PublicFeed() {
     return (
         <div>
             <div>
-                <MainNav />
+                <MainNav/>
             </div>
             Welcome to the Public Feed. You are signed in.
             <button type="button">Log Out</button>

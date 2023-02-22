@@ -33,6 +33,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
+const { create_post } = require('./routes/post');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -112,6 +113,14 @@ app.post('/server/feed', (req, res) => {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
   }
+})
+
+app.post('/server/post', (req, res) => {
+  if(checkExpiry == "Expired"){
+    return res.sendStatus(404);
+  }
+  create_post(req, res);
+  res.sendStatus(200)
 })
 
 app.get('/server/users/:username', async (req,res) => {

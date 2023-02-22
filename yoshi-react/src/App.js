@@ -8,6 +8,7 @@ import AdminDashboard from "./components/admin/admin-dashboard.jsx";
 import PublicFeed from "./components/feeds/public.jsx";
 import FriendFeed from "./components/feeds/friend.jsx";
 import Profile from "./components/feeds/profile.jsx";
+import Post from "./components/posts/post.jsx";
 import Messages from "./components/feeds/messages.jsx";
 import PageNotFound from "./components/user-error/404.jsx";
 import UserForbidden from "./components/user-error/403.jsx";
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: '/friends/',
     element: <FriendFeed/>
+  },
+  {
+    path: '/post',
+    element: <Post/>
   },
   {
     path: '/users/:username/', // want by user name 

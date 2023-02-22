@@ -48,32 +48,35 @@ async function removeLogin(req, res) {
         status: "Expired"
     });
 }
-
+/*
+Returns:
+    True: If Token is expired
+    False: If Token is not expired
+*/
 async function checkExpiry(req) {
     if(req.cookies == undefined){
-        return "Expired"
+        return true
     }
 
     if (req.cookies["token"] != undefined) {
         console.log('Debug: Checking the Expiry Date of Token')
         const login = await Login.findOne({token: req.cookies["token"]}).clone();
         if(login == null)
-            return "Expired";
+            return true;
         let expiresAt = new Date(login.expires);
         let current = new Date();
         if (expiresAt.getTime() < current.getTime()) {
-            return "Expired"
+            return true
         } 
         else {
-            return "Not Expired"
+            return false
         }
     }
-    return "Expired"
+    return true
 }
 
 async function sendCheckExpiry(req, res){
-    let expiry = await checkExpiry(req);
-    if((expiry) == "Not Expired"){
+    if(!(await checkExpiry(req))){
         return res.json({
             message: "Token still valid.",
             status: "Not Expired"

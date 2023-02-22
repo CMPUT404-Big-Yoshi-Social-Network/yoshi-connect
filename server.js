@@ -79,11 +79,11 @@ app.post('/server/admin', async (req, res) => {
 
 app.get('/server/admin/dashboard', async (req, res) => {
   console.log('Debug: Checking expiry of token')
-  if(await checkAdmin(req, res) === false){
+  if(!(await checkAdmin(req, res))){
     return res.sendStatus(403)
   }
 
-  if((await checkExpiry(req, res)) == "Expired"){
+  if((await checkExpiry(req, res))){
     return res.json({
       status: "Unsuccessful",
       message: "Token expired"
@@ -116,18 +116,17 @@ app.post('/server/feed', (req, res) => {
 })
 
 app.post('/server/post', (req, res) => {
-  if(checkExpiry == "Expired"){
+  if(checkExpiry(req, res))
     return res.sendStatus(404);
-  }
+
   create_post(req, res);
   res.sendStatus(200)
 })
 
 app.get('/server/users/:username', async (req,res) => {
-  let a = await checkExpiry(req);
-  if(a  == "Expired"){
+  if(await checkExpiry(req))
     return res.sendStatus(401);
-  };
+
   get_profile(req, res);
 })
 

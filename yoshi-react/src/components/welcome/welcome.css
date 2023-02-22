@@ -1,0 +1,35 @@
+@font-face {
+    font-family: "Uni Neue";
+    src: url('../../fonts/UniNeue-Trial-Regular.eot');
+    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
+         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
+         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
+         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+}
+
+*{
+    color: white;
+    text-align: center;
+    font-family: "Uni Neue";
+}
+body{
+    margin-top: 20em;
+    background-image: radial-gradient(circle, #050125, #090D0E);
+}
+.hello{
+    font-size: 40px;
+    padding: 1em;
+}
+.button{
+    font-size: 18px;
+    margin: 0em 2em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
+}
+.button:hover{
+    background-color: #A7E7F8;
+    color: black;
+}

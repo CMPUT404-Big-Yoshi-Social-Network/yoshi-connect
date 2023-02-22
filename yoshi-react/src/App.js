@@ -1,4 +1,3 @@
-import "./App.css";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Welcome from "./components/welcome/welcome.jsx";
 import Login from "./components/login/login.jsx";

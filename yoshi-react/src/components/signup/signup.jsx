@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { Form, Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import './signup.css';
+
 export default function Signup() {
     const navigate = useNavigate();
     const [data, setData] = useState({
@@ -73,40 +76,41 @@ export default function Signup() {
       }
     }
     return(
-      <form>
-        <label>
-          <p>Username</p>
-        </label>
-          <input type="text" name="username" onChange={(e) => {
-            setData({
-              ...data,
-              username: e.target.value
-            })
-          }}/>
-        <label>
-          <p>Email</p>
-        </label>
-
-          <input type="email" name="email" onChange={(e) => {
-            setData({
-              ...data,
-              email: e.target.value
-            })
-          }}/>
-        <label>
-          <p>Password</p>
-        </label>
-
-          <input type="password" name="password" onChange={(e) => {
-            setData({
-              ...data,
-              password: e.target.value
-            })
-          }}/>
-        <div>
-
-          <button type="submit" onClick={getAccount}>Create Account</button>
-        </div>
-      </form>
+      <body>
+        <Card className="card">
+          <Card.Header>
+              <h4>Sign Up</h4>
+          </Card.Header>
+          <Card.Body>
+              <Form>
+                  <Form.Group className="mb-3">
+                    <p>Username</p>
+                      <Form.Control
+                          name="username"
+                          onChange={(e) => {setData({...data, username: e.target.value})}}
+                          type="text" placeholder="Username"/>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <p>Email</p>
+                      <Form.Control
+                          name="email"
+                          onChange={(e) => {setData({...data, username: e.target.value})}}
+                          type="email" placeholder="Email"/>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <p>Password</p>
+                      <Form.Control
+                          name="password"
+                          onChange={(e) => {setData({...data, username: e.target.value})}}
+                          type="password" placeholder="Password"/>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                      <Button onClick={getAccount} variant="warning" type="submit">Create Account</Button>
+                  </Form.Group>
+              </Form>
+          </Card.Body>
+        </Card>
+      </body>
+      
     )
   }

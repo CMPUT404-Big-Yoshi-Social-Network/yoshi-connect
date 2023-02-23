@@ -1,7 +1,27 @@
-body{
-    background-image: radial-gradient(circle, #050125, #090D0E);
-    /* background: blue; */
-}
-.card{
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
 
+.form{
+    color: red;
+}
+.hello2{
+    font-size: 25px;
+    
+}
+.card h3{
+    text-align: left;
+    color: #A7E7F8;
+    margin-left: 20rem;
+    font-family: 'Signika', sans-serif;
+}
+.a p{
+    text-align: left;
+    margin-left: 20.1em;
+}
+.box{
+    background-image: radial-gradient(circle, #050125, #090D0E);
+    color: white;
+    width: 27%;
+    border: #4A5460 0.2em solid;
+    border-radius: .5em;
+    padding: .5em;
 }

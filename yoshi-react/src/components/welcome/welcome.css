@@ -12,6 +12,9 @@
     text-align: center;
     font-family: "Uni Neue";
 }
+/* ::selection{
+    background: #A7E7F8;
+} */
 body{
     margin-top: 20em;
     background-image: radial-gradient(circle, #050125, #090D0E);

@@ -12,6 +12,7 @@ import Messages from "./components/feeds/messages.jsx";
 import PageNotFound from "./components/user-error/404.jsx";
 import UserForbidden from "./components/user-error/403.jsx";
 import UserUnauthorized from "./components/user-error/401.jsx";
+import BadRequest from './components/user-error/400.jsx';
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
   {
     path: '*' || '/notfound/', 
     element: <PageNotFound/>   
+  },
+  {
+    path: '/badrequest/', 
+    element: <BadRequest/>   
   }
 ])
   

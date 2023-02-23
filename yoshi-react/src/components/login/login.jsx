@@ -62,7 +62,6 @@ export default function Login() {
                           type="password" className='login-box'/>
                   </Form.Group>
                   <br></br>
-                  <br></br>
                   <Button href='/' variant="warning" type="submit" className='login-button'>Back</Button>
                   <Button onClick={getUserpass} variant="warning" type="submit" className='login-button'>Next</Button>
               </Form>

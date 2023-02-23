@@ -1,7 +1,13 @@
+import { Image } from 'react-bootstrap'
+import './401.css'
+
 function UserUnauthorized() {
     return (
-        <div>
-            You do not have valid credentials! Get outta here or I will call the police!
+        <div className="sc401">
+            <h1>401</h1>
+            <h2>Your authorization failed</h2>
+            <h3>UNAUTHORIZED</h3>
+            <Image src='/images/status_code_401.png'/>
         </div>
     )
 }

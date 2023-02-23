@@ -8,7 +8,7 @@ function MainNav() {
         // Might need to query notifications and use map (refer to changingNav.jsx
         <Navbar>
             <Container>
-                <Navbar.Brand href="/feed">YoshiConnect</Navbar.Brand>
+                <Navbar.Brand href="/feed">Yoshi Connect</Navbar.Brand>
                 <Nav>
                     <div>
                         <Nav.Link href="/search">Search</Nav.Link>

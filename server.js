@@ -48,9 +48,6 @@ if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
 
-app.get('/favicon.ico', (req, res) => {
-  res.sendStatus(404);
-})
 
 // Sign up page 
 app.post('/server/signup', async (req, res) => {

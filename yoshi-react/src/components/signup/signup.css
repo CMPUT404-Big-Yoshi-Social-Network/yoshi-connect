@@ -1,28 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
 
-/* .hello{
+.signup{
+    color: white;
+    font-family: "Uni Neue";
+    text-align: center;
+    margin-top: 10em;
+}
+.signup-hello{
     font-size: 25px; 
-} */
-.card h3{
-    text-align: left;
+}
+.signup-card h3{
     color: #7cdcf7;
-    margin-left: 20rem;
     font-family: 'Signika', sans-serif;
     font-weight: 500;
     font-size: 20px;
 }
-.a p{
-    text-align: left;
-    margin-left: 20.1rem;
+.signup-a p{
     font-family: 'Signika', sans-serif;
     font-weight: 300;
     font-size: 18px;
 }
-.box{
+.signup-box{
     background-image: radial-gradient(circle, #050125, #090D0E);
-    color: blue;
-    width: 27%;
+    color: white;
+    width: 15%;
     border: #4A5460 0.2em solid;
     border-radius: .5em;
     padding: .5em;
+}
+.signup-button{
+    color: white;
+    font-size: 18px;
+    margin: 0em 2em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
+}
+.signup-button:hover{
+    background-color: #A7E7F8;
+    color: black;
 }

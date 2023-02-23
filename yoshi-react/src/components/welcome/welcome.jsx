@@ -6,11 +6,11 @@ function Welcome() {
     return (
         <div className='welcome'>
             <Image fluid src='/images/yoshi_connect_logo2.png' alt='Logo' width={100} />
-            <Container className='hello'>
+            <Container className='welcome-hello'>
                 Welcome to Yoshi Connect.
             </Container>
-            <Button className='button' href='/signup'>Sign Up</Button>
-            <Button className='button' href='/login'>Log In</Button>
+            <Button className='welcome-button' href='/signup'>Sign Up</Button>
+            <Button className='welcome-button' href='/login'>Log In</Button>
         </div>
     )
 }

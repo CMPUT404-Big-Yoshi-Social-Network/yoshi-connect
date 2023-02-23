@@ -38,10 +38,10 @@ export default function Login() {
     return(
       <div className='login'>
         <Image fluid src='/images/yoshi_connect_logo2.png' alt='Logo' width={100} />
-        <Container className='login-header'>
+        <Container className='login-hello'>
             Yoshi Connect
         </Container>
-        <Card className="login-heading">
+        <Card className="login-card">
           <Card.Header>
               <h3>Log In</h3>
           </Card.Header>
@@ -62,8 +62,9 @@ export default function Login() {
                           type="password" className='login-box'/>
                   </Form.Group>
                   <br></br>
-                  <Button href='/' variant="warning" type="submit" className='button'>Back</Button>
-                  <Button onClick={getUserpass} variant="warning" type="submit" className='button'>Next</Button>
+                  <br></br>
+                  <Button href='/' variant="warning" type="submit" className='login-button'>Back</Button>
+                  <Button onClick={getUserpass} variant="warning" type="submit" className='login-button'>Next</Button>
               </Form>
           </Card.Body>
         </Card>

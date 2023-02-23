@@ -79,7 +79,7 @@ export default function Signup() {
       <>
         <Image fluid src='/images/yoshi_connect_logo2.png' alt='Logo' width={100} />
         <Container className='hello2'>
-            Yoshi Connect
+            Yoshi Connect.
         </Container>
         <Card className="card">
           <Card.Header>
@@ -87,6 +87,13 @@ export default function Signup() {
           </Card.Header>
           <Card.Body>
               <Form className='form'>
+              <Form.Group className="a">
+                    <p>Email</p>
+                      <Form.Control
+                          name="email"
+                          onChange={(e) => {setData({...data, email: e.target.value})}}
+                          type="email" className='box'/>
+                  </Form.Group>
                   <Form.Group className="a">
                     <p>Username</p>
                       <Form.Control
@@ -95,17 +102,10 @@ export default function Signup() {
                           type="text" className='box'/>
                   </Form.Group>
                   <Form.Group className="a">
-                    <p>Email</p>
-                      <Form.Control
-                          name="email"
-                          onChange={(e) => {setData({...data, username: e.target.value})}}
-                          type="email" className='box'/>
-                  </Form.Group>
-                  <Form.Group className="a">
                     <p>Password</p>
                       <Form.Control
                           name="password"
-                          onChange={(e) => {setData({...data, username: e.target.value})}}
+                          onChange={(e) => {setData({...data, password: e.target.value})}}
                           type="password" className='box'/>
                   </Form.Group>
                   <br></br>

@@ -1,25 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
 
-.form{
-    color: red;
-}
-.hello2{
-    font-size: 25px;
-    
-}
+/* .hello{
+    font-size: 25px; 
+} */
 .card h3{
     text-align: left;
-    color: #A7E7F8;
+    color: #7cdcf7;
     margin-left: 20rem;
     font-family: 'Signika', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
 }
 .a p{
     text-align: left;
-    margin-left: 20.1em;
+    margin-left: 20.1rem;
+    font-family: 'Signika', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
 }
 .box{
     background-image: radial-gradient(circle, #050125, #090D0E);
-    color: white;
+    color: blue;
     width: 27%;
     border: #4A5460 0.2em solid;
     border-radius: .5em;

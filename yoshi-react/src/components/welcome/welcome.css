@@ -15,9 +15,8 @@
 /* ::selection{
     background: #A7E7F8;
 } */
-body{
+.welcome{
     margin-top: 20em;
-    background-image: radial-gradient(circle, #050125, #090D0E);
 }
 .hello{
     font-size: 40px;

@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {Button, Container, Image, Card, Form} from 'react-bootstrap';
+import './login.css'
 export default function Login() {
     console.log('):')
     const navigate = useNavigate();
@@ -34,29 +36,38 @@ export default function Login() {
       })
     }
     return(
-      <form>
-        <label>
-          <p>Username</p>
-        </label>
-          <input type="text" name="username" onChange={(e) => {
-            setData({
-              ...data,
-              username: e.target.value
-            })
-          }}/>
-        <label>
-          <p>Password</p>
-        </label>
-
-          <input type="password" name="password" onChange={(e) => {
-            setData({
-              ...data,
-              password: e.target.value
-            })
-          }}/>
-        <div>
-          <button type="submit" onClick={getUserpass}>Submit</button>
-        </div>
-      </form>
+      <div className='login'>
+        <Image fluid src='/images/yoshi_connect_logo2.png' alt='Logo' width={100} />
+        <Container className='login-header'>
+            Yoshi Connect
+        </Container>
+        <Card className="login-heading">
+          <Card.Header>
+              <h3>Log In</h3>
+          </Card.Header>
+          <Card.Body>
+              <Form className='form'>
+                  <Form.Group className="login-text">
+                    <p>Username</p>
+                      <Form.Control
+                          name="username"
+                          onChange={(e) => {setData({...data, username: e.target.value})}}
+                          type="text" className='login-box'/>
+                  </Form.Group>
+                  <Form.Group className="login-text">
+                    <p>Password</p>
+                      <Form.Control
+                          name="password"
+                          onChange={(e) => {setData({...data, username: e.target.value})}}
+                          type="password" className='login-box'/>
+                  </Form.Group>
+                  <br></br>
+                  <Button href='/' variant="warning" type="submit" className='button'>Back</Button>
+                  <Button onClick={getUserpass} variant="warning" type="submit" className='button'>Next</Button>
+              </Form>
+          </Card.Body>
+        </Card>
+      </div>
+            
     )
   }

@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
+
+/* .form{
+    color: red;
+}*/
+.login-header{
+    font-size: 25px;
+    
+} 
+
+.login {
+    text-align: center;
+}
+
+.login-heading h3{
+    color: #A7E7F8;
+    /* margin-left: 20.1rem; */
+    font-family: 'Signika', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+}
+.login-text p{
+    /* margin-left: 20.1em; */
+    font-family: 'Signika', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+}
+/* attempt to dynamically align things
+ .container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  } */
+.login-box{
+    background-image: radial-gradient(circle, #050125, #090D0E);
+    color: white;
+    width: 15%;
+    border: #4A5460 0.2em solid;
+    border-radius: .5em;
+    /* padding: .5em; */
+}

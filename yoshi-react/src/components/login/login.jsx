@@ -58,7 +58,7 @@ export default function Login() {
                     <p>Password</p>
                       <Form.Control
                           name="password"
-                          onChange={(e) => {setData({...data, username: e.target.value})}}
+                          onChange={(e) => {setData({...data, password: e.target.value})}}
                           type="password" className='login-box'/>
                   </Form.Group>
                   <br></br>

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect } from "react";
-import MainNav from './mainNav.jsx';
+import TopNav from './topNav.jsx';
 import LogOut from './logOut.js';
 
 function PublicFeed() {
@@ -35,10 +35,10 @@ function PublicFeed() {
     return (
         <div>
             <div>
-                <MainNav/>
+                <TopNav/>
             </div>
             Welcome to the Public Feed. You are signed in.
-            <button type="button">Log Out</button>
+            <button type="button" onClick={() => LogOut()}>Log Out</button>
         </div>
     )
 }

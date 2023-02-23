@@ -2,7 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
-function ChangingNavBar() {
+function LeftNavBar() {
     const { location } = useParams();
     const [data, setData] = useState({
         brand: ''
@@ -41,4 +41,4 @@ function ChangingNavBar() {
     )
 }
 
-export default ChangingNavBar;
+export default LeftNavBar;

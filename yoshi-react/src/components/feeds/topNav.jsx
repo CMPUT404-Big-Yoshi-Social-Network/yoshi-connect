@@ -2,10 +2,10 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
-function MainNav() {
+function TopNav() {
     return (
         // TODO: Need to Add Search functionality and Notification Functionality
-        // Might need to query notifications and use map (refer to changingNav.jsx
+        // Might need to query notifications and use map (refer to leftNav.jsx
         <Navbar>
             <Container>
                 <Navbar.Brand href="/feed">Yoshi Connect</Navbar.Brand>
@@ -22,5 +22,5 @@ function MainNav() {
     )
 }
 
-export default MainNav;
+export default TopNav;
 

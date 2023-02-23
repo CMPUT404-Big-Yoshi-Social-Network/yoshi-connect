@@ -2,7 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
-function AuthorNavBar() {
+function RightNavBar() {
     return (
         <Navbar className="flex-column">
             <Container>
@@ -28,4 +28,4 @@ function AuthorNavBar() {
     )
 }
 
-export default AuthorNavBar;
+export default RightNavBar;

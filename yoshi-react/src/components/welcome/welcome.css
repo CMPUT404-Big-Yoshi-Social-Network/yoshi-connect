@@ -7,22 +7,18 @@
          url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
 }
 
-*{
+.welcome{
+    margin-top: 20em;
     color: white;
     text-align: center;
     font-family: "Uni Neue";
 }
-/* ::selection{
-    background: #A7E7F8;
-} */
-.welcome{
-    margin-top: 20em;
-}
-.hello{
+.welcome-hello{
     font-size: 40px;
     padding: 1em;
 }
-.button{
+.welcome-button{
+    color: white;
     font-size: 18px;
     margin: 0em 2em;
     background-color: #735DFA;
@@ -31,7 +27,7 @@
     padding: .4em 1.5em;
     text-decoration: none;
 }
-.button:hover{
+.welcome-button:hover{
     background-color: #A7E7F8;
     color: black;
 }

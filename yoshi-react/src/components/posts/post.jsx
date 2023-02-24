@@ -17,6 +17,7 @@ function Post() {
        checkExpiry();
     });
     const post_post = () => {
+        togglePostMenu()
 
       let config = {
         method: 'post',
@@ -40,40 +41,67 @@ function Post() {
         console.log(e);
       })
     }
-    return (
-        <form>
-            <label><p>Title</p></label>
-            <input type="text" onChange={(e) => {
-                setData({...data, title: e.target.value})
-            }}></input>
-            <label><p>Description</p></label>
-            <input type="text" onChange={(e) => {
-                setData({...data, description: e.target.value})
-            }}></input>
-            <label><p>Format</p></label>
-            <select id="format" name="format" onChange={(e) => {
-                setData({...data, format: e.target.value})
-            }}>
-                <option value="plaintext">plaintext</option>
-                <option value="markdown">MarkDown</option>
-            </select>
-            <label><p>Scope</p></label>
-            <select id="scope" name="scope" onChange={(e) =>{
-                setData({...data, scope: e.target.value})
-            }} >
-                <option value="Public">Public</option>
-                <option value="Friends Only">Friends Only</option>
-            </select>
-            <label><p>Content</p></label>
-            <textarea name="description" rows="20" columns="70" onChange={(e) =>{
-                setData({...data, content: e.target.value})
-            }}>
 
-            </textarea>
-            <div>
-                <button type="button" onClick={post_post}>Submit</button>
+    const [isOpen, setIsOpen] = useState(false)
+    const togglePostMenu = () => {
+        setIsOpen(!isOpen);
+    }
+
+    const PostMenu = props => {
+        return (
+            <div className={"postMenuPage"}>
+                <div className={"postMenuBox"}>
+                    <button className={"postMenuCloseButton"} onClick={togglePostMenu}>x</button>
+                    <h1 className={"createPostHeader"}>Create New Post</h1>
+                    <hr size={"2px"} width={"fill"} color={"white"}/>
+                    <form>
+                        <select className={"postMenuDropDown"}  id={"format"} name={"format"} onChange={(e) => {
+                            setData({...data, format: e.target.value})
+                        }}>
+                            <option value={"plaintext"}>Plain Text</option>
+                            <option value={"markdown"}>MarkDown</option>
+                        </select>
+                        <select className={"postMenuDropDown"}  id={"scope"} name={"scope"} onChange={(e) =>{
+                            setData({...data, scope: e.target.value})
+                        }} >
+                            <option value={"Public"}>Public</option>
+                            <option value={"Friends Only"}>Friends Only</option>
+                        </select>
+                        {/*<label><p>Title</p></label>*/}
+                        {/*<input type={"text"} onChange={(e) => {*/}
+                        {/*    setData({...data, title: e.target.value})*/}
+                        {/*}}></input>*/}
+                        <label><p style={{color:"white"}}>Description</p></label>
+                        <textarea className={"postMenuInput"} id={"description"} name={"description"} rows={"8"}
+                                  wrap="physical" maxLength={"150"} onChange={(e) =>{
+                            setData({...data, content: e.target.value})
+                        }}/>
+                        <div style={{color:"white", textAlign:"right"}}>
+                            0/150
+                        </div>
+                        <label><p style={{color:"white"}}>Image Upload</p></label>
+                        <textarea className={"postMenuInput"} id={"image"} name={"impage"} rows={"8"} wrap="physical" onChange={(e) =>{
+                            setData({...data, content: e.target.value})
+                        }}/>
+                        <div style={{color:"white", textAlign:"right"}}>
+                            25MB
+                        </div>
+                        <button className={"createPostButton"} onClick={post_post}>Create Post</button>
+                    </form>
+                </div>
             </div>
-        </form>
+        )
+    }
+
+    return (
+        <div>
+            <input
+                type={"button"}
+                value={"Create Post"}
+                onClick={togglePostMenu}
+            />
+            {isOpen && <PostMenu/>}
+        </div>
     )
 }
 

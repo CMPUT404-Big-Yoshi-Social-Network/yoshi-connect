@@ -22,7 +22,6 @@ function create_post_history(author_id){
 }
 
 async function create_post(req, res){
-    console.log(req.body);
 
     login_promise = Login.findOne({token: req.cookies["token"]})
 

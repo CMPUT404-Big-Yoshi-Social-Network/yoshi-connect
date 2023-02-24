@@ -50,10 +50,7 @@ function Post() {
     return (
         <div>
             <input
-                type={"button"}
-                value={"Create Post"}
-                onClick={togglePostMenu}
-            />
+                type={"button"} value={"Create Post"} onClick={togglePostMenu}/>
             {isOpen &&
                 <div className={"postMenuPage"}>
                     <div className={"postMenuBox"}>

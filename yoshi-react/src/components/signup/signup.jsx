@@ -9,43 +9,9 @@ export default function Signup() {
       password: ''
     })
 
-    const checkUsernameInUse = async (username) => {
-      let justLogged =  new Date();
-
-      let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: '/server/signup',
-        headers: {
-          'Content-Type': 'application/json',
-          'Last-Modified': justLogged,
-        },
-        data: {
-          username: username,
-          status: 'Is username in use'
-        }
-      }
-
-      const username_free = await axios(config)
-      .then((response) => {
-        if ( response.data.status === 'Successful' ) {
-          console.log("Debug: Going to public feed.")
-          return true;
-        } else {
-          return false;
-        }
-      })
-      .catch(err => {
-        console.error(err);
-      }); 
-      return username_free
-    }
-    
     const getAccount = async (e) => {
       e.preventDefault()
-      let a = await checkUsernameInUse(data.username);
-      if (a) {
-        let justLogged =  new Date();
+      let justLogged =  new Date();
 
         let config = {
           method: 'post',
@@ -62,7 +28,7 @@ export default function Signup() {
         .then((response) => {
           console.log("Debug: Token received.");
           if ( response.data.status === 'Successful' ) {
-            console.log("Debug: Going to public feed.")
+            console.log("Debug: Going to public feed.");
             window.localStorage.setItem("token", response.data.token);
             navigate('/feed');
           }
@@ -70,7 +36,6 @@ export default function Signup() {
         .catch(err => {
           console.error(err);
         });
-      }
     }
     return(
       <form>

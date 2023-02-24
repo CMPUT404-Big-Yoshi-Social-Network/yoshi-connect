@@ -61,8 +61,26 @@ async function create_post(req, res){
     return;
 }
 
-function get_post(){
+async function get_post(req, res){
     console.log("Get Post");
+
+    authorId = req.params.author_id;
+    postId = req.params.post_id;
+    console.log(authorId);
+    console.log(postId)
+
+    let post = await Post_History.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {'posts._id' : postId}
+        }
+    ]);
+    return res.json(post);
 }
 
 function update_post(){

@@ -56,8 +56,7 @@ app.get('/favicon.ico', (req, res) => {
 // Sign up page 
 app.post('/server/signup', async (req, res) => {
   console.log('Debug: Signing up as an author');
-    await register_author(req, res);
-  }
+  await register_author(req, res);
 })
 
 // Login page
@@ -110,12 +109,32 @@ app.post('/server/feed', (req, res) => {
   }
 })
 
-app.post('/server/post', (req, res) => {
-  if(checkExpiry(req, res))
+app.get('/server/post/:post_id', async (req, res) => {
+  if(await checkExpiry(req, res))
+    return res.sendStatus(404);
+
+  get_post(req, res);
+})
+
+app.put('/server/post', async (req, res) => {
+  if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
   create_post(req, res);
-  res.sendStatus(200)
+})
+
+app.post('/server/post/:post_id', async (req, res) => {
+  if(await checkExpiry(req, res))
+    return res.sendStatus(404);
+
+  update_post(req, res);
+})
+
+app.delete('/server/post/:post_id', async (req, res) => {
+  if(await checkExpiry(req, res))
+    return res.sendStatus(404);
+
+  delete_post(req, res);
 })
 
 app.get('/server/users/:username', async (req,res) => {

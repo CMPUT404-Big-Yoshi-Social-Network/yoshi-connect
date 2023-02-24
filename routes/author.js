@@ -24,13 +24,9 @@ async function doesProfileExist(req, res) {
 }
 
 async function register_author(req, res){
-    let author_found = await Author.findOne({username: req.body.username}, function(err, author){
-        if(!author){
-            return;
-        }
-        console.log("Debug: Author does exist, Authentication failed");
+    if(await checkUsername(req) === "In use")
         return res.json({
-            username: req.body.username,
+            message: "Username already in use.",
             status: "Unsuccessful"
         });
     }).clone()

@@ -55,12 +55,7 @@ app.get('/favicon.ico', (req, res) => {
 
 // Sign up page 
 app.post('/server/signup', async (req, res) => {
-  console.log(req)
-  if (req.body.status == 'Is username in use') {
-    console.log('Debug: Checking if the username is already taken')
-    await checkUsername(req, res);
-  } else {
-    console.log('Debug: Signing up as an author')
+  console.log('Debug: Signing up as an author');
     await register_author(req, res);
   }
 })

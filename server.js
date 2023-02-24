@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
-const { create_post } = require('./routes/post');
+const { create_post, get_post, update_post, delete_post } = require('./routes/post');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -113,7 +113,7 @@ app.get('/server/post/:post_id', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
-  get_post(req, res);
+  await get_post(req, res);
 })
 
 app.put('/server/post', async (req, res) => {
@@ -123,20 +123,62 @@ app.put('/server/post', async (req, res) => {
   create_post(req, res);
 })
 
-app.post('/server/post/:post_id', async (req, res) => {
+app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+  console.log("awoidj")
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
+
+  get_post(req, res);
+})
+
+app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+  if(await checkExpiry(req, res))
+    return res.sendStatus(404);
+
+  //If author_id is not the same as cookie then send 401
+  //Else update the post
 
   update_post(req, res);
 })
 
-app.delete('/server/post/:post_id', async (req, res) => {
+app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
+
+  //If author_id is not the same as cookie then send 401
+  //Else create the post
 
   delete_post(req, res);
 })
 
+app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+  if(await checkExpiry(req, res))
+    return res.sendStatus(404);
+
+  //If author_id is not the same as cookie then send 401
+  //Else create the post
+  create_post(req, res);
+})
+
+app.get('/server/authors/:authorId/posts/', async (req, res) => {
+  console.log(req.url);
+  if(await checkExpiry(req, res))
+    return res.sendStatus(404);
+
+  get_post(req, res);
+})
+
+app.post('/server/authors/:author_id/posts/', async (req, res) => {
+  if(await checkExpiry(req, res))
+    return res.sendStatus(404);
+
+  //If author_id is not the same as cookie then send 401
+  //Else update the post
+
+  update_post(req, res);
+})
+
+// Will most likely need to be removed in favour of /authors/{AUTHOR_ID}
 app.get('/server/users/:username', async (req,res) => {
   if(await checkExpiry(req))
     return res.sendStatus(401);
@@ -150,6 +192,7 @@ app.post('/server/users/:username', (req, res) => {
     removeLogin(req, res);
   }
 })
+
 
 app.get('/',(req, res) => {
   res.render("index");

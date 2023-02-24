@@ -1,11 +1,25 @@
-const { post_scheme } = require('../db_schema/post_schema.js');
+const { author_scheme, login_scheme } = require('../db_schema/author_schema.js');
+const { post_history_scheme, post_scheme } = require('../db_schema/post_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 
 const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
-const Post = database.model('Posts', post_scheme);
+const Post_History = database.model('Posts', post_history_scheme);
+
+function create_post_history(author_id){
+    let new_post_history = new Post_History ({
+        authorId: author_id,
+        num_posts: 0,
+        posts: []
+    })
+
+    //Might need an await here, not sure
+    new_post_history.save()
+
+    return;
+}
 
 async function create_post(req, res){
     console.log(req.body);
@@ -14,12 +28,8 @@ async function create_post(req, res){
 
     //Setup the rest of the post
     const title = req.body.title;
-    const desc = req.body.description;
-    let contentType = "";
-    if(req.body.contentType === "Plain text")
-        contentType = "type/plain";
-    else if (req.body.contentType === "Markdown")
-        contentType = "text/markdown";
+    const desc = req.body.desc;
+    const contentType = req.body.contentType;
     const content = req.body.content;
     const categories = [""];
     const published = new Date().toISOString();
@@ -29,7 +39,9 @@ async function create_post(req, res){
     //Get the author's document
     const authorId = (await login_promise).authorId;
 
-    let post_creation = new Post({
+    const post_history = await Post_History.findOne({authorId: authorId});
+    
+    post_history.posts.push({
         title: title,
         description: desc,
         contentType: contentType,
@@ -42,8 +54,30 @@ async function create_post(req, res){
         visibility: visibility,
         unlisted: unlisted
     })
+
+    await post_history.save();
+
+    res.sendStatus(200);
+
+    return;
+}
+
+function get_post(){
+    console.log("Get Post");
+}
+
+function update_post(){
+    console.log("Update Post")
+}
+
+function delete_post(){
+    console.log("Delete Post")
 }
 
 module.exports={
-    create_post
+    create_post_history,
+    create_post,
+    get_post,
+    update_post,
+    delete_post
 }

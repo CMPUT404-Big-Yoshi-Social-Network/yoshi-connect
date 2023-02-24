@@ -20,19 +20,17 @@ function isPersonal(req, res) {
     }
 }
 
-async function checkUsername(req, res) {
-    await Author.findOne({username: req.body.username}, function(err, author){
-        if(author){
-            console.log("Debug: Username is taken, Authentication failed");
-            return res.json({
-                status: "Unsuccessful"
-            });
-        } else {
-            return res.json({
-                status: "Successful"
-            });
-        }
-    }).clone()
+async function checkUsername(req) {
+    const author = await Author.findOne({username: req.body.username});
+
+    if(author == undefined)
+        return "Not in use";
+
+    if(author.username == req.body.username){
+        console.log("Debug: Username is taken, Authentication failed");
+        return "In use";
+    }
+    return "Not in use";
 }
 
 async function removeLogin(req, res) {

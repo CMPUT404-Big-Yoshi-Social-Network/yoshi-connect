@@ -38,6 +38,16 @@ async function create_post(req, res){
     //Get the author's document
     const authorId = (await login_promise).authorId;
 
+    login = await login_promise;
+    if(login == undefined)
+        return res.sendStatus(403);
+
+    const authorId = login.authorId;
+    if (authorId != req.params.author_id)
+        return res.sendStatus(401);
+    
+    //Get the author's document
+    //Should be refactored to do use an aggregate pipeline in case of large number of posts
     const post_history = await Post_History.findOne({authorId: authorId});
     
     post_history.posts.push({

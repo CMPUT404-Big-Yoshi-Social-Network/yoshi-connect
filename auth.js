@@ -138,7 +138,7 @@ async function authAuthor(req, res) {
         let token = uidgen.generateSync();
 
         let login = new Login({
-            authorId: req.author.authorId,
+            authorId: req.author._id,
             username: req.body.username,
             token: token,
             admin: req.author.admin,

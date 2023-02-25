@@ -35,8 +35,6 @@ async function create_post(req, res){
     const visibility = req.body.visibility;
     const unlisted = !req.body.listed;
 
-    //Get the author's document
-    const authorId = (await login_promise).authorId;
 
     login = await login_promise;
     if(login == undefined)
@@ -96,8 +94,42 @@ async function get_post(req, res){
     return res.json(post);
 }
 
-function update_post(){
-    console.log("Update Post")
+async function update_post(req, res){
+    console.log("Update Post");
+
+    authorId = req.params.author_id;
+    postId = req.params.post_id;
+
+    const title = req.body.title;
+    const desc = req.body.desc;
+    const contentType = req.body.contentType;
+    const content = req.body.content;
+    const categories = [""];
+    const visibility = req.body.visibility;
+    const unlisted = !req.body.listed;
+
+    const post_history = await Post_History.findOne({authorId: authorId});
+
+    const post = post_history.posts.id(postId)
+
+    if(title != post.title)
+        post.title = title;
+    if(desc != post.description)
+        post.description = desc;
+    if(contentType != post.contentType)
+        post.contentType = contentType;
+    if(content != post.content)
+        post.content = content;
+    if(visibility != post.visibility)
+        post.visibility = visibility;
+    if(unlisted != post.unlisted)
+        post.unlisted = unlisted;
+    //TODO: UPDATE CATEGORIES
+
+    await post_history.save()
+    console.log("Saved");
+
+    return res.sendStatus(200);
 }
 
 function delete_post(){

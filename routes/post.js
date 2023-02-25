@@ -62,8 +62,9 @@ async function create_post(req, res){
         published: published,
         visibility: visibility,
         unlisted: unlisted
-    })
+    });
 
+    post_history.num_posts = post_history.num_posts + 1;
     await post_history.save();
 
     res.sendStatus(200);

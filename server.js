@@ -159,7 +159,7 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   //Else create the post
   create_post(req, res);
 })
-
+//CREATION URL
 app.get('/server/authors/:authorId/posts/', async (req, res) => {
   console.log(req.url);
   if(await checkExpiry(req, res))
@@ -167,15 +167,15 @@ app.get('/server/authors/:authorId/posts/', async (req, res) => {
 
   get_post(req, res);
 })
-
-app.post('/server/authors/:author_id/posts/', async (req, res) => {
+//CREATION URL
+app.put('/server/authors/:author_id/posts/', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
   //If author_id is not the same as cookie then send 401
   //Else update the post
 
-  update_post(req, res);
+  create_post(req, res);
 })
 
 // Will most likely need to be removed in favour of /authors/{AUTHOR_ID}

@@ -132,8 +132,25 @@ async function update_post(req, res){
     return res.sendStatus(200);
 }
 
-function delete_post(){
+async function delete_post(req, res){
     console.log("Delete Post");
+
+    const authorId = req.params.author_id;
+    const postId = req.params.post_id;
+
+    const post_history = await Post_History.findOne({authorId: authorId});
+
+    if(post_history == undefined)
+        return sendStatus(404);
+
+    const post = await post_history.posts.id(postId);
+    if(post == null)
+        return res.sendStatus(404);
+
+    post.remove();    
+    post_history.save();
+
+    return res.sendStatus(200);
 }
 
 module.exports={

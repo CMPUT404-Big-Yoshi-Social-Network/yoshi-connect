@@ -137,7 +137,7 @@ async function authAuthor(req, res) {
         let token = uidgen.generateSync();
 
         let login = new Login({
-            authorId: req.author.authorId,
+            authorId: req.author._id,
             username: req.body.username,
             token: token,
             admin: req.author.admin,
@@ -149,7 +149,7 @@ async function authAuthor(req, res) {
                 console.log("Debug: You are not an admin. Your login will not be cached.")
                 return res.json({
                     username: req.body.username,
-                    authorId: req.author.authorId,
+                    authorId: req.author._id,
                     status: "Unsuccessful"
                 }); 
             }
@@ -161,7 +161,7 @@ async function authAuthor(req, res) {
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
             return res.json({
                 username: req.body.username,
-                authorId: req.author.authorId,
+                authorId: req.author._id,
                 status: "Successful"
             });
         }

@@ -54,7 +54,6 @@ async function register_author(req, res){
     }
 
     var author = new Author({
-        authorId: authorId,
         username: username,
         password: crypto_js.SHA256(password),
         email: email,
@@ -78,7 +77,7 @@ async function register_author(req, res){
         let token = uidgen.generateSync();
 
         let login = new Login({
-            authorId: authorId,
+            authorId: author._id,
             username: username,
             token: token,
             admin: false,

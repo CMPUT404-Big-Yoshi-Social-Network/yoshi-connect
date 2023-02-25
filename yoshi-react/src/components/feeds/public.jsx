@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect } from "react";
 import TopNav from './topNav.jsx';
-import LogOut from './logOut.js';
+import LogOut from '../../logOut.js';
 
 function PublicFeed() {
     const navigate = useNavigate();
@@ -38,7 +38,6 @@ function PublicFeed() {
                 <TopNav/>
             </div>
             Welcome to the Public Feed. You are signed in.
-            <button type="button" onClick={() => LogOut()}>Log Out</button>
         </div>
     )
 }

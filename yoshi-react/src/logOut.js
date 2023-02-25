@@ -26,6 +26,3 @@ function LogOut() {
 }
 
 export default LogOut;
-// module.exports = {
-//     LogOut
-// }

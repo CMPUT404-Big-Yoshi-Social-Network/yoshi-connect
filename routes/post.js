@@ -90,6 +90,8 @@ async function get_post(req, res){
             $match: {'posts._id' : postId}
         }
     ]);
+    if(post.length == 0)
+        return res.sendStatus(404);
     return res.json(post);
 }
 

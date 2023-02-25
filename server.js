@@ -120,7 +120,7 @@ app.put('/server/post', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
-  create_post(req, res);
+  await create_post(req, res);
 })
 
 app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -128,7 +128,7 @@ app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
-  get_post(req, res);
+  await get_post(req, res);
 })
 
 app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -138,7 +138,7 @@ app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   //If author_id is not the same as cookie then send 401
   //Else update the post
 
-  update_post(req, res);
+  await update_post(req, res);
 })
 
 app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -148,7 +148,7 @@ app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   //If author_id is not the same as cookie then send 401
   //Else create the post
 
-  delete_post(req, res);
+  await delete_post(req, res);
 })
 
 app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -157,7 +157,7 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
 
   //If author_id is not the same as cookie then send 401
   //Else create the post
-  create_post(req, res);
+  await create_post(req, res);
 })
 //CREATION URL
 app.get('/server/authors/:authorId/posts/', async (req, res) => {
@@ -165,7 +165,7 @@ app.get('/server/authors/:authorId/posts/', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
-  get_post(req, res);
+  await get_post(req, res);
 })
 //CREATION URL
 app.put('/server/authors/:author_id/posts/', async (req, res) => {
@@ -175,7 +175,7 @@ app.put('/server/authors/:author_id/posts/', async (req, res) => {
   //If author_id is not the same as cookie then send 401
   //Else update the post
 
-  create_post(req, res);
+  await create_post(req, res);
 })
 
 // Will most likely need to be removed in favour of /authors/{AUTHOR_ID}

@@ -12,17 +12,17 @@ function Profile() {
             .get('/server/users/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
-                // FOR SOME REASON IT IS FALSE?
+                console.log(response)
                 setPersonal(response.data.personal);
             })
             .catch(err => {
                 if (err.response.status === 404) {
                     console.log("Debug: Profile does not exist.");
-                    navigate('/notfound'); // 404 Not Found
+                    navigate('/notfound'); 
                 }
                 else if (err.response.status === 401) {
                     console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); // 401 Not Found
+                    navigate('/unauthorized'); 
                 }
             });
         }

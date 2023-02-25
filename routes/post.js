@@ -98,7 +98,7 @@ function update_post(){
 }
 
 function delete_post(){
-    console.log("Delete Post")
+    console.log("Delete Post");
 }
 
 module.exports={

@@ -33,7 +33,8 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
-const { create_post, get_post, update_post, delete_post } = require('./routes/post');
+const { create_post, get_post, get_posts_paginated, update_post, delete_post } = require('./routes/post');
+const { randomUUID } = require('crypto');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -157,15 +158,17 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
 
   //If author_id is not the same as cookie then send 401
   //Else create the post
-  await create_post(req, res);
+  
+
+  await create_post(req, res, req.params.post_id);
 })
 //CREATION URL
-app.get('/server/authors/:authorId/posts/', async (req, res) => {
+app.get('/server/authors/:author_id/posts/', async (req, res) => {
   console.log(req.url);
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
-  await get_post(req, res);
+  await get_posts_paginated(req, res);
 })
 //CREATION URL
 app.put('/server/authors/:author_id/posts/', async (req, res) => {
@@ -174,8 +177,7 @@ app.put('/server/authors/:author_id/posts/', async (req, res) => {
 
   //If author_id is not the same as cookie then send 401
   //Else update the post
-
-  await create_post(req, res);
+  await create_post(req, res, undefined);
 })
 
 // Will most likely need to be removed in favour of /authors/{AUTHOR_ID}

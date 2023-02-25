@@ -8,6 +8,21 @@ const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 const Post_History = database.model('Posts', post_history_scheme);
 
+/*
+Check if the author_id provided matches the authorid attached to the token
+*/
+async function same_author(req, author_id){
+    token = req.cookies["token"];
+
+    const login = await Login.findOne({token: token});
+    if(login == undefined)
+        return false;
+
+    if(login.authorId == author_id)
+        return true;
+    return false;
+}
+
 function create_post_history(author_id){
     let new_post_history = new Post_History ({
         authorId: author_id,
@@ -21,9 +36,11 @@ function create_post_history(author_id){
     return;
 }
 
-async function create_post(req, res){
-
-    login_promise = Login.findOne({token: req.cookies["token"]})
+async function create_post(req, res, postId){
+    //TODO Make sure the author is the correct author (probably make this its own function)
+    const authorId = req.params.author_id;
+    if(await same_author(req, authorId) == false)
+        return req.sendStatus(401);
 
     //Setup the rest of the post
     const title = req.body.title;
@@ -35,32 +52,41 @@ async function create_post(req, res){
     const visibility = req.body.visibility;
     const unlisted = !req.body.listed;
 
-
-    login = await login_promise;
-    if(login == undefined)
-        return res.sendStatus(403);
-
-    const authorId = login.authorId;
-    if (authorId != req.params.author_id)
-        return res.sendStatus(401);
-    
     //Get the author's document
     //Should be refactored to do use an aggregate pipeline in case of large number of posts
     const post_history = await Post_History.findOne({authorId: authorId});
-    
-    post_history.posts.push({
-        title: title,
-        description: desc,
-        contentType: contentType,
-        content: content,
-        authorId: authorId,
-        categories: categories,
-        count: 0,
-        comments: "",
-        published: published,
-        visibility: visibility,
-        unlisted: unlisted
-    });
+   
+    if(postId == undefined){
+        post_history.posts.push({
+            title: title,
+            description: desc,
+            contentType: contentType,
+            content: content,
+            authorId: authorId,
+            categories: categories,
+            count: 0,
+            comments: "",
+            published: published,
+            visibility: visibility,
+            unlisted: unlisted
+        });
+    }
+    else{
+        post_history.posts.push({
+            _id: postId,
+            title: title,
+            description: desc,
+            contentType: contentType,
+            content: content,
+            authorId: authorId,
+            categories: categories,
+            count: 0,
+            comments: "",
+            published: published,
+            visibility: visibility,
+            unlisted: unlisted
+        });
+    }
 
     post_history.num_posts = post_history.num_posts + 1;
     await post_history.save();
@@ -71,12 +97,11 @@ async function create_post(req, res){
 }
 
 async function get_post(req, res){
+    //TODO Make sure the author is the correct author (probably make this its own function)
     console.log("Get Post");
 
-    authorId = req.params.author_id;
-    postId = req.params.post_id;
-    console.log(authorId);
-    console.log(postId)
+    const authorId = req.params.author_id;
+    const postId = req.params.post_id;
 
     let post = await Post_History.aggregate([
         {
@@ -94,11 +119,53 @@ async function get_post(req, res){
     return res.json(post);
 }
 
+async function get_posts_paginated(req, res){
+    const authorId = req.params.author_id;
+    console.log(req.query.page);
+    console.log(req.query.size);
+
+    let page = 1;
+    let size = 5;
+    if(req.query.page != undefined)
+        page = req.query.page;
+    if(req.query.size != undefined)
+        size = req.query.size;
+
+    const start_index = (page - 1) * size; 
+    const end_index = page * size;
+    /*
+    let posts = await Post_History.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $slice: ["$posts", 1]
+        }
+    ])
+    */
+    let posts = await Post_History.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $project: {_id: 1, posts: {$slice: ["$posts", start_index, end_index]}}
+        },
+        {
+            $unwind: "$posts"
+        }
+    ])
+    console.log(posts);
+    return res.sendStatus(200);
+}
 async function update_post(req, res){
+    //TODO Make sure the author is the correct author (probably make this its own function)
     console.log("Update Post");
 
     authorId = req.params.author_id;
     postId = req.params.post_id;
+
+    if(await same_author(req, authorId) == false)
+        return res.sendStatus(401);
 
     const title = req.body.title;
     const desc = req.body.desc;
@@ -133,21 +200,26 @@ async function update_post(req, res){
 }
 
 async function delete_post(req, res){
+    //TODO Make sure the author is the correct author (probably make this its own function)
     console.log("Delete Post");
 
     const authorId = req.params.author_id;
     const postId = req.params.post_id;
 
+    if(await same_author(req, authorId) == false)
+        return res.sendStatus(401);
+
     const post_history = await Post_History.findOne({authorId: authorId});
 
     if(post_history == undefined)
-        return sendStatus(404);
+        return sendStatus(500);
 
     const post = await post_history.posts.id(postId);
     if(post == null)
         return res.sendStatus(404);
 
-    post.remove();    
+    post.remove();
+    post_history.num_posts = post_history.num_posts - 1;
     post_history.save();
 
     return res.sendStatus(200);
@@ -157,6 +229,7 @@ module.exports={
     create_post_history,
     create_post,
     get_post,
+    get_posts_paginated,
     update_post,
     delete_post
 }

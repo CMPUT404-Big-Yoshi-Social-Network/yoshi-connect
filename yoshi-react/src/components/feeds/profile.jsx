@@ -67,8 +67,6 @@ function Profile() {
             .catch(err => {
               console.error(err);
             });
-        } else {
-            console.log('Debug: Viewing my own account. I will see requests I need to approve.')
         }
     }, [username, exists, personal.viewed, personal.viewer, navigate]);
     const SendRequest = () => {

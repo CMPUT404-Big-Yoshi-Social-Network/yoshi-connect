@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
-const { saveRequest, deleteRequest, findRequest } = require('./routes/request');
+const { saveRequest, deleteRequest, findRequest, findAllRequests } = require('./routes/request');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -121,6 +121,13 @@ app.get('/server/users/:username', async (req,res) => {
     return res.sendStatus(401);
   };
   get_profile(req, res);
+})
+
+app.post('/server/requests', (req, res) => {
+  if (req.body.data.status == 'Fetching Requests') {
+    console.log('Debug: Getting friend requests')
+    findAllRequests(req, res);
+  } 
 })
 
 app.post('/server/users/:username', (req, res) => {

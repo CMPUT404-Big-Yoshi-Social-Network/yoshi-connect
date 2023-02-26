@@ -57,8 +57,24 @@ async function findRequest(req, res) {
     }).clone()
 }
 
+async function findAllRequests(req, res) {
+    await Request.find({receiverId: req.body.data.receiver}, function(err, requests){
+        if(requests){
+            console.log("Debug: Requests exists");
+            return res.json({
+                requests: requests
+            });
+        } else {
+            return res.json({
+                requests: null
+            });
+        }
+    }).clone()
+}
+
 module.exports={
     saveRequest,
     deleteRequest,
-    findRequest
+    findRequest,
+    findAllRequests
 }

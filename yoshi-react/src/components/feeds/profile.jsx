@@ -64,11 +64,11 @@ function Profile() {
         } else {
             addButton.innerText = "Add Friend";
             let config = {
-                method: 'post',
+                method: 'delete',
                 maxBodyLength: Infinity,
                 url: '/server/users/' + username,
                 headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
+                  'Content-Type': 'application/json'
                 },
                 data: {
                     receiver: personal.viewed,
@@ -77,7 +77,7 @@ function Profile() {
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .delete('/server/users/' + username, config)
             .then((response) => {
                 console.log('Debug: Friend request deleted!')
             })

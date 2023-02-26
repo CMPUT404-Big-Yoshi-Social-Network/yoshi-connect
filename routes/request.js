@@ -1,8 +1,7 @@
-const { author_scheme, request_scheme } = require('../db_schema/author_schema.js');
+const { request_scheme } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
-const Author = database.model('Author', author_scheme);
 const Request = database.model('Request', request_scheme);
 
 async function saveRequest(req, res) {
@@ -29,9 +28,9 @@ async function saveRequest(req, res) {
 }
 
 async function deleteRequest(req, res) {
-    await Author.findOne({username: req.body.data.username}, function(err, author){
-        if(author){
-            console.log("Debug: Profile does exist, Authentication failed");
+    await Request.deleteOne({sendId: req.body.sender, receiverId: req.body.receiver}, function(err, request){
+        if(request){
+            console.log("Debug: Request does exist and was deleted.");
             return res.json({
                 status: "Successful"
             });

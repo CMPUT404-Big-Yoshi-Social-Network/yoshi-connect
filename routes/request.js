@@ -1,0 +1,49 @@
+const { author_scheme, request_scheme } = require('../db_schema/author_schema.js');
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
+const database = mongoose.connection;
+const Author = database.model('Author', author_scheme);
+const Request = database.model('Request', request_scheme);
+
+async function saveRequest(req, res) {
+    var request = new Request({
+        senderId: req.body.data.sender,
+        receiverId: req.body.data.receiver,
+        status: 'Stranger'
+    });
+
+    await request.save(async (err, author, next) => {
+        if(err){
+            console.log(err);
+            return res.json({
+                message: "You could not send a friend request (could not be saved in database).",
+                status: "Unsuccessful"
+            });
+        } else {
+            return res.json({
+                message: "Request saved.",
+                status: "Successful"
+            });
+        }
+    });
+}
+
+async function deleteRequest(req, res) {
+    await Author.findOne({username: req.body.data.username}, function(err, author){
+        if(author){
+            console.log("Debug: Profile does exist, Authentication failed");
+            return res.json({
+                status: "Successful"
+            });
+        } else {
+            return res.json({
+                status: "Unsuccessful"
+            });
+        }
+    }).clone()
+}
+
+module.exports={
+    saveRequest,
+    deleteRequest
+}

@@ -41,7 +41,7 @@ function Profile() {
     return (
         <div>
             You are viewing profile. Welcome to {username}'s profile!
-            { {...personal.person === false} ? <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button> : null}
+            { personal.person ? null : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
         </div> 
     )
 }

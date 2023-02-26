@@ -11,8 +11,8 @@ function Profile() {
             axios
             .get('/server/users/' + username)
             .then((response) => {
-                console.log('Debug: Profile Exists.')
                 console.log(response)
+                console.log('Debug: Profile Exists.')
                 setPersonal(response.data.personal);
             })
             .catch(err => {

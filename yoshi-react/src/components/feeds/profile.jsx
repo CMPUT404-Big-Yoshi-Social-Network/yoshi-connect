@@ -4,16 +4,18 @@ import { useState } from 'react';
 import axios from 'axios';
 function Profile() {
     const { username } = useParams();
-    const [personal, setPersonal] = useState(null)
+    const [personal, setPersonal] = useState({
+        person: null
+    })
     const navigate = useNavigate();
     useEffect(() => {
         const isRealProfile = () => {
             axios
             .get('/server/users/' + username)
             .then((response) => {
-                console.log(response)
                 console.log('Debug: Profile Exists.')
-                setPersonal(response.data.personal);
+                const person = response.data.personal
+                setPersonal(prevPersonal => ({...prevPersonal, person}))
             })
             .catch(err => {
                 if (err.response.status === 404) {
@@ -27,14 +29,19 @@ function Profile() {
             });
         }
         isRealProfile();
-    }, [username, personal, navigate]);
-    const ChangeFriendState = () => {
-        ;
+    }, [username, navigate]);
+    const SendRequest = () => {
+        let addButton = document.getElementById("request");
+        if (addButton.innerText === "Add Friend") {
+            addButton.innerText = "Sent!";
+        } else {
+            addButton.innerText = "Add Friend";
+        }
     }
     return (
         <div>
             You are viewing profile. Welcome to {username}'s profile!
-            { !{personal} ? <button type="button" id='friend' onClick={() => ChangeFriendState()}>Need to Change Between UnFriend and Add Friend</button> : null}
+            { {...personal.person === false} ? <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button> : null}
         </div> 
     )
 }

@@ -123,14 +123,16 @@ async function get_profile(req, res) {
     else if(author.username == login.username){
         console.log("Debug: This is your personal account.")
         return res.json({
-            username: author.username,
+            viewed: author.username,
+            viewer: login.username,
             personal: true
         });
     }
     else if(author.username != login.username){
         console.log("Debug: This is not your personal account.")
         return res.json({
-            username: author.username,
+            viewed: author.username,
+            viewer: login.username,
             personal: false
         });
     }

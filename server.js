@@ -126,6 +126,10 @@ app.post('/server/users/:username', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
+  } else if (req.body.data.status == 'Save Request') {
+    console.log('Debug: Saving Friend Request')
+  } else if (req.body.data.status == 'Delete Request') {
+    console.log('Debug: Deleting Friend Request')
   }
 })
 

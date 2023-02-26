@@ -42,7 +42,23 @@ async function deleteRequest(req, res) {
     }).clone()
 }
 
+async function findRequest(req, res) {
+    await Request.findOne({sendId: req.body.data.sender, receiverId: req.body.data.receiver}, function(err, request){
+        if(request){
+            console.log("Debug: Request does exist.");
+            return res.json({
+                status: "Successful"
+            });
+        } else {
+            return res.json({
+                status: "Unsuccessful"
+            });
+        }
+    }).clone()
+}
+
 module.exports={
     saveRequest,
-    deleteRequest
+    deleteRequest,
+    findRequest
 }

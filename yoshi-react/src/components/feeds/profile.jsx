@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 function Profile() {
     const { username } = useParams();
@@ -10,13 +10,16 @@ function Profile() {
         viewed: null
     })
     const navigate = useNavigate();
+    let addButton = document.getElementById("request");
+    let exists = useRef(null);
     useEffect(() => {
+        let person = null;
         const isRealProfile = () => {
             axios
             .get('/server/users/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
-                const person = response.data.personal
+                person = response.data.personal
                 const viewer = response.data.viewer
                 const viewed = response.data.viewed
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
@@ -35,9 +38,40 @@ function Profile() {
             });
         }
         isRealProfile();
-    }, [username, navigate]);
+        if (!person) { 
+            console.log('Debug: Checking if the viewer has already sent a friend request.')
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/users/' + username,
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    receiver: personal.viewed,
+                    sender: personal.viewer,
+                    status: 'Does Request Exist'
+                }
+            }
+            axios
+            .post('/server/users/' + username, config)
+            .then((response) => {
+                if (response.data.status === 'Successful') {
+                    console.log('Debug: Friend Request Exists.')
+                    exists.current = true;
+                } else {
+                    console.log('Debug: Friend Request does not exist.')
+                    exists.current = false;
+                }
+            })
+            .catch(err => {
+              console.error(err);
+            });
+        } else {
+            console.log('Debug: Viewing my own account. I will see requests I need to approve.')
+        }
+    }, [username, exists, personal.viewed, personal.viewer, navigate]);
     const SendRequest = () => {
-        let addButton = document.getElementById("request");
         if (addButton.innerText === "Add Friend") {
             addButton.innerText = "Sent!";
             let config = {
@@ -89,7 +123,7 @@ function Profile() {
     return (
         <div>
             You are viewing profile. Welcome to {username}'s profile!
-            { personal.person ? null : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
+            { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
         </div> 
     )
 }

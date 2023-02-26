@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
-const { saveRequest, deleteRequest } = require('./routes/request');
+const { saveRequest, deleteRequest, findRequest } = require('./routes/request');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -130,6 +130,9 @@ app.post('/server/users/:username', (req, res) => {
   } else if (req.body.data.status == 'Save Request') {
     console.log('Debug: Saving Friend Request')
     saveRequest(req, res);
+  } else if (req.body.data.status == 'Does Request Exist') {
+    console.log('Debug: Checking if Friend Request Exists')
+    findRequest(req, res);
   }
 })
 

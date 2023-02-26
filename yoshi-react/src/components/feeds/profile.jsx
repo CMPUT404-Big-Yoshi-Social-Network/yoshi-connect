@@ -5,7 +5,9 @@ import axios from 'axios';
 function Profile() {
     const { username } = useParams();
     const [personal, setPersonal] = useState({
-        person: null
+        person: null,
+        viewer: null,
+        viewed: null
     })
     const navigate = useNavigate();
     useEffect(() => {
@@ -15,7 +17,11 @@ function Profile() {
             .then((response) => {
                 console.log('Debug: Profile Exists.')
                 const person = response.data.personal
+                const viewer = response.data.viewer
+                const viewed = response.data.viewed
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
+                setPersonal(prevViewer => ({...prevViewer, viewer}))
+                setPersonal(prevViewing => ({...prevViewing, viewed}))
             })
             .catch(err => {
                 if (err.response.status === 404) {
@@ -34,8 +40,50 @@ function Profile() {
         let addButton = document.getElementById("request");
         if (addButton.innerText === "Add Friend") {
             addButton.innerText = "Sent!";
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/users/' + username,
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    receiver: personal.viewed,
+                    sender: personal.viewer,
+                    status: 'Save Request'
+                }
+            }
+            axios
+            .post('/server/users/' + username, config)
+            .then((response) => {
+                console.log('Debug: Friend request sent!')
+            })
+            .catch(err => {
+              console.error(err);
+            });
         } else {
             addButton.innerText = "Add Friend";
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/users/' + username,
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    receiver: personal.viewed,
+                    sender: personal.viewer,
+                    status: 'Delete Request'
+                }
+            }
+            axios
+            .post('/server/users/' + username, config)
+            .then((response) => {
+                console.log('Debug: Friend request deleted!')
+            })
+            .catch(err => {
+              console.error(err);
+            });
         }
     }
     return (

@@ -113,7 +113,7 @@ async function adding(friend, req, res) {
             console.log('Debug: Add receiver to sender following list')
             if (following) {
                 console.log('Debug: Sender already has a following list, must add to existing list.')
-                // TODO: Add to existing list 
+                following.followings.push({username: req.body.data.receiver});
             } else {
                 console.log('Debug: Sender does not have a following list (has not followed anyone), must make one.')
                 var following = new Following({
@@ -137,7 +137,7 @@ async function adding(friend, req, res) {
             console.log('Debug: Add sender to receiver follower list')
             if (follower) {
                 console.log('Debug: Receiver already has a follower list, must add to existing list.')
-                // TODO: Add to existing list 
+                follower.followers.push({username: req.body.data.sender});
             } else {
                 console.log('Debug: Receiver does not have a follower list (has no followers), must make one.')
                 var follower = new Follower({
@@ -195,7 +195,7 @@ async function adding(friend, req, res) {
             console.log('Debug: Add sender to receiver friend list.')
             if (friend) {
                 console.log('Debug: Receiver has friend list.')
-                // TODO: ADD TO EXISTING LIST
+                friend.friends.push({username: req.body.data.sender});
             } else {
                 console.log('Debug: Receiver does not have a friend list yet.')
                 var new_friend = new Friend({
@@ -218,7 +218,7 @@ async function adding(friend, req, res) {
             console.log('Debug: Add receiver to sender friend list.')
             if (friend) {
                 console.log('Debug: Sender has friend list.')
-                // TODO: ADD TO EXISTING LIST
+                friend.friends.push({username: req.body.data.receiver});
             } else {
                 console.log('Debug: Sender does not have a friend list yet.')
                 var new_friend = new Friend({

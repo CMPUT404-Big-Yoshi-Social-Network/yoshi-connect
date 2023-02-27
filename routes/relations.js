@@ -16,6 +16,7 @@ async function isFriend(req, res) {
             console.log('Debug: This viewer does follow people, but do they follow the viewed.')
             let idx = following.followings.map(obj => obj.username).indexOf(req.body.data.viewed);
             if (idx > -1) { 
+                console.log('Debug: They follow them.')
                 status = 'Follows';
             } else {
                 checkFriend = true;
@@ -30,6 +31,7 @@ async function isFriend(req, res) {
                 console.log('Debug: This viewer does friend people, but do they friend the viewed.')
                 let idx = friend.friends.map(obj => obj.username).indexOf(req.body.data.viewed);
                 if (idx > -1) { 
+                    console.log('Debug: They are friends.')
                     status = 'Friends';
                 } 
             } 

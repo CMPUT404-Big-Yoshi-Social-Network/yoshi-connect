@@ -4,7 +4,7 @@ import axios from 'axios';
 
 function Request(props) {
     const { senderId } = props;
-    const { receiverId } = useParams();
+    const { username } = useParams();
     const addRequest = () => {
         console.log('Debug: Adding Author')
         let config = {
@@ -15,8 +15,8 @@ function Request(props) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                sender: senderId,
-                receiver: receiverId,
+                senderId: senderId,
+                receiverId: username,
                 status: 'Sender is added by Receiver'
             }
         }
@@ -40,7 +40,7 @@ function Request(props) {
             },
             data: {
                 sender: senderId,
-                receiver: receiverId,
+                receiver: username,
                 status: 'Sender is rejected by Receiver'
             }
         }

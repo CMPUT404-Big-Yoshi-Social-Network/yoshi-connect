@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile } = require('./routes/author');
-const { saveRequest, deleteRequest, findRequest, findAllRequests } = require('./routes/request');
+const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -129,6 +129,7 @@ app.post('/server/requests', (req, res) => {
     findAllRequests(req, res);
   } else if (req.body.data.status == 'Sender is added by Receiver') {
     console.log('Debug: Sender added by Receiver')
+    senderAdded(req, res)
   } else if (req.body.data.status == 'Sender is rejected by Receiver') {
     console.log('Debug: Sender rejected by Receiver')
   }

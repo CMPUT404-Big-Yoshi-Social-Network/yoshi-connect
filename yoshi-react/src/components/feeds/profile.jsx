@@ -12,6 +12,7 @@ function Profile() {
     const navigate = useNavigate();
     let addButton = document.getElementById("request");
     let exists = useRef(null);
+    let friends = useRef(null);
     useEffect(() => {
         let person = null;
         const isRealProfile = () => {
@@ -68,6 +69,37 @@ function Profile() {
               console.error(err);
             });
         }
+
+        if (!exists.current && !person) {
+            console.log('See if they are followers or friends.');
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/users/' + username,
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    receiver: personal.viewed,
+                    sender: personal.viewer,
+                    status: 'Friends or Follows'
+                }
+            }
+            axios
+            .post('/server/users/' + username, config)
+            .then((response) => {
+                if (response.data.status === 'Friends') {
+                    console.log('Debug: They are friends.')
+                    friends.current = true;
+                } else if (response.data.status === 'Follows') {
+                    console.log('Debug: They are follows.')
+                    friends.current = false;
+                }
+            })
+            .catch(err => {
+              console.error(err);
+            });
+        }
     }, [username, exists, personal.viewed, personal.viewer, navigate]);
     const SendRequest = () => {
         if (addButton.innerText === "Add Friend") {
@@ -93,7 +125,7 @@ function Profile() {
             .catch(err => {
               console.error(err);
             });
-        } else {
+        } else if ((addButton.innerText === "Sent!")) {
             addButton.innerText = "Add Friend";
             let config = {
                 method: 'delete',
@@ -116,12 +148,16 @@ function Profile() {
             .catch(err => {
               console.error(err);
             });
+        } else if (addButton.innerText === "Unfriend") {
+            console.log('Debug: We want to unfriend.')
+        } else if (addButton.innerText === "Unfollow") {
+            console.log('Debug: We want to unfollow.')
         }
     }
     return (
         <div>
             You are viewing profile. Welcome to {username}'s profile!
-            { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
+            { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : !friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
         </div> 
     )
 }

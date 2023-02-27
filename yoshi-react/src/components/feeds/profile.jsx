@@ -80,8 +80,8 @@ function Profile() {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
+                    viewed: personal.viewed,
+                    viewer: personal.viewer,
                     status: 'Friends or Follows'
                 }
             }
@@ -157,7 +157,7 @@ function Profile() {
     return (
         <div>
             You are viewing profile. Welcome to {username}'s profile!
-            { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : !friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
+            { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
         </div> 
     )
 }

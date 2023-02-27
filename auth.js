@@ -8,18 +8,6 @@ const database = mongoose.connection;
 const Login = database.model('Login', login_scheme);
 const Author = database.model('Author', author_scheme);
 
-function isPersonal(req, res) {
-    if (req.body.data.token != null) {
-        console.log('Debug: Getting the token in the login database.')
-        Login.findOne({token: req.body.data.token}, function(err, login) {
-            if (err) throw err;
-            return res.json({
-                username: login.username
-            });
-        })  
-    }
-}
-
 async function checkUsername(req, res) {
     await Author.findOne({username: req.body.username}, function(err, author){
         if(author){
@@ -182,6 +170,5 @@ module.exports = {
     checkUsername,
     checkExpiry,
     sendCheckExpiry,
-    checkAdmin,
-    isPersonal
+    checkAdmin
 }

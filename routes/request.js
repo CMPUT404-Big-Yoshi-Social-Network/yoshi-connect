@@ -149,6 +149,9 @@ async function senderAdded(req, res) {
                 status: "Unsuccessful"
             });
         }
+    } else {
+        console.log('Debug: These authors need to be added as friends!')
+        // TODO: Adding as friends functionality
     }
 }
 

@@ -141,6 +141,8 @@ async function senderAdded(req, res) {
         }).clone()
 
         if (success) {
+            console.log('Debug: Delete the request since it has been accepted.')
+            deleteRequest(req, res);
             return res.json({
                 status: "Successful"
             });

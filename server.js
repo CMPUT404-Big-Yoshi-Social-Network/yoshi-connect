@@ -129,9 +129,10 @@ app.post('/server/requests', (req, res) => {
     findAllRequests(req, res);
   } else if (req.body.data.status == 'Sender is added by Receiver') {
     console.log('Debug: Sender added by Receiver')
-    senderAdded(req, res)
+    senderAdded(req, res);
   } else if (req.body.data.status == 'Sender is rejected by Receiver') {
     console.log('Debug: Sender rejected by Receiver')
+    deleteRequest(req, res);
   }
 })
 

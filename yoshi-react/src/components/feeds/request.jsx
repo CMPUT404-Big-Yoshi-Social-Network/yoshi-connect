@@ -5,6 +5,7 @@ import axios from 'axios';
 function Request(props) {
     const { senderId } = props;
     const { username } = useParams();
+    let request = document.getElementById("request");
     const addRequest = () => {
         console.log('Debug: Adding Author')
         let config = {
@@ -47,14 +48,17 @@ function Request(props) {
         axios
         .post('/server/requests', config)
         .then((response) => {
-            console.log(response)
+            // TEMPORARY
+            if (response.data.status === 'Successful') {
+                request.innerHTML = '';
+            }
         })
         .catch(err => {
             console.error(err);
         });
     }
     return (
-        <div>
+        <div id='request'>
             { senderId }
             <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
             <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>

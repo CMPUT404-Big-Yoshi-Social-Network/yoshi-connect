@@ -5,7 +5,6 @@ import axios from 'axios';
 function Request(props) {
     const { senderId } = props;
     const { username } = useParams();
-    let request = document.getElementById("request");
     const addRequest = () => {
         console.log('Debug: Adding Author')
         let config = {
@@ -48,10 +47,6 @@ function Request(props) {
         axios
         .post('/server/requests', config)
         .then((response) => {
-            // TEMPORARY
-            if (response.data.status === 'Successful') {
-                request.innerHTML = '';
-            }
         })
         .catch(err => {
             console.error(err);

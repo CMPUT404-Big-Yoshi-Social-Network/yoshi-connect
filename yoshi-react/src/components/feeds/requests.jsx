@@ -23,7 +23,6 @@ function Requests() {
         axios
         .post('/server/requests', config)
         .then((response) => {
-            console.log(response.data.requests)
             setRequests(response.data.requests)
         })
         .catch(err => {

@@ -127,7 +127,11 @@ app.post('/server/requests', (req, res) => {
   if (req.body.data.status == 'Fetching Requests') {
     console.log('Debug: Getting friend requests')
     findAllRequests(req, res);
-  } 
+  } else if (req.body.data.status == 'Sender is added by Receiver') {
+    console.log('Debug: Sender added by Receiver')
+  } else if (req.body.data.status == 'Sender is rejected by Receiver') {
+    console.log('Debug: Sender rejected by Receiver')
+  }
 })
 
 app.post('/server/users/:username', (req, res) => {

@@ -23,6 +23,8 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const multer = require('multer');
+const upload = multer({dest: 'uploads/'});
 require('dotenv').config()
 mongoose.set('strictQuery', true);
 

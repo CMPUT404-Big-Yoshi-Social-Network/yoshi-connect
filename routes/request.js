@@ -90,14 +90,21 @@ async function senderAdded(req, res) {
     await Following.findOne({username: req.body.data.receiver}, function(err, following){
         if (following) {
             console.log("Debug: Receiver has a following list. Now, we need to find the sender in their following list.");
-            // for (let i = 0; i < following.length; i++) {
-            //     console.log(i) // dont forget: if they exist in the list then they will friend = true
-            // }
+            for (let i = 0; i < following.followings.length; i++) {
+                if (following.followings[i].username === req.body.data.sender) {
+                    console.log('Debug: They must be added as friends.')
+                    friend = true;
+                    break
+                } 
+            }
         } else {
             console.log('The Receiver does not currently have a following list (following no one).')
         }
+        adding(friend, req, res);
     }).clone()
+}
 
+async function adding(friend, req, res) {
     if (!friend) {
         console.log('Debug: Added as a follower.')
         let success = true;

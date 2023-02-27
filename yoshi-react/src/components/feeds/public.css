@@ -1,0 +1,12 @@
+.pubColL, .pubColM, .pubColR {
+    float: left;
+}
+
+.pubColL, .pubColR {
+    width: 20%;
+}
+
+.pubColM {
+    width: 60%;
+    background-color: #090D0E;
+}

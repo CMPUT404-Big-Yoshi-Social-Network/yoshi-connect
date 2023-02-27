@@ -166,37 +166,30 @@ async function adding(friend, req, res) {
         }
     } else {
         console.log('Debug: These authors need to be added as friends.')
-        let updated = null;
+        let new_following = [];
         await Following.findOne({username: req.body.data.receiver}, function(err, following){
             console.log('Debug: Find sender from receiver following list.')
-            if (following) {
-                console.log('Debug: We found receiver following list')
-                for (let i = 0; i < following.followings.length; i++) {
-                    if (following.followings[i].username === req.body.data.sender) {
-                        console.log('Debug: We found him, boys!')
-                        updated = following.followings.splice(i, 1);
-                        break;
-                    } 
-                }
-            } 
+            let idx = following.followings.map(obj => obj.username).indexOf(req.body.data.sender);
+            if (idx > -1) { 
+                following.followings.splice(idx, 1);
+                new_following = following.followings;
+            }
         }).clone()
-        await Following.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followings: updated}).clone()
+        await Following.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followings: new_following}).clone()
 
+        let new_follower = [];
         await Follower.findOne({username: req.body.data.sender}, function(err, follower){
             console.log('Debug: Remove receiver from sender follower list.')
             if (follower) {
                 console.log('Debug: We found sender follower list, now we need to delete receiver.')
-                for (let i = 0; i < follower.followers.length; i++) {
-                    if (follower.followers[i].username === req.body.data.receiver) {
-                        console.log('Debug: We found him, boys!')
-                        updated = follower.followers.splice(i, 1);
-                        break
-                    } 
-                }
-                
+                let idx = follower.followers.map(obj => obj.username).indexOf(req.body.data.receiver);
+                if (idx > -1) { 
+                    follower.followers.splice(idx, 1);
+                    new_follower = follower.followers;
+                }                
             } 
         }).clone()
-        await Follower.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followers: updated}).clone()
+        await Follower.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followers: new_follower}).clone()
 
         await Friend.findOne({username: req.body.data.receiver}, function(err, friend){
             console.log('Debug: Add sender to receiver friend list.')

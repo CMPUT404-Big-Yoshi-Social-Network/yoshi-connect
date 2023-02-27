@@ -31,7 +31,16 @@ async function saveRequest(req, res) {
 }
 
 async function deleteRequest(req, res) {
-    await Request.deleteOne({sendId: req.body.sender, receiverId: req.body.receiver}, function(err, request){
+    let sender = null;
+    let receiver = null;
+    if (req.body.sender === undefined) {
+        sender = req.body.data.sender;
+        receiver = req.body.data.receiver;
+    } else {
+        sender = req.body.sender;
+        receiver = req.body.receiver;
+    }
+    await Request.deleteOne({sendId: sender, receiverId: receiver}, function(err, request){
         if(request){
             console.log("Debug: Request does exist and was deleted.");
             return res.json({
@@ -78,7 +87,7 @@ async function findAllRequests(req, res) {
 async function senderAdded(req, res) {
     console.log('Debug: Need to check if the receiver is already following the sender.')
     let friend = false; 
-    await Following.findOne({username: req.body.data.receiverId}, function(err, following){
+    await Following.findOne({username: req.body.data.receiver}, function(err, following){
         if (following) {
             console.log("Debug: Receiver has a following list. Now, we need to find the sender in their following list.");
             // for (let i = 0; i < following.length; i++) {
@@ -91,9 +100,9 @@ async function senderAdded(req, res) {
 
     if (!friend) {
         console.log('Debug: Added as a follower.')
-        let success = false;
+        let success = true;
 
-        await Following.findOne({username: req.body.data.senderId}, function(err, following){
+        await Following.findOne({username: req.body.data.sender}, function(err, following){
             console.log('Debug: Add receiver to sender following list')
             if (following) {
                 console.log('Debug: Sender already has a following list, must add to existing list.')
@@ -101,9 +110,9 @@ async function senderAdded(req, res) {
             } else {
                 console.log('Debug: Sender does not have a following list (has not followed anyone), must make one.')
                 var following = new Following({
-                    username: req.body.data.senderId,
+                    username: req.body.data.sender,
                     followings: [{
-                        username: req.body.data.receiverId,
+                        username: req.body.data.receiver,
                     }]
                 });
     
@@ -117,7 +126,7 @@ async function senderAdded(req, res) {
         }).clone()
 
         console.log('Debug: Add sender to follower list.')
-        await Follower.findOne({username: req.body.data.receiverId}, function(err, follower){
+        await Follower.findOne({username: req.body.data.receiver}, function(err, follower){
             console.log('Debug: Add sender to receiver follower list')
             if (follower) {
                 console.log('Debug: Receiver already has a follower list, must add to existing list.')
@@ -125,9 +134,9 @@ async function senderAdded(req, res) {
             } else {
                 console.log('Debug: Receiver does not have a follower list (has no followers), must make one.')
                 var follower = new Follower({
-                    username: req.body.data.receiverId,
+                    username: req.body.data.receiver,
                     followers: [{
-                        username: req.body.data.senderId,
+                        username: req.body.data.sender,
                     }]
                 });
     
@@ -142,10 +151,7 @@ async function senderAdded(req, res) {
 
         if (success) {
             console.log('Debug: Delete the request since it has been accepted.')
-            deleteRequest(req, res);
-            return res.json({
-                status: "Successful"
-            });
+            await deleteRequest(req, res);
         } else {
             return res.json({
                 status: "Unsuccessful"

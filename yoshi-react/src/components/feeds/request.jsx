@@ -16,8 +16,8 @@ function Request(props) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                senderId: senderId,
-                receiverId: username,
+                sender: senderId,
+                receiver: username,
                 status: 'Sender is added by Receiver'
             }
         }

@@ -137,7 +137,7 @@ app.post('/server/requests', (req, res) => {
   }
 })
 
-app.post('/server/users/:username', (req, res) => {
+app.post('/server/users/:username', async (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
@@ -149,7 +149,7 @@ app.post('/server/users/:username', (req, res) => {
     findRequest(req, res);
   } else if (req.body.data.status == 'Friends or Follows') {
     console.log('Debug: Checking if they are friends or follows.')
-    isFriend(req, res);
+    await isFriend(req, res);
   }
 })
 

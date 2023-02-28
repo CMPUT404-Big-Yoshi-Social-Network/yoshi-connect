@@ -150,8 +150,56 @@ function Profile() {
             });
         } else if (addButton.innerText === "Unfriend") {
             console.log('Debug: We want to unfriend.')
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/users/' + username,
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    receiver: personal.viewed,
+                    sender: personal.viewer,
+                    status: 'Unfriending'
+                }
+            }
+            axios
+            .post('/server/users/' + username, config)
+            .then((response) => {
+                if (response.data.status === 'Successful') {
+                    console.log('Debug: Friend is unfriended.')
+                    addButton.innerText = "Unfollow";
+                }
+            })
+            .catch(err => {
+              console.error(err);
+            });
         } else if (addButton.innerText === "Unfollow") {
             console.log('Debug: We want to unfollow.')
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/users/' + username,
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    receiver: personal.viewed,
+                    sender: personal.viewer,
+                    status: 'Unfollowing'
+                }
+            }
+            axios
+            .post('/server/users/' + username, config)
+            .then((response) => {
+                if (response.data.status === 'Successful') {
+                    console.log('Debug: Follow is unfollowed.')
+                    addButton.innerText = "Add Friend";
+                }
+            })
+            .catch(err => {
+              console.error(err);
+            });
         }
     }
     return (

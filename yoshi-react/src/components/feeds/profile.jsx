@@ -168,7 +168,7 @@ function Profile() {
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Friend is unfriended.')
-                    addButton.innerText = "Unfollow";
+                    addButton.innerText = "Add Friend";
                 }
             })
             .catch(err => {

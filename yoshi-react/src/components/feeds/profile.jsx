@@ -166,7 +166,7 @@ function Profile() {
             axios
             .post('/server/users/' + username, config)
             .then((response) => {
-                if (response.data.status === 'Successful') {
+                if (response.data.status) {
                     console.log('Debug: Friend is unfriended.')
                     addButton.innerText = "Unfollow";
                 }
@@ -192,7 +192,7 @@ function Profile() {
             axios
             .post('/server/users/' + username, config)
             .then((response) => {
-                if (response.data.status === 'Successful') {
+                if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')
                     addButton.innerText = "Add Friend";
                 }

@@ -34,7 +34,7 @@ const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile } = require('./routes/author');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
-const { isFriend } = require('./routes/relations');
+const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -150,6 +150,12 @@ app.post('/server/users/:username', async (req, res) => {
   } else if (req.body.data.status == 'Friends or Follows') {
     console.log('Debug: Checking if they are friends or follows.')
     await isFriend(req, res);
+  } else if (req.body.data.status == 'Unfriending') {
+    console.log('Debug: Viewer unfriending viewed.')
+    await unfriending(req, res);
+  } else if (req.body.data.status == 'Unfollowing') {
+    console.log('Debug: Viewer unfollowing viewer.')
+    await unfollowing(req, res);
   }
 })
 

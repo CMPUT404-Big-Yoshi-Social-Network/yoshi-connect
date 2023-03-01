@@ -2,6 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
 import axios from 'axios';
+import Requests from './requests.jsx';
 function Profile() {
     const { username } = useParams();
     const [personal, setPersonal] = useState({
@@ -206,6 +207,10 @@ function Profile() {
         <div>
             You are viewing profile. Welcome to {username}'s profile!
             { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
+            <br></br>
+            <div>
+                <Requests username={username}/>
+            </div>
         </div> 
     )
 }

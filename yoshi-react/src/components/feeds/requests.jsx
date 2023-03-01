@@ -1,13 +1,13 @@
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
 import Request from './request.jsx';
 
-function Requests() {
-    const { username } = useParams();
+function Requests(props) {
+    const { username } = props;
     const [requests, setRequests] = useState([]);
     useEffect(() => {
         console.log('Debug: Fetching all the requests for this user')
+        console.log(username)
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -31,7 +31,7 @@ function Requests() {
     }, [setRequests, username]);
     return (
         <div>
-            <h1>Friend Requests</h1>
+            <h3>Friend Requests</h3>
             {Object.keys(requests).map((request, idx) => (
                 <Request key={idx} {...requests[request]}/>
             ))}

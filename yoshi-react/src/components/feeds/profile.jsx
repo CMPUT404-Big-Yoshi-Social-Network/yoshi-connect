@@ -106,7 +106,7 @@ function Profile() {
         if (addButton.innerText === "Add Friend") {
             addButton.innerText = "Sent!";
             let config = {
-                method: 'post',
+                method: 'put',
                 maxBodyLength: Infinity,
                 url: '/server/users/' + username,
                 headers: {
@@ -119,7 +119,7 @@ function Profile() {
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .put('/server/users/' + username, config)
             .then((response) => {
                 console.log('Debug: Friend request sent!')
             })
@@ -152,7 +152,7 @@ function Profile() {
         } else if (addButton.innerText === "Unfriend") {
             console.log('Debug: We want to unfriend.')
             let config = {
-                method: 'post',
+                method: 'put',
                 maxBodyLength: Infinity,
                 url: '/server/users/' + username,
                 headers: {
@@ -165,7 +165,7 @@ function Profile() {
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .put('/server/users/' + username, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Friend is unfriended.')
@@ -178,7 +178,7 @@ function Profile() {
         } else if (addButton.innerText === "Unfollow") {
             console.log('Debug: We want to unfollow.')
             let config = {
-                method: 'post',
+                method: 'put',
                 maxBodyLength: Infinity,
                 url: '/server/users/' + username,
                 headers: {
@@ -191,7 +191,7 @@ function Profile() {
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .put('/server/users/' + username, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')

@@ -7,7 +7,6 @@ function Requests(props) {
     const [requests, setRequests] = useState([]);
     useEffect(() => {
         console.log('Debug: Fetching all the requests for this user')
-        console.log(username)
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

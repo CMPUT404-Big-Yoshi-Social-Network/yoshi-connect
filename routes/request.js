@@ -150,7 +150,6 @@ async function adding(friend, req, res) {
                         username: req.body.data.sender,
                     }]
                 });
-    
                 follower.save(async (err, follower, next) => {
                     if(err){
                         console.log(err);
@@ -159,7 +158,9 @@ async function adding(friend, req, res) {
                 })
             }
         }).clone()
-        await Follower.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followers: new_follower}).clone()
+        if (new_follower.length) {
+            await Follower.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followers: new_follower}).clone()
+        }
 
         if (success) {
             console.log('Debug: Delete the request since it has been accepted.')

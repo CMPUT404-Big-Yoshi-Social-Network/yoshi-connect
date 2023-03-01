@@ -101,6 +101,7 @@ async function unfriending(req, res) {
         }
     }).clone()
     if (new_following.length) {
+        console.log('Debug: New following!')
         await Following.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followings: new_following}).clone()
     }
 
@@ -129,6 +130,7 @@ async function unfriending(req, res) {
         }
     }).clone()
     if (new_follower.length) {
+        console.log('Debug: New follower!')
         await Follower.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followers: new_follower}).clone()
     }
 

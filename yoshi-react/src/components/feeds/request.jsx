@@ -8,7 +8,7 @@ function Request(props) {
     const addRequest = () => {
         console.log('Debug: Adding Author')
         let config = {
-            method: 'post',
+            method: 'put',
             maxBodyLength: Infinity,
             url: '/server/requests',
             headers: {
@@ -21,9 +21,8 @@ function Request(props) {
             }
         }
         axios
-        .post('/server/requests', config)
+        .put('/server/requests', config)
         .then((response) => {
-            console.log(response)
         })
         .catch(err => {
             console.error(err);
@@ -32,11 +31,11 @@ function Request(props) {
     const rejectRequest = () => {
         console.log('Debug: Rejecting Author')
         let config = {
-            method: 'post',
+            method: 'delete',
             maxBodyLength: Infinity,
             url: '/server/requests',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             },
             data: {
                 sender: senderId,
@@ -45,7 +44,7 @@ function Request(props) {
             }
         }
         axios
-        .post('/server/requests', config)
+        .delete('/server/requests', config)
         .then((response) => {
         })
         .catch(err => {

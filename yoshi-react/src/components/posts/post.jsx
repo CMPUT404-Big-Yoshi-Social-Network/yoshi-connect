@@ -9,7 +9,8 @@ function Post() {
         contentType: "type/plain",
         visibility: "Public",
         content: "",
-        unlisted: false
+        unlisted: false,
+        image: ""
     })
     const checkExpiry = () => {
         
@@ -64,6 +65,7 @@ function Post() {
     const togglePostMenu = () => {
         setIsOpen(!isOpen);
     }
+    
 
     return (
         <body className={"tempBackground"}>
@@ -121,19 +123,14 @@ function Post() {
                             0/150 (doesn't actually count)
                         </div>
                         
-                        <input type={"file"} accept={"image/*"} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={(e) =>{
-                            setData({...data, content: e.target.value})}}/>
+                        <input type={"file"} accept={"image/*"} multiple = "false" className={"postMenuImageInput"} name={"image"} id={"image"} onChange={(e) =>{
+                            setData({...data, image: e.target.files[0]})}}/>
                         <div style={{color:"white", textAlign:"right"}}>
                             25MB (not enforced)
                         </div>
 
                         <button className={"createPostButton"} type={"button"} onClick={post_post}>Create Post</button>
                     </form>
-
-                        {/* <form action="" method="put" enctype="multipart/form-data">
-                            <input type="file" id="image" name="image" />
-                            <button type="button" onClick={post_image}>Submit</button>
-                        </form> */}
                 </div>
             </div>
             }   

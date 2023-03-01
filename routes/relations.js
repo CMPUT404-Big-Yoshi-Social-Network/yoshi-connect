@@ -21,7 +21,9 @@ async function isFriend(req, res) {
             } else {
                 checkFriend = true;
             }
-        } 
+        } else {
+            checkFriend = true;
+        }
     }).clone()
 
     if (checkFriend) {

@@ -58,6 +58,12 @@ code {
   width: 100%;
 }
 
+.postMenuImageInput {
+  background-color: #4a5460;
+  border: none;
+  width: 100%;
+}
+
 .createPostHeader {
   color: white;
   margin: auto;
@@ -71,5 +77,10 @@ code {
   border: none;
   border-radius:10px;
   padding: 5px;
+}
 
+.tempBackground {
+  background-color: #24292f;
+  width: 100vw;
+  height: 100vh;
 }

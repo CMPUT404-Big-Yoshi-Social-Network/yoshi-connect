@@ -40,7 +40,7 @@ async function create_post(req, res, postId){
     //TODO Make sure the author is the correct author (probably make this its own function)
     const authorId = req.params.author_id;
     if(await same_author(req, authorId) == false)
-        return req.sendStatus(401);
+        return res.sendStatus(401);
 
     //Setup the rest of the post
     const title = req.body.title;

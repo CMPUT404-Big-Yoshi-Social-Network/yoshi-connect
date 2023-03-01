@@ -14,7 +14,8 @@ const post_scheme = new Schema({
     comments: String,
     published: String,
     visibility: String,
-    unlisted: Boolean},
+    unlisted: Boolean,
+    image: String},
     {versionKey: false
 });
 

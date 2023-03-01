@@ -43,14 +43,15 @@ async function create_post(req, res, postId){
         return res.sendStatus(401);
 
     //Setup the rest of the post
-    const title = req.body.title;
-    const desc = req.body.desc;
-    const contentType = req.body.contentType;
-    const content = req.body.content;
+    const title = req.body.data.title;
+    const desc = req.body.data.desc;
+    const contentType = req.body.data.contentType;
+    const content = req.body.data.content;
     const categories = [""];
     const published = new Date().toISOString();
-    const visibility = req.body.visibility;
-    const unlisted = !req.body.listed;
+    const visibility = req.body.data.visibility;
+    const unlisted = !req.body.data.listed;
+    const image = req.body.data.image;
 
     //Get the author's document
     //Should be refactored to do use an aggregate pipeline in case of large number of posts
@@ -68,7 +69,8 @@ async function create_post(req, res, postId){
             comments: "",
             published: published,
             visibility: visibility,
-            unlisted: unlisted
+            unlisted: unlisted,
+            image: image
         });
     }
     else{
@@ -84,7 +86,8 @@ async function create_post(req, res, postId){
             comments: "",
             published: published,
             visibility: visibility,
-            unlisted: unlisted
+            unlisted: unlisted,
+            image: image
         });
     }
 

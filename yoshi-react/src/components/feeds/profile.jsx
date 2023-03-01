@@ -208,9 +208,7 @@ function Profile() {
             You are viewing profile. Welcome to {username}'s profile!
             { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
             <br></br>
-            <div>
-                <Requests username={username}/>
-            </div>
+            { personal.person ? <div><Requests username={username}/></div> : null }
         </div> 
     )
 }

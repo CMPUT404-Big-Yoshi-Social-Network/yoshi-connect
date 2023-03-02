@@ -6,14 +6,12 @@ const crypto = require('crypto');
 const comment_scheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     commenter: String,
-    commenterId: String,
     comment: String
 })
 
 const like_scheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
-    liker: String,
-    likerId: String
+    liker: String
 })
 
 const post_scheme = new Schema({

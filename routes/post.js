@@ -45,8 +45,7 @@ async function addLike(req, res){
     let success = false;
 
     var like = new Like({
-        liker: req.body.data.liker,
-        likerId: req.body.data.receiver
+        liker: req.body.data.liker
     });
 
     let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
@@ -59,7 +58,11 @@ async function addLike(req, res){
     }
 
     return json({
-        status: success
+        status: success,
+        likeId: like._id,
+        liker: like.liker,
+        postId: postHistory.posts[idx]._id,
+        authorId: req.body.data.authorId
     })
 }
 
@@ -71,7 +74,7 @@ async function deleteLike(req, res){
         if (history) {
             let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
             if (post_idx > -1) { 
-                let like_idx = history.posts[post_idx].likes.map(obj => obj.likeId).indexOf(req.body.data.likeId);
+                let like_idx = history.posts[post_idx].likes.map(obj => obj._id).indexOf(req.body.data.likeId);
                 history.posts[post_idx].likes[like_idx].splice(like_idx, 1);
                 updated_posts = history.posts;
                 postHistory.posts[post_idx].count--;
@@ -88,7 +91,6 @@ async function addComment(req, res){
 
     var comment = new Comment({
         commenter: req.body.data.commenter,
-        commenterId: req.body.data.commenterId,
         comment: req.body.data.comment
     });
 
@@ -101,7 +103,11 @@ async function addComment(req, res){
     }
 
     return json({
-        status: success
+        status: success,
+        commentId: comment._id,
+        commenter: comment.commenter,
+        postId: postHistory.posts[idx]._id,
+        authorId: req.body.data.authorId
     })
 }
 
@@ -113,7 +119,7 @@ async function deleteComment(req, res){
         if (history) {
             let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
             if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj.commenterId).indexOf(req.body.data.commenterId);
+                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
                 history.posts[post_idx].comments[com_idx].splice(com_idx, 1);
                 updated_posts = history.posts;
             }
@@ -130,7 +136,7 @@ async function editComment(req, res){
         if (history) {
             let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
             if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj.commenterId).indexOf(req.body.data.commenterId);
+                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
                 history.posts[post_idx].comments[com_idx].comment = req.body.data.comment;
                 updated_posts = history.posts;
             }

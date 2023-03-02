@@ -56,7 +56,13 @@ async function create_post(req, res, postId){
     //Get the author's document
     //Should be refactored to do use an aggregate pipeline in case of large number of posts
     const post_history = await Post_History.findOne({authorId: authorId});
-   
+
+    if (post_history.posts == null) {
+        console.log('Debug: Create a post history');
+        create_post_history(authorId);
+        const post_history = await Post_History.findOne({authorId: authorId});
+    }
+
     if(postId == undefined){
         post_history.posts.push({
             title: title,

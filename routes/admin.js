@@ -92,7 +92,7 @@ async function modifyAuthor(req, res){
 
 async function deleteAuthor(req, res){
     console.log('Debug: Attempt to delete an author.')
-    await Author.deleteOne({username: req.body.data.username}, function(err, author){
+    await Author.deleteOne({username: req.body.username}, function(err, author){
         if(author){
             console.log("Debug: Author does exist and was deleted.");
             return res.json({

@@ -116,11 +116,15 @@ app.put('/server/admin/dashboard', (req, res) => {
   if (req.body.data.status == 'Add New Author') {
     console.log('Debug: Adding a new author');
     addAuthor(req, res);
-  } else if (req.body.data.status == 'Delete an Author') {
-    console.log('Debug: Deleting an Author');
-    deleteAuthor(req, res);
   } else if (req.body.data.status == 'Modify an Author') {
     modifyAuthor(req, res);
+  }
+})
+
+app.delete('/server/admin/dashboard', (req, res) => {
+  if (req.body.status == 'Delete an Author') {
+    console.log('Debug: Deleting an Author');
+    deleteAuthor(req, res);
   }
 })
 

@@ -50,20 +50,20 @@ function Post() {
             console.log(e);
         })}
 
-    const post_image = () => {
-        let formData = new FormData();
-        let imageFile = document.querySelector('#image');
-        formData.append("image", imageFile.files[0]);
+    // const post_image = () => {
+    //     let formData = new FormData();
+    //     let imageFile = document.querySelector('#image');
+    //     formData.append("image", imageFile.files[0]);
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        //Fix This Later
-        axios.put('/server/authors/a70c9729-fb37-4354-8b69-9d71aad3c6f9/posts/', formData, {
-        /////////////////////////////////////////////////////////////////////////////////////
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-    }
+    //     /////////////////////////////////////////////////////////////////////////////////////
+    //     //Fix This Later
+    //     axios.put('/server/authors/a70c9729-fb37-4354-8b69-9d71aad3c6f9/posts/', formData, {
+    //     /////////////////////////////////////////////////////////////////////////////////////
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data'
+    //         }
+    //     })
+    // }
 
     const [isOpen, setIsOpen] = useState(false)
     const togglePostMenu = () => {

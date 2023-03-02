@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Authors from './authors.jsx';
 function AdminDashboard() {
     const navigate = useNavigate();
     const get_dashboard = () => {
@@ -62,6 +63,7 @@ function AdminDashboard() {
         <div>
             Hello. You are viewing the admin dashboard.
             <button type="button" onClick={() => LogOut()}>Log Out</button>
+            <div><Authors/></div>
         </div>
     )
 }

@@ -4,12 +4,23 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 const Author = database.model('Author', author_scheme);
-import { checkIfExists } from './author.js';
 
 async function addAuthor(req, res){
     console.log('Debug: Adding a new author to YoshiConnect');
 
-    checkIfExists(req);
+    let author_found = await Author.findOne({username: req.body.username}, function(err, author){
+        if(!author){
+            return;
+        }
+        console.log("Debug: Author does exist, Authentication failed");
+        return res.json({
+            username: req.body.username,
+            status: "Unsuccessful"
+        });
+    }).clone()
+    if(author_found) {
+        return;
+    }
 
     const username = req.body.username;
     const email = req.body.email;

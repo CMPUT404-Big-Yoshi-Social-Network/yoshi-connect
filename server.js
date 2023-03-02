@@ -34,6 +34,7 @@ const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile } = require('./routes/author');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
+const { addAuthor, deleteAuthor, modifyAuthor } = require('./routes/admin');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
@@ -101,6 +102,23 @@ app.post('/server/admin/dashboard', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
+  } else if (req.body.data.status == 'Fetching Authors') {
+    console.log('Debug: Getting all authors')
+    return json({
+      authors: Author.find()
+    })
+  }
+})
+
+app.put('/server/admin/dashboard', (req, res) => {
+  if (req.body.data.status == 'Add New Author') {
+    console.log('Debug: Adding a new author');
+    addAuthor(req, res);
+  } else if (req.body.data.status == 'Delete an Author') {
+    console.log('Debug: Deleting an Author');
+    deleteAuthor(req, res);
+  } else if (req.body.data.status == 'Modify an Author') {
+    modifyAuthor(req, res);
   }
 })
 

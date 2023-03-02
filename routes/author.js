@@ -8,7 +8,7 @@ const database = mongoose.connection;
 const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 
-async function register_author(req, res){
+async function checkIfExists(res, req) {
     let author_found = await Author.findOne({username: req.body.username}, function(err, author){
         if(!author){
             return;
@@ -19,9 +19,13 @@ async function register_author(req, res){
             status: "Unsuccessful"
         });
     }).clone()
-    if(author_found)
-        return
-        
+    if(author_found) {
+        return;
+    }
+}
+
+async function register_author(req, res){
+    checkIfExists(res, req)  
     console.log("Debug: Author does not exist yet.")
 
     const authorId = (await Author.find().sort({authorId:-1}).limit(1))[0].authorId + 1;
@@ -125,5 +129,6 @@ async function get_profile(req, res) {
 
 module.exports={
     register_author,
-    get_profile
+    get_profile,
+    checkIfExists
 }

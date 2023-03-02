@@ -29,6 +29,7 @@
     "install": "^0.13.0",
     "mongoose": "^6.9.1",
     "react-router-dom": "^6.8.1",
+    "reactjs-popup": "^2.0.5",
     "uid-generator": "^2.0.0"
   },
   "devDependencies": {

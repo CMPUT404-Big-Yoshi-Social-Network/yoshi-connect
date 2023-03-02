@@ -1,10 +1,17 @@
 import React from "react";
 import axios from 'axios';
+import { useState } from 'react';
+import ModifyAuthor from "./modify-form.jsx";
 
 function Author(props) {
     const { username } = props;
+    const [show, setShow] = useState({
+        modify: null
+    })
     const modifyAuthor = () => {
         console.log('Debug: Modifying this author')
+        const show = true;
+        setShow(prevShow => ({...prevShow, show}));
     }
     const deleteAuthor = () => {
         console.log('Debug: Deleting this author')
@@ -33,6 +40,7 @@ function Author(props) {
             { username }
             <button type="button" id='modify' onClick={() => modifyAuthor()}>Modify</button>
             <button type="button" id='delete' onClick={() => deleteAuthor()}>Delete</button>
+            { show.modify ? <div><ModifyAuthor/></div> : null }
         </div>
     )
 }

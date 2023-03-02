@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Authors from './authors.jsx';
+import AddAuthor from "./add-form.jsx";
+import Popup from 'reactjs-popup';
 function AdminDashboard() {
     const navigate = useNavigate();
     const get_dashboard = () => {
@@ -63,6 +65,9 @@ function AdminDashboard() {
         <div>
             <h1>Admin Dashboard</h1>
             <button type="button" onClick={() => LogOut()}>Log Out</button>
+            <Popup trigger={<button>Add New Author</button>} position="right center">
+                <AddAuthor/>
+            </Popup>
             <div><Authors/></div>
         </div>
     )

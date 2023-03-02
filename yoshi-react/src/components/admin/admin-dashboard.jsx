@@ -49,7 +49,7 @@ function AdminDashboard() {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                message: 'Logging Out'
+                status: 'Logging Out'
             }
         }
         axios

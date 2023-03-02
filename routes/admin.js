@@ -8,13 +8,13 @@ const Author = database.model('Author', author_scheme);
 async function addAuthor(req, res){
     console.log('Debug: Adding a new author to YoshiConnect');
 
-    let author_found = await Author.findOne({username: req.body.username}, function(err, author){
+    let author_found = await Author.findOne({username: req.body.data.username}, function(err, author){
         if(!author){
             return;
         }
         console.log("Debug: Author does exist, Authentication failed");
         return res.json({
-            username: req.body.username,
+            username: req.body.data.username,
             status: "Unsuccessful"
         });
     }).clone()
@@ -22,9 +22,9 @@ async function addAuthor(req, res){
         return;
     }
 
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
+    const username = req.body.data.username;
+    const email = req.body.data.email;
+    const password = req.body.data.password;
 
     var author = new Author({
         username: username,
@@ -32,7 +32,7 @@ async function addAuthor(req, res){
         email: email,
         about: "...",
         pronouns: ".../...",
-        admin: req.body.admin
+        admin: req.body.data.admin
     });
 
     author.save(async (err, author, next) => {

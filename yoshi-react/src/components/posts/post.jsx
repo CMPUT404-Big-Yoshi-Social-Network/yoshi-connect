@@ -86,7 +86,7 @@ function Post() {
     
 
     return (
-        <body className={"tempBackground"}>
+        <div className={"tempBackground"}>
             <button className={"createPostButton"} type={"button"} value={"Create Post"} onClick={togglePostMenu}>CREATE NEW POST</button>
             {isOpen &&    
                 <div className={"postMenuPage"}>
@@ -156,7 +156,7 @@ function Post() {
                 </div>
             </div>
             }   
-        </body>        
+        </div>        
     )
 }
 

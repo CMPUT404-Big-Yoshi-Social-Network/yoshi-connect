@@ -40,5 +40,7 @@ const post_history_scheme = new Schema({
 })
 module.exports = {
     post_scheme,
-    post_history_scheme
+    post_history_scheme,
+    like_scheme,
+    comment_scheme
 }

@@ -48,23 +48,23 @@ const router = createBrowserRouter([
     element: <Post/>
   },
   {
-    path: '/users/:username/', // want by user name 
+    path: '/users/:username/', 
     element: <Profile/>
   },
   {
-    path: '/messages/', // want by user name 
+    path: '/messages/', 
     element: <Messages/>
   },
   {
-    path: '/forbidden/', // want by user name 
+    path: '/forbidden/', 
     element: <UserForbidden/>   
   },
   {
-    path: '/unauthorized/', // want by user name 
+    path: '/unauthorized/', 
     element: <UserUnauthorized/>   
   },
   {
-    path: '*' || '/notfound/', // want by user name 
+    path: '*' || '/notfound/', 
     element: <PageNotFound/>   
   }
 ])

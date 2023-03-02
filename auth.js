@@ -8,18 +8,6 @@ const database = mongoose.connection;
 const Login = database.model('Login', login_scheme);
 const Author = database.model('Author', author_scheme);
 
-function isPersonal(req, res) {
-    if (req.body.data.token != null) {
-        console.log('Debug: Getting the token in the login database.')
-        Login.findOne({token: req.body.data.token}, function(err, login) {
-            if (err) throw err;
-            return res.json({
-                username: login.username
-            });
-        })  
-    }
-}
-
 async function checkUsername(req) {
     const author = await Author.findOne({username: req.body.username});
 
@@ -150,7 +138,7 @@ async function authAuthor(req, res) {
                 console.log("Debug: You are not an admin. Your login will not be cached.")
                 return res.json({
                     username: req.body.username,
-                    authorId: req.author.authorId,
+                    authorId: req.author._id,
                     status: "Unsuccessful"
                 }); 
             }
@@ -162,7 +150,7 @@ async function authAuthor(req, res) {
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
             return res.json({
                 username: req.body.username,
-                authorId: req.author.authorId,
+                authorId: req.author._id,
                 status: "Successful"
             });
         }
@@ -183,6 +171,5 @@ module.exports = {
     checkUsername,
     checkExpiry,
     sendCheckExpiry,
-    checkAdmin,
-    isPersonal
+    checkAdmin
 }

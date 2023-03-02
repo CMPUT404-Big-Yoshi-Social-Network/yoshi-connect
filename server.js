@@ -33,10 +33,12 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
+const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post } = require('./routes/post');
 const { randomUUID } = require('crypto');
+const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
+const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -190,10 +192,57 @@ app.get('/server/users/:username', async (req,res) => {
   get_profile(req, res);
 })
 
-app.post('/server/users/:username', (req, res) => {
+app.post('/server/requests', (req, res) => {
+  if (req.body.data.status == 'Fetching Requests') {
+    console.log('Debug: Getting friend requests')
+    findAllRequests(req, res);
+  }
+})
+
+app.put('/server/requests', (req, res) => {
+  if (req.body.data.status == 'Sender is added by Receiver') {
+    console.log('Debug: Sender added by Receiver')
+    senderAdded(req, res);
+  } 
+})
+
+app.delete('/server/requests', (req, res) => {
+  if (req.body.status == 'Sender is rejected by Receiver') {
+    console.log('Debug: Sender rejected by Receiver')
+    deleteRequest(req, res);
+  }
+})
+
+app.post('/server/users/:username', async (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
+  } else if (req.body.data.status == 'Does Request Exist') {
+    console.log('Debug: Checking if Friend Request Exists')
+    findRequest(req, res);
+  } else if (req.body.data.status == 'Friends or Follows') {
+    console.log('Debug: Checking if they are friends or follows.')
+    await isFriend(req, res);
+  }
+})
+
+app.put('/server/users/:username', async (req, res) => {
+  if (req.body.data.status == 'Save Request') {
+    console.log('Debug: Saving Friend Request')
+    saveRequest(req, res);
+  } else if (req.body.data.status == 'Unfriending') {
+    console.log('Debug: Viewer unfriending viewed.')
+    await unfriending(req, res);
+  } else if (req.body.data.status == 'Unfollowing') {
+    console.log('Debug: Viewer unfollowing viewer.')
+    await unfollowing(req, res);
+  }
+})
+
+app.delete('/server/users/:username', (req, res) => {
+  if (req.body.status == 'Delete Request') {
+    console.log('Debug: Deleting Friend Request')
+    deleteRequest(req, res);
   }
 })
 

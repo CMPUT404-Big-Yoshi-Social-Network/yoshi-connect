@@ -12,21 +12,6 @@ const {create_post_history} = require('./post.js')
 
 const crypto = require('crypto');
 
-async function doesProfileExist(req, res) {
-    await Author.findOne({username: req.body.data.username}, function(err, author){
-        if(author){
-            console.log("Debug: Profile does exist, Authentication failed");
-            return res.json({
-                status: "Successful"
-            });
-        } else {
-            return res.json({
-                status: "Unsuccessful"
-            });
-        }
-    }).clone()
-}
-
 async function register_author(req, res){
     if(await checkUsername(req) === "In use")
         return res.json({
@@ -95,7 +80,6 @@ async function register_author(req, res){
                 status: "Unsuccessful"
             });
         }
-        
     });
 
     await create_post_history(author._id);
@@ -124,14 +108,16 @@ async function get_profile(req, res) {
     else if(author.username == login.username){
         console.log("Debug: This is your personal account.")
         return res.json({
-            username: author.username,
+            viewed: author.username,
+            viewer: login.username,
             personal: true
         });
     }
     else if(author.username != login.username){
         console.log("Debug: This is not your personal account.")
         return res.json({
-            username: author.username,
+            viewed: author.username,
+            viewer: login.username,
             personal: false
         });
     }
@@ -139,6 +125,5 @@ async function get_profile(req, res) {
 
 module.exports={
     register_author,
-    get_profile,
-    doesProfileExist
+    get_profile
 }

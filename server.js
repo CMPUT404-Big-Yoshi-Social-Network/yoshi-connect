@@ -35,7 +35,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile } = require('./routes/author');
-const { create_post, get_post, get_posts_paginated, update_post, delete_post } = require('./routes/post');
+const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment } = require('./routes/post');
 const { randomUUID } = require('crypto');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -150,6 +150,14 @@ app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
+  if (req.body.data.status == 'Remove like') {
+    console.log('Debug: Removing a like from a post!')
+    deleteLike(req, res);
+  } else if (req.body.data.status == 'Remove comment') {
+    console.log('Debug: Removing a comment from a post!')
+    deleteComment(req, res);
+  }
+
   //If author_id is not the same as cookie then send 401
   //Else create the post
 
@@ -162,9 +170,18 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
 
   //If author_id is not the same as cookie then send 401
   //Else create the post
-  
-
-  await create_post(req, res, req.params.post_id);
+  if (req.body.data.status == 'Add like') {
+    console.log('Debug: Adding a like to a post!');
+    addLike(req, res);
+  } else if (req.body.data.status == 'Add comment') {
+    console.log('Debug: Adding a comment to a post!');
+    addComment(req, res);
+  } else if (req.body.data.status == 'Edit comment') {
+    console.log('Debug: Updating a comment on a post!')
+    editComment(req, res);
+  } else {
+    await create_post(req, res, req.params.post_id);
+  }
 })
 //CREATION URL
 app.get('/server/authors/:author_id/posts/', async (req, res) => {

@@ -1,5 +1,5 @@
 const { author_scheme, login_scheme } = require('../db_schema/author_schema.js');
-const { post_history_scheme, post_scheme } = require('../db_schema/post_schema.js');
+const { post_history_scheme, post_scheme, like_scheme, comment_scheme } = require('../db_schema/post_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
@@ -7,6 +7,9 @@ const database = mongoose.connection;
 const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 const Post_History = database.model('Posts', post_history_scheme);
+const Post = database.model('Post', post_scheme);
+const Like = database.model('Like', like_scheme);
+const Comment = database.model('Comment', comment_scheme);
 
 /*
 Check if the author_id provided matches the authorid attached to the token
@@ -36,6 +39,106 @@ function create_post_history(author_id){
     return;
 }
 
+async function addLike(req, res){
+    console.log('Debug: Adding a like!')
+    const postHistory = await Post_History.findOne({authorId: req.body.data.authorId});
+    let success = false;
+
+    var like = new Like({
+        liker: req.body.data.liker,
+        likerId: req.body.data.receiver
+    });
+
+    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+    if (idx > -1) { 
+        postHistory.posts[idx].likes.push(like);
+        postHistory.posts[idx].count++;
+        success = true;
+    } else {
+        console.log('Debug: No such post exists!')
+    }
+
+    return json({
+        status: success
+    })
+}
+
+async function deleteLike(req, res){
+    console.log('Debug: Removing a like!')
+    let updated_posts = [];
+    await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
+        console.log('Debug: Find the post with the like.')
+        if (history) {
+            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+            if (post_idx > -1) { 
+                let like_idx = history.posts[post_idx].likes.map(obj => obj.likeId).indexOf(req.body.data.likeId);
+                history.posts[post_idx].likes[like_idx].splice(like_idx, 1);
+                updated_posts = history.posts;
+                postHistory.posts[post_idx].count--;
+            }
+        }
+    }).clone()
+    await Post_History.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+}
+
+async function addComment(req, res){
+    console.log('Debug: Adding a comment!')
+    const postHistory = await Post_History.findOne({authorId: req.body.data.authorId});
+    let success = false;
+
+    var comment = new Comment({
+        commenter: req.body.data.commenter,
+        commenterId: req.body.data.commenterId,
+        comment: req.body.data.comment
+    });
+
+    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+    if (idx > -1) { 
+        postHistory.posts[idx].comments.push(comment);
+        success = true;
+    } else {
+        console.log('Debug: No such post exists!')
+    }
+
+    return json({
+        status: success
+    })
+}
+
+async function deleteComment(req, res){
+    console.log('Debug: Deleting a comment!')
+    let updated_posts = [];
+    await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
+        console.log('Debug: Find the post with the comment.')
+        if (history) {
+            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+            if (post_idx > -1) { 
+                let com_idx = history.posts[post_idx].comments.map(obj => obj.commenterId).indexOf(req.body.data.commenterId);
+                history.posts[post_idx].comments[com_idx].splice(com_idx, 1);
+                updated_posts = history.posts;
+            }
+        }
+    }).clone()
+    await Post_History.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+}
+
+async function editComment(req, res){
+    console.log('Debug: Editing a comment!')
+    let updated_posts = [];
+    await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
+        console.log('Debug: Find the post with the comment.')
+        if (history) {
+            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+            if (post_idx > -1) { 
+                let com_idx = history.posts[post_idx].comments.map(obj => obj.commenterId).indexOf(req.body.data.commenterId);
+                history.posts[post_idx].comments[com_idx].comment = req.body.data.comment;
+                updated_posts = history.posts;
+            }
+        }
+    }).clone()
+    await Post_History.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+}
+
 async function create_post(req, res, postId){
     //TODO Make sure the author is the correct author (probably make this its own function)
     const authorId = req.params.author_id;
@@ -60,11 +163,12 @@ async function create_post(req, res, postId){
     if (post_history.posts == null) {
         console.log('Debug: Create a post history');
         create_post_history(authorId);
-        const post_history = await Post_History.findOne({authorId: authorId});
+        post_history = await Post_History.findOne({authorId: authorId});
     }
 
     if(postId == undefined){
-        post_history.posts.push({
+
+        var post = new Post({
             title: title,
             description: desc,
             contentType: contentType,
@@ -79,10 +183,11 @@ async function create_post(req, res, postId){
             unlisted: unlisted,
             image: image
         });
+
+        post_history.posts.push(post);
     }
     else{
-        post_history.posts.push({
-            _id: postId,
+        var post = new Post({
             title: title,
             description: desc,
             contentType: contentType,
@@ -97,6 +202,8 @@ async function create_post(req, res, postId){
             unlisted: unlisted,
             image: image
         });
+
+        post_history.posts.push(post);
     }
 
     post_history.num_posts = post_history.num_posts + 1;
@@ -242,5 +349,10 @@ module.exports={
     get_post,
     get_posts_paginated,
     update_post,
-    delete_post
+    delete_post,
+    addLike,
+    addComment,
+    deleteLike,
+    deleteComment,
+    editComment
 }

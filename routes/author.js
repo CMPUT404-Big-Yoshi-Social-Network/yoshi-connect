@@ -8,21 +8,6 @@ const database = mongoose.connection;
 const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 
-async function doesProfileExist(req, res) {
-    await Author.findOne({username: req.body.data.username}, function(err, author){
-        if(author){
-            console.log("Debug: Profile does exist, Authentication failed");
-            return res.json({
-                status: "Successful"
-            });
-        } else {
-            return res.json({
-                status: "Unsuccessful"
-            });
-        }
-    }).clone()
-}
-
 async function register_author(req, res){
     let author_found = await Author.findOne({username: req.body.username}, function(err, author){
         if(!author){
@@ -109,7 +94,7 @@ async function get_profile(req, res) {
     }
 
     console.log('Debug: Getting the token in the login database.')
-    const login = Login.findOne({token: req.cookies["token"]});
+    const login = await Login.findOne({token: req.cookies["token"]});
 
     if(login == undefined){
         return res.sendStatus(404);
@@ -121,14 +106,18 @@ async function get_profile(req, res) {
         return res.sendStatus(404);
     }
     else if(author.username == login.username){
+        console.log("Debug: This is your personal account.")
         return res.json({
-            username: author.username,
+            viewed: author.username,
+            viewer: login.username,
             personal: true
         });
     }
     else if(author.username != login.username){
+        console.log("Debug: This is not your personal account.")
         return res.json({
-            username: author.username,
+            viewed: author.username,
+            viewer: login.username,
             personal: false
         });
     }
@@ -136,6 +125,5 @@ async function get_profile(req, res) {
 
 module.exports={
     register_author,
-    get_profile,
-    doesProfileExist
+    get_profile
 }

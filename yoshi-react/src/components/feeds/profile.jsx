@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import axios from 'axios';
+import './main.css';
 function Profile() {
     const { username } = useParams();
     const navigate = useNavigate();

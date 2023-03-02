@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from "react";
+import './main.css';
 function Messages() {
     const navigate = useNavigate();
     const checkForAuthor = () => {

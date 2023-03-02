@@ -5,7 +5,7 @@ import TopNav from './topNav.jsx';
 // import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
 import LogOut from '../../logOut.js';
-import './public.css';
+import './main.css';
 
 function PublicFeed() {
     const navigate = useNavigate();

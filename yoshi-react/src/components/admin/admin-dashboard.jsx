@@ -61,7 +61,7 @@ function AdminDashboard() {
     }
     return (
         <div>
-            Hello. You are viewing the admin dashboard.
+            <h1>Admin Dashboard</h1>
             <button type="button" onClick={() => LogOut()}>Log Out</button>
             <div><Authors/></div>
         </div>

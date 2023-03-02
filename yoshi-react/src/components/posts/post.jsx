@@ -142,7 +142,8 @@ function Post() {
                         </div>
                         
                         <div className={"postMenuInput"}>
-                        <input type={"file"} accept={"image/*"} multiple = "false" className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/>
+                        {/* <input type={"file"} accept={"image/*"} multiple = "false" className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/> */}
+                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/>
                         <br/>
                         <img src="" style={{maxHeight: "15vh"}} alt="" />
                         </div>

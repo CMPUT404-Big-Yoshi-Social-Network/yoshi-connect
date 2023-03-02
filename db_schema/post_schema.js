@@ -3,6 +3,19 @@ const { Schema } = mongoose;
 
 const crypto = require('crypto');
 
+const comment_scheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    commenter: String,
+    commenterId: String,
+    comment: String
+})
+
+const like_scheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    liker: String,
+    likerId: String
+})
+
 const post_scheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     title: String,
@@ -11,7 +24,8 @@ const post_scheme = new Schema({
     content: String,
     categories: [String],
     count: Number,
-    comments: String,
+    likes: [like_scheme],
+    comments: [comment_scheme],
     published: String,
     visibility: String,
     unlisted: Boolean,

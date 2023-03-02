@@ -9,6 +9,8 @@ function Post() {
         contentType: "type/plain",
         visibility: "Public",
         content: "",
+        likes: [],
+        comments: [],
         unlisted: false,
         image: ""
     })

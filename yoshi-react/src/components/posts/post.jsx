@@ -9,6 +9,8 @@ function Post() {
         contentType: "type/plain",
         visibility: "Public",
         content: "",
+        likes: [],
+        comments: [],
         unlisted: false,
         image: ""
     })
@@ -19,6 +21,7 @@ function Post() {
        checkExpiry();
     });
     const post_post = () => {
+        console.log('Debug: Creating a post!')
         togglePostMenu()
 
         let config = {
@@ -26,7 +29,7 @@ function Post() {
             maxBodyLength: Infinity,
             /////////////////////////////////////////////////////////////////////////////////////
             //Fix This Later
-            url: '/server/authors/a70c9729-fb37-4354-8b69-9d71aad3c6f9/posts/',
+            url: '/server/authors/a9f468da-e50a-4a2d-805f-9e80ef49a681/posts/',
             /////////////////////////////////////////////////////////////////////////////////////
             headers: {
             'Content-Type': 'multipart/form-data'
@@ -35,7 +38,7 @@ function Post() {
         }
         
         console.log(config)
-        axios.put('/server/authors/a70c9729-fb37-4354-8b69-9d71aad3c6f9/posts/', config)
+        axios.put('/server/authors/a9f468da-e50a-4a2d-805f-9e80ef49a681/posts/', config)
         .then((response) => {
             if ( response.data.status === 'Successful' ) {
             console.log("Debug: Token received.");
@@ -47,7 +50,7 @@ function Post() {
             console.log(e);
         })}
 
-        const post_image = () => {
+    const post_image = () => {
         let formData = new FormData();
         let imageFile = document.querySelector('#image');
         formData.append("image", imageFile.files[0]);
@@ -100,7 +103,7 @@ function Post() {
     
 
     return (
-        <body className={"tempBackground"}>
+        <div className={"tempBackground"}>
             <button className={"createPostButton"} type={"button"} value={"Create Post"} onClick={togglePostMenu}>CREATE NEW POST</button>
             {isOpen &&    
                 <div className={"postMenuPage"}>
@@ -156,7 +159,8 @@ function Post() {
                         </div>
                         
                         <div className={"postMenuInput"}>
-                        <input type={"file"} accept={"image/*"} multiple = "false" className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/>
+                        {/* <input type={"file"} accept={"image/*"} multiple = "false" className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/> */}
+                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/>
                         <br/>
                         <img src="" style={{maxHeight: "15vh"}} alt="" />
                         </div>
@@ -170,7 +174,7 @@ function Post() {
                 </div>
             </div>
             }   
-        </body>        
+        </div>        
     )
 }
 

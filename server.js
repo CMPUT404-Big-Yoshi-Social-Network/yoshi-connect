@@ -111,7 +111,10 @@ app.put('/server/admin/dashboard', (req, res) => {
 })
 
 app.post('/server/admin/dashboard', async (req, res) => {
-  if (req.body.data.status == 'Logging Out') {
+  if (req.body.status == 'Is username in use') {
+    console.log('Debug: Checking if the username is already taken')
+    await checkUsername(req, res);
+  } else if (req.body.data.status == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
   } else if (req.body.data.status == 'Fetching Authors') {
@@ -119,7 +122,7 @@ app.post('/server/admin/dashboard', async (req, res) => {
     return res.json({
       authors: await Author.find()
     })
-  } 
+  }
 })
 
 app.delete('/server/admin/dashboard', (req, res) => {

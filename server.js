@@ -46,6 +46,9 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
+const { author_scheme } = require('./db_schema/author_schema.js');
+const database = mongoose.connection;
+const Author = database.model('Author', author_scheme);
 
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
@@ -57,7 +60,6 @@ app.get('/favicon.ico', (req, res) => {
 
 // Sign up page 
 app.post('/server/signup', async (req, res) => {
-  console.log(req)
   if (req.body.status == 'Is username in use') {
     console.log('Debug: Checking if the username is already taken')
     await checkUsername(req, res);
@@ -98,14 +100,14 @@ app.get('/server/admin/dashboard', async (req, res) => {
   })
 })
 
-app.post('/server/admin/dashboard', (req, res) => {
+app.post('/server/admin/dashboard', async (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
   } else if (req.body.data.status == 'Fetching Authors') {
     console.log('Debug: Getting all authors')
-    return json({
-      authors: Author.find()
+    return res.json({
+      authors: await Author.find()
     })
   }
 })

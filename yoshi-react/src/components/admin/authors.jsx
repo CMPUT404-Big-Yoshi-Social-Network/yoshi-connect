@@ -9,7 +9,7 @@ function Authors() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/server/admin/dashboard',
+            url: '/server/admin/dashboard',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -18,7 +18,7 @@ function Authors() {
             }
         }
         axios
-        .post('/server/server/admin/dashboard', config)
+        .post('/server/admin/dashboard', config)
         .then((response) => {
             setAuthors(response.data.authors)
         })

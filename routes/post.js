@@ -69,6 +69,7 @@ async function addLike(req, res){
 async function deleteLike(req, res){
     console.log('Debug: Removing a like!')
     let updated_posts = [];
+    let success = false;
     await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
         console.log('Debug: Find the post with the like.')
         if (history) {
@@ -78,10 +79,15 @@ async function deleteLike(req, res){
                 history.posts[post_idx].likes[like_idx].splice(like_idx, 1);
                 updated_posts = history.posts;
                 postHistory.posts[post_idx].count--;
+                success = true;
             }
         }
     }).clone()
     await Post_History.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+
+    return json({
+        status: success,
+    })
 }
 
 async function addComment(req, res){
@@ -114,6 +120,7 @@ async function addComment(req, res){
 async function deleteComment(req, res){
     console.log('Debug: Deleting a comment!')
     let updated_posts = [];
+    let success = false;
     await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
         console.log('Debug: Find the post with the comment.')
         if (history) {
@@ -122,15 +129,21 @@ async function deleteComment(req, res){
                 let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
                 history.posts[post_idx].comments[com_idx].splice(com_idx, 1);
                 updated_posts = history.posts;
+                success = true;
             }
         }
     }).clone()
     await Post_History.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+
+    return json({
+        status: success,
+    })
 }
 
 async function editComment(req, res){
     console.log('Debug: Editing a comment!')
     let updated_posts = [];
+    let success = false;
     await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
         console.log('Debug: Find the post with the comment.')
         if (history) {
@@ -139,10 +152,15 @@ async function editComment(req, res){
                 let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
                 history.posts[post_idx].comments[com_idx].comment = req.body.data.comment;
                 updated_posts = history.posts;
+                success = true;
             }
         }
     }).clone()
     await Post_History.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+
+    return json({
+        status: success,
+    })
 }
 
 async function create_post(req, res, postId){

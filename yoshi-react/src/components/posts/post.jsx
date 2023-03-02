@@ -46,7 +46,6 @@ function Post() {
         .catch((e) =>{
             console.log(e);
         })}
-    }
 
     const [isOpen, setIsOpen] = useState(false)
     const togglePostMenu = () => {

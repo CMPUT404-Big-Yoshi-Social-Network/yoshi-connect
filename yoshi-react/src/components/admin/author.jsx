@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import axios from 'axios';
 import ModifyAuthor from "./modify-form.jsx";
 import Popup from 'reactjs-popup';
+import { useState } from 'react';
 
 function Author(props) {
-    const { username } = props;
-    const modifyAuthor = () => {
-        console.log('Debug: Modifying this author')
-    }
+    const [username, setUsername] = useState('');
+    useEffect(() => {
+        setUsername(props.username)
+     }, [props]);
     const deleteAuthor = () => {
         console.log('Debug: Deleting this author')
         let config = {
@@ -32,10 +33,10 @@ function Author(props) {
     }
     return (
         <div id='author'>
-            { username }
+            { props.username }
             <button type="button" id='delete' onClick={() => deleteAuthor()}>Delete</button>
             <Popup trigger={<button>Modify</button>} position="right center">
-                <ModifyAuthor/>
+                <ModifyAuthor {...props}/>
             </Popup>
         </div>
     )

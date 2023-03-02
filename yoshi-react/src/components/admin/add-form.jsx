@@ -21,10 +21,11 @@ function AddAuthor() {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: {
-            status: 'Add New Author',
-            username: data.username,
-            password: data.password,
-            email: data.email
+                status: 'Add New Author',
+                username: data.username,
+                password: data.password,
+                email: data.email,
+                admin: false
             }
         }
 

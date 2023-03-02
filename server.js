@@ -105,6 +105,7 @@ app.put('/server/admin/dashboard', (req, res) => {
     console.log('Debug: Adding a new author');
     addAuthor(req, res);
   } else if (req.body.data.status == 'Modify an Author') {
+    console.log('Debug: Modifying the Author')
     modifyAuthor(req, res);
   }
 })

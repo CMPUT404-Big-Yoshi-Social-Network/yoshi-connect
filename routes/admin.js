@@ -56,26 +56,21 @@ async function addAuthor(req, res){
 
 async function modifyAuthor(req, res){
     let updated_author = null;
-    await Author.findOne({username: req.body.data.oldUsername}, function(err, author){
+    await Author.findOne({_id: req.body.data.authorId}, function(err, author){
         if (author) {
-            if (req.body.data.toChange == 'Username') {
-                author.username = req.body.data.newUsername;
-            } else if (req.body.data.toChange == 'Password') {
-                author.password = crypto_js.SHA256(req.body.data.newPassword);
-            } else if (req.body.data.toChange == 'Email') {
-                author.email = req.body.data.newEmail;
-            } else if (req.body.data.toChange == 'About') {
-                author.about = req.body.data.newAbout;
-            } else if (req.body.data.toChange == 'Pronouns') {
-                author.pronouns = req.body.data.newPronouns;
-            } else if (req.body.data.toChange == 'Admin') {
-                author.admin = req.body.data.newAdmin;
-            }
+            console.log('Debug: Found the author')
+            author.username = req.body.data.newUsername;
+            author.password = crypto_js.SHA256(req.body.data.newPassword);
+            author.email = req.body.data.newEmail;
+            author.about = req.body.data.newAbout;
+            author.pronouns = req.body.data.newPronouns;
+            author.admin = req.body.data.newAdmin;
             updated_author = author;
         } 
     }).clone()
     if (updated_author != null) {
-        await Author.replaceOne({_id: req.body.data.authorId}, { 
+        await Author.findOneAndReplace({_id: updated_author._id}, { 
+            _id: updated_author._id,
             username: updated_author.username, 
             password: updated_author.password, 
             email: updated_author.email, 

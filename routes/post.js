@@ -11,6 +11,7 @@ const Like = database.model('Like', like_scheme);
 const Comment = database.model('Comment', comment_scheme);
 
 async function create_post_history(author_id){
+    console.log('Debug: Creating post history for user')
     let new_post_history = new Post_History ({
         authorId: author_id,
         num_posts: 0,
@@ -23,7 +24,7 @@ async function create_post_history(author_id){
 }
 
 async function addLike(req, res){
-    console.log('Debug: Adding a like!')
+    console.log('Debug: Adding a like')
     const postHistory = await Post_History.findOne({authorId: req.body.data.authorId});
     let success = false;
 
@@ -50,7 +51,7 @@ async function addLike(req, res){
 }
 
 async function deleteLike(req, res){
-    console.log('Debug: Removing a like!')
+    console.log('Debug: Removing a like')
     let updated_posts = [];
     let success = false;
     await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
@@ -74,7 +75,7 @@ async function deleteLike(req, res){
 }
 
 async function addComment(req, res){
-    console.log('Debug: Adding a comment!')
+    console.log('Debug: Adding a comment')
     const postHistory = await Post_History.findOne({authorId: req.body.data.authorId});
     let success = false;
 
@@ -101,7 +102,7 @@ async function addComment(req, res){
 }
 
 async function deleteComment(req, res){
-    console.log('Debug: Deleting a comment!')
+    console.log('Debug: Deleting a comment')
     let updated_posts = [];
     let success = false;
     await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
@@ -124,7 +125,7 @@ async function deleteComment(req, res){
 }
 
 async function editComment(req, res){
-    console.log('Debug: Editing a comment!')
+    console.log('Debug: Editing a comment')
     let updated_posts = [];
     let success = false;
     await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
@@ -147,6 +148,7 @@ async function editComment(req, res){
 }
 
 async function create_post(req, res, postId){
+    console.log('Debug: Creating a post')
     let authorId = req.params.author_id;
     //Setup the rest of the post
     const title = req.body.data.title;
@@ -215,7 +217,7 @@ async function create_post(req, res, postId){
 }
 
 async function get_post(req, res){
-    console.log("Get Post");
+    console.log("Debug: Getting a post");
 
     const authorId = req.params.author_id;
     const postId = req.params.post_id;
@@ -237,6 +239,7 @@ async function get_post(req, res){
 }
 
 async function get_posts_paginated(req, res){
+    console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
 
     console.log(req.query.page);
@@ -277,7 +280,7 @@ async function get_posts_paginated(req, res){
 }
 
 async function update_post(req, res){
-    console.log("Update Post");
+    console.log("Debug: Update a post");
 
     const authorId = req.params.author_id;
     const postId = req.params.post_id;
@@ -315,7 +318,7 @@ async function update_post(req, res){
 }
 
 async function delete_post(req, res){
-    console.log("Delete Post");
+    console.log("Debug: Delete a post");
 
     const authorId = req.params.author_id;
     const postId = req.params.post_id;

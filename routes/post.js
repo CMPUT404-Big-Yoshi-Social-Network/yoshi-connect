@@ -39,7 +39,7 @@ async function addLike(req, res){
         console.log('Debug: No such post exists!')
     }
 
-    return json({
+    return res.json({
         status: success,
         likeId: like._id,
         liker: like.liker,

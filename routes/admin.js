@@ -56,60 +56,40 @@ async function addAuthor(req, res){
 }
 
 async function modifyAuthor(req, res){
-    let updated_author = null;
 
-    already_existing_author = await Author.findOne({username: req.body.data.newUsername});
-    if(already_existing_author){
-        return res.sendStatus(401);
+    const author = await Author.findOne({_id: req.body.data.authorId}).clone();
+
+    if(author == undefined){
+        return res.sendStatus(404);
     }
 
-    await Author.findOne({_id: req.body.data.authorId}, function(err, author){
-        if (author) {
-            console.log('Debug: Found the author')
-            author.username = req.body.data.newUsername;
-            author.password = crypto_js.SHA256(req.body.data.newPassword);
-            author.email = req.body.data.newEmail;
-            author.about = req.body.data.newAbout;
-            author.pronouns = req.body.data.newPronouns;
-            author.admin = req.body.data.newAdmin;
-            updated_author = author;
-        } 
-    }).clone()
-
-    let updated_login = null;
-    await Login.findOne({authorId: req.body.data.authorId}, function(err, login){
-        if (login) {
-            console.log('Debug: Update login credentials if it exists')
-            login.username = req.body.data.newUsername;
-            login.admin = req.body.data.newAdmin;
-            updated_login = login;
-        } 
-    }).clone()
-    if (updated_author != null) {
-        await Author.findOneAndReplace({_id: updated_author._id}, { 
-            _id: updated_author._id,
-            username: updated_author.username, 
-            password: updated_author.password, 
-            email: updated_author.email, 
-            about: updated_author.about, 
-            pronouns: updated_author.pronouns, 
-            admin: updated_author.admin, 
-        }).clone()
-        if (updated_login != null) {
-            await Login.findOneAndReplace({authorId: updated_login.authorId}, { 
-                _id: updated_login._id,
-                authorId: updated_login.authorId,
-                username: updated_login.username,
-                token: updated_login.token, 
-                admin: updated_login.admin,
-                expires: updated_login.expires 
-            }).clone()
+    if(author.username != req.body.data.newUsername){
+        existing_author = await Author.findOne({username: req.body.data.newUsername});
+        if(existing_author){
+            return res.sendStatus(400);
         }
     }
 
-    return res.json({
-        status: "Successful"
-    })
+    console.log('Debug: Found the author');
+    author.username = req.body.data.newUsername;
+    author.password = crypto_js.SHA256(req.body.data.newPassword);
+    author.email = req.body.data.newEmail;
+    author.about = req.body.data.newAbout;
+    author.pronouns = req.body.data.newPronouns;
+    author.admin = req.body.data.newAdmin;
+    author.save();
+
+    await Login.find({authorId: req.body.data.authorId}, function(err, logins){
+        if(err){
+            res.sendStatus(500);
+        }
+        for(let i = 0; i < logins.length; i++){
+            logins[i].username = req.body.data.newUsername;
+            logins[i].admin = req.body.data.newAdmin;
+            logins[i].save();
+        }
+        return res.sendStatus(200);
+    }).clone();
 }
 
 async function deleteAuthor(req, res){

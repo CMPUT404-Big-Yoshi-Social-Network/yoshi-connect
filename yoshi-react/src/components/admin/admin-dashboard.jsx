@@ -52,6 +52,7 @@ function AdminDashboard() {
         axios
         .post('/server/admin/dashboard', config)
         .then((response) => {
+            localStorage['sessionId'] = "";
             navigate("/");
         })
         .catch(err => {

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-function Post() {
+function CreatePost() {
     const navigate = useNavigate();
     const [data, setData] = useState({
         title: "",
@@ -12,14 +12,33 @@ function Post() {
         likes: [],
         comments: [],
         unlisted: false,
-        image: ""
+        image: "",
+        authorId: '',
+        postId: ''
     })
-    const checkExpiry = () => {
-        
-    }
+    const checkExpiry = () => { }
     useEffect(() => {
        checkExpiry();
-    });
+       let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/posts/',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                sessionId: localStorage.getItem('sessionId'),
+                status: 'Fetching current authorId'
+            }
+        }
+        axios
+        .post('/server/posts/', config)
+        .then((response) => {
+            let authorId = response.data.authorId;
+            setData(prevAuthorId => ({...prevAuthorId, authorId}))
+        })
+        .catch(err => { });
+    }, []);
     const post_post = () => {
         console.log('Debug: Creating a post!')
         togglePostMenu()
@@ -27,23 +46,30 @@ function Post() {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            /////////////////////////////////////////////////////////////////////////////////////
-            //Fix This Later
-            url: '/server/authors/a9f468da-e50a-4a2d-805f-9e80ef49a681/posts/',
-            /////////////////////////////////////////////////////////////////////////////////////
+            url: '/server/authors/' + data.authorId + '/posts/',
             headers: {
             'Content-Type': 'multipart/form-data'
             },
-            data: data
+            data: {
+                title: data.title,
+                desc: data.desc,
+                contentType: data.contentType,
+                visibility: data.visibility,
+                content: data.content,
+                likes: data.likes,
+                comments: data.comments,
+                unlisted: data.unlisted,
+                image: data.image
+            }
         }
         
         console.log(config)
-        axios.put('/server/authors/a9f468da-e50a-4a2d-805f-9e80ef49a681/posts/', config)
+        axios.put('/server/authors/' + data.authorId + '/posts/', config)
         .then((response) => {
             if ( response.data.status === 'Successful' ) {
-            console.log("Debug: Token received.");
-            console.log("Debug: Going to public feed.");
-            navigate('/feed');
+                console.log("Debug: Token received.");
+                console.log("Debug: Going to public feed.");
+                navigate('/feed');
             }
         })
         .catch((e) =>{
@@ -55,10 +81,7 @@ function Post() {
         let imageFile = document.querySelector('#image');
         formData.append("image", imageFile.files[0]);
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        //Fix This Later
-        axios.put('/server/authors/a70c9729-fb37-4354-8b69-9d71aad3c6f9/posts/', formData, {
-        /////////////////////////////////////////////////////////////////////////////////////
+        axios.put('/server/authors/posts/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -103,7 +126,7 @@ function Post() {
     
 
     return (
-        <div className={"tempBackground"}>
+        <div>
             <button className={"createPostButton"} type={"button"} value={"Create Post"} onClick={togglePostMenu}>CREATE NEW POST</button>
             {isOpen &&    
                 <div className={"postMenuPage"}>
@@ -178,4 +201,4 @@ function Post() {
     )
 }
 
-export default Post;
+export default CreatePost;

@@ -1,4 +1,4 @@
-const { request_scheme, follower_scheme, following_scheme, friend_scheme } = require('../db_schema/author_schema.js');
+const { request_scheme, follower_scheme, following_scheme, friend_scheme, login_scheme} = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
@@ -6,6 +6,7 @@ const Request = database.model('Request', request_scheme);
 const Follower = database.model('Follower', follower_scheme);
 const Following = database.model('Following', following_scheme);
 const Friend = database.model('Friend', friend_scheme);
+const Login = database.model('Login', login_scheme);
 
 async function saveRequest(req, res) {
     var request = new Request({
@@ -70,7 +71,13 @@ async function findRequest(req, res) {
 }
 
 async function findAllRequests(req, res) {
-    await Request.find({receiverId: req.body.data.receiver}, function(err, requests){
+    let username = '';
+    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+        console.log('Debug: Retrieving current author logged in')
+        username = login[0].username
+    }).clone();
+
+    await Request.find({receiverId: username}, function(err, requests){
         console.log("Debug: Requests exists");
         return res.json({
             requests: requests

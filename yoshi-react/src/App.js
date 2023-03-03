@@ -62,7 +62,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/api/docs',
-    element: <SwaggerUI url="/server/api-docs.json" />
+    element: <SwaggerUI type="module" url="/server/api-docs.json" />
   },
   {
     path: '*' || '/notfound/', 

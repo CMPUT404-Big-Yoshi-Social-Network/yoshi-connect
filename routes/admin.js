@@ -109,17 +109,16 @@ async function modifyAuthor(req, res){
 async function deleteAuthor(req, res){
     console.log('Debug: Attempt to delete an author.')
     await Author.deleteOne({username: req.body.username}, function(err, author){
-        if(author){
-            console.log("Debug: Author does exist and was deleted.");
-            return res.json({
-                status: "Successful"
-            });
-        } else {
-            return res.json({
-                status: "Unsuccessful"
-            });
+
+        if(!author){
+            return res.sendStatus(404);
         }
-    }).clone()
+
+        Login.deleteMany({username: req.body.username}, function(err, delete_count_obj) {
+            return res.sendStatus(200)
+        }).clone();
+    }).clone();
+    
 }
 
 module.exports={

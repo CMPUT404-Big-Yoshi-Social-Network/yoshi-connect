@@ -130,8 +130,21 @@ async function getCurrentAuthor(req, res){
     })
 }
 
+async function getCurrentAuthorUsername(req, res){
+    let username = '';
+    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+        console.log('Debug: Retrieving current author logged in')
+        console.log(login)
+        username = login[0].username
+        return res.json({
+            username: username
+        })
+    }).clone();
+}
+
 module.exports={
     register_author,
     get_profile,
-    getCurrentAuthor
+    getCurrentAuthor,
+    getCurrentAuthorUsername
 }

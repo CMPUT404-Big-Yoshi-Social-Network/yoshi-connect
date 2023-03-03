@@ -34,10 +34,11 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile, getCurrentAuthor } = require('./routes/author');
+const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
+const { fetchFriends } = require('./routes/friend');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -192,11 +193,14 @@ app.get('/server/users/:username', async (req,res) => {
   get_profile(req, res);
 })
 
-app.post('/server/requests', (req, res) => {
+app.post('/server/requests', async (req, res) => {
   if (req.body.data.status == 'Fetching Requests') {
     console.log('Debug: Getting friend requests')
     findAllRequests(req, res);
-  }
+  } else if ( req.body.data.status == 'Fetching current authorId') { 
+      console.log('Debug: Getting the current author logged in');
+      await getCurrentAuthorUsername(req, res);
+    } 
 })
 
 app.put('/server/requests', (req, res) => {
@@ -244,6 +248,11 @@ app.delete('/server/users/:username', (req, res) => {
     console.log('Debug: Deleting Friend Request')
     deleteRequest(req, res);
   }
+})
+
+app.post('/server/friends', async (req, res) => {
+  console.log('Debug: Getting the author friends');
+  fetchFriends(req, res);
 })
 
 

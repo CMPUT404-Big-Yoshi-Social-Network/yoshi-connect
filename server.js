@@ -23,7 +23,9 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-require('dotenv').config()
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+require('dotenv').config();
 mongoose.set('strictQuery', true);
 
 // Setting up app
@@ -34,6 +36,7 @@ const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile } = require('./routes/author');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
+const { addAuthor, deleteAuthor, modifyAuthor } = require('./routes/admin');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
@@ -45,10 +48,29 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
+const { author_scheme } = require('./db_schema/author_schema.js');
+const database = mongoose.connection;
+const Author = database.model('Author', author_scheme);
 
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Hello World',
+      version: '1.0.0',
+      description: "Yoshi-connect API",
+    },
+  },
+  apis: ['./server.js'], // files containing annotations as above
+};
+
+const openapiSpecification = swaggerJsdoc(options);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);
@@ -56,7 +78,6 @@ app.get('/favicon.ico', (req, res) => {
 
 // Sign up page 
 app.post('/server/signup', async (req, res) => {
-  console.log(req)
   if (req.body.status == 'Is username in use') {
     console.log('Debug: Checking if the username is already taken')
     await checkUsername(req, res);
@@ -97,10 +118,35 @@ app.get('/server/admin/dashboard', async (req, res) => {
   })
 })
 
-app.post('/server/admin/dashboard', (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
+app.put('/server/admin/dashboard', (req, res) => {
+  if (req.body.data.status == 'Add New Author') {
+    console.log('Debug: Adding a new author');
+    addAuthor(req, res);
+  } else if (req.body.data.status == 'Modify an Author') {
+    console.log('Debug: Modifying the Author')
+    modifyAuthor(req, res);
+  }
+})
+
+app.post('/server/admin/dashboard', async (req, res) => {
+  if (req.body.status == 'Is username in use') {
+    console.log('Debug: Checking if the username is already taken')
+    await checkUsername(req, res);
+  } else if (req.body.data.status == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
+  } else if (req.body.data.status == 'Fetching Authors') {
+    console.log('Debug: Getting all authors')
+    return res.json({
+      authors: await Author.find()
+    })
+  }
+})
+
+app.delete('/server/admin/dashboard', (req, res) => {
+  if (req.body.status == 'Delete an Author') {
+    console.log('Debug: Deleting an Author');
+    deleteAuthor(req, res);
   }
 })
 

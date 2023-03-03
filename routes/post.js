@@ -217,8 +217,7 @@ async function create_post(req, res, postId){
 async function get_post(req, res){
     console.log("Get Post");
 
-    let authorId = await getCurrentAuthor(req);
-
+    const authorId = req.params.author_id;
     const postId = req.params.post_id;
 
     let post = await Post_History.aggregate([
@@ -238,7 +237,7 @@ async function get_post(req, res){
 }
 
 async function get_posts_paginated(req, res){
-    let authorId = await getCurrentAuthor(req);
+    const authorId = req.params.author_id;
 
     console.log(req.query.page);
     console.log(req.query.size);
@@ -280,9 +279,8 @@ async function get_posts_paginated(req, res){
 async function update_post(req, res){
     console.log("Update Post");
 
-    let authorId = await getCurrentAuthor(req);
-
-    postId = req.params.post_id;
+    const authorId = req.params.author_id;
+    const postId = req.params.post_id;
 
     const title = req.body.title;
     const desc = req.body.desc;
@@ -319,8 +317,7 @@ async function update_post(req, res){
 async function delete_post(req, res){
     console.log("Delete Post");
 
-    let authorId = await getCurrentAuthor(req);
-
+    const authorId = req.params.author_id;
     const postId = req.params.post_id;
 
     const post_history = await Post_History.findOne({authorId: authorId});

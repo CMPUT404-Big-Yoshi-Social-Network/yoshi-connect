@@ -55,7 +55,9 @@ if (process.env.NODE_ENV === "development") {
 
 const openapiSpecification = swaggerJsdoc(options);
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+app.use('/server/api-docs.json', (req, res) => {
+  res.send(JSON.stringify(openapiSpecification));
+});
 
 app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);

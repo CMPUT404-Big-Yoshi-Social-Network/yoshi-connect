@@ -12,6 +12,8 @@ import Messages from "./components/feeds/messages.jsx";
 import PageNotFound from "./components/user-error/404.jsx";
 import UserForbidden from "./components/user-error/403.jsx";
 import UserUnauthorized from "./components/user-error/401.jsx";
+import SwaggerUI from "swagger-ui-react";
+import "swagger-ui-react/swagger-ui.css";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +59,10 @@ const router = createBrowserRouter([
   {
     path: '/unauthorized/', 
     element: <UserUnauthorized/>   
+  },
+  {
+    path: '/api/docs',
+    element: <SwaggerUI url="/server/api-docs.json" />
   },
   {
     path: '*' || '/notfound/', 

@@ -3,4 +3,4 @@ const config = {
     extensionsToTreatAsEsm: ['.jsx'],
   };
   
-  module.exports = config;
+  export default config;

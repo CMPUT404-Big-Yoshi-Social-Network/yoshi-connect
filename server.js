@@ -23,7 +23,6 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const {options} = require('./openAPI/options.js');
 require('dotenv').config();
@@ -54,7 +53,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const openapiSpecification = swaggerJsdoc(options);
-
+console.log(JSON.stringify(openapiSpecification))
 app.use('/server/api-docs.json', (req, res) => {
   res.send(JSON.stringify(openapiSpecification));
 });
@@ -67,10 +66,20 @@ app.get('/favicon.ico', (req, res) => {
  * @openapi
  * /server/signup:
  *  post:
- *    description: Signup page
+ *    security:
+ *      - loginToken: []
+ *    description: Signup url. Allows creation of an account and automatically logins to this new account. 
  *    responses:
  *      200:
- *        description: successfully created an account
+ *        description: Successfully created an account
+ *        headers:
+ *         Set-Cookie:
+ *            schema:
+ *              type: string
+ *              description: This token identifies you as being logged in and allows you to perform other api calls
+ *              example: token=QV1hAYUZU5Qu2dkrP4peLN
+ *      400:
+ *        description: NEEDS TO BE REFACTORED Signup not possible, username, is already taken, field missing, etc.
  */
 app.post('/server/signup', async (req, res) => {
   console.log(req)
@@ -83,7 +92,23 @@ app.post('/server/signup', async (req, res) => {
   }
 })
 
-// Login page
+/**
+ * @openapi
+ * /server/login:
+ *  post:
+ *    description: Login url, so you can authenticate locally with the server
+ *    responses:
+ *      200:
+ *        description: Successfully created an account
+ *        headers:
+ *         Set-Cookie:
+ *            schema:
+ *              type: string
+ *              description: This token identifies you as being logged in and allows you to perform other api calls
+ *              example: token=QV1hAYUZU5Qu2dkrP4peLN
+ *      400:
+ *        description: NEEDS TO BE REFACTORED Login not possible. Failed due to incorrect username or password. 
+ */
 app.post('/server/login', async (req, res) => {
   console.log('Debug: Login as Author')
   await authAuthor(req, res);

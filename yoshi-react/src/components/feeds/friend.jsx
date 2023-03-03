@@ -2,16 +2,31 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from "react";
 function FriendFeed() {
     const navigate = useNavigate();
-    const checkForAuthor = () => {
-        const token = localStorage.getItem('token');
-        if (token === null) {
-            console.log("Debug: You are not logged in.")
-            return navigate('/unauthorized');
+    const checkExpiry = () => {
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: '/feed',
         }
-        console.log("Debug: You are logged in.")
+        axios
+        .get('/server/feed', config)
+        .then((response) => {
+            if (response.data.status === "Expired") {
+                console.log("Debug: Your token is expired.")
+                LogOut();
+                navigate('/');
+            }
+            else{console.log('Debug: Your token is not expired.')}
+        })
+        .catch(err => {
+            if (err.response.status === 401) {
+                console.log("Debug: Not authorized.");
+                navigate('/unauthorized'); // 401 Not Found
+            }
+        });
     }
     useEffect(() => {
-        checkForAuthor();
+       checkExpiry();
     });
     return (
         <div>

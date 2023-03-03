@@ -3,8 +3,6 @@ import renderer from "react-test-renderer";
 import welcome from "../../welcome/welcome";
 import "@testing-library/jest-dom";
 
-import Counter from "../components/Counter";
-
 //test block
 test("on inital render, the sign up button is there", () => {
 // render the component on virtual dom

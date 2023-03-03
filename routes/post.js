@@ -52,20 +52,20 @@ async function deleteLike(req, res){
     console.log('Debug: Removing a like')
     let updated_posts = [];
     let success = false;
-    await Post_History.findOne({authorId: req.body.data.authorId}, function(err, history){
+    await Post_History.findOne({authorId: req.body.authorId}, function(err, history){
         console.log('Debug: Find the post with the like.')
         if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
             if (post_idx > -1) { 
-                let like_idx = history.posts[post_idx].likes.map(obj => obj._id).indexOf(req.body.data.likeId);
+                let like_idx = history.posts[post_idx].likes.map(obj => obj._id).indexOf(req.body.likeId);
                 history.posts[post_idx].likes[like_idx].splice(like_idx, 1);
                 updated_posts = history.posts;
-                postHistory.posts[post_idx].count--;
+                history.posts[post_idx].count--;
                 success = true;
             }
         }
     }).clone()
-    await Post_History.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+    await Post_History.findOneAndReplace({authorId: req.body.authorId}, {authorId: req.body.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
 
     return json({
         status: success,

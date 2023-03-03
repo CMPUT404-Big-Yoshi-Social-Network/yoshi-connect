@@ -6,12 +6,9 @@ import { useState } from 'react';
 
 function Post() {
     // const { veiwerId } = props;
-    const veiwerId = "15d84277-d4ec-42b3-8e75-1278cd5654c2"
-    const postId = "300c32ac-cebc-42f6-b3dd-2fb6f481f61c"
-    const authorId = "15d84277-d4ec-42b3-8e75-1278cd5654c2"
-
-
-    axioz.get("/server/author")
+    const veiwerId = "a77ed810-6d30-4b25-a5e8-16fdb96cd1de"
+    const postId = "8210dcae-cd16-4ab7-81ba-2df2bb36008e"
+    const authorId = "a77ed810-6d30-4b25-a5e8-16fdb96cd1de"
 
     // const { authorId, postId } = useParams();
     const [data, setData] = useState({
@@ -87,7 +84,7 @@ function Post() {
             method: "delete",
             maxBodyLength: "Infinity",
             url: "/server/authors/"+authorId+"/posts/"+postId,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/json' },
             data: {
                 likeId: veiwerId,
                 authorId: authorId,

@@ -137,8 +137,7 @@ async function authAuthor(req, res) {
             if (!req.author.admin) {
                 console.log("Debug: You are not an admin. Your login will not be cached.")
                 return res.json({
-                    username: req.body.username,
-                    authorId: req.author._id,
+                    sessionId: token,
                     status: "Unsuccessful"
                 }); 
             }
@@ -149,18 +148,15 @@ async function authAuthor(req, res) {
             console.log("Debug: Login Cached.")
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
             return res.json({
-                username: req.body.username,
-                authorId: req.author._id,
+                sessionId: token,
                 status: "Successful"
             });
         }
         return res.json({
-            username: req.body.username,
             status: "Unsuccessful"
         });
     }
     return res.json({
-        username: req.body.username,
         status: "Unsuccessful"
     });
 }

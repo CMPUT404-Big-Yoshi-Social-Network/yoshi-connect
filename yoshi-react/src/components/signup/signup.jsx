@@ -28,8 +28,9 @@ export default function Signup() {
         .then((response) => {
           console.log("Debug: Token received.");
           if ( response.data.status === 'Successful' ) {
+            console.log("Debug: SessionId saved locally.");
+            window.localStorage.setItem('sessionId', response.data.sessionId);
             console.log("Debug: Going to public feed.");
-            window.localStorage.setItem("token", response.data.token);
             navigate('/feed');
           }
         })

@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect } from "react";
+import Notifications from './notifcation-box.jsx';
+
 function PublicFeed() {
     const navigate = useNavigate();
     const checkExpiry = () => {
@@ -55,6 +57,7 @@ function PublicFeed() {
         <div>
             Welcome to the Public Feed. You are signed in.
             <button type="button" onClick={() => LogOut()}>Log Out</button>
+            <Notifications/>
         </div>
     )
 }

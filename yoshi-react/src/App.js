@@ -13,6 +13,7 @@ import PageNotFound from "./components/user-error/404.jsx";
 import UserForbidden from "./components/user-error/403.jsx";
 import UserUnauthorized from "./components/user-error/401.jsx";
 import BadRequest from './components/user-error/400.jsx';
+import ApiDocs from "./components/api-docs/api-docs.jsx";
 
 const router = createBrowserRouter([
   {
@@ -48,11 +49,11 @@ const router = createBrowserRouter([
     element: <Profile/>
   },
   {
-    path: '/messages/',
+    path: '/messages/', 
     element: <Messages/>
   },
   {
-    path: '/forbidden/',
+    path: '/forbidden/', 
     element: <UserForbidden/>   
   },
   {
@@ -60,12 +61,16 @@ const router = createBrowserRouter([
     element: <UserUnauthorized/>   
   }, 
   {
-    path: '*' || '/notfound/', 
-    element: <PageNotFound/>   
+    path: '/badrequest/', 
+    element: <BadRequest/>
   },
   {
-    path: '/badrequest/', 
-    element: <BadRequest/>   
+    path: '/api-docs',
+    element: <ApiDocs/>
+  },
+  {
+    path: '*' || '/notfound/', 
+    element: <PageNotFound/>   
   }
 ])
   

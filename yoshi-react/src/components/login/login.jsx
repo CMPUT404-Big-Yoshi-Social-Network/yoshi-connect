@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import {Button, Container, Image, Card, Form} from 'react-bootstrap';
 import './login.css'
 export default function Login() {
-    console.log('):')
     const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',

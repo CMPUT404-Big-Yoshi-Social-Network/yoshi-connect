@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-function Post() {
+function CreatePost() {
     const navigate = useNavigate();
     const [data, setData] = useState({
         title: "",
@@ -201,4 +201,4 @@ function Post() {
     )
 }
 
-export default Post;
+export default CreatePost;

@@ -59,10 +59,10 @@ const router = createBrowserRouter([
     path: '/unauthorized/', 
     element: <UserUnauthorized/>   
   },
-  {
+  /*{
     path: '/api-docs',
     element: <ApiDocs/>
-  },
+  },*/
   {
     path: '*' || '/notfound/', 
     element: <PageNotFound/>   

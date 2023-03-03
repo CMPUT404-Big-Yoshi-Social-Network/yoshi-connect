@@ -46,6 +46,7 @@ function PublicFeed() {
         axios
         .post('/server/feed', config)
         .then((response) => {
+            localStorage['sessionId'] = "";
             navigate("/");
         })
         .catch(err => {

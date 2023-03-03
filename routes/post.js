@@ -290,30 +290,40 @@ async function update_post(req, res){
     const desc = req.body.desc;
     const contentType = req.body.contentType;
     const content = req.body.content;
-    const categories = [""];
+    const categories = req.body.categories;
     const visibility = req.body.visibility;
-    const unlisted = !req.body.listed;
+    const unlisted = req.body.listed;
+    const specifics = req.body.specifics;
+    const image = req.body.image;
 
     const post_history = await Post_History.findOne({authorId: authorId});
 
     const post = post_history.posts.id(postId)
 
-    if(title != post.title)
-        post.title = title;
-    if(desc != post.description)
-        post.description = desc;
-    if(contentType != post.contentType)
-        post.contentType = contentType;
-    if(content != post.content)
-        post.content = content;
-    if(visibility != post.visibility)
+    let specifics_updated = false;
+    post.title = title; 
+    post.description = desc;
+    post.contentType = contentType;
+    post.content = content;
+    if ( post.visibility != visibility ) {
+        if ( (visibility == 'Friends' || visibility == 'Public') && post.specifics.length != 0) {
+            console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
+            post.specifics = [];
+            specifics_updated = true;
+        } 
         post.visibility = visibility;
-    if(unlisted != post.unlisted)
-        post.unlisted = unlisted;
-    //TODO: UPDATE CATEGORIES -- refactor this
+    }
+    if ( !specifics_updated ) {
+        if ( post.specifics != specifics ) {
+            post.specifics = specifics;
+        }
+    }
+    post.categories = categories;
+    post.unlisted = unlisted;
+    post.image = image;
 
     await post_history.save()
-    console.log("Saved");
+    console.log("Debug: Post has been updated and saved.");
 
     return res.sendStatus(200);
 }

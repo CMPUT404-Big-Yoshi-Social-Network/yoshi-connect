@@ -126,6 +126,11 @@ app.post('/server/users/:username', (req, res) => {
   }
 })
 
+app.get('/server/nav', async (req, res) => {
+  console.log('Debug: Getting the current author logged in');
+  getCurrentAuthorUsername(req, res);
+})
+
 app.get('/',(req, res) => {
   res.render("index");
 });

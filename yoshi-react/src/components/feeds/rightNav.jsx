@@ -1,13 +1,35 @@
-//import { useParams } from 'react-router-dom';
-// import { useEffect } from 'react';
-// import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import './rightNav.css';
 
 function RightNavBar() {
-    //const { username } = useParams();
+    const { data } = useParams();
+    let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: '/server/nav',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: data
+      }
+    const getUsername = () => {
+        axios
+        .get('/server/nav')
+        .then((response) => {
+            console.log('This should get something', response)
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+    useEffect(() => {
+        getUsername();
+    }, [])
 
     return (
         <Navbar className="right-column">

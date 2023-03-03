@@ -76,17 +76,17 @@ function CreatePost() {
             console.log(e);
         })}
 
-    const post_image = () => {
-        let formData = new FormData();
-        let imageFile = document.querySelector('#image');
-        formData.append("image", imageFile.files[0]);
+    // const post_image = () => {
+    //     let formData = new FormData();
+    //     let imageFile = document.querySelector('#image');
+    //     formData.append("image", imageFile.files[0]);
 
-        axios.put('/server/authors/posts/', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-    }
+    //     axios.put('/server/authors/posts/', formData, {
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data'
+    //         }
+    //     })
+    // }
 
     const [isOpen, setIsOpen] = useState(false)
     const togglePostMenu = () => {

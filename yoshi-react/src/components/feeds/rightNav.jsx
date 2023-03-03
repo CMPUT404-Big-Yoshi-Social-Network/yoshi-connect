@@ -37,7 +37,9 @@ function RightNavBar() {
                     </div>
                 </Nav>
                 <div className='rn-div'>
-                        <img className='rn-pubCogImg' alt='rn-pubCogImg' src='/images/icon_settings.png' href='/settings' width={25}/>
+                    <a href='/settings'>
+                        <img className='rn-pubCogImg' alt='rn-pubCogImg' src='/images/icon_settings.png' width={25}/>
+                    </a>
                 </div>
             </Container>
         </Navbar>

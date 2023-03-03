@@ -53,8 +53,6 @@ if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
 
-<<<<<<< HEAD
-=======
 const openapiSpecification = swaggerJsdoc(options);
 app.use('/server/api-docs',
   swaggerUi.serve,
@@ -64,7 +62,6 @@ app.use('/server/api-docs',
 app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);
 })
->>>>>>> a18b3e021f6a12a58c2bf9d91bf3cb7b27024341
 
 /**
  * @openapi

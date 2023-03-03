@@ -45,15 +45,6 @@ const router = createBrowserRouter([
     element: <FriendFeed/>
   },
   {
-    path: '/post',
-    element: <CreatePost/>
-  },
-  
-  {
-    path: '/posts/', 
-    element: <Post/>
-  },
-  {
     path: '/users/:username/', 
     element: <Profile/>
   },

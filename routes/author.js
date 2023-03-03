@@ -8,9 +8,7 @@ mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
-const {create_post_history} = require('./post.js')
-
-const crypto = require('crypto');
+const {create_post_history} = require('./post.js');
 
 async function register_author(req, res){
     if(await checkUsername(req) === "In use")
@@ -66,8 +64,7 @@ async function register_author(req, res){
         console.log("Debug: Login Cached.")
         res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
         return res.json({
-            username: username,
-            authorId: author._id,
+            sessionId: token,
             status: "Successful"
         });
     })
@@ -76,7 +73,6 @@ async function register_author(req, res){
         if(err){
             console.log(err);
             return res.json({
-                message: "You could not be added to the database.",
                 status: "Unsuccessful"
             });
         }
@@ -123,7 +119,19 @@ async function get_profile(req, res) {
     }
 }
 
+async function getCurrentAuthor(req, res){
+    let authorId = '';
+    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+        console.log('Debug: Retrieving current author logged in')
+        authorId = login[0].authorId
+    }).clone();
+    return res.json({
+        authorId: authorId
+    })
+}
+
 module.exports={
     register_author,
-    get_profile
+    get_profile,
+    getCurrentAuthor
 }

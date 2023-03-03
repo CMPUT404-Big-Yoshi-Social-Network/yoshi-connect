@@ -2,8 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import Request from './request.jsx';
 
-function Requests(props) {
-    const { username } = props;
+function Requests() {
     const [requests, setRequests] = useState([]);
     useEffect(() => {
         console.log('Debug: Fetching all the requests for this user')
@@ -15,7 +14,7 @@ function Requests(props) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                receiver: username,
+                sessionId: localStorage.getItem('sessionId'),
                 status: 'Fetching Requests'
             }
         }
@@ -27,7 +26,7 @@ function Requests(props) {
         .catch(err => {
             console.error(err);
         });
-    }, [setRequests, username]);
+    }, [setRequests]);
     return (
         <div>
             <h3>Friend Requests</h3>

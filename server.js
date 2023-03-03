@@ -33,10 +33,9 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile } = require('./routes/author');
+const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
+const { register_author, get_profile, getCurrentAuthor } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment } = require('./routes/post');
-const { randomUUID } = require('crypto');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 
@@ -114,94 +113,78 @@ app.post('/server/feed', (req, res) => {
   }
 })
 
-app.get('/server/post/:post_id', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
-
-  await get_post(req, res);
+app.post('/server/posts/', async (req, res) => {
+  if ( req.body.data.status == 'Fetching current authorId') { 
+    console.log('Debug: Getting the current author logged in');
+    await getCurrentAuthor(req, res);
+  } else {
+    console.log('Debug: Paging the posts created by other (not the logged in author)');
+    await get_posts_paginated(req, res);
+  }
 })
 
-app.put('/server/post', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
-
+app.put('/server/authors/:author_id/posts/', async (req, res) => {
+  console.log('Debug: Creating a post')
   await create_post(req, res);
 })
 
-app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  console.log("awoidj")
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
+app.get('/server/authors/:author_id/posts/', async (req, res) => {
+  console.log('Debug: Paging the posts created by the logged in author');
+    if ( await checkExpiry(req, res) ) {
+      return res.sendStatus(404);
+    }
+  await get_posts_paginated(req, res);
+})
 
+app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+  console.log('Debug: Viewing a specific post by a specific author');
+  if ( await checkExpiry(req, res) ) {
+    return res.sendStatus(404);
+  }
   await get_post(req, res);
 })
 
 app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  if(await checkExpiry(req, res))
+  console.log('Debug: Updating a specific post by a specific author')
+  if ( await checkExpiry(req, res) ) {
     return res.sendStatus(404);
-
-  //If author_id is not the same as cookie then send 401
-  //Else update the post
-
+  }
   await update_post(req, res);
 })
 
 app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  if(await checkExpiry(req, res))
+   console.log('Debug: Deleting a specific post by a specific author')
+  if ( await checkExpiry(req, res) ) {
     return res.sendStatus(404);
-
-  if (req.body.data.status == 'Remove like') {
+  }
+  if ( req.body.data.status == 'Remove like' ) {
     console.log('Debug: Removing a like from a post!')
     deleteLike(req, res);
-  } else if (req.body.data.status == 'Remove comment') {
+  } else if ( req.body.data.status == 'Remove comment' ) {
     console.log('Debug: Removing a comment from a post!')
     deleteComment(req, res);
+  } else {
+    await delete_post(req, res);
   }
-
-  //If author_id is not the same as cookie then send 401
-  //Else create the post
-
-  await delete_post(req, res);
 })
 
 app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  if(await checkExpiry(req, res))
+  if ( await checkExpiry(req, res) ) {
     return res.sendStatus(404);
+  }
 
-  //If author_id is not the same as cookie then send 401
-  //Else create the post
-  if (req.body.data.status == 'Add like') {
+  if ( req.body.data.status == 'Add like' ) {
     console.log('Debug: Adding a like to a post!');
     addLike(req, res);
-  } else if (req.body.data.status == 'Add comment') {
+  } else if ( req.body.data.status == 'Add comment' ) {
     console.log('Debug: Adding a comment to a post!');
     addComment(req, res);
-  } else if (req.body.data.status == 'Edit comment') {
+  } else if ( req.body.data.status == 'Edit comment' ) {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);
-  } else {
-    await create_post(req, res, req.params.post_id);
   }
 })
-//CREATION URL
-app.get('/server/authors/:author_id/posts/', async (req, res) => {
-  console.log(req.url);
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
 
-  await get_posts_paginated(req, res);
-})
-//CREATION URL
-app.put('/server/authors/:author_id/posts/', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
-
-  //If author_id is not the same as cookie then send 401
-  //Else update the post
-  await create_post(req, res, undefined);
-})
-
-// Will most likely need to be removed in favour of /authors/{AUTHOR_ID}
 app.get('/server/users/:username', async (req,res) => {
   if(await checkExpiry(req))
     return res.sendStatus(401);

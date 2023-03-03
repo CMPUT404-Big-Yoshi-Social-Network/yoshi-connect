@@ -2,7 +2,7 @@
  * @type {import('jest').Config}
  */
 const config = {
-    extensionsToTreatAsEsm: ['.jsx']
+    "presets": ["@babel/preset-env", "@babel/preset-react"]
 };
 
 module.exports = config

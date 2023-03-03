@@ -14,27 +14,23 @@ const Comment = database.model('Comment', comment_scheme);
 /*
 Check if the author_id provided matches the authorid attached to the token
 */
-async function same_author(req, author_id){
-    token = req.cookies["token"];
-
-    const login = await Login.findOne({token: token});
-    if(login == undefined)
-        return false;
-
-    if(login.authorId == author_id)
-        return true;
-    return false;
+async function getCurrentAuthor(req){
+    let authorId = '';
+    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+        console.log('Debug: Retrieving current author logged in')
+        authorId = login[0].authorId
+    }).clone();
+    return authorId;
 }
 
-function create_post_history(author_id){
+async function create_post_history(author_id){
     let new_post_history = new Post_History ({
         authorId: author_id,
         num_posts: 0,
         posts: []
     })
 
-    //Might need an await here, not sure
-    new_post_history.save()
+    await new_post_history.save()
 
     return;
 }
@@ -164,10 +160,7 @@ async function editComment(req, res){
 }
 
 async function create_post(req, res, postId){
-    //TODO Make sure the author is the correct author (probably make this its own function)
-    const authorId = req.params.author_id;
-    if(await same_author(req, authorId) == false)
-        return res.sendStatus(401);
+    let authorId = await getCurrentAuthor(req);
 
     //Setup the rest of the post
     const title = req.body.data.title;
@@ -182,12 +175,11 @@ async function create_post(req, res, postId){
 
     //Get the author's document
     //Should be refactored to do use an aggregate pipeline in case of large number of posts
-    const post_history = await Post_History.findOne({authorId: authorId});
+    let post_history = await Post_History.findOne({authorId: authorId});
 
-    if (post_history.posts == null) {
+    if (post_history == null) {
         console.log('Debug: Create a post history');
-        create_post_history(authorId);
-        post_history = await Post_History.findOne({authorId: authorId});
+        await create_post_history(authorId);
     }
 
     if(postId == undefined){
@@ -207,8 +199,6 @@ async function create_post(req, res, postId){
             unlisted: unlisted,
             image: image
         });
-
-        post_history.posts.push(post);
     }
     else{
         var post = new Post({
@@ -226,10 +216,10 @@ async function create_post(req, res, postId){
             unlisted: unlisted,
             image: image
         });
-
-        post_history.posts.push(post);
     }
 
+    post_history = await Post_History.findOne({authorId: authorId});
+    post_history.posts.push(post);
     post_history.num_posts = post_history.num_posts + 1;
     await post_history.save();
 
@@ -239,10 +229,10 @@ async function create_post(req, res, postId){
 }
 
 async function get_post(req, res){
-    //TODO Make sure the author is the correct author (probably make this its own function)
     console.log("Get Post");
 
-    const authorId = req.params.author_id;
+    let authorId = await getCurrentAuthor(req);
+
     const postId = req.params.post_id;
 
     let post = await Post_History.aggregate([
@@ -262,7 +252,8 @@ async function get_post(req, res){
 }
 
 async function get_posts_paginated(req, res){
-    const authorId = req.params.author_id;
+    let authorId = await getCurrentAuthor(req);
+
     console.log(req.query.page);
     console.log(req.query.size);
 
@@ -299,15 +290,13 @@ async function get_posts_paginated(req, res){
     console.log(posts);
     return res.sendStatus(200);
 }
+
 async function update_post(req, res){
-    //TODO Make sure the author is the correct author (probably make this its own function)
     console.log("Update Post");
 
-    authorId = req.params.author_id;
-    postId = req.params.post_id;
+    let authorId = await getCurrentAuthor(req);
 
-    if(await same_author(req, authorId) == false)
-        return res.sendStatus(401);
+    postId = req.params.post_id;
 
     const title = req.body.title;
     const desc = req.body.desc;
@@ -342,14 +331,11 @@ async function update_post(req, res){
 }
 
 async function delete_post(req, res){
-    //TODO Make sure the author is the correct author (probably make this its own function)
     console.log("Delete Post");
 
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
+    let authorId = await getCurrentAuthor(req);
 
-    if(await same_author(req, authorId) == false)
-        return res.sendStatus(401);
+    const postId = req.params.post_id;
 
     const post_history = await Post_History.findOne({authorId: authorId});
 

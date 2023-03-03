@@ -164,7 +164,7 @@ app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   await delete_post(req, res);
 })
 
-app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+app.put('/server/authors/posts/:post_id', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
@@ -184,7 +184,7 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   }
 })
 //CREATION URL
-app.get('/server/authors/:author_id/posts/', async (req, res) => {
+app.get('/server/authors/posts/', async (req, res) => {
   console.log(req.url);
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
@@ -192,9 +192,10 @@ app.get('/server/authors/:author_id/posts/', async (req, res) => {
   await get_posts_paginated(req, res);
 })
 //CREATION URL
-app.put('/server/authors/:author_id/posts/', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
+app.put('/server/authors/posts/', async (req, res) => {
+  if(await checkExpiry(req, res)) { 
+    return res.sendStatus(404); 
+  }
 
   //If author_id is not the same as cookie then send 401
   //Else update the post

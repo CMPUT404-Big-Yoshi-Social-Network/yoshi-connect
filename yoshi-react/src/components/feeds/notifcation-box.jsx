@@ -8,7 +8,7 @@ function Notifications() {
         <div>
             <h1>Notification Box</h1>
             <div><Requests/></div>
-            {/* Friend Requests: received one or accepted 
+            {/* Friend Requests: accepted notification
             Likes
             Comments */}
         </div>

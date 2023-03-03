@@ -27,23 +27,31 @@ function Post() {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            /////////////////////////////////////////////////////////////////////////////////////
-            //Fix This Later
-            url: '/server/authors/a9f468da-e50a-4a2d-805f-9e80ef49a681/posts/',
-            /////////////////////////////////////////////////////////////////////////////////////
+            url: '/server/authors/posts/',
             headers: {
             'Content-Type': 'multipart/form-data'
             },
-            data: data
+            data: {
+                title: data.title,
+                desc: data.desc,
+                contentType: data.contentType,
+                visibility: data.visibility,
+                content: data.content,
+                likes: data.likes,
+                comments: data.comments,
+                unlisted: data.unlisted,
+                image: data.image,
+                sessionId: localStorage.getItem('sessionId')
+            }
         }
         
         console.log(config)
-        axios.put('/server/authors/a9f468da-e50a-4a2d-805f-9e80ef49a681/posts/', config)
+        axios.put('/server/authors/posts/', config)
         .then((response) => {
             if ( response.data.status === 'Successful' ) {
-            console.log("Debug: Token received.");
-            console.log("Debug: Going to public feed.");
-            navigate('/feed');
+                console.log("Debug: Token received.");
+                console.log("Debug: Going to public feed.");
+                navigate('/feed');
             }
         })
         .catch((e) =>{
@@ -55,10 +63,7 @@ function Post() {
         let imageFile = document.querySelector('#image');
         formData.append("image", imageFile.files[0]);
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        //Fix This Later
-        axios.put('/server/authors/a70c9729-fb37-4354-8b69-9d71aad3c6f9/posts/', formData, {
-        /////////////////////////////////////////////////////////////////////////////////////
+        axios.put('/server/authors/posts/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

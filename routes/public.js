@@ -48,7 +48,7 @@ async function fetchPublicPosts(req, res) {
         }).clone()
     }
 
-    // TODO: Getting the PSA (Public Posts)
+    // TODO: Getting the PSA (Public Posts): Require to iterate through all the authors in order to get their posts array which indicates visibility
 
     return res.json({
         publicPosts: publicPosts

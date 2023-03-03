@@ -61,7 +61,15 @@ app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);
 })
 
-// Sign up page 
+/**
+ * @openapi
+ * /server/signup:
+ *  post:
+ *    description: Signup page
+ *    responses:
+ *      200:
+ *        description: successfully created an account
+ */
 app.post('/server/signup', async (req, res) => {
   console.log(req)
   if (req.body.status == 'Is username in use') {

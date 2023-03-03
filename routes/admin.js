@@ -57,6 +57,12 @@ async function addAuthor(req, res){
 
 async function modifyAuthor(req, res){
     let updated_author = null;
+
+    already_existing_author = await Author.findOne({username: req.body.data.newUsername});
+    if(already_existing_author){
+        return res.sendStatus(401);
+    }
+
     await Author.findOne({_id: req.body.data.authorId}, function(err, author){
         if (author) {
             console.log('Debug: Found the author')

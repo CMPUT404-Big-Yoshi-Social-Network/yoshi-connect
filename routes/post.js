@@ -338,6 +338,10 @@ async function delete_post(req, res){
     return res.sendStatus(200);
 }
 
+function checkVisibility(req, res){
+    console.log('Debug: Checks the visibility of the post');
+}
+
 module.exports={
     create_post_history,
     create_post,

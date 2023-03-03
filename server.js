@@ -23,7 +23,10 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-require('dotenv').config()
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const {options} = require('./openAPI/options.js');
+require('dotenv').config();
 mongoose.set('strictQuery', true);
 
 // Setting up app
@@ -31,8 +34,15 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
+<<<<<<< HEAD
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
 const { register_author, get_profile, getCurrentAuthorUsername } = require('./routes/author');
+=======
+const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
+const { register_author, get_profile } = require('./routes/author');
+const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
+const { isFriend, unfriending, unfollowing } = require('./routes/relations');
+>>>>>>> a18b3e021f6a12a58c2bf9d91bf3cb7b27024341
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -48,8 +58,38 @@ if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
 
+<<<<<<< HEAD
+=======
+const openapiSpecification = swaggerJsdoc(options);
+app.use('/server/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(openapiSpecification)
+);
 
-// Sign up page 
+app.get('/favicon.ico', (req, res) => {
+  res.sendStatus(404);
+})
+>>>>>>> a18b3e021f6a12a58c2bf9d91bf3cb7b27024341
+
+/**
+ * @openapi
+ * /server/signup:
+ *  post:
+ *    security:
+ *      - loginToken: []
+ *    description: Signup url. Allows creation of an account and automatically logins to this new account. 
+ *    responses:
+ *      200:
+ *        description: Successfully created an account
+ *        headers:
+ *         Set-Cookie:
+ *            schema:
+ *              type: string
+ *              description: This token identifies you as being logged in and allows you to perform other api calls
+ *              example: token=QV1hAYUZU5Qu2dkrP4peLN
+ *      400:
+ *        description: NEEDS TO BE REFACTORED Signup not possible, username, is already taken, field missing, etc.
+ */
 app.post('/server/signup', async (req, res) => {
   console.log(req)
   if (req.body.status == 'Is username in use') {
@@ -61,7 +101,23 @@ app.post('/server/signup', async (req, res) => {
   }
 })
 
-// Login page
+/**
+ * @openapi
+ * /server/login:
+ *  post:
+ *    description: Login url, so you can authenticate locally with the server
+ *    responses:
+ *      200:
+ *        description: Successfully created an account
+ *        headers:
+ *         Set-Cookie:
+ *            schema:
+ *              type: string
+ *              description: This token identifies you as being logged in and allows you to perform other api calls
+ *              example: token=QV1hAYUZU5Qu2dkrP4peLN
+ *      400:
+ *        description: NEEDS TO BE REFACTORED Login not possible. Failed due to incorrect username or password. 
+ */
 app.post('/server/login', async (req, res) => {
   console.log('Debug: Login as Author')
   await authAuthor(req, res);
@@ -119,10 +175,57 @@ app.get('/server/users/:username', async (req,res) => {
   get_profile(req, res);
 })
 
-app.post('/server/users/:username', (req, res) => {
+app.post('/server/requests', (req, res) => {
+  if (req.body.data.status == 'Fetching Requests') {
+    console.log('Debug: Getting friend requests')
+    findAllRequests(req, res);
+  }
+})
+
+app.put('/server/requests', (req, res) => {
+  if (req.body.data.status == 'Sender is added by Receiver') {
+    console.log('Debug: Sender added by Receiver')
+    senderAdded(req, res);
+  } 
+})
+
+app.delete('/server/requests', (req, res) => {
+  if (req.body.status == 'Sender is rejected by Receiver') {
+    console.log('Debug: Sender rejected by Receiver')
+    deleteRequest(req, res);
+  }
+})
+
+app.post('/server/users/:username', async (req, res) => {
   if (req.body.data.message == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
+  } else if (req.body.data.status == 'Does Request Exist') {
+    console.log('Debug: Checking if Friend Request Exists')
+    findRequest(req, res);
+  } else if (req.body.data.status == 'Friends or Follows') {
+    console.log('Debug: Checking if they are friends or follows.')
+    await isFriend(req, res);
+  }
+})
+
+app.put('/server/users/:username', async (req, res) => {
+  if (req.body.data.status == 'Save Request') {
+    console.log('Debug: Saving Friend Request')
+    saveRequest(req, res);
+  } else if (req.body.data.status == 'Unfriending') {
+    console.log('Debug: Viewer unfriending viewed.')
+    await unfriending(req, res);
+  } else if (req.body.data.status == 'Unfollowing') {
+    console.log('Debug: Viewer unfollowing viewer.')
+    await unfollowing(req, res);
+  }
+})
+
+app.delete('/server/users/:username', (req, res) => {
+  if (req.body.status == 'Delete Request') {
+    console.log('Debug: Deleting Friend Request')
+    deleteRequest(req, res);
   }
 })
 

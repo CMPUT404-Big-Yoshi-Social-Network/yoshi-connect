@@ -1,7 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import axios from 'axios';
-import './main.css';
+import TopNav from './topNav.jsx';
+import LeftNavBar from './leftNav.jsx';
+import RightNavBar from './rightNav.jsx';
+
 function Profile() {
     const { username } = useParams();
     const navigate = useNavigate();
@@ -29,8 +32,19 @@ function Profile() {
 
     return (
         <div>
-            You are viewing profile. Welcome to {username}'s profile!
-        </div> 
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                    You are viewing profile. Welcome to {username}'s profile!
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
+        </div>
     )
 }
 

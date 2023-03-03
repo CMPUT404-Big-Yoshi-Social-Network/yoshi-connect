@@ -1,5 +1,5 @@
 .pubColL, .pubColM, .pubColR {
-    float: left;
+    display: inline-block;
 }
 
 .pubColL, .pubColR {

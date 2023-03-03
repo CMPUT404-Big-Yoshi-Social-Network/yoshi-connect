@@ -23,17 +23,19 @@
 }
 .topNav2{
     display: inline-block;
-    margin: 0em 10em;
-    font-size: 16pt;
+    margin: 0em 6.5em;
+    font-size: 14pt;
 }
 .topSearch{
+    margin-top: -.5em;
+    position: fixed;
     text-decoration: none;
-    /* background-image: radial-gradient(circle, #050125, #090D0E);
+    width: 15%;
+    background-image: radial-gradient(circle, #050125, #090D0E);
     color: white;
-    width: 90%;
     border: #4A5460 0.1em solid;
     border-radius: .5em;
-    padding: .5em; */
+    padding: .5em;
 }
 .topNotif{
     margin-left: 30em;

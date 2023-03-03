@@ -2,10 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect } from "react";
 import TopNav from './topNav.jsx';
-// import LeftNavBar from './leftNav.jsx';
+import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
 import LogOut from '../../logOut.js';
-import './main.css';
+import './public.css';
 
 function PublicFeed() {
     const navigate = useNavigate();
@@ -40,18 +40,16 @@ function PublicFeed() {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    {/* <LeftNavBar/> */}
-                    Left Nav Bar
+                    <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    Welcome to Yoshi Connect. This is the public feed!
+                        Welcome to Yoshi Connect. This is the public feed!
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>
                 </div>
             </div>
         </div>
-
     )
 }
 

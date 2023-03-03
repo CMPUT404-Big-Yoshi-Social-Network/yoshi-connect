@@ -8,12 +8,12 @@ import AdminDashboard from "./components/admin/admin-dashboard.jsx";
 import PublicFeed from "./components/feeds/public.jsx";
 import FriendFeed from "./components/feeds/friend.jsx";
 import Profile from "./components/feeds/profile.jsx";
-import CreatePost from "./components/posts/createPost.jsx";
+// import CreatePost from "./components/posts/createPost.jsx";
 import Messages from "./components/feeds/messages.jsx";
 import PageNotFound from "./components/user-error/404.jsx";
 import UserForbidden from "./components/user-error/403.jsx";
 import UserUnauthorized from "./components/user-error/401.jsx";
-import Post from "./components/posts/post.jsx";
+// import Post from "./components/posts/post.jsx";
 
 const router = createBrowserRouter([
   {

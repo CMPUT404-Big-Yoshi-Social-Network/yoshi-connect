@@ -25,31 +25,39 @@ const login_scheme = new Schema({
 
 const follower_scheme = new Schema({
     username: String,
+    authorId: String,
     followers: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
 
 const following_scheme = new Schema({
     username: String,
+    authorId: String,
     followings: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
 
 const friend_scheme = new Schema({
     username: String,
+    authorId: String,
     friends: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
 
 const request_scheme = new Schema({
     senderId: String,
+    senderUUID: String,
     receiverId: String,
+    receiverUUID: String,
     status: String},
     {versionKey: false
 });

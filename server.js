@@ -23,6 +23,7 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require('swagger-jsdoc');
 const {options} = require('./openAPI/options.js');
 require('dotenv').config();
@@ -53,10 +54,10 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const openapiSpecification = swaggerJsdoc(options);
-console.log(JSON.stringify(openapiSpecification))
-app.use('/server/api-docs.json', (req, res) => {
-  res.send(JSON.stringify(openapiSpecification));
-});
+app.use('/server/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(openapiSpecification)
+);
 
 app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);

@@ -1,8 +1,22 @@
-import SwaggerUI from "swagger-ui-react";
-import "swagger-ui-react/swagger-ui.css";
+import axios from 'axios';
+import React, { useEffect, useState } from "react";
 
 export default function ApiDocs() {
-    return(
-      <SwaggerUI url="/server/api-docs.json"/>
-    )
+  //let html_docs = "";
+  //const get_docs = async () => {
+    //return await axios.get("/server/api-docs");
+  //}
+  //useEffect( () => {
+    //html_docs = get_docs();
+  //});
+  const get_docs = (e) => {
+    e.prevent_default()
   }
+
+  let docs = undefined;
+  let callRef = React.createRef();
+  useEffect(() => {
+    docs = axios.get("/server/api-docs");
+  })
+  return(<iframe src="http://localhost:8080/server/api-docs"></iframe>);
+}

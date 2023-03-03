@@ -123,86 +123,86 @@ app.put('/server/authors/:author_id/posts/', async (req, res) => {
   await create_post(req, res);
 })
 
-app.get('/server/post/:post_id', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
+// app.get('/server/post/:post_id', async (req, res) => {
+//   if(await checkExpiry(req, res))
+//     return res.sendStatus(404);
 
-  await get_post(req, res);
-})
+//   await get_post(req, res);
+// })
 
-app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  console.log("awoidj")
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
+// app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+//   console.log("awoidj")
+//   if(await checkExpiry(req, res))
+//     return res.sendStatus(404);
 
-  await get_post(req, res);
-})
+//   await get_post(req, res);
+// })
 
-app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
+// app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+//   if(await checkExpiry(req, res))
+//     return res.sendStatus(404);
 
-  //If author_id is not the same as cookie then send 401
-  //Else update the post
+//   //If author_id is not the same as cookie then send 401
+//   //Else update the post
 
-  await update_post(req, res);
-})
+//   await update_post(req, res);
+// })
 
-app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
+// app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+//   if(await checkExpiry(req, res))
+//     return res.sendStatus(404);
 
-  if (req.body.data.status == 'Remove like') {
-    console.log('Debug: Removing a like from a post!')
-    deleteLike(req, res);
-  } else if (req.body.data.status == 'Remove comment') {
-    console.log('Debug: Removing a comment from a post!')
-    deleteComment(req, res);
-  }
+//   if (req.body.data.status == 'Remove like') {
+//     console.log('Debug: Removing a like from a post!')
+//     deleteLike(req, res);
+//   } else if (req.body.data.status == 'Remove comment') {
+//     console.log('Debug: Removing a comment from a post!')
+//     deleteComment(req, res);
+//   }
 
-  //If author_id is not the same as cookie then send 401
-  //Else create the post
+//   //If author_id is not the same as cookie then send 401
+//   //Else create the post
 
-  await delete_post(req, res);
-})
+//   await delete_post(req, res);
+// })
 
-app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
+// app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+//   if(await checkExpiry(req, res))
+//     return res.sendStatus(404);
 
-  //If author_id is not the same as cookie then send 401
-  //Else create the post
-  if (req.body.data.status == 'Add like') {
-    console.log('Debug: Adding a like to a post!');
-    addLike(req, res);
-  } else if (req.body.data.status == 'Add comment') {
-    console.log('Debug: Adding a comment to a post!');
-    addComment(req, res);
-  } else if (req.body.data.status == 'Edit comment') {
-    console.log('Debug: Updating a comment on a post!')
-    editComment(req, res);
-  } else {
-    await create_post(req, res, req.params.post_id);
-  }
-})
-//CREATION URL
-app.get('/server/authors/posts/', async (req, res) => {
-  console.log(req.url);
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
+//   //If author_id is not the same as cookie then send 401
+//   //Else create the post
+//   if (req.body.data.status == 'Add like') {
+//     console.log('Debug: Adding a like to a post!');
+//     addLike(req, res);
+//   } else if (req.body.data.status == 'Add comment') {
+//     console.log('Debug: Adding a comment to a post!');
+//     addComment(req, res);
+//   } else if (req.body.data.status == 'Edit comment') {
+//     console.log('Debug: Updating a comment on a post!')
+//     editComment(req, res);
+//   } else {
+//     await create_post(req, res, req.params.post_id);
+//   }
+// })
+// //CREATION URL
+// app.get('/server/authors/posts/', async (req, res) => {
+//   console.log(req.url);
+//   if(await checkExpiry(req, res))
+//     return res.sendStatus(404);
 
-  await get_posts_paginated(req, res);
-})
-//CREATION URL
-app.put('/server/authors/posts/', async (req, res) => {
-  if(await checkExpiry(req, res)) { 
-    return res.sendStatus(404); 
-  }
+//   await get_posts_paginated(req, res);
+// })
+// //CREATION URL
+// app.put('/server/authors/posts/', async (req, res) => {
+//   if(await checkExpiry(req, res)) { 
+//     return res.sendStatus(404); 
+//   }
 
-  //If author_id is not the same as cookie then send 401
-  //Else update the post
-  await create_post(req, res, undefined);
-})
+//   //If author_id is not the same as cookie then send 401
+//   //Else update the post
+//   await create_post(req, res, undefined);
+// })
 
 // Will most likely need to be removed in favour of /authors/{AUTHOR_ID}
 app.get('/server/users/:username', async (req,res) => {

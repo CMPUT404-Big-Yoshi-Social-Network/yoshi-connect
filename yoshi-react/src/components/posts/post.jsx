@@ -27,7 +27,8 @@ function Post() {
                 'Content-Type': 'application/json'
             },
             data: {
-                sessionId: localStorage.getItem('sessionId')
+                sessionId: localStorage.getItem('sessionId'),
+                status: 'Fetching current authorId'
             }
         }
         axios

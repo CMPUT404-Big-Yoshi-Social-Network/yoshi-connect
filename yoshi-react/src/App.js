@@ -13,6 +13,7 @@ import PageNotFound from "./components/user-error/404.jsx";
 import UserForbidden from "./components/user-error/403.jsx";
 import UserUnauthorized from "./components/user-error/401.jsx";
 import BadRequest from './components/user-error/400.jsx';
+import Settings from './components/settings/settings.jsx';
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
   {
     path: '/badrequest/', 
     element: <BadRequest/>   
+  },
+  {
+    path: '/settings/', 
+    element: <Settings/>   
   }
 ])
   

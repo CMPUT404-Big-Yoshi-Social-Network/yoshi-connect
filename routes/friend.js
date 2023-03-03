@@ -14,9 +14,11 @@ async function fetchFriends(req, res) {
 
     await Friend.find({username: username}, function(err, friends){
         console.log("Debug: Friends exists");
-        return res.json({
-            friends: friends
-        });
+        if (friends != []) {
+            return res.json({
+                friends: friends[0].friends
+            });
+        }
     }).clone()
 }
 

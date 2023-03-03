@@ -250,7 +250,7 @@ app.delete('/server/users/:username', (req, res) => {
   }
 })
 
-app.post('/server/friends', async (req, res) => {
+app.post('/server/friends', (req, res) => {
   console.log('Debug: Getting the author friends');
   fetchFriends(req, res);
 })

@@ -38,7 +38,7 @@ const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
-const { fetchFriends } = require('./routes/friend');
+const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -253,6 +253,11 @@ app.delete('/server/users/:username', (req, res) => {
 app.post('/server/friends', (req, res) => {
   console.log('Debug: Getting the author friends');
   fetchFriends(req, res);
+})
+
+app.post('/server/friends/posts', (req, res) => {
+  console.log('Debug: Getting the author friends posts');
+  fetchFriendPosts(req, res);
 })
 
 

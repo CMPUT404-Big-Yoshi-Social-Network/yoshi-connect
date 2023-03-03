@@ -27,6 +27,7 @@ const follower_scheme = new Schema({
     username: String,
     followers: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
@@ -35,6 +36,7 @@ const following_scheme = new Schema({
     username: String,
     followings: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
@@ -43,6 +45,7 @@ const friend_scheme = new Schema({
     username: String,
     friends: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
@@ -50,6 +53,7 @@ const friend_scheme = new Schema({
 const request_scheme = new Schema({
     senderId: String,
     receiverId: String,
+    rId: String,
     status: String},
     {versionKey: false
 });

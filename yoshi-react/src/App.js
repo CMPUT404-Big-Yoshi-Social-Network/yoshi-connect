@@ -50,45 +50,32 @@ const router = createBrowserRouter([
     element: <Profile/>
   },
   {
-<<<<<<< HEAD
     path: '/messages/',
     element: <Messages/>
   },
   {
-    path: '/forbidden/',
-=======
-    path: '/messages/', 
-    element: <Messages/>
-  },
-  {
     path: '/forbidden/', 
->>>>>>> a18b3e021f6a12a58c2bf9d91bf3cb7b27024341
     element: <UserForbidden/>   
   },
   {
     path: '/unauthorized/', 
     element: <UserUnauthorized/>   
-  }, 
-  {
-    path: '*' || '/notfound/', 
-    element: <PageNotFound/>   
   },
   {
-<<<<<<< HEAD
     path: '/badrequest/', 
     element: <BadRequest/>   
   },
   {
     path: '/settings/', 
     element: <Settings/>   
-=======
+  },
+  {
     path: '/api-docs',
     element: <ApiDocs/>
   },
   {
     path: '*' || '/notfound/', 
     element: <PageNotFound/>   
->>>>>>> a18b3e021f6a12a58c2bf9d91bf3cb7b27024341
   }
 ])
   

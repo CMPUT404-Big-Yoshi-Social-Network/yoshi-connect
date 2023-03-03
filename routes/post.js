@@ -188,6 +188,7 @@ async function create_post(req, res, postId){
     }
     else{
         var post = new Post({
+            _id: postId,
             title: title,
             description: desc,
             contentType: contentType,

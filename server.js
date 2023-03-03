@@ -182,6 +182,8 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   } else if ( req.body.data.status == 'Edit comment' ) {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);
+  } else {
+    await create_post(req, res, req.params.post_id);
   }
 })
 

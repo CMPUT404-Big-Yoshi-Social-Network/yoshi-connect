@@ -1,10 +1,8 @@
-const { author_scheme, login_scheme } = require('../db_schema/author_schema.js');
 const { post_history_scheme, post_scheme, like_scheme, comment_scheme } = require('../db_schema/post_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 
-const Login = database.model('Login', login_scheme);
 const Post_History = database.model('Posts', post_history_scheme);
 const Post = database.model('Post', post_scheme);
 const Like = database.model('Like', like_scheme);

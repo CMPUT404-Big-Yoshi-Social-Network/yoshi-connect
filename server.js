@@ -23,7 +23,10 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-require('dotenv').config()
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+const {options} = require('./openAPI/options.js');
+require('dotenv').config();
 mongoose.set('strictQuery', true);
 
 // Setting up app
@@ -49,6 +52,10 @@ mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
+
+const openapiSpecification = swaggerJsdoc(options);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);

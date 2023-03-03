@@ -32,7 +32,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth')
-const { register_author, get_profile } = require('./routes/author');
+const { register_author, get_profile, getCurrentAuthorUsername } = require('./routes/author');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -128,7 +128,7 @@ app.post('/server/users/:username', (req, res) => {
 
 app.get('/server/nav', async (req, res) => {
   console.log('Debug: Getting the current author logged in');
-  getCurrentAuthorUsername(req, res);
+  await getCurrentAuthorUsername(req, res);
 })
 
 app.get('/',(req, res) => {

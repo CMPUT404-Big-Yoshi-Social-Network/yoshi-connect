@@ -22,7 +22,9 @@
 .rn-div{
     padding: 1em 0em;
 }
-
+.rn-user{
+    font-size: 14pt;
+}
 .rn-feed, .rn-friends, .rn-msgs, .rn-post, .rn-user{
     padding-left: 1em;
     text-decoration: none;

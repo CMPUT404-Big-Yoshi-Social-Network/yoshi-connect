@@ -1,5 +1,5 @@
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState} from 'react';
+// import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
@@ -7,29 +7,22 @@ import Navbar from 'react-bootstrap/Navbar';
 import './rightNav.css';
 
 function RightNavBar() {
-    const { data } = useParams();
-    let config = {
-        method: 'get',
-        maxBodyLength: Infinity,
-        url: '/server/nav',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        data: data
-      }
+    const [username, setUsername] = useState();
+
     const getUsername = () => {
         axios
         .get('/server/nav')
         .then((response) => {
-            console.log('This should get something', response)
+            setUsername(response.data.username)            //console.log('Username:', username);
         })
         .catch(err => {
             console.log(err);
         });
     }
+    
     useEffect(() => {
         getUsername();
-    }, [])
+    }, [username])
 
     return (
         <Navbar className="right-column">
@@ -38,7 +31,7 @@ function RightNavBar() {
                     <div className='rn-div'>
                     {/* TODO: Needs to fetch username  */}
                         <img className='rn-pubUserImg' alt='rn-pubUser' src='/images/public/icon_profile.png' width={40}/>
-                        <Nav.Link className='rn-user'href="/users/:username">Username</Nav.Link> 
+                        <Nav.Link className='rn-user' href={`/users/${username}`}>{username}</Nav.Link> 
                     </div>
                     <div className='rn-div'>
                         <img className='rn-pubFeedImg' alt='rn-pubFeedImg' src='/images/public/icon_public_feed.png' width={25}/>

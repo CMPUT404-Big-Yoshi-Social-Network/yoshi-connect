@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-//import { Form } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import './topNav.css'
 
 function TopNav() {
@@ -15,12 +15,12 @@ function TopNav() {
                     <h1>Yoshi Connect</h1>
                 </Navbar.Brand>
                 <Nav className='topNav2'>
-                    {/* <Form.Control
+                    <Form.Control
                         type="search"
                         placeholder="Search"
                         className="topSearch"
-                    /> */}
-                    <Nav.Link className='topSearch' href="/search">Search</Nav.Link>
+                    />
+                    {/* <Nav.Link className='topSearch' href="/search">Search</Nav.Link> */}
                     <Nav.Link className='topNotif' href="/notifications">Notifications</Nav.Link>
                 </Nav>
             </Container>

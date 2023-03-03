@@ -2,6 +2,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
 import axios from 'axios';
+import TopNav from './topNav.jsx';
+import LeftNavBar from './leftNav.jsx';
+import RightNavBar from './rightNav.jsx';
 import Requests from './requests.jsx';
 function Profile() {
     const { username } = useParams();
@@ -205,11 +208,22 @@ function Profile() {
     }
     return (
         <div>
-            You are viewing profile. Welcome to {username}'s profile!
-            { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
-            <br></br>
-            { personal.person ? <div><Requests username={username}/></div> : null }
-        </div> 
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                    You are viewing profile. Welcome to {username}'s profile!
+                    { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
+                    <br></br>
+                    { personal.person ? <div><Requests username={username}/></div> : null }
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
+        </div>
     )
 }
 

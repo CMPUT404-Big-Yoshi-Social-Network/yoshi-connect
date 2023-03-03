@@ -1,12 +1,12 @@
-.pubColL, .pubColM, .pubColR {
+.adminColL, .adminColM, .adminColR {
     display: inline-block;
 }
 
-.pubColL, .pubColR {
+.adminColL, .adminColR {
     width: 15%;
 }
 
-.pubColM {
+.adminColM {
     width: 70%;
     background-color: #090D0E;
 }

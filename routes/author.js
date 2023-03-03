@@ -123,7 +123,17 @@ async function get_profile(req, res) {
     }
 }
 
+async function getCurrentAuthorUsername(req, res){
+    let login = await Login.find({token: req.cookies['token']});
+    console.log('Debug: Retrieving current author logged in')
+    return res.json({
+        username: login[0].username
+    })
+}
+
+
 module.exports={
     register_author,
-    get_profile
+    get_profile,
+    getCurrentAuthorUsername
 }

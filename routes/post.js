@@ -378,7 +378,11 @@ async function checkVisibility(req, res){
                 viewable = true;
                 break;
             }
-        }        
+        }
+
+        if ( !viewable ) {
+            return res.sendStatus(404);
+        } 
     } else if ( post.visibility == 'Private' ) {
         console.log('Debug: Only specific people can see this post (i.e., messages).')
         for ( let i = 0; i < post.specifics.length ; i++ ) {
@@ -386,6 +390,9 @@ async function checkVisibility(req, res){
                 viewable = true;
                 break;
             }
+        }
+        if ( !viewable ) {
+            return res.sendStatus(404);
         }
     }
 

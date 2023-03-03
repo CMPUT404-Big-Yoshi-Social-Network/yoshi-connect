@@ -108,7 +108,7 @@ function Post() {
     
 
     return (
-        <div className={"tempBackground"}>
+        <div>
             <button className={"createPostButton"} type={"button"} value={"Create Post"} onClick={togglePostMenu}>CREATE NEW POST</button>
             {isOpen &&    
                 <div className={"postMenuPage"}>

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect } from "react";
 import Notifications from './notifcation-box.jsx';
+import Post from '../posts/post.jsx';
 
 function PublicFeed() {
     const navigate = useNavigate();
@@ -59,6 +60,7 @@ function PublicFeed() {
             Welcome to the Public Feed. You are signed in.
             <button type="button" onClick={() => LogOut()}>Log Out</button>
             <Notifications/>
+            <Post/>
         </div>
     )
 }

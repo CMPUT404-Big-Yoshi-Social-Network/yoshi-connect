@@ -42,7 +42,7 @@ function Friends() {
         axios
         .post('/server/friends/posts', config)
         .then((response) => {
-            setFriendPosts(response.data.friendsPosts)
+            setFriendPosts(response.data.friendPosts)
         })
         .catch(err => {
             console.error(err);

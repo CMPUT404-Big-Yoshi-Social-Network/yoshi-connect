@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import renderer from "react-test-renderer";
 import welcome from "../../welcome/welcome";
 import "@testing-library/jest-dom";
@@ -6,17 +6,17 @@ import "@testing-library/jest-dom";
 import Counter from "../components/Counter";
 
 //test block
-test("increments counter", () => {
+test("should click on sign up button", () => {
 // render the component on virtual dom
-render(<Counter />);
+render(<welcome />);
 
 //select the elements you want to interact with
-const counter = screen.getByTestId("counter");
+const signupButton = screen.getByTestId("signup");
 const incrementBtn = screen.getByTestId("increment");
 
 //interact with those elements
-fireEvent.click(incrementBtn);
+fireEvent.click(signupButton);
 
 //assert the expected result
-expect(counter).toHaveTextContent("1");
+expect(signupButton).toHaveTextContent("1");
 });

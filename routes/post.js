@@ -412,6 +412,30 @@ async function checkVisibility(req, res){
 
 }
 
+async function fetchLikers(req, res) {
+    console.log('Debug: Getting the likers for a specific post.');
+
+    const authorId = req.params.author_id;
+    const postId = req.params.post_id;
+
+    const post = await Post_History.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {'posts._id' : postId}
+        }
+    ]);
+    if(post.length == 0) { return res.sendStatus(404); }
+
+    return res.json({
+        likers: post.likes
+    })
+}
+
 module.exports={
     create_post_history,
     create_post,
@@ -424,5 +448,6 @@ module.exports={
     deleteLike,
     deleteComment,
     editComment,
-    checkVisibility
+    checkVisibility,
+    fetchLikers
 }

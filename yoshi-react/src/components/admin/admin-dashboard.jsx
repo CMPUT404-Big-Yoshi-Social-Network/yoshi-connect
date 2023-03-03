@@ -1,6 +1,11 @@
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import TopAdminNav from './topAdminNav.jsx';
+import LeftAdminNavBar from './leftAdminNav.jsx';
+import RightAdminNavBar from './rightAdminNav.jsx';
+import './admin-dashboard.css';
+
 function AdminDashboard() {
     const navigate = useNavigate();
     const get_dashboard = () => {
@@ -60,8 +65,18 @@ function AdminDashboard() {
     }
     return (
         <div>
-            Hello. You are viewing the admin dashboard.
-            <button type="button" onClick={() => LogOut()}>Log Out</button>
+            <TopAdminNav/>
+            <div className='adminRow'>
+                <div className='adminColL'>
+                    <LeftAdminNavBar/>
+                </div>
+                <div className='adminColM'>
+                    Hello. You are viewing the admin dashboard.
+                </div>
+                <div className='adminColR'>
+                    <RightAdminNavBar/>
+                </div>
+            </div>
         </div>
     )
 }

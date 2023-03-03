@@ -33,10 +33,9 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile } = require('./routes/author');
+const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
+const { register_author, get_profile, getCurrentAuthor } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment } = require('./routes/post');
-const { randomUUID } = require('crypto');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 
@@ -114,18 +113,21 @@ app.post('/server/feed', (req, res) => {
   }
 })
 
+app.post('/server/posts/', async (req, res) => {
+  console.log('Debug: Getting the current author logged in')
+  await getCurrentAuthor(req, res);
+})
+
+app.put('/server/authors/:author_id/posts/', async (req, res) => {
+  console.log('Debug: Creating a post')
+  await create_post(req, res);
+})
+
 app.get('/server/post/:post_id', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 
   await get_post(req, res);
-})
-
-app.put('/server/post', async (req, res) => {
-  if(await checkExpiry(req, res))
-    return res.sendStatus(404);
-
-  await create_post(req, res);
 })
 
 app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -164,7 +166,7 @@ app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   await delete_post(req, res);
 })
 
-app.put('/server/authors/posts/:post_id', async (req, res) => {
+app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if(await checkExpiry(req, res))
     return res.sendStatus(404);
 

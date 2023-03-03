@@ -10,18 +10,6 @@ const Post = database.model('Post', post_scheme);
 const Like = database.model('Like', like_scheme);
 const Comment = database.model('Comment', comment_scheme);
 
-/*
-Check if the author_id provided matches the authorid attached to the token
-*/
-async function getCurrentAuthor(req){
-    let authorId = '';
-    await Login.find({token: req.body.data.sessionId}, function(err, login) {
-        console.log('Debug: Retrieving current author logged in')
-        authorId = login[0].authorId
-    }).clone();
-    return authorId;
-}
-
 async function create_post_history(author_id){
     let new_post_history = new Post_History ({
         authorId: author_id,
@@ -159,8 +147,7 @@ async function editComment(req, res){
 }
 
 async function create_post(req, res, postId){
-    let authorId = await getCurrentAuthor(req);
-
+    let authorId = req.params.author_id;
     //Setup the rest of the post
     const title = req.body.data.title;
     const desc = req.body.data.desc;

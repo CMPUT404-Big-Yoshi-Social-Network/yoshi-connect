@@ -12,14 +12,32 @@ function Post() {
         likes: [],
         comments: [],
         unlisted: false,
-        image: ""
+        image: "",
+        authorId: '',
+        postId: ''
     })
-    const checkExpiry = () => {
-        
-    }
+    const checkExpiry = () => { }
     useEffect(() => {
        checkExpiry();
-    });
+       let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/posts/',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                sessionId: localStorage.getItem('sessionId')
+            }
+        }
+        axios
+        .post('/server/posts/', config)
+        .then((response) => {
+            let authorId = response.data.authorId;
+            setData(prevAuthorId => ({...prevAuthorId, authorId}))
+        })
+        .catch(err => { });
+    }, []);
     const post_post = () => {
         console.log('Debug: Creating a post!')
         togglePostMenu()
@@ -27,7 +45,7 @@ function Post() {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/server/authors/posts/',
+            url: '/server/authors/' + data.authorId + '/posts/',
             headers: {
             'Content-Type': 'multipart/form-data'
             },
@@ -40,13 +58,12 @@ function Post() {
                 likes: data.likes,
                 comments: data.comments,
                 unlisted: data.unlisted,
-                image: data.image,
-                sessionId: localStorage.getItem('sessionId')
+                image: data.image
             }
         }
         
         console.log(config)
-        axios.put('/server/authors/posts/', config)
+        axios.put('/server/authors/' + data.authorId + '/posts/', config)
         .then((response) => {
             if ( response.data.status === 'Successful' ) {
                 console.log("Debug: Token received.");

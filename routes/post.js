@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 
-const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 const Post_History = database.model('Posts', post_history_scheme);
 const Post = database.model('Post', post_scheme);

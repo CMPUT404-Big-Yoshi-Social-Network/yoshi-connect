@@ -7,7 +7,7 @@
          url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
 }
 
-.right-column{
+.right-admin-column{
     top: 0;
     right: 1;
     position: fixed;
@@ -19,25 +19,44 @@
     font-family: 'Uni Neue', sans-serif;
 }
 
-.rn-div{
+.rn-admdiv{
     padding: 1em 0em;
 }
-.rn-user{
-    font-size: 14pt;
-}
-.rn-feed, .rn-friends, .rn-msgs, .rn-post, .rn-user{
+
+.rn-admdash, .rn-admadmins, .rn-admuser, .rn-admserver, .rn-user, .rn-admnodes{
     padding-left: 1em;
     text-decoration: none;
     color: white;
 }
-.rn-feed:hover, .rn-friends:hover, .rn-msgs:hover, .rn-post:hover, .rn-user:hover{
+.rn-admdash:hover, .rn-admadmins:hover, .rn-admuser:hover, .rn-admserver:hover, .rn-user:hover, .rn-admnodes:hover{
     text-decoration: none;
     color: #d2f364;
 }
 
-.rn-pubCogImg{
+.rn-admCogImg{
     position: fixed;
     margin: 1em 1em;
     right: 0;
     bottom: 0;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.goto-user-dashboard{
+    display: inline-block;
+    position: fixed;
+    color: black;
+    font-size: 18px;
+    margin-bottom: 1em;
+    bottom: 0;
+    right: 1;
+    background-color: #A7E7F8;
+    border: #A7E7F8;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
+}
+.goto-user-dashboard:hover{
+    background-color: #735DFA;
+    color: white;
 }

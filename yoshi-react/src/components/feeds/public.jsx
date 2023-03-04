@@ -3,10 +3,11 @@ import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import Notifications from './notifcation-box.jsx';
 import CreatePost from '../posts/create.jsx';
+import Posts from '../posts/posts.jsx';
+import Following from './following.jsx';
 
 function PublicFeed() {
     const navigate = useNavigate();
-    const [followings, setFollowing] = useState([]);
     const [publicPosts, setPublicPosts] = useState([]);
     const checkExpiry = () => {
         let config = {
@@ -33,29 +34,8 @@ function PublicFeed() {
     }
     useEffect(() => {
        checkExpiry();
-       console.log('Debug: Fetching all followings for this user')
-       let config = {
-           method: 'post',
-           maxBodyLength: Infinity,
-           url: '/server/following',
-           headers: {
-               'Content-Type': 'application/x-www-form-urlencoded'
-           },
-           data: {
-               sessionId: localStorage.getItem('sessionId'),
-           }
-       }
-       axios
-       .post('/server/following', config)
-       .then((response) => {
-           setFollowing(response.data.following)
-       })
-       .catch(err => {
-           console.error(err);
-       });
-
        console.log('Debug: Fetching all the public/following posts of this user');
-       config = {
+       let config = {
            method: 'post',
            maxBodyLength: Infinity,
            url: '/server/public/posts',
@@ -96,14 +76,16 @@ function PublicFeed() {
         .catch(err => {
           console.error(err);
         });
-
     }
     return (
         <div>
-            Welcome to the Public Feed. You are signed in.
+            <h1>Public Feed</h1>
             <button type="button" onClick={() => LogOut()}>Log Out</button>
-            <Notifications/>
             <CreatePost/>
+            <Notifications/>
+            <Following/>
+            <h3>Public and Follower Posts</h3>
+            <Posts {...publicPosts}/>
         </div>
     )
 }

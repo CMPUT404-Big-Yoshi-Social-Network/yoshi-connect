@@ -214,11 +214,6 @@ async function create_post(req, res, postId){
     post_history.posts.push(post);
     post_history.num_posts = post_history.num_posts + 1;
     await post_history.save();
-
-    return res.json({
-        status: 'Successful',
-        feed: req.body.data.visibility
-    })
 }
 
 async function get_post(req, res){

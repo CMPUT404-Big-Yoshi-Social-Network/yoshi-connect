@@ -1,10 +1,8 @@
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import Post from "./post.jsx";
 
 function CreatePost() {
-    const navigate = useNavigate();
     const [data, setData] = useState({
         title: "",
         desc: "",
@@ -19,9 +17,9 @@ function CreatePost() {
         specifics: [],
         postId: ''
     })
-    const checkExpiry = () => { }
+    const [isOpen, setIsOpen] = useState(false);
+
     useEffect(() => {
-       checkExpiry();
        let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -42,9 +40,10 @@ function CreatePost() {
         })
         .catch(err => { });
     }, []);
-    const post_post = () => {
-        console.log('Debug: Creating a post!')
-        togglePostMenu()
+    
+    const savePost = () => {
+        console.log('Debug: Creating a post')
+        togglePostMenu();
 
         let config = {
             method: 'put',
@@ -68,61 +67,31 @@ function CreatePost() {
         }
         
         axios.put('/server/authors/' + data.authorId + '/posts/', config)
-        .then((response) => {
-            // if ( response.data.status === 'Successful' ) {
-            //     console.log("Debug: Going to public feed.");
-            //     if ( response.data.feed === 'Public') {
-            //         navigate('/feed');    
-            //     } else if ( response.data.feed === 'Friends' ) {
-            //         navigate('/friends');
-            //     } else if ( response.data.feed === 'Private' ) {
-            //         navigate('/messages');
-            //     }
-            // }
-        })
-        .catch((e) =>{
-            console.log(e);
-        })}
+        .then((response) => { })
+        .catch((e) =>{ console.log(e); })
+    }
 
-    // const post_image = () => {
-    //     let formData = new FormData();
-    //     let imageFile = document.querySelector('#image');
-    //     formData.append("image", imageFile.files[0]);
-
-    //     axios.put('/server/authors/posts/', formData, {
-    //         headers: {
-    //             'Content-Type': 'multipart/form-data'
-    //         }
-    //     })
-    // }
-
-    const [isOpen, setIsOpen] = useState(false)
     const togglePostMenu = () => {
-        
         setIsOpen(!isOpen);
         console.log("Toggling post menu");
     }
 
-    function previewFile() {
+    function previewImage() {
         const preview = document.querySelector("img");
         const file = document.querySelector("input[type=file]").files[0];
         const reader = new FileReader();
         const reader2 = new FileReader();
+
         reader2.onload = function (event) {
-            // blob stuff
-            var blob = new Blob([event.target.result]); // create blob...
+            var blob = new Blob([event.target.result]); 
             window.URL = window.URL || window.webkitURL;
-            var blobURL = window.URL.createObjectURL(blob); // and get it's URL
+            var blobURL = window.URL.createObjectURL(blob); 
             data.image = blobURL;
         }
     
         reader.addEventListener(
           "load",
-          () => {
-            // convert image file to base64 string
-            preview.src = reader.result;
-            // data.image = Buffer.from(reader.result, "base64");
-          },
+          () => { preview.src = reader.result; },
           false
         );
       
@@ -130,8 +99,7 @@ function CreatePost() {
           reader.readAsDataURL(file);
           reader2.readAsArrayBuffer(file);
         }
-      }
-    
+    }
 
     return (
         <div>
@@ -198,8 +166,7 @@ function CreatePost() {
                         </div>
                         
                         <div className={"postMenuInput"}>
-                        {/* <input type={"file"} accept={"image/*"} multiple = "false" className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/> */}
-                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/>
+                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewImage}/>
                         <br/>
                         <img src="" style={{maxHeight: "15vh"}} alt="" />
                         </div>
@@ -208,7 +175,7 @@ function CreatePost() {
                             25MB (not enforced)
                         </div>
 
-                        <button className={"createPostButton"} type={"button"} onClick={post_post}>Create Post</button>
+                        <button className={"createPostButton"} type={"button"} onClick={savePost}>Create Post</button>
                     </form>
                 </div>
             </div>

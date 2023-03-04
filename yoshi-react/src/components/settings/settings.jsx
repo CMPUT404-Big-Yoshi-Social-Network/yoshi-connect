@@ -15,7 +15,7 @@ function Settings() {
         loggedIn();
     });
     return (
-        <div>
+        <div className='settings'>
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
@@ -23,6 +23,7 @@ function Settings() {
                 </div>
                 <div className='pubColM'>
                     You are viewing your settings. DEFAULT SHOULD BE ACCOUNT DETAILS!
+                    <Image fluid src='/images/icon_profile.png' alt='profile icon' width={20}></Image>
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

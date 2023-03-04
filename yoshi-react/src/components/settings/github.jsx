@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from "react";
+import './github.css';
 function GitHub() {
     const navigate = useNavigate();
     const checkForAuthor = () => {

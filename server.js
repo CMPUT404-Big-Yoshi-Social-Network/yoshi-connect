@@ -150,12 +150,19 @@ app.get('/server/admin/dashboard', async (req, res) => {
   })
 })
 
+app.delete('/server/admin/dashboard', (req, res) => {
+  if (req.body.status == 'Delete an Author') {
+    console.log('Debug: Deleting an Author');
+    deleteAuthor(req, res);
+  }
+})
+
 app.put('/server/admin/dashboard', (req, res) => {
   if (req.body.data.status == 'Add New Author') {
-    console.log('Debug: Adding a new author');
+    console.log('Debug: Adding a new Author.');
     addAuthor(req, res);
   } else if (req.body.data.status == 'Modify an Author') {
-    console.log('Debug: Modifying the Author')
+    console.log('Debug: Modifying the Author.')
     modifyAuthor(req, res);
   }
 })
@@ -172,13 +179,6 @@ app.post('/server/admin/dashboard', async (req, res) => {
     return res.json({
       authors: await Author.find()
     })
-  }
-})
-
-app.delete('/server/admin/dashboard', (req, res) => {
-  if (req.body.status == 'Delete an Author') {
-    console.log('Debug: Deleting an Author');
-    deleteAuthor(req, res);
   }
 })
 

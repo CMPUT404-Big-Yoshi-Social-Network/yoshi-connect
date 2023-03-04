@@ -24,8 +24,11 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
-const upload = multer({dest: 'uploads/'});
-require('dotenv').config()
+// const upload = multer({dest: 'uploads/'});
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const {options} = require('./openAPI/options.js');
+require('dotenv').config();
 mongoose.set('strictQuery', true);
 
 // Setting up app
@@ -55,17 +58,57 @@ if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
 
+const openapiSpecification = swaggerJsdoc(options);
+app.use('/server/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(openapiSpecification)
+);
+
 app.get('/favicon.ico', (req, res) => {
   res.sendStatus(404);
 })
 
-// Sign up page 
+/**
+ * @openapi
+ * /server/signup:
+ *  post:
+ *    security:
+ *      - loginToken: []
+ *    description: Signup url. Allows creation of an account and automatically logins to this new account. 
+ *    responses:
+ *      200:
+ *        description: Successfully created an account
+ *        headers:
+ *         Set-Cookie:
+ *            schema:
+ *              type: string
+ *              description: This token identifies you as being logged in and allows you to perform other api calls
+ *              example: token=QV1hAYUZU5Qu2dkrP4peLN
+ *      400:
+ *        description: NEEDS TO BE REFACTORED Signup not possible, username, is already taken, field missing, etc.
+ */
 app.post('/server/signup', async (req, res) => {
   console.log('Debug: Signing up as an author');
   await register_author(req, res);
 })
 
-// Login page
+/**
+ * @openapi
+ * /server/login:
+ *  post:
+ *    description: Login url, so you can authenticate locally with the server
+ *    responses:
+ *      200:
+ *        description: Successfully created an account
+ *        headers:
+ *         Set-Cookie:
+ *            schema:
+ *              type: string
+ *              description: This token identifies you as being logged in and allows you to perform other api calls
+ *              example: token=QV1hAYUZU5Qu2dkrP4peLN
+ *      400:
+ *        description: NEEDS TO BE REFACTORED Login not possible. Failed due to incorrect username or password. 
+ */
 app.post('/server/login', async (req, res) => {
   console.log('Debug: Login as Author')
   await authAuthor(req, res);

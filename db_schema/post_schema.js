@@ -40,13 +40,13 @@ const post_history_scheme = new Schema({
     {versionKey: false
 })
 
-const Post_History = database.model('Posts', post_history_scheme);
+const PostHistory = database.model('Posts', post_history_scheme);
 const Post = database.model('Post', post_scheme);
 const Like = database.model('Like', like_scheme);
 const Comment = database.model('Comment', comment_scheme);
 
 module.exports = {
-    Post_History,
+    PostHistory,
     Post,
     Like,
     Comment

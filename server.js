@@ -19,27 +19,32 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Setting up database
-const mongoose = require('mongoose');
+// Parsers
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+
+// Swagger.io
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require('swagger-jsdoc');
 const {options} = require('./openAPI/options.js');
-require('dotenv').config();
-mongoose.set('strictQuery', true);
 
-// Setting up app
+// dotenv
+require('dotenv').config();
+
+// Setup
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
+
+// Routing functions
+const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
 const { register_author, get_profile } = require('./routes/author');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { addAuthor, deleteAuthor, modifyAuthor } = require('./routes/admin');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 
+// App uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -47,16 +52,20 @@ app.use(cookieParser());
 app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
-// Connect to database
+// Setting up database
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 const { author_scheme } = require('./db_schema/author_schema.js');
 const database = mongoose.connection;
 const Author = database.model('Author', author_scheme);
 
+// Development check
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
 
+// Swagger.io serve
 const openapiSpecification = swaggerJsdoc(options);
 app.use('/server/api-docs',
   swaggerUi.serve,
@@ -118,7 +127,7 @@ app.post('/server/login', async (req, res) => {
   await authAuthor(req, res);
 })
 
-// Admin Login page
+/** Admin routing */ 
 app.post('/server/admin', async (req, res) => {
   console.log('Debug: Login as Admin')
   await authAuthor(req, res);
@@ -132,14 +141,12 @@ app.get('/server/admin/dashboard', async (req, res) => {
 
   if((await checkExpiry(req, res)) == "Expired"){
     return res.json({
-      status: "Unsuccessful",
-      message: "Token expired"
+      status: false
     })
   }
 
   return res.json({
-    status: "Successful",
-    message: "Here's the dashboard"
+    status: true
   })
 })
 
@@ -175,6 +182,7 @@ app.delete('/server/admin/dashboard', (req, res) => {
   }
 })
 
+/** Public feed routing */
 app.get('/server/feed', (req, res) => {
   console.log('Debug: Checking expiry of token')
   sendCheckExpiry(req, res);
@@ -187,33 +195,11 @@ app.post('/server/feed', (req, res) => {
   }
 })
 
+/** Profile routing */
 app.get('/server/users/:username', async (req,res) => {
-  let a = await checkExpiry(req);
-  if(a  == "Expired"){
-    return res.sendStatus(401);
-  };
+  let isExpired = await checkExpiry(req);
+  if(isExpired  == "Expired") { return res.sendStatus(401); }
   get_profile(req, res);
-})
-
-app.post('/server/requests', (req, res) => {
-  if (req.body.data.status == 'Fetching Requests') {
-    console.log('Debug: Getting friend requests')
-    findAllRequests(req, res);
-  }
-})
-
-app.put('/server/requests', (req, res) => {
-  if (req.body.data.status == 'Sender is added by Receiver') {
-    console.log('Debug: Sender added by Receiver')
-    senderAdded(req, res);
-  } 
-})
-
-app.delete('/server/requests', (req, res) => {
-  if (req.body.status == 'Sender is rejected by Receiver') {
-    console.log('Debug: Sender rejected by Receiver')
-    deleteRequest(req, res);
-  }
 })
 
 app.post('/server/users/:username', async (req, res) => {
@@ -249,6 +235,29 @@ app.delete('/server/users/:username', (req, res) => {
   }
 })
 
+/** Requests routing */
+app.post('/server/requests', (req, res) => {
+  if (req.body.data.status == 'Fetching Requests') {
+    console.log('Debug: Getting friend requests')
+    findAllRequests(req, res);
+  }
+})
+
+app.put('/server/requests', (req, res) => {
+  if (req.body.data.status == 'Sender is added by Receiver') {
+    console.log('Debug: Sender added by Receiver')
+    senderAdded(req, res);
+  } 
+})
+
+app.delete('/server/requests', (req, res) => {
+  if (req.body.status == 'Sender is rejected by Receiver') {
+    console.log('Debug: Sender rejected by Receiver')
+    deleteRequest(req, res);
+  }
+})
+
+/** General routing */
 app.get('/',(req, res) => {
   res.render("index");
 });
@@ -256,6 +265,5 @@ app.get('/',(req, res) => {
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
-
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

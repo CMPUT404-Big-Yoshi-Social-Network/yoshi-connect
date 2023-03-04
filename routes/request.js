@@ -77,7 +77,6 @@ async function findAllRequests(req, res) {
         
         await Request.find({receiverId: username}, function(err, requests){
             console.log("Debug: Requests exists");
-            console.log(requests)
             return res.json({
                 requests: requests
             });

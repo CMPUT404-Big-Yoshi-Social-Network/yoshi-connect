@@ -45,7 +45,7 @@ async function fetchPublicPosts(req, res) {
             followings = following.followings
         }
     }
-    console.log(following);
+    
     let publicPosts = [];
     if (followings != undefined) {
         for (let i = 0; i < followings.length; i++) {

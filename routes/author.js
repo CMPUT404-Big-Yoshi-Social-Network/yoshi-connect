@@ -5,7 +5,8 @@ const { Author, Login } = require('../db_schema/author_schema.js');
 const { checkUsername } = require('../auth.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const {create_post_history} = require('./post.js');
+const { create_post_history } = require('./post.js');
+const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 
 async function register_author(req, res){
     if(await checkUsername(req) === "In use")
@@ -76,6 +77,10 @@ async function register_author(req, res){
     });
 
     await create_post_history(author._id);
+    await createFollowers(author.username, author._id);
+    await createFriends(author.username, author._id);
+    await createFollowings(author.username, author._id);
+
 }
 
 async function get_profile(req, res) {

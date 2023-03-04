@@ -121,6 +121,7 @@ async function adding(friend, req, res) {
             if (following) {
                 console.log('Debug: Sender already has a following list, must add to existing list.')
                 following.followings.push({username: req.body.data.receiver, authorId: receiverUUID});
+
                 new_following = following.followings;
             } else {
                 console.log('Debug: Sender does not have a following list (has not followed anyone), must make one.')

@@ -6,6 +6,8 @@ import CreatePost from '../posts/create.jsx';
 
 function PublicFeed() {
     const navigate = useNavigate();
+    const [followings, setFollowing] = useState([]);
+    const [publicPosts, setPublicPosts] = useState([]);
     const checkExpiry = () => {
         let config = {
             method: 'get',
@@ -31,6 +33,47 @@ function PublicFeed() {
     }
     useEffect(() => {
        checkExpiry();
+       console.log('Debug: Fetching all followings for this user')
+       let config = {
+           method: 'post',
+           maxBodyLength: Infinity,
+           url: '/server/following',
+           headers: {
+               'Content-Type': 'application/x-www-form-urlencoded'
+           },
+           data: {
+               sessionId: localStorage.getItem('sessionId'),
+           }
+       }
+       axios
+       .post('/server/following', config)
+       .then((response) => {
+           setFollowing(response.data.following)
+       })
+       .catch(err => {
+           console.error(err);
+       });
+
+       console.log('Debug: Fetching all the public/following posts of this user');
+       config = {
+           method: 'post',
+           maxBodyLength: Infinity,
+           url: '/server/public/posts',
+           headers: {
+               'Content-Type': 'application/x-www-form-urlencoded'
+           },
+           data: {
+               sessionId: localStorage.getItem('sessionId'),
+           }
+       }
+       axios
+       .post('/server/public/posts', config)
+       .then((response) => {
+           setPublicPosts(response.data.publicPosts)
+       })
+       .catch(err => {
+           console.error(err);
+       });
     });
     const LogOut = () => {
         let config = {

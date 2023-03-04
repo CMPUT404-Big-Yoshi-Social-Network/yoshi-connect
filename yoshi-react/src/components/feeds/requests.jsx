@@ -26,12 +26,13 @@ import Request from './request.jsx';
 function Requests(props) {
     const { username } = props;
     const [requests, setRequests] = useState([]);
+    const url = '/server/requests';
     useEffect(() => {
         console.log('Debug: Fetching all the requests for this user')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/requests',
+            url: url,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -41,7 +42,7 @@ function Requests(props) {
             }
         }
         axios
-        .post('/server/requests', config)
+        .post(url, config)
         .then((response) => {
             setRequests(response.data.requests)
         })

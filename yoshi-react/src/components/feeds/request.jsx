@@ -26,12 +26,13 @@ import axios from 'axios';
 function Request(props) {
     const { senderId } = props;
     const { username } = useParams();
+    const url = '/server/requests';
     const addRequest = () => {
         console.log('Debug: Adding Author')
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/server/requests',
+            url: url,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -42,7 +43,7 @@ function Request(props) {
             }
         }
         axios
-        .put('/server/requests', config)
+        .put(url, config)
         .then((response) => {
         })
         .catch(err => {
@@ -50,11 +51,11 @@ function Request(props) {
         });
     }
     const rejectRequest = () => {
-        console.log('Debug: Rejecting Author')
+        console.log('Debug: Rejecting Author.')
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
-            url: '/server/requests',
+            url: url,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -65,7 +66,7 @@ function Request(props) {
             }
         }
         axios
-        .delete('/server/requests', config)
+        .delete(url, config)
         .then((response) => {
         })
         .catch(err => {

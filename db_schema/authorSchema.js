@@ -19,12 +19,14 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Fetch database
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+// Used for passwords
 const crypto = require("crypto");
 
-const author_scheme = new Schema({
+const authorScheme = new Schema({
     _id: { type: String, default: crypto.randomUUID },
     username: String,
     password: String,
@@ -35,7 +37,7 @@ const author_scheme = new Schema({
     {versionKey: false
 });
 
-const login_scheme = new Schema({
+const loginScheme = new Schema({
     authorId: String,
     username: String,
     token: String,
@@ -44,7 +46,7 @@ const login_scheme = new Schema({
     {versionKey: false
 });
 
-const follower_scheme = new Schema({
+const followerScheme = new Schema({
     username: String,
     followers: [{
         username: String,
@@ -52,7 +54,7 @@ const follower_scheme = new Schema({
     {versionKey: false
 });
 
-const following_scheme = new Schema({
+const followingScheme = new Schema({
     username: String,
     followings: [{
         username: String,
@@ -60,7 +62,7 @@ const following_scheme = new Schema({
     {versionKey: false
 });
 
-const friend_scheme = new Schema({
+const friendScheme = new Schema({
     username: String,
     friends: [{
         username: String,
@@ -68,7 +70,7 @@ const friend_scheme = new Schema({
     {versionKey: false
 });
 
-const request_scheme = new Schema({
+const requestScheme = new Schema({
     senderId: String,
     receiverId: String,
     status: String},
@@ -76,10 +78,10 @@ const request_scheme = new Schema({
 });
 
 module.exports = {
-    author_scheme,
-    login_scheme,
-    friend_scheme,
-    following_scheme,
-    follower_scheme,
-    request_scheme
+    authorScheme,
+    loginScheme,
+    friendScheme,
+    followingScheme,
+    followerScheme,
+    requestScheme
 }

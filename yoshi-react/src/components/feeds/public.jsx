@@ -24,14 +24,15 @@ import axios from 'axios';
 import React, { useEffect } from "react";
 function PublicFeed() {
     const navigate = useNavigate();
+    const url = '/server/feed';
     const checkExpiry = () => {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: '/feed',
+            url: url,
         }
         axios
-        .get('/server/feed', config)
+        .get(url, config)
         .then((response) => {
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.")
@@ -54,7 +55,7 @@ function PublicFeed() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/feed',
+            url: url,
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -63,7 +64,7 @@ function PublicFeed() {
             }
         }
         axios
-        .post('/server/feed', config)
+        .post(url, config)
         .then((response) => {
             navigate("/");
         })

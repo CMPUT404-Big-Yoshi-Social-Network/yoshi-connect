@@ -19,26 +19,31 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-const { follower_scheme, following_scheme, friend_scheme } = require('../db_schema/author_schema.js');
+// Fetching database 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
-const Follower = database.model('Follower', follower_scheme);
-const Following = database.model('Following', following_scheme);
-const Friend = database.model('Friend', friend_scheme);
+
+// Fetching schemas
+const { followerScheme, followingScheme, friendScheme } = require('../db_schema/authorSchema.js');
+const Follower = database.model('Follower', followerScheme);
+const Following = database.model('Following', followingScheme);
+const Friend = database.model('Friend', friendScheme);
 
 async function isFriend(req, res) {
     console.log('Debug: Checking if the author is a friend or follow.');
+
     checkFriend = false;
     let status = '';
+
     await Following.findOne({username: req.body.data.viewer}, function(err, following){
         console.log('Debug: See if viewer is viewing someone they follow.')
         if (following) {
             console.log('Debug: This viewer does follow people, but do they follow the viewed.')
             let idx = following.followings.map(obj => obj.username).indexOf(req.body.data.viewed);
             if (idx > -1) { 
-                console.log('Debug: They follow them.')
-                status = 'Follows';
+                console.log('Debug: They follow them (false).')
+                status = false;
             } else {
                 checkFriend = true;
             }
@@ -54,8 +59,8 @@ async function isFriend(req, res) {
                 console.log('Debug: This viewer does friend people, but do they friend the viewed.')
                 let idx = friend.friends.map(obj => obj.username).indexOf(req.body.data.viewed);
                 if (idx > -1) { 
-                    console.log('Debug: They are friends.')
-                    status = 'Friends';
+                    console.log('Debug: They are friends (true).')
+                    status = true;
                 } 
             } 
         }).clone()
@@ -67,45 +72,46 @@ async function isFriend(req, res) {
 
 async function unfriending(req, res) {
     console.log('Debug: Viewer is unfriending the viewed.')
+
     let success = true;
 
-    let new_friend_sender = [];
+    let newFriendSender = [];
     await Friend.findOne({username: req.body.data.sender}, function(err, friend){
         console.log('Debug: Remove receiver from sender friend list.')
         if (friend) {
             console.log('Debug: We found sender friend list, now we need to delete receiver.')
-            new_friend_sender = friend.friends;
+            newFriendSender = friend.friends;
             let idx = friend.friends.map(obj => obj.username).indexOf(req.body.data.receiver);
             if (idx > -1) { 
                 friend.friends.splice(idx, 1);
-                new_friend_sender = friend.friends;
+                newFriendSender = friend.friends;
             }                
         } 
     }).clone()
-    await Friend.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, friends: new_friend_sender}).clone()
+    await Friend.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, friends: newFriendSender}).clone()
 
-    let new_friend_receiver = [];
+    let newFriendReceiver = [];
     await Friend.findOne({username: req.body.data.receiver}, function(err, friend){
         console.log('Debug: Remove sender from receiver friend list.')
         if (friend) {
             console.log('Debug: We found receiver friend list, now we need to delete sender.')
-            new_friend_receiver = friend.friends;
+            newFriendReceiver = friend.friends;
             let idx = friend.friends.map(obj => obj.username).indexOf(req.body.data.sender);
             if (idx > -1) { 
                 friend.friends.splice(idx, 1);
-                new_friend_receiver = friend.friends;
+                newFriendReceiver = friend.friends;
             }                
         } 
     }).clone()
-    await Friend.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, friends: new_friend_receiver}).clone()
+    await Friend.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, friends: newFriendReceiver}).clone()
 
-    let new_following = [];
+    let newFollowing = [];
     await Following.findOne({username: req.body.data.receiver}, function(err, following){
-        console.log('Debug: Add sender to receiver following list')
+        console.log('Debug: Add sender to receiver following list.')
         if (following) {
             console.log('Debug: Receiver already has a following list, must add to existing list.')
             following.followings.push({username: req.body.data.sender});
-            new_following = following.followings;
+            newFollowing = following.followings;
         } else {
             console.log('Debug: Receiver does not have a following list (has not followed anyone), must make one.')
             var following = new Following({
@@ -116,25 +122,24 @@ async function unfriending(req, res) {
             });
 
             following.save(async (err, following, next) => {
-                if(err){
-                    console.log(err);
+                if (err) {
                     success = false;
                 }
             })
         }
     }).clone()
-    if (new_following.length) {
-        console.log('Debug: New following!')
-        await Following.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followings: new_following}).clone()
+    if (newFollowing.length) {
+        console.log('Debug: New following.')
+        await Following.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followings: newFollowing}).clone()
     }
 
-    let new_follower = [];
+    let newFollower = [];
     await Follower.findOne({username: req.body.data.sender}, function(err, follower){
-        console.log('Debug: Add receiver to sender follower list')
+        console.log('Debug: Add receiver to sender follower list.')
         if (follower) {
             console.log('Debug: Sender already has a follower list, must add to existing list.')
             follower.followers.push({username: req.body.data.receiver});
-            new_follower = follower.followers;
+            newFollower = follower.followers;
         } else {
             console.log('Debug: Sender does not have a follower list (has no followers), must make one.')
             var follower = new Follower({
@@ -145,16 +150,15 @@ async function unfriending(req, res) {
             });
 
             follower.save(async (err, follower, next) => {
-                if(err){
-                    console.log(err);
+                if (err) {
                     success = false;
                 }
             })
         }
     }).clone()
-    if (new_follower.length) {
-        console.log('Debug: New follower!')
-        await Follower.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followers: new_follower}).clone()
+    if (newFollower.length) {
+        console.log('Debug: New follower.')
+        await Follower.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followers: newFollower}).clone()
     }
 
     return res.json({
@@ -164,40 +168,42 @@ async function unfriending(req, res) {
 
 async function unfollowing(req, res) {
     console.log('Debug: Viewer is unfollowing the viewed.')
-    let new_following = [];
+
     let success = true;
+
+    let newFollowing = [];
     await Following.findOne({username: req.body.data.sender}, function(err, following){
-        console.log('Debug: Remove viewed to viewer following list')
+        console.log('Debug: Remove viewed to viewer following list.')
         if (err) { 
             success = false;
         }
         if (following) {
-            new_following = following.followings;
+            newFollowing = following.followings;
             let idx = following.followings.map(obj => obj.username).indexOf(req.body.data.receiver);
             if (idx > -1) { 
                 following.followings.splice(idx, 1);
-                new_following = following.followings;
+                newFollowing = following.followings;
             } 
         } 
     }).clone()
-    await Following.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followings: new_following}).clone()
+    await Following.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followings: newFollowing}).clone()
 
-    let new_follower = [];
+    let newFollower = [];
     await Follower.findOne({username: req.body.data.receiver}, function(err, follower){
-        console.log('Debug: Remove viewer to viewed follower list')
+        console.log('Debug: Remove viewer to viewed follower list.')
         if (err) { 
             success = false;
         }
         if (follower) {
-            new_follower = follower.followers;
+            newFollower = follower.followers;
             let idx = follower.followers.map(obj => obj.username).indexOf(req.body.data.sender);
             if (idx > -1) { 
                 follower.followers.splice(idx, 1);
-                new_follower = follower.followers;
+                newFollower = follower.followers;
             }
         } 
     }).clone()
-    await Follower.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followers: new_follower}).clone()
+    await Follower.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followers: newFollower}).clone()
 
     return res.json({
         status: success

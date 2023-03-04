@@ -22,12 +22,15 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 export default function AdminLogin() { 
+    const url = '/server/admin';
     const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',
       password: ''
     })
+
     const getAdmin = (e) => {
       e.preventDefault()
 
@@ -36,7 +39,7 @@ export default function AdminLogin() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/server/admin',
+        url: url,
         headers: {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged
@@ -46,7 +49,7 @@ export default function AdminLogin() {
 
       axios(config)
       .then((response) => {
-        if ( response.data.status === 'Successful') {
+        if ( response.data.status === true) {
           console.log("Debug: Token saved and going to dashboard.")
           return navigate('/admin/dashboard/');
         } 

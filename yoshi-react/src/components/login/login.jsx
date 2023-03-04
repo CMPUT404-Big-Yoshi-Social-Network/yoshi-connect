@@ -22,12 +22,16 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 export default function Login() {
     const navigate = useNavigate();
+
+    const url = '/server/login';
     const [data, setData] = useState({
       username: '',
       password: ''
     })
+
     const getUserpass = (e) => {
       e.preventDefault()
 
@@ -36,7 +40,7 @@ export default function Login() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/server/login',
+        url: url,
         headers: {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged
@@ -46,9 +50,8 @@ export default function Login() {
 
       axios(config)
       .then((response) => {
-        if ( response.data.status === 'Successful' ) {
-          console.log("Debug: Token received.");
-          console.log("Debug: Going to public feed.")
+        if ( response.data.status) {
+          console.log("Debug: Token received and going to public feed.");
           navigate('/feed');
         }
       })

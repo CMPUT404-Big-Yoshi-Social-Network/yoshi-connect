@@ -304,6 +304,11 @@ app.delete('/server/users/:username', (req, res) => {
   }
 })
 
+app.get('/server/friends', (req, res) => {
+  console.log('Debug: Checking expiry of token')
+  sendCheckExpiry(req, res);
+})
+
 app.post('/server/friends', (req, res) => {
   console.log('Debug: Getting the author friends');
   fetchFriends(req, res);

@@ -22,7 +22,9 @@ Foundation; All Rights Reserved
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import Authors from './authors.jsx';
+import AddAuthor from "./add-form.jsx";
+import Popup from 'reactjs-popup';
 function AdminDashboard() {
     const navigate = useNavigate();
     const url = '/server/admin/dashboard';
@@ -68,7 +70,7 @@ function AdminDashboard() {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                message: 'Logging Out'
+                status: 'Logging Out'
             }
         }
         axios
@@ -82,8 +84,12 @@ function AdminDashboard() {
     }
     return (
         <div>
-            Hello. You are viewing the admin dashboard.
+            <h1>Admin Dashboard</h1>
             <button type="button" onClick={() => LogOut()}>Log Out</button>
+            <Popup trigger={<button>Add New Author</button>} position="right center">
+                <AddAuthor/>
+            </Popup>
+            <div><Authors/></div>
         </div>
     )
 }

@@ -39,7 +39,7 @@ async function fetchPublicPosts(req, res) {
         console.log("Debug: Following exists");
         if (following != undefined) {
             if (following != [] && following != null) {
-                followings = followings.followings
+                followings = following.followings
             }
         }
     }).clone()
@@ -49,10 +49,11 @@ async function fetchPublicPosts(req, res) {
         for (let i = 0; i < followings.length; i++) {
             await PostHistory.findOne({authorId: followings[i].authorId}, function(err, history){
                 if (history != []) {
-                    history.posts.forEach( function (obj) {
-                        obj.authorId = followings[i].authorId;
+                    history.posts.forEach( (post) => {
+                        let plainPost = post.toObject();
+                        plainPost.authorId = followings[i].authorId;
+                        publicPosts.push(plainPost);
                     });
-                    publicPosts = publicPosts.concat(history.posts); 
                 }
             }).clone()
         }

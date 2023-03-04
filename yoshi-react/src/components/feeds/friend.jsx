@@ -77,7 +77,10 @@ function FriendFeed() {
         .post('/server/posts/', config)
         .then((response) => {
             let viewerId = response.data.authorId;
-            setViewerId(prevViewer => ({...prevViewer, viewerId}))
+            setViewerId({
+                ...viewer,
+                viewerId: viewerId
+              })
         })
         .catch(err => { });
 
@@ -102,7 +105,7 @@ function FriendFeed() {
            console.error(err);
        });
 
-    }, [setFriendPosts, setViewerId]);
+    }, [setFriendPosts, setViewerId, viewer]);
     return (
         <div>
             <h1>Friends Feed</h1>

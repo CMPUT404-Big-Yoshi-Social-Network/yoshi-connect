@@ -3,10 +3,9 @@ import axios from 'axios';
 import Comment from './comment';
 import { useState } from 'react';
 
-function Post(props) {
-    const viewerId = props.viewerId;
-    const postId = props._id;
-    const authorId = props.authorId;
+function Post({viewerId, post}) {
+    const postId = post._id;
+    const authorId = post.authorId;
     const url = "/server/authors/" + authorId + "/posts/" + postId;
 
     const [comment, setComment] = useState({
@@ -80,16 +79,16 @@ function Post(props) {
     return (
         <div style={{backgroundColor: "grey"}}>
             <hr size={"2px"} width={"fill"} color={"black"}/>
-            {!props.unlisted &&
+            {!post.unlisted &&
                 <div>
-                    {props.title === "" ? null : <h1>{props.title}</h1>}
-                    {props.description === "" ? null : <h3>{props.description}</h3>}
+                    {post.title === "" ? null : <h1>{post.title}</h1>}
+                    {post.description === "" ? null : <h3>{post.description}</h3>}
 
                     <hr size={"2px"} width={"fill"} color={"white"}/>
 
-                    {props.content === "" ? null : props.contentType === "type/plain" ? <p>{props.content}</p> : <p>Markdown:{props.content}</p>}
+                    {post.content === "" ? null : post.contentType === "type/plain" ? <p>{post.content}</p> : <p>Markdown:{post.content}</p>}
 
-                    <p>{props.published}</p>
+                    <p>{post.published}</p>
 
                     { like ? <button onClick={removeLike}>Unlike</button> : <button onClick={addLike}>Like</button>} 
 
@@ -106,8 +105,8 @@ function Post(props) {
                                 <button onClick={makeComment}>Add Comment</button>
                             </form>
 
-                            {Object.keys(props.comments).map((comment, idx) => (
-                                <Comment key={idx} {...props.comments[comment]}/>
+                            {Object.keys(post.comments).map((comment, idx) => (
+                                <Comment key={idx} {...post.comments[comment]}/>
                             ))}
                         </div>}
                 </div>}

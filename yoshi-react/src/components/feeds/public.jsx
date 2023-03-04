@@ -56,7 +56,10 @@ function PublicFeed() {
         .post('/server/posts/', config)
         .then((response) => {
             let viewerId = response.data.authorId;
-            setViewerId(prevViewer => ({...prevViewer, viewerId}))
+            setViewerId({
+                ...viewer,
+                viewerId: viewerId
+              })
         })
         .catch(err => { });
 
@@ -80,7 +83,7 @@ function PublicFeed() {
        .catch(err => {
            console.error(err);
        });
-    }, [setPublicPosts, setViewerId]);
+    }, [setPublicPosts, setViewerId, viewer]);
     const LogOut = () => {
         console.log('Debug: Attempting to log out.')
         let config = {

@@ -56,7 +56,7 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
-const { author_scheme } = require('./db_schema/author_schema.js');
+const { author_scheme } = require('./db_schema/authorSchema.js');
 const database = mongoose.connection;
 const Author = database.model('Author', author_scheme);
 

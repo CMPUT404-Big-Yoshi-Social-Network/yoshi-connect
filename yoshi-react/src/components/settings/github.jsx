@@ -16,7 +16,18 @@ function GitHub() {
     });
     return (
         <div>
-            Viewing GitHub details
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                    Viewing GitHub details
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
         </div>
     )
 }

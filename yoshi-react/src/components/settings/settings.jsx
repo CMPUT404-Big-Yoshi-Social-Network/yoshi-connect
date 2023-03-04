@@ -16,8 +16,19 @@ function Settings() {
     });
     return (
         <div>
-            You are viewing your settings. DEFAULT SHOULD BE ACCOUNT DETAILS!
-        </div> 
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                    You are viewing your settings. DEFAULT SHOULD BE ACCOUNT DETAILS!
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
+        </div>
     )
 }
 

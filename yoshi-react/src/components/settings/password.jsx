@@ -16,7 +16,18 @@ function PasswordChange() {
     });
     return (
         <div>
-            Viewing Password Change Page.
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                    Viewing Password Change Page.
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
         </div>
     )
 }

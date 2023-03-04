@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Follow from './follow.jsx';
 
 function Following() {
-    const [followings, setFollowing] = useState([]);
+    const [followings, setFollowings] = useState([]);
 
     useEffect(() => {
        console.log('Debug: Fetching all followings for this user')
@@ -21,18 +21,23 @@ function Following() {
        axios
        .post('/server/following', config)
        .then((response) => {
-           setFollowing(response.data.followings)
+            console.log(response.data.following)
+            setFollowings(response.data.following)
        })
        .catch(err => {
            console.error(err);
        });
-    });
+    }, []);
     return (
         <div>
             <h3>Following</h3>
-            {Object.keys(followings).map((following, idx) => (
-                <Follow key={idx} {...followings[following]}/>
-            ))}
+            {(followings === []) ? null :
+                <div>
+                    {Object.keys(followings).map((following, idx) => (
+                        <Follow key={idx} {...followings[following]}/>
+                    ))}
+                </div>
+            }
         </div>
     )
 }

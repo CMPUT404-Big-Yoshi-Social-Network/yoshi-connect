@@ -80,7 +80,6 @@ async function modifyAuthor(req, res){
 async function deleteAuthor(req, res){
     console.log('Debug: Attempt to delete an author.')
     await Author.deleteOne({username: req.body.username}, function(err, deleteObj){
-        console.log(deleteObj);
         if(deleteObj.deletedCount == 0){
             return res.sendStatus(404);
         }

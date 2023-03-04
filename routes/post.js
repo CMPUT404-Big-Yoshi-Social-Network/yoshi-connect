@@ -268,7 +268,6 @@ async function get_posts_paginated(req, res){
             $unwind: "$posts"
         }
     ])
-    console.log(posts);;
     return res.sendStatus(200);
 }
 

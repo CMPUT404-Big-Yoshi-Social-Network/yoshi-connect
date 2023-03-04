@@ -62,6 +62,7 @@ function CreatePost() {
                 likes: data.likes,
                 comments: data.comments,
                 unlisted: data.unlisted,
+                specifics: data.specifics,
                 image: data.image
             }
         }

@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import TopNav from './topNav.jsx';
 import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
+import './friend.css';
 function FriendFeed() {
     const navigate = useNavigate();
     const checkForAuthor = () => {

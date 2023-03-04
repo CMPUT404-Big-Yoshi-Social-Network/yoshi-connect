@@ -81,18 +81,18 @@ function Post({viewerId, post}) {
             <hr size={"2px"} width={"fill"} color={"black"}/>
             {!post.unlisted &&
                 <div>
-                    {post.title === "" ? null : <h1>{post.title}</h1>}
-                    {post.description === "" ? null : <h3>{post.description}</h3>}
+                    { post.title === "" ? null : <h1>{post.title}</h1> }
+                    { post.description === "" ? null : <h3>{post.description}</h3> }
 
                     <hr size={"2px"} width={"fill"} color={"white"}/>
 
-                    {post.content === "" ? null : post.contentType === "type/plain" ? <p>{post.content}</p> : <p>Markdown:{post.content}</p>}
+                    { post.content === "" ? null : post.contentType === "type/plain" ? <p>{post.content}</p> : <p>Markdown:{post.content}</p> }
 
                     <p>{post.published}</p>
 
-                    { like ? <button onClick={removeLike}>Unlike</button> : <button onClick={addLike}>Like</button>} 
+                    { like ? <button onClick={removeLike}>Unlike</button> : <button onClick={addLike}>Like</button> } 
 
-                    {showComment ? <button onClick={toggleComments}>Close Comments</button> : <button onClick={toggleComments}>Open Comments</button>}
+                    { showComment ? <button onClick={toggleComments}>Close Comments</button> : <button onClick={toggleComments}>Open Comments</button> }
 
                     {showComment && 
                         <div>

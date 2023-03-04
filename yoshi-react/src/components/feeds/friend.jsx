@@ -84,7 +84,7 @@ function FriendFeed() {
             <h3>Friends List</h3>
             <Friends/>
             <h3>Friends Posts</h3>
-            <Posts {...friendPosts}/>
+            <Posts viewerId={viewerId} authorId={authorId} posts={friendPosts}/>
         </div>
     )
 }

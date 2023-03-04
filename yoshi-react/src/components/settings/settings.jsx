@@ -26,7 +26,37 @@ function Settings() {
                 </div>
                 <div className='pubColM'>
                     You are viewing your settings. DEFAULT SHOULD BE ACCOUNT DETAILS!
-                    <Image fluid src='/images/icon_profile.png' alt='profile icon' width={20}></Image>
+                    <div className='profile-heading'>
+                        <img className='ad-pubUserImg' alt='rn-pubUser' src='/images/public/icon_profile.png' width={40}/>
+                    </div>
+                    <Card.Body>
+                        <Form className='account-details-form'>
+                        <Form.Group className="account-details-a">
+                            <p>Email</p>
+                                <Form.Control
+                                    name="email"
+                                    onChange={(e) => {setData({...data, email: e.target.value})}}
+                                    type="email" className='account-details-box'/>
+                                </Form.Group>
+                            <Form.Group className="account-details-a">
+                                <p>Username</p>
+                                <Form.Control
+                                    name="username"
+                                    onChange={(e) => {setData({...data, username: e.target.value})}}
+                                    type="text" className='account-details-box'/>
+                            </Form.Group>
+                            <Form.Group className="account-details-a">
+                                <p>Password</p>
+                                <Form.Control
+                                    name="password"
+                                    onChange={(e) => {setData({...data, password: e.target.value})}}
+                                    type="password" className='account-details-box'/>
+                            </Form.Group>
+                            <br></br>
+                            <Button href='/' variant="warning" type="submit" className='signup-button'>Back</Button>
+                            <Button onClick={getAccount} variant="warning" type="submit" className='signup-button'>Next</Button>
+                        </Form>
+                    </Card.Body>
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

@@ -26,6 +26,7 @@ const post_scheme = new Schema({
     comments: [comment_scheme],
     published: String,
     visibility: String,
+    specifics: [String],
     unlisted: Boolean,
     image: String},
     {versionKey: false

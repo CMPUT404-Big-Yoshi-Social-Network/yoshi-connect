@@ -35,7 +35,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername } = require('./routes/author');
-const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment } = require('./routes/post');
+const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility, fetchLikers } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
@@ -150,8 +150,16 @@ app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   console.log('Debug: Updating a specific post by a specific author')
   if ( await checkExpiry(req, res) ) {
     return res.sendStatus(404);
+  } else if ( req.body.data.status == 'Checking Visibility') {
+    console.log('Debug: Checking the visibility of a post');
+    checkVisibility(req, res);
+  } else if ( req.body.data.status == 'Fetching likers') {
+    console.log('Debug: Viewing list of likers for a specific post');
+    fetchLikers(req, res);
+  } else {
+    console.log('Debug: Updating a post');
+    await update_post(req, res);
   }
-  await update_post(req, res);
 })
 
 app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -184,6 +192,8 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   } else if ( req.body.data.status == 'Edit comment' ) {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);
+  } else {
+    await create_post(req, res, req.params.post_id);
   }
 })
 

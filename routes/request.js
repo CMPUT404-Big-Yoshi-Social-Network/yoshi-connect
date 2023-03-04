@@ -10,10 +10,14 @@ const Login = database.model('Login', login_scheme);
 const Author = database.model('Author', author_scheme);
 
 async function saveRequest(req, res) {
+    const senderUUID = await Author.findOne({username: req.body.data.sender});
+    const receiverUUID = await Author.findOne({username: req.body.data.receiver});
 
     var request = new Request({
         senderId: req.body.data.sender,
+        senderUUID: senderUUID,
         receiverId: req.body.data.receiver,
+        receiverUUID: receiverUUID,
         status: 'Stranger'
     });
 
@@ -106,28 +110,27 @@ async function senderAdded(req, res) {
 
 async function adding(friend, req, res) {
     let success = true;
+    const senderUUID = await Author.findOne({username: req.body.data.sender});
+    const receiverUUID = await Author.findOne({username: req.body.data.receiver});
     if (!friend) {
         console.log('Debug: Added as a follower.')
-        let authorId = '';
-        await Author.findOne({username: req.body.data.receiver}, function(err, author) {
-            console.log('Debug: Author Exists')
-            authorId = author._id
-        }).clone();
 
         let new_following = [];
         await Following.findOne({username: req.body.data.sender}, function(err, following){
             console.log('Debug: Add receiver to sender following list')
             if (following) {
                 console.log('Debug: Sender already has a following list, must add to existing list.')
-                following.followings.push({username: req.body.data.receiver, authorId: authorId});
+                following.followings.push({username: req.body.data.receiver, authorId: receiverUUID});
+
                 new_following = following.followings;
             } else {
                 console.log('Debug: Sender does not have a following list (has not followed anyone), must make one.')
                 var following = new Following({
                     username: req.body.data.sender,
+                    authorId: senderUUID,
                     followings: [{
                         username: req.body.data.receiver,
-                        authorId: authorId
+                        authorId: receiverUUID
                     }]
                 });
     
@@ -140,14 +143,8 @@ async function adding(friend, req, res) {
             }
         }).clone()
         if (new_following.length) {
-            await Following.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followings: new_following}).clone()
+            await Following.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, authorId: senderUUID, followings: new_following}).clone()
         }
-
-        authorId = '';
-        await Author.findOne({username: req.body.data.sender}, function(err, author) {
-            console.log('Debug: Author Exists')
-            authorId = author._id
-        }).clone();
 
         let new_follower = [];
         console.log('Debug: Add sender to follower list.')
@@ -155,15 +152,16 @@ async function adding(friend, req, res) {
             console.log('Debug: Add sender to receiver follower list')
             if (follower) {
                 console.log('Debug: Receiver already has a follower list, must add to existing list.')
-                follower.followers.push({username: req.body.data.sender, authorId: authorId});
+                follower.followers.push({username: req.body.data.sender, authorId: senderUUID});
                 new_follower = follower.followers;
             } else {
                 console.log('Debug: Receiver does not have a follower list (has no followers), must make one.')
                 var follower = new Follower({
                     username: req.body.data.receiver,
+                    authorId: receiverUUID,
                     followers: [{
                         username: req.body.data.sender,
-                        authorId: authorId
+                        authorId: senderUUID
                     }]
                 });
                 follower.save(async (err, follower, next) => {
@@ -175,7 +173,7 @@ async function adding(friend, req, res) {
             }
         }).clone()
         if (new_follower.length) {
-            await Follower.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followers: new_follower}).clone()
+            await Follower.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, authorId: receiverUUID, followers: new_follower}).clone()
         }
 
         if (success) {
@@ -215,26 +213,21 @@ async function adding(friend, req, res) {
         }).clone()
         await Follower.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followers: new_follower}).clone()
 
-        let authorId = '';
-        await Author.findOne({username: req.body.data.sender}, function(err, author) {
-            console.log('Debug: Author Exists')
-            authorId = author._id
-        }).clone();
-
         let new_friend_receiver = [];
         await Friend.findOne({username: req.body.data.receiver}, function(err, friend){
             console.log('Debug: Add sender to receiver friend list.')
             if (friend) {
                 console.log('Debug: Receiver has friend list.')
-                friend.friends.push({username: req.body.data.sender, authorId: authorId});
+                friend.friends.push({username: req.body.data.sender, authorId: senderUUID});
                 new_friend_receiver = friend.friends;
             } else {
                 console.log('Debug: Receiver does not have a friend list yet.')
                 var new_friend = new Friend({
                     username: req.body.data.receiver,
+                    authorId: receiverUUID,
                     friends: [{
-                        username: req.body.data.sender, 
-                        authorId: authorId
+                        username: req.body.data.sender,
+                        authorId: senderUUID
                     }]
                 });
     
@@ -247,29 +240,24 @@ async function adding(friend, req, res) {
             }
         }).clone()
         if (new_friend_receiver.length) {
-            await Friend.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, friends: new_friend_receiver}).clone()
+            await Friend.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, authorId: receiverUUID, friends: new_friend_receiver}).clone()
         }
-
-        authorId = '';
-        await Author.findOne({username: req.body.data.receiver}, function(err, author) {
-            console.log('Debug: Author Exists')
-            authorId = author._id
-        }).clone();
 
         let new_friend_sender = [];
         await Friend.findOne({username: req.body.data.sender}, function(err, friend){
             console.log('Debug: Add receiver to sender friend list.')
             if (friend) {
                 console.log('Debug: Sender has friend list.')
-                friend.friends.push({username: req.body.data.receiver, authorId: authorId});
+                friend.friends.push({username: req.body.data.receiver, authorId: receiverUUID});
                 new_friend_sender = friend.friends;
             } else {
                 console.log('Debug: Sender does not have a friend list yet.')
                 var new_friend = new Friend({
                     username: req.body.data.sender,
+                    authorId: senderUUID,
                     friends: [{
                         username: req.body.data.receiver,
-                        authorId: authorId
+                        authorId: receiverUUID
                     }]
                 });
     
@@ -282,7 +270,7 @@ async function adding(friend, req, res) {
             }
         }).clone()
         if (new_friend_sender.length) {
-            await Friend.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, friends: new_friend_sender}).clone();
+            await Friend.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, authorId: senderUUID, friends: new_friend_sender}).clone();
         }
 
         if (success) {

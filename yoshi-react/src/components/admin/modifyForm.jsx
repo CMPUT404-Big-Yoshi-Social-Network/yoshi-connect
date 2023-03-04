@@ -11,6 +11,7 @@ function ModifyAuthor(props) {
         newPronouns: props.pronouns,
         newAdmin: props.admin
     })
+    const url = '/server/admin/dashboard';
 
     const modify = (e) => {
         e.preventDefault();
@@ -18,7 +19,7 @@ function ModifyAuthor(props) {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/server/admin/dashboard',
+            url: url,
             headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -35,7 +36,7 @@ function ModifyAuthor(props) {
         }
 
         axios
-        .put('/server/admin/dashboard', config)
+        .put(url, config)
         .then((response) => {
         })
         .catch(err => {

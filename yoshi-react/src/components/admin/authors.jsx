@@ -4,12 +4,13 @@ import Author from './author.jsx';
 
 function Authors() {
     const [authors, setAuthors] = useState([]);
+    const url = '/server/admin/dashboard';
     useEffect(() => {
         console.log('Debug: Fetching all the authors')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/admin/dashboard',
+            url: url,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -18,14 +19,14 @@ function Authors() {
             }
         }
         axios
-        .post('/server/admin/dashboard', config)
+        .post(url, config)
         .then((response) => {
             setAuthors(response.data.authors)
         })
         .catch(err => {
             console.error(err);
         });
-    }, [setAuthors]);
+    }, [setAuthors, url]);
     return (
         <div>
             <h3>Authors</h3>

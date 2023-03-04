@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 function Author(props) {
     const [username, setUsername] = useState('');
+    const url = '/server/admin/dashboard';
     useEffect(() => {
         setUsername(props.username)
      }, [props]);
@@ -14,7 +15,7 @@ function Author(props) {
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
-            url: '/server/admin/dashboard',
+            url: url,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -24,7 +25,7 @@ function Author(props) {
             }
         }
         axios
-        .delete('/server/admin/dashboard', config)
+        .delete(url, config)
         .then((response) => {
         })
         .catch(err => {

@@ -3,20 +3,20 @@ import axios from 'axios';
 import { useState } from 'react';
 
 function AddAuthor() {
+    const url = '/server/admin/dashboard';
     const [data, setData] = useState({
         username: '',
         password: '',
         email: ''
       })
 
-
     const addAuthor = async (e) => {
         e.preventDefault();
-        console.log('Debug: Attempting to add an author');
+        console.log('Debug: Attempting to add an author.');
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/server/admin/dashboard',
+            url: url,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -30,7 +30,7 @@ function AddAuthor() {
         }
 
         axios
-        .put('/server/admin/dashboard', config)
+        .put(url, config)
         .then((response) => {})
         .catch(err => {
             console.error(err);

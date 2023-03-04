@@ -19,11 +19,11 @@ async function fetchFollowing(req, res) {
         if(following == undefined){
             return res.json({
                 following: []
-            })
+            });
         }
 
         return res.json({
-            following: following
+            following: following.followings
         })
     }).clone();
 }

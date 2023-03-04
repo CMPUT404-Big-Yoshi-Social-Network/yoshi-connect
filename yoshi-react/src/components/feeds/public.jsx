@@ -37,8 +37,9 @@ function PublicFeed() {
         });
     }
     useEffect(() => {
-       checkExpiry();
-
+        checkExpiry();
+    })
+    useEffect(() => {
        let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -79,7 +80,7 @@ function PublicFeed() {
        .catch(err => {
            console.error(err);
        });
-    });
+    }, []);
     const LogOut = () => {
         console.log('Debug: Attempting to log out.')
         let config = {

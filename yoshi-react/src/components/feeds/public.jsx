@@ -39,7 +39,7 @@ function PublicFeed() {
                 LogOut();
                 navigate('/');
             }
-            else{console.log('Debug: Your token is not expired.')}
+            else{ console.log('Debug: Your token is not expired.') }
         })
         .catch(err => {
             if (err.response.status === 401) {

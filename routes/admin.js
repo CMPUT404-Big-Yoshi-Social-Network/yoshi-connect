@@ -7,7 +7,7 @@ const Author = database.model('Author', author_scheme);
 const Login = database.model('Login', login_scheme);
 
 async function addAuthor(req, res){
-    console.log('Debug: Adding a new author to YoshiConnect');
+    console.log('Debug: Adding a new author.');
 
     let existingAuthor = await Author.findOne({username: req.body.data.username}).clone();
 
@@ -35,7 +35,7 @@ async function addAuthor(req, res){
         return res.sendStatus(200);
     });
 
-    console.log("Debug: " + author.username + " added successfully to database");
+    console.log("Debug: " + author.username + " added successfully to database.");
 
 }
 
@@ -55,7 +55,7 @@ async function modifyAuthor(req, res){
         }
     }
 
-    console.log('Debug: Found the author');
+    console.log('Debug: Found the author.');
     author.username = req.body.data.newUsername;
     author.password = crypto_js.SHA256(req.body.data.newPassword);
     author.email = req.body.data.newEmail;

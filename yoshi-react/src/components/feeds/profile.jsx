@@ -149,7 +149,7 @@ function Profile() {
             axios
             .put(url, config)
             .then((response) => {
-                console.log('Debug: Friend request sent!')
+                console.log('Debug: Friend request sent.')
             })
             .catch(err => {
               console.error(err);
@@ -172,7 +172,7 @@ function Profile() {
             axios
             .delete(url, config)
             .then((response) => {
-                console.log('Debug: Friend request deleted!')
+                console.log('Debug: Friend request deleted.')
             })
             .catch(err => {
               console.error(err);

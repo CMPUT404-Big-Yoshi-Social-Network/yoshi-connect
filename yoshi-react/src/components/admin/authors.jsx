@@ -6,7 +6,7 @@ function Authors() {
     const [authors, setAuthors] = useState([]);
     const url = '/server/admin/dashboard';
     useEffect(() => {
-        console.log('Debug: Fetching all the authors')
+        console.log('Debug: Fetching all the authors.')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

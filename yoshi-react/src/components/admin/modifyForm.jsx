@@ -15,7 +15,7 @@ function ModifyAuthor(props) {
 
     const modify = (e) => {
         e.preventDefault();
-        console.log('Debug: Attempting to modify an author');
+        console.log('Debug: Attempting to modify an author.');
         let config = {
             method: 'put',
             maxBodyLength: Infinity,

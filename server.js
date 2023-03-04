@@ -97,10 +97,10 @@ app.get('/favicon.ico', (req, res) => {
  */
 app.post('/server/signup', async (req, res) => {
   if (req.body.status == 'Is username in use') {
-    console.log('Debug: Checking if the username is already taken')
+    console.log('Debug: Checking if the username is already taken.')
     await checkUsername(req, res);
   } else {
-    console.log('Debug: Signing up as an author')
+    console.log('Debug: Signing up as an author.')
     await registerAuthor(req, res);
   }
 })
@@ -123,18 +123,18 @@ app.post('/server/signup', async (req, res) => {
  *        description: NEEDS TO BE REFACTORED Login not possible. Failed due to incorrect username or password. 
  */
 app.post('/server/login', async (req, res) => {
-  console.log('Debug: Login as Author')
+  console.log('Debug: Login as Author.')
   await authAuthor(req, res);
 })
 
 /** Admin routing */ 
 app.post('/server/admin', async (req, res) => {
-  console.log('Debug: Login as Admin')
+  console.log('Debug: Login as Admin.')
   await authAuthor(req, res);
 })
 
 app.get('/server/admin/dashboard', async (req, res) => {
-  console.log('Debug: Checking expiry of token')
+  console.log('Debug: Checking expiry of token.')
   if(await checkAdmin(req, res) === false){
     return res.sendStatus(403)
   }
@@ -152,7 +152,7 @@ app.get('/server/admin/dashboard', async (req, res) => {
 
 app.delete('/server/admin/dashboard', (req, res) => {
   if (req.body.status == 'Delete an Author') {
-    console.log('Debug: Deleting an Author');
+    console.log('Debug: Deleting an Author.');
     deleteAuthor(req, res);
   }
 })
@@ -169,13 +169,13 @@ app.put('/server/admin/dashboard', (req, res) => {
 
 app.post('/server/admin/dashboard', async (req, res) => {
   if (req.body.status == 'Is username in use') {
-    console.log('Debug: Checking if the username is already taken')
+    console.log('Debug: Checking if the username is already taken.')
     await checkUsername(req, res);
   } else if (req.body.data.status == 'Logging Out') {
-    console.log('Debug: Logging out as Admin')
+    console.log('Debug: Logging out as Admin.')
     removeLogin(req, res);
   } else if (req.body.data.status == 'Fetching Authors') {
-    console.log('Debug: Getting all authors')
+    console.log('Debug: Getting all authors.')
     return res.json({
       authors: await Author.find()
     })
@@ -184,13 +184,13 @@ app.post('/server/admin/dashboard', async (req, res) => {
 
 /** Public feed routing */
 app.get('/server/feed', (req, res) => {
-  console.log('Debug: Checking expiry of token')
+  console.log('Debug: Checking expiry of token.')
   sendCheckExpiry(req, res);
 })
 
 app.post('/server/feed', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
+    console.log('Debug: Logging out as Author.')
     removeLogin(req, res);
   }
 })
@@ -204,10 +204,10 @@ app.get('/server/users/:username', async (req,res) => {
 
 app.post('/server/users/:username', async (req, res) => {
   if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
+    console.log('Debug: Logging out as Author.')
     removeLogin(req, res);
   } else if (req.body.data.status == 'Does Request Exist') {
-    console.log('Debug: Checking if Friend Request Exists')
+    console.log('Debug: Checking if Friend Request Exists.')
     findRequest(req, res);
   } else if (req.body.data.status == 'Friends or Follows') {
     console.log('Debug: Checking if they are friends or follows.')
@@ -217,7 +217,7 @@ app.post('/server/users/:username', async (req, res) => {
 
 app.put('/server/users/:username', async (req, res) => {
   if (req.body.data.status == 'Save Request') {
-    console.log('Debug: Saving Friend Request')
+    console.log('Debug: Saving Friend Request.')
     saveRequest(req, res);
   } else if (req.body.data.status == 'Unfriending') {
     console.log('Debug: Viewer unfriending viewed.')
@@ -230,7 +230,7 @@ app.put('/server/users/:username', async (req, res) => {
 
 app.delete('/server/users/:username', (req, res) => {
   if (req.body.status == 'Delete Request') {
-    console.log('Debug: Deleting Friend Request')
+    console.log('Debug: Deleting Friend Request.')
     deleteRequest(req, res);
   }
 })
@@ -238,21 +238,21 @@ app.delete('/server/users/:username', (req, res) => {
 /** Requests routing */
 app.post('/server/requests', (req, res) => {
   if (req.body.data.status == 'Fetching Requests') {
-    console.log('Debug: Getting friend requests')
+    console.log('Debug: Getting friend requests.')
     findAllRequests(req, res);
   }
 })
 
 app.put('/server/requests', (req, res) => {
   if (req.body.data.status == 'Sender is added by Receiver') {
-    console.log('Debug: Sender added by Receiver')
+    console.log('Debug: Sender added by Receiver.')
     senderAdded(req, res);
   } 
 })
 
 app.delete('/server/requests', (req, res) => {
   if (req.body.status == 'Sender is rejected by Receiver') {
-    console.log('Debug: Sender rejected by Receiver')
+    console.log('Debug: Sender rejected by Receiver.')
     deleteRequest(req, res);
   }
 })
@@ -266,4 +266,4 @@ app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}.`));

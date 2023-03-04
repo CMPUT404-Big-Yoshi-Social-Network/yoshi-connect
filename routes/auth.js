@@ -105,7 +105,7 @@ async function authAuthor(req, res) {
     const password = req.body.password;
 
     if (!username || !password) {
-        console.log("Debug: Username or Password not given, Authentication failed");
+        console.log("Debug: Username or Password not given, Authentication failed.");
         return res.json({
             status: false
         });
@@ -114,7 +114,7 @@ async function authAuthor(req, res) {
     const author = await Author.findOne({username: req.body.username});
 
     if(!author){
-        console.log("Debug: Author does not exist, Authentication failed");
+        console.log("Debug: Author does not exist, Authentication failed.");
         return res.json({ status: false });
     }
 

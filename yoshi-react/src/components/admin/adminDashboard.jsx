@@ -47,7 +47,7 @@ function AdminDashboard() {
                 console.log("Debug: You're not an admin.")
                 navigate('/forbidden');
             } else {
-                console.log("Successfully logged in");
+                console.log("Successfully logged in.");
             }
             console.log('Debug: Your token is not expired.')
         })

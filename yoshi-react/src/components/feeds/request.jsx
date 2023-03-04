@@ -28,7 +28,7 @@ function Request(props) {
     const { username } = useParams();
     const url = '/server/requests';
     const addRequest = () => {
-        console.log('Debug: Adding Author')
+        console.log('Debug: Adding Author.')
         let config = {
             method: 'put',
             maxBodyLength: Infinity,

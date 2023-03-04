@@ -11,7 +11,7 @@ function Author(props) {
         setUsername(props.username)
      }, [props]);
     const deleteAuthor = () => {
-        console.log('Debug: Deleting this author')
+        console.log('Debug: Deleting this author.')
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,

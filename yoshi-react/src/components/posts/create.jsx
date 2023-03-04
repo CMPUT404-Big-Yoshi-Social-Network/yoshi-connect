@@ -71,7 +71,13 @@ function CreatePost() {
             if ( response.data.status === 'Successful' ) {
                 console.log("Debug: Token received.");
                 console.log("Debug: Going to public feed.");
-                navigate('/feed');
+                if ( response.data.feed === 'Public') {
+                    navigate('/feed');    
+                } else if ( response.data.feed === 'Friends') {
+                    navigate('/friends');
+                } else if ( response.data.feed === 'Private') {
+                    navigate('/messages');
+                }
             }
         })
         .catch((e) =>{

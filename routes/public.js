@@ -8,40 +8,33 @@ const Login = database.model('Login', login_scheme);
 const PostHistory = database.model('Posts', post_history_scheme);
 
 async function fetchFollowing(req, res) {
-    let username = '';
-    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+    let authorId = '';
+    await Login.findOne({token: req.body.data.sessionId}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
-        username = login[0].username
+        authorId = login.authorId
     }).clone();
 
-    await Following.findOne({username: username}, function(err, following){
+    await Following.findOne({authorId: authorId}, function(err, following){
         console.log("Debug: Following exists");
         if(following == undefined){
-            return res.json({
-                following: []
-            });
+            return res.json({ following: [] });
         }
-
-        return res.json({
-            following: following.followings
-        })
+        return res.json({ following: following.items })
     }).clone();
 }
 
 async function fetchPublicPosts(req, res) {
     console.log('Debug: Getting public/following posts');
-    let username = '';
-    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+    let authorId = '';
+    await Login.findOne({token: req.body.data.sessionId}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
-        username = login[0].username
+        authorId = login.authorId
     }).clone();
 
     let followings = [];
-    const following = await Following.findOne({username: username}).clone()
+    const following = await Following.findOne({authorId: authorId}).clone()
     if (following != undefined) {
-        if (following.followings != [] && following.followings != null) {
-            followings = following.followings
-        }
+        if (following.items != [] && following.items != null) { followings = following.items }
     }
 
     let publicPosts = [];
@@ -49,7 +42,6 @@ async function fetchPublicPosts(req, res) {
         for (let i = 0; i < followings.length; i++) {
             let history = await PostHistory.findOne({authorId: followings[i].authorId});
             if (history != []) {
-                console.log(history.posts)
                 history.posts.forEach( (post) => {
                     let plainPost = post.toObject();
                     plainPost.authorId = followings[i].authorId;
@@ -60,9 +52,7 @@ async function fetchPublicPosts(req, res) {
     }
 
     // TODO: Getting the PSA (Public Posts): Require to iterate through all the authors in order to get their posts array which indicates visibility
-    return res.json({
-        publicPosts: publicPosts
-    });
+    return res.json({ publicPosts: publicPosts });
 }
 
 module.exports={

@@ -35,7 +35,10 @@ export default function Signup() {
           }
         })
         .catch(err => {
-          console.error(err);
+          if (err.response.status === 400) {
+            console.log("Debug: Username in use, or you did not fill all the cells.");
+            navigate('/notfound'); 
+          }
         });
     }
     return(

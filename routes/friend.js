@@ -17,51 +17,41 @@ async function fetchFriends(req, res) {
     await Friend.findOne({authorId: authorId}, function(err, friends){
         console.log("Debug: Friends exists");
         if (friends != undefined) {
-            if (friends != [] && friends != null) {
-                return res.json({
-                    friends: friends.friends
-                });
-            }
+            if (friends != [] && friends != null) { return res.json({ friends: friends.items }); }
         }
     }).clone()
 }
 
 async function fetchFriendPosts(req, res) {
     console.log('Debug: Getting friend posts');
-    let username = '';
-    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+    let authorId = '';
+    await Login.findOne({token: req.body.data.sessionId}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
-        username = login[0].username
+        authorId = login.authorId
     }).clone();
 
     let friends = [];
-    await Friend.findOne({username: username}, function(err, friends){
+    await Friend.findOne({authorId: authorId}, function(err, friends){
         console.log("Debug: Friends exists");
         if (friends != undefined) {
-            if (friends != [] && friends != null) {
-                friends = friends;
-            }
+            if (friends != [] && friends != null) { friends = friends.items; }
         }
     }).clone()
 
-    // Refactor Later
     let friendsPosts = [];
     if (friends != undefined) {
         for (let i = 0; i < friends.length; i++) {
             await PostHistory.findOne({authorId: friends[i].authorId}, function(err, history){
-                if (history != []) {
-                    history.posts.forEach( function (obj) {
-                        obj.authorId = friends[i].authorId;
-                    });
-                    friendsPosts = friendsPosts.concat(history.posts);
-                }
+                history.posts.forEach( (post) => {
+                    let plainPost = post.toObject();
+                    plainPost.authorId = friends[i].authorId;
+                    friendsPosts.push(plainPost);
+                });
             }).clone()
         }
     }
 
-    return res.json({
-        friendPosts: friendsPosts
-    })
+    return res.json({ friendPosts: friendsPosts })
 }
 
 module.exports={

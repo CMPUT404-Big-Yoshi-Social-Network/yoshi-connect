@@ -5,61 +5,63 @@ const database = mongoose.connection;
 const crypto = require('crypto');
 
 const author_scheme = new Schema({
+    type: 'author',
     _id: {type: String, default: crypto.randomUUID},
-    username: String,
+    url: String,
+    host: String,
+    displayName: String,
+    github: String,
+    profileImage: String},
+    {versionKey: false
+});
+
+const account_scheme = new Schema({
+    type: 'account',
+    _id: {type: String, default: crypto.randomUUID},
+    displayName: String,
     password: String,
     email: String,
     about: String,
     pronouns: String,
-    admin: Boolean,},
+    admin: Boolean},
     {versionKey: false
 });
 
 const login_scheme = new Schema({
+    type: 'login',
     authorId: String,
-    username: String,
     token: String,
-    admin: Boolean,
-    expires: String,},
+    expires: String,
+    admin: Boolean},
     {versionKey: false
 });
 
 const follower_scheme = new Schema({
-    username: String,
+    type: 'followers',
     authorId: String,
-    followers: [{
-        username: String,
-        authorId: String
-    }]},
+    items: [author_scheme]},
     {versionKey: false
 });
 
 const following_scheme = new Schema({
-    username: String,
+    type: 'followings',
     authorId: String,
-    followings: [{
-        username: String,
-        authorId: String
-    }]},
+    items: [author_scheme]},
     {versionKey: false
 });
 
 const friend_scheme = new Schema({
-    username: String,
+    type: 'friends',
     authorId: String,
-    friends: [{
-        username: String,
-        authorId: String
-    }]},
+    items: [author_scheme]},
     {versionKey: false
 });
 
 const request_scheme = new Schema({
-    senderId: String,
-    senderUUID: String,
-    receiverId: String,
-    receiverUUID: String,
-    status: String},
+    type: String,
+    summary: String,
+    actor: author_scheme,
+    object: author_scheme},
     {versionKey: false
 });
 
@@ -69,6 +71,7 @@ const Login = database.model('Login', login_scheme);
 const Author = database.model('Author', author_scheme);
 const Request = database.model('Request', request_scheme);
 const Follower = database.model('Follower', follower_scheme);
+const Account = database.model('Account', account_scheme);
 
 module.exports = {
     Friend,
@@ -76,5 +79,6 @@ module.exports = {
     Login,
     Author,
     Request,
-    Follower
+    Follower,
+    Account
 }

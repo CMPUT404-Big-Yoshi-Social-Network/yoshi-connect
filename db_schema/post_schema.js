@@ -3,31 +3,26 @@ const { Schema } = mongoose;
 const database = mongoose.connection;
 const crypto = require('crypto');
 
-const comment_scheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    commenter: String,
-    comment: String
-})
-
-const like_scheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    liker: String
-})
 
 const post_scheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    type: 'post',
+    _id: String, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
     title: String,
     description: String,
+    source: String,
+    origin: String,
     contentType: String,
     content: String,
+    author: Author,
     categories: [String],
     count: Number,
-    likes: [like_scheme],
-    comments: [comment_scheme],
+    commentsSrc: Comments,
+    comments: String, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
     published: String,
     visibility: String,
-    specifics: [String],
     unlisted: Boolean,
+    likesSrc: Likes,
+    specifics: [Author],
     image: String},
     {versionKey: false
 });
@@ -42,12 +37,8 @@ const post_history_scheme = new Schema({
 
 const Post_History = database.model('Posts', post_history_scheme);
 const Post = database.model('Post', post_scheme);
-const Like = database.model('Like', like_scheme);
-const Comment = database.model('Comment', comment_scheme);
 
 module.exports = {
     Post_History,
-    Post,
-    Like,
-    Comment
+    Post
 }

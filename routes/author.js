@@ -1,13 +1,10 @@
 const crypto_js = require('crypto-js');
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { author_scheme, login_scheme } = require('../db_schema/author_schema.js');
+const { Author, Login } = require('../db_schema/author_schema.js');
 const { checkUsername } = require('../auth.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
-const Author = database.model('Author', author_scheme);
-const Login = database.model('Login', login_scheme);
 const {create_post_history} = require('./post.js');
 
 async function register_author(req, res){

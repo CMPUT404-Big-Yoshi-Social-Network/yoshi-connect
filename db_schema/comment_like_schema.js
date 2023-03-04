@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const { author_scheme} = require('./author_schema.js');
-const { post_scheme } = require('./post_schema.js');
 
 const crypto = require('crypto');
 

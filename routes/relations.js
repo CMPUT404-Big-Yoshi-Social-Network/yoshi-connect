@@ -1,10 +1,6 @@
-const { follower_scheme, following_scheme, friend_scheme } = require('../db_schema/author_schema.js');
+const { Follower, Following, Friend } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
-const Follower = database.model('Follower', follower_scheme);
-const Following = database.model('Following', following_scheme);
-const Friend = database.model('Friend', friend_scheme);
 
 async function isFriend(req, res) {
     console.log('Debug: Checking if the author is a friend or follow.');

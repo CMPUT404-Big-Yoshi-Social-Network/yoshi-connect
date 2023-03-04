@@ -80,7 +80,7 @@ function PublicFeed() {
        .catch(err => {
            console.error(err);
        });
-    }, []);
+    }, [setPublicPosts, setViewerId]);
     const LogOut = () => {
         console.log('Debug: Attempting to log out.')
         let config = {

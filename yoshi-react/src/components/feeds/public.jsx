@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Notifications from './notifcation-box.jsx';
 import CreatePost from '../posts/create.jsx';
 

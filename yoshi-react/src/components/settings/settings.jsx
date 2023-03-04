@@ -32,18 +32,19 @@ function Settings() {
                     <Card.Body>
                         <Form className='account-details-form'>
                         <Form.Group className="account-details-a">
+                            <p>Username</p>
+                                <Form.Control
+                                    //href={`/users/${username}`}>{username} 
+                                    name="username"
+                                    onChange={(e) => {setData({...data, username: e.target.value})}}
+                                    type="text" className='account-details-box'/>
+                        </Form.Group>
+                        <Form.Group className="account-details-a">
                             <p>Email</p>
                                 <Form.Control
                                     name="email"
                                     onChange={(e) => {setData({...data, email: e.target.value})}}
                                     type="email" className='account-details-box'/>
-                            </Form.Group>
-                            <Form.Group className="account-details-a">
-                                <p>Username</p>
-                                <Form.Control
-                                    name="username"
-                                    onChange={(e) => {setData({...data, username: e.target.value})}}
-                                    type="text" className='account-details-box'/>
                             </Form.Group>
                             <Form.Group className="account-details-a">
                                 <p>Password</p>

@@ -23,7 +23,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Authors from './authors.jsx';
-import AddAuthor from "./add-form.jsx";
+import AddAuthor from "./addForm.jsx";
 import Popup from 'reactjs-popup';
 function AdminDashboard() {
     const navigate = useNavigate();

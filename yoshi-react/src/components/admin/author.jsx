@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import axios from 'axios';
-import ModifyAuthor from "./modify-form.jsx";
+import ModifyAuthor from "./modifyForm.jsx";
 import Popup from 'reactjs-popup';
 import { useState } from 'react';
 

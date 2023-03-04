@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import Post from "./post.jsx";
 
 function CreatePost() {
     const [data, setData] = useState({
@@ -104,9 +103,6 @@ function CreatePost() {
     return (
         <div>
             <button className={"createPostButton"} type={"button"} value={"Create Post"} onClick={togglePostMenu}>CREATE NEW POST</button>
-            <br/>
-            <Post/>
-            <br/>
             {isOpen &&    
                 <div className={"postMenuPage"}>
                     <div className={"postMenuBox"}>

@@ -6,7 +6,7 @@ function Notifications() {
      });
     return (
         <div>
-            <h1>Notification Box</h1>
+            <h3>Notification Box</h3>
             <div><Requests/></div>
             {/* Friend Requests: accepted notification
             Likes received from own posts from other users

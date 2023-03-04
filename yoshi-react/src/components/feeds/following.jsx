@@ -21,7 +21,7 @@ function Following() {
        axios
        .post('/server/following', config)
        .then((response) => {
-           setFollowing(response.data.following)
+           setFollowing(response.data.followings)
        })
        .catch(err => {
            console.error(err);

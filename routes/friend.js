@@ -6,18 +6,20 @@ const Friend = database.model('Friend', friend_scheme);
 const Login = database.model('Login', login_scheme);
 
 async function fetchFriends(req, res) {
-    let username = '';
-    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+    let authorId = '';
+    Login.findOne({token: req.body.data.sessionId}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
-        username = login[0].username
+        authorId = login.authorId
     }).clone();
 
-    await Friend.find({username: username}, function(err, friends){
+    await Friend.findOne({authorId: authorId}, function(err, friends){
         console.log("Debug: Friends exists");
-        if (friends != [] && friends != undefined && friends != null) {
-            return res.json({
-                friends: friends[0].friends
-            });
+        if (friends != undefined) {
+            if (friends != [] && friends != null) {
+                return res.json({
+                    friends: friends.friends
+                });
+            }
         }
     }).clone()
 }
@@ -31,10 +33,12 @@ async function fetchFriendPosts(req, res) {
     }).clone();
 
     let friends = [];
-    await Friend.find({username: username}, function(err, friends){
+    await Friend.findOne({username: username}, function(err, friends){
         console.log("Debug: Friends exists");
-        if (friends != []) {
-            friends = friends[0].friends
+        if (friends != undefined) {
+            if (friends != [] && friends != null) {
+                friends = friends;
+            }
         }
     }).clone()
 

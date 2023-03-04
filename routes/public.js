@@ -14,10 +14,12 @@ async function fetchFollowing(req, res) {
 
     await Following.findOne({username: username}, function(err, following){
         console.log("Debug: Following exists");
-        if (following != [] && following != null && following != undefined) {
-            return res.json({
-                followings: following.followings
-            });
+        if (following != undefined) {
+            if (following != [] && following != null) {
+                return res.json({
+                    followings: following.followings
+                });
+            }
         }
     }).clone()
 }
@@ -31,24 +33,28 @@ async function fetchPublicPosts(req, res) {
     }).clone();
 
     let followings = [];
-    await Following.findOne({username: username}, function(err, followings){
-        console.log("Debug: Followings exists");
-        if (followings != [] && followings != null && followings != undefined) {
-            followings = followings.followings
+    await Following.findOne({username: username}, function(err, following){
+        console.log("Debug: Following exists");
+        if (following != undefined) {
+            if (following != [] && following != null) {
+                followings = followings.followings
+            }
         }
     }).clone()
 
     // Refactor Later
     let publicPosts = [];
-    for (let i = 0; i < followings.length; i++) {
-        await Post.findOne({username: followings[i].authorId}, function(err, post){
-            if (post != []) {
-                post.posts.forEach( function (obj) {
-                    obj.authorId = followings[i].authorId;
-                });
-                publicPosts = publicPosts.concat(post.posts); 
-            }
-        }).clone()
+    if (followings != undefined) {
+        for (let i = 0; i < followings.length; i++) {
+            await Post.findOne({username: followings[i].authorId}, function(err, post){
+                if (post != []) {
+                    post.posts.forEach( function (obj) {
+                        obj.authorId = followings[i].authorId;
+                    });
+                    publicPosts = publicPosts.concat(post.posts); 
+                }
+            }).clone()
+        }
     }
 
     // TODO: Getting the PSA (Public Posts): Require to iterate through all the authors in order to get their posts array which indicates visibility

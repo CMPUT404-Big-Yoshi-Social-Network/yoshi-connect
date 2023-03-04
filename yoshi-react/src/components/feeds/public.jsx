@@ -9,7 +9,7 @@ import Following from './following.jsx';
 function PublicFeed() {
     const navigate = useNavigate();
     const [publicPosts, setPublicPosts] = useState([]);
-    const [data, setData] = useState({
+    const [viewer, setViewerId] = useState({
         viewerId: '',
     })
 
@@ -55,7 +55,7 @@ function PublicFeed() {
         .post('/server/posts/', config)
         .then((response) => {
             let viewerId = response.data.authorId;
-            setData(prevViewerId => ({...prevViewerId, viewerId}))
+            setViewerId(prevViewer => ({...prevViewer, viewerId}))
         })
         .catch(err => { });
 
@@ -81,6 +81,7 @@ function PublicFeed() {
        });
     });
     const LogOut = () => {
+        console.log('Debug: Attempting to log out.')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -110,7 +111,7 @@ function PublicFeed() {
             <Notifications/>
             <Following/>
             <h3>Public and Follower Posts</h3>
-            <Posts viewerId={data.viewerId} posts={publicPosts}/>
+            <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
         </div>
     )
 }

@@ -53,7 +53,6 @@ const friend_scheme = new Schema({
 const request_scheme = new Schema({
     senderId: String,
     receiverId: String,
-    rId: String,
     status: String},
     {versionKey: false
 });

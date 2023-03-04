@@ -2,6 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import LogOut from '../../logOut.js';
+import './settingsNav.css';
 
 function RightNavBar() {
     return (

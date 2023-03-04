@@ -7,6 +7,9 @@ import Posts from '../posts/posts.jsx';
 function FriendFeed() {
     const navigate = useNavigate();
     const [friendPosts, setFriendPosts] = useState([]);
+    const [data, setData] = useState({
+        viewerId: '',
+    })
 
     useEffect(() => {
         const LogOut = () => {
@@ -56,8 +59,28 @@ function FriendFeed() {
         }
        checkExpiry();
 
-       console.log('Debug: Fetching all the friends post of this author');
        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/posts/',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                sessionId: localStorage.getItem('sessionId'),
+                status: 'Fetching current authorId'
+            }
+        }
+        axios
+        .post('/server/posts/', config)
+        .then((response) => {
+            let viewerId = response.data.authorId;
+            setData(prevViewerId => ({...prevViewerId, viewerId}))
+        })
+        .catch(err => { });
+
+       console.log('Debug: Fetching all the friends post of this author');
+       config = {
            method: 'post',
            maxBodyLength: Infinity,
            url: '/server/friends/posts',
@@ -77,14 +100,14 @@ function FriendFeed() {
            console.error(err);
        });
 
-    }, [setFriendPosts, navigate]);
+    }, [setFriendPosts, setAuthorId, navigate]);
     return (
         <div>
             <h1>Friends Feed</h1>
             <h3>Friends List</h3>
             <Friends/>
             <h3>Friends Posts</h3>
-            <Posts viewerId={viewerId} authorId={authorId} posts={friendPosts}/>
+            <Posts viewerId={data.viewerId} posts={friendPosts}/>
         </div>
     )
 }

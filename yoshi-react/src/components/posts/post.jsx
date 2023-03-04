@@ -8,26 +8,15 @@ function Post(props) {
     const postId = props._id;
     const authorId = props.authorId;
     const url = "/server/authors/" + authorId + "/posts/" + postId;
+
     const [comment, setComment] = useState({
         newComment: ""
     })
+    const [showComment, setShowComment] = useState(false)
+
     const [like, setLike] = useState({
         liked: false
     })
-    const [showComment, setShowComment] = useState(false)
-    const [data, setData] = useState({
-        title: props.title,
-        desc: props.description,
-        contentType: props.contentType,
-        visibility: props.visibility,
-        content: props.content,
-        likes: props.likes,
-        comments: props.comments,
-        published: props.published,
-        unlisted: props.unlisted,
-        specifics: props.specifics,
-        image: props.image
-    });
 
     const toggleComments = () => { 
         console.log("Debug: Toggle Comments");
@@ -91,16 +80,16 @@ function Post(props) {
     return (
         <div style={{backgroundColor: "grey"}}>
             <hr size={"2px"} width={"fill"} color={"black"}/>
-            {!data.unlisted &&
+            {!props.unlisted &&
                 <div>
-                    {data.title === "" ? null : <h1>{data.title}</h1>}
-                    {data.desc === "" ? null : <h3>{data.desc}</h3>}
+                    {props.title === "" ? null : <h1>{props.title}</h1>}
+                    {props.description === "" ? null : <h3>{props.description}</h3>}
 
                     <hr size={"2px"} width={"fill"} color={"white"}/>
 
-                    {data.content === "" ? null : data.contentType === "type/plain" ? <p>{data.content}</p> : <p>Markdown:{data.content}</p>}
+                    {props.content === "" ? null : props.contentType === "type/plain" ? <p>{props.content}</p> : <p>Markdown:{props.content}</p>}
 
-                    <p>{data.published}</p>
+                    <p>{props.published}</p>
 
                     { like ? <button onClick={removeLike}>Unlike</button> : <button onClick={addLike}>Like</button>} 
 
@@ -117,8 +106,8 @@ function Post(props) {
                                 <button onClick={makeComment}>Add Comment</button>
                             </form>
 
-                            {Object.keys(data.comments).map((comment, idx) => (
-                                <Comment key={idx} {...data.comments[comment]}/>
+                            {Object.keys(props.comments).map((comment, idx) => (
+                                <Comment key={idx} {...props.comments[comment]}/>
                             ))}
                         </div>}
                 </div>}

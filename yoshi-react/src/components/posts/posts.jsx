@@ -6,7 +6,7 @@ function Posts(props) {
     return (
         <div>
             {Object.keys(posts).map((post, idx) => (
-                <Post key={idx} viewerId={props.viewerId} authorId={props.authorId} {...posts[post]}/>
+                <Post key={idx} {...posts[post]}/>
             ))}     
         </div>
     )

@@ -9,6 +9,10 @@ import Following from './following.jsx';
 function PublicFeed() {
     const navigate = useNavigate();
     const [publicPosts, setPublicPosts] = useState([]);
+    const [data, setData] = useState({
+        viewerId: '',
+    })
+
     const checkExpiry = () => {
         let config = {
             method: 'get',
@@ -34,8 +38,29 @@ function PublicFeed() {
     }
     useEffect(() => {
        checkExpiry();
-       console.log('Debug: Fetching all the public/following posts of this user');
+
        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/posts/',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                sessionId: localStorage.getItem('sessionId'),
+                status: 'Fetching current authorId'
+            }
+        }
+        axios
+        .post('/server/posts/', config)
+        .then((response) => {
+            let viewerId = response.data.authorId;
+            setData(prevViewerId => ({...prevViewerId, viewerId}))
+        })
+        .catch(err => { });
+
+       console.log('Debug: Fetching all the public/following posts of this user');
+       config = {
            method: 'post',
            maxBodyLength: Infinity,
            url: '/server/public/posts',
@@ -85,7 +110,7 @@ function PublicFeed() {
             <Notifications/>
             <Following/>
             <h3>Public and Follower Posts</h3>
-            <Posts viewerId={viewerId} authorId={authorId} posts={publicPosts}/>
+            <Posts viewerId={data.viewerId} posts={publicPosts}/>
         </div>
     )
 }

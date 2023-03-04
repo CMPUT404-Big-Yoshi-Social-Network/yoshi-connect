@@ -41,9 +41,12 @@ async function fetchPublicPosts(req, res) {
     // Refactor Later
     let publicPosts = [];
     for (let i = 0; i < followings.length; i++) {
-        await Post.findOne({username: followings[i].authorId}, function(err, following){
-            if (following != []) {
-                publicPosts = publicPosts.concat(following.posts);
+        await Post.findOne({username: followings[i].authorId}, function(err, post){
+            if (post != []) {
+                post.posts.forEach( function (obj) {
+                    obj.authorId = followings[i].authorId;
+                });
+                publicPosts = publicPosts.concat(post.posts); 
             }
         }).clone()
     }

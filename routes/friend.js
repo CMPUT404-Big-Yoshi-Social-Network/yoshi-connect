@@ -41,9 +41,12 @@ async function fetchFriendPosts(req, res) {
     // Refactor Later
     let friendsPosts = [];
     for (let i = 0; i < friends.length; i++) {
-        await Post.findOne({username: friends[i].authorId}, function(err, posts){
-            if (posts != []) {
-                friendsPosts = friendsPosts.concat(posts.posts);
+        await Post.findOne({username: friends[i].authorId}, function(err, post){
+            if (post != []) {
+                post.posts.forEach( function (obj) {
+                    obj.authorId = friends[i].authorId;
+                });
+                friendsPosts = friendsPosts.concat(post.posts);
             }
         }).clone()
     }

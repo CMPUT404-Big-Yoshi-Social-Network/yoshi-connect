@@ -1,10 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import Post from "./post.jsx";
 
 function CreatePost() {
-    const navigate = useNavigate();
     const [data, setData] = useState({
         title: "",
         desc: "",
@@ -16,11 +13,12 @@ function CreatePost() {
         unlisted: false,
         image: "",
         authorId: '',
+        specifics: [],
         postId: ''
     })
-    const checkExpiry = () => { }
+    const [isOpen, setIsOpen] = useState(false);
+
     useEffect(() => {
-       checkExpiry();
        let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -41,9 +39,10 @@ function CreatePost() {
         })
         .catch(err => { });
     }, []);
-    const post_post = () => {
-        console.log('Debug: Creating a post!')
-        togglePostMenu()
+    
+    const savePost = () => {
+        console.log('Debug: Creating a post')
+        togglePostMenu();
 
         let config = {
             method: 'put',
@@ -61,62 +60,37 @@ function CreatePost() {
                 likes: data.likes,
                 comments: data.comments,
                 unlisted: data.unlisted,
+                specifics: data.specifics,
                 image: data.image
             }
         }
         
-        console.log(config)
         axios.put('/server/authors/' + data.authorId + '/posts/', config)
-        .then((response) => {
-            if ( response.data.status === 'Successful' ) {
-                console.log("Debug: Token received.");
-                console.log("Debug: Going to public feed.");
-                navigate('/feed');
-            }
-        })
-        .catch((e) =>{
-            console.log(e);
-        })}
+        .then((response) => { })
+        .catch((e) =>{ console.log(e); })
+    }
 
-    // const post_image = () => {
-    //     let formData = new FormData();
-    //     let imageFile = document.querySelector('#image');
-    //     formData.append("image", imageFile.files[0]);
-
-    //     axios.put('/server/authors/posts/', formData, {
-    //         headers: {
-    //             'Content-Type': 'multipart/form-data'
-    //         }
-    //     })
-    // }
-
-    const [isOpen, setIsOpen] = useState(false)
     const togglePostMenu = () => {
-        
         setIsOpen(!isOpen);
         console.log("Toggling post menu");
     }
 
-    function previewFile() {
+    function previewImage() {
         const preview = document.querySelector("img");
         const file = document.querySelector("input[type=file]").files[0];
         const reader = new FileReader();
         const reader2 = new FileReader();
+
         reader2.onload = function (event) {
-            // blob stuff
-            var blob = new Blob([event.target.result]); // create blob...
+            var blob = new Blob([event.target.result]); 
             window.URL = window.URL || window.webkitURL;
-            var blobURL = window.URL.createObjectURL(blob); // and get it's URL
+            var blobURL = window.URL.createObjectURL(blob); 
             data.image = blobURL;
         }
     
         reader.addEventListener(
           "load",
-          () => {
-            // convert image file to base64 string
-            preview.src = reader.result;
-            // data.image = Buffer.from(reader.result, "base64");
-          },
+          () => { preview.src = reader.result; },
           false
         );
       
@@ -124,15 +98,11 @@ function CreatePost() {
           reader.readAsDataURL(file);
           reader2.readAsArrayBuffer(file);
         }
-      }
-    
+    }
 
     return (
         <div>
             <button className={"createPostButton"} type={"button"} value={"Create Post"} onClick={togglePostMenu}>CREATE NEW POST</button>
-            <br/>
-            <Post/>
-            <br/>
             {isOpen &&    
                 <div className={"postMenuPage"}>
                     <div className={"postMenuBox"}>
@@ -151,8 +121,9 @@ function CreatePost() {
 
                         <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
-                            <option value={"Public"}>PUBLIC</option>
-                            <option value={"Friends Only"}>FRIENDS</option>
+                            <option value={"Public"}>Public</option>
+                            <option value={"Friends"}>Friends</option>
+                            <option value={"Private"}>Private</option>
                         </select>
 
                         <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{
@@ -165,6 +136,10 @@ function CreatePost() {
                             <option value="False">True</option>
                         </select>
 
+                        <label><p style={{color:"white"}}>Message To:</p></label>
+                        <input className={"postMenuInput"} type="text" onChange={(e) => {
+                            setData({...data, specifics: [e.target.value]})
+                        }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
@@ -187,8 +162,7 @@ function CreatePost() {
                         </div>
                         
                         <div className={"postMenuInput"}>
-                        {/* <input type={"file"} accept={"image/*"} multiple = "false" className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/> */}
-                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewFile}/>
+                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewImage}/>
                         <br/>
                         <img src="" style={{maxHeight: "15vh"}} alt="" />
                         </div>
@@ -197,7 +171,7 @@ function CreatePost() {
                             25MB (not enforced)
                         </div>
 
-                        <button className={"createPostButton"} type={"button"} onClick={post_post}>Create Post</button>
+                        <button className={"createPostButton"} type={"button"} onClick={savePost}>Create Post</button>
                     </form>
                 </div>
             </div>

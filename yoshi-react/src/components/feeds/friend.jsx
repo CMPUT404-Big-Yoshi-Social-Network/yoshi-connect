@@ -1,36 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import Friends from './friends.jsx';
+import Posts from '../posts/posts.jsx';
 
 function FriendFeed() {
     const navigate = useNavigate();
-    const checkExpiry = () => {
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: '/feed',
-        }
-        axios
-        .get('/server/feed', config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
-                LogOut();
-                navigate('/');
-            }
-            else{console.log('Debug: Your token is not expired.')}
-        })
-        .catch(err => {
-            if (err.response.status === 401) {
-                console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); // 401 Not Found
-            }
-        });
-    }
-    useEffect(() => {
-       checkExpiry();
-    });
+    const [friendPosts, setFriendPosts] = useState([]);
+    const [viewer, setViewerId] = useState({
+        viewerId: '',
+    })
     const LogOut = () => {
         let config = {
             method: 'post',
@@ -53,10 +32,87 @@ function FriendFeed() {
           console.error(err);
         });
     }
+
+    const checkExpiry = () => {
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: '/feed',
+        }
+        axios
+        .get('/server/feed', config)
+        .then((response) => {
+            if (response.data.status === "Expired") {
+                console.log("Debug: Your token is expired.")
+                LogOut();
+                navigate('/');
+            }
+            else{console.log('Debug: Your token is not expired.')}
+        })
+        .catch(err => {
+            if (err.response.status === 401) {
+                console.log("Debug: Not authorized.");
+                navigate('/unauthorized'); 
+            }
+        });
+    }
+
+    useEffect(() => {
+        checkExpiry();
+    })
+    useEffect(() => {
+       let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/posts/',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                sessionId: localStorage.getItem('sessionId'),
+                status: 'Fetching current authorId'
+            }
+        }
+        axios
+        .post('/server/posts/', config)
+        .then((response) => {
+            let viewerId = response.data.authorId;
+            setViewerId({
+                ...viewer,
+                viewerId: viewerId
+              })
+        })
+        .catch(err => { });
+
+       console.log('Debug: Fetching all the friends post of this author');
+       config = {
+           method: 'post',
+           maxBodyLength: Infinity,
+           url: '/server/friends/posts',
+           headers: {
+               'Content-Type': 'application/x-www-form-urlencoded'
+           },
+           data: {
+               sessionId: localStorage.getItem('sessionId'),
+           }
+       }
+       axios
+       .post('/server/friends/posts', config)
+       .then((response) => {
+           setFriendPosts(response.data.friendPosts)
+       })
+       .catch(err => {
+           console.error(err);
+       });
+
+    }, [setFriendPosts, setViewerId, viewer]);
     return (
         <div>
-            Welcome to the Friend Feed. You are signed in.
+            <h1>Friends Feed</h1>
+            <h3>Friends List</h3>
             <Friends/>
+            <h3>Friends Posts</h3>
+            <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
         </div>
     )
 }

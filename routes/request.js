@@ -71,17 +71,18 @@ async function findRequest(req, res) {
 
 async function findAllRequests(req, res) {
     let username = '';
-    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+    await Login.find({token: req.body.data.sessionId}, async function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         username = login[0].username
+        
+        await Request.find({receiverId: username}, function(err, requests){
+            console.log("Debug: Requests exists");
+            console.log(requests)
+            return res.json({
+                requests: requests
+            });
+        }).clone()
     }).clone();
-
-    await Request.find({receiverId: username}, function(err, requests){
-        console.log("Debug: Requests exists");
-        return res.json({
-            requests: requests
-        });
-    }).clone()
 }
 
 async function senderAdded(req, res) {

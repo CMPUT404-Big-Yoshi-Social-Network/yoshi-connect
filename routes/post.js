@@ -152,6 +152,7 @@ async function create_post(req, res, postId){
     const published = new Date().toISOString();
     const visibility = req.body.data.visibility;
     const unlisted = !req.body.data.listed;
+    const specifics = req.body.data.specifics;
     const image = req.body.data.image;
 
     //Get the author's document
@@ -177,6 +178,7 @@ async function create_post(req, res, postId){
             comments: [],
             published: published,
             visibility: visibility,
+            specifics: specifics,
             unlisted: unlisted,
             image: image
         });
@@ -195,6 +197,7 @@ async function create_post(req, res, postId){
             comments: [],
             published: published,
             visibility: visibility,
+            specifics: specifics,
             unlisted: unlisted,
             image: image
         });
@@ -204,10 +207,6 @@ async function create_post(req, res, postId){
     post_history.posts.push(post);
     post_history.num_posts = post_history.num_posts + 1;
     await post_history.save();
-
-    res.sendStatus(200);
-
-    return;
 }
 
 async function get_post(req, res){
@@ -269,7 +268,6 @@ async function get_posts_paginated(req, res){
             $unwind: "$posts"
         }
     ])
-    console.log(posts);;
     return res.sendStatus(200);
 }
 

@@ -1,81 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Notifications from './notifcation-box.jsx';
 import CreatePost from '../posts/create.jsx';
+import Posts from '../posts/posts.jsx';
+import Following from './following.jsx';
 
 function PublicFeed() {
     const navigate = useNavigate();
-    const [followings, setFollowing] = useState([]);
     const [publicPosts, setPublicPosts] = useState([]);
-    const checkExpiry = () => {
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: '/feed',
-        }
-        axios
-        .get('/server/feed', config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
-                LogOut();
-                navigate('/');
-            }
-            else{console.log('Debug: Your token is not expired.')}
-        })
-        .catch(err => {
-            if (err.response.status === 401) {
-                console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); // 401 Not Found
-            }
-        });
-    }
-    useEffect(() => {
-       checkExpiry();
-       console.log('Debug: Fetching all followings for this user')
-       let config = {
-           method: 'post',
-           maxBodyLength: Infinity,
-           url: '/server/following',
-           headers: {
-               'Content-Type': 'application/x-www-form-urlencoded'
-           },
-           data: {
-               sessionId: localStorage.getItem('sessionId'),
-           }
-       }
-       axios
-       .post('/server/following', config)
-       .then((response) => {
-           setFollowing(response.data.following)
-       })
-       .catch(err => {
-           console.error(err);
-       });
+    const [viewer, setViewerId] = useState({
+        viewerId: '',
+    })
 
-       console.log('Debug: Fetching all the public/following posts of this user');
-       config = {
-           method: 'post',
-           maxBodyLength: Infinity,
-           url: '/server/public/posts',
-           headers: {
-               'Content-Type': 'application/x-www-form-urlencoded'
-           },
-           data: {
-               sessionId: localStorage.getItem('sessionId'),
-           }
-       }
-       axios
-       .post('/server/public/posts', config)
-       .then((response) => {
-           setPublicPosts(response.data.publicPosts)
-       })
-       .catch(err => {
-           console.error(err);
-       });
-    });
-    const LogOut = () => {
+    const LogOut = useCallback(() => {
+        console.log('Debug: Attempting to log out.')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -96,14 +35,97 @@ function PublicFeed() {
         .catch(err => {
           console.error(err);
         });
+    }, [navigate]);
 
-    }
+    useEffect(() => {
+        const checkExpiry = () => {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/feed',
+            }
+    
+            axios
+            .get('/server/feed', config)
+            .then((response) => {
+                if (response.data.status === "Expired") {
+                    console.log("Debug: Your token is expired.")
+                    LogOut();
+                    navigate('/');
+                }
+                else{console.log('Debug: Your token is not expired.')}
+            })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    console.log("Debug: Not authorized.");
+                    navigate('/unauthorized'); // 401 Not Found
+                }
+            });
+        }
+
+        checkExpiry();
+    }, [LogOut, navigate]) 
+
+    useEffect(() => {
+        const getId = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/posts/',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    sessionId: localStorage.getItem('sessionId'),
+                    status: 'Fetching current authorId'
+                }
+            }
+            axios
+            .post('/server/posts/', config)
+            .then((response) => {
+                let viewerId = response.data.authorId;
+                setViewerId({
+                    viewerId: viewerId
+                  })
+            })
+            .catch(err => { });
+        }
+
+        const getPosts = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/public/posts',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    sessionId: localStorage.getItem('sessionId'),
+                }
+            }
+            axios
+            .post('/server/public/posts', config)
+            .then((response) => {
+                setPublicPosts(response.data.publicPosts)
+            })
+            .catch(err => {
+                console.error(err);
+            });
+        }
+
+        getId();
+        getPosts();
+    }, []);
+
     return (
         <div>
-            Welcome to the Public Feed. You are signed in.
+            <h1>Public Feed</h1>
             <button type="button" onClick={() => LogOut()}>Log Out</button>
-            <Notifications/>
             <CreatePost/>
+            <Notifications/>
+            <Following/>
+            <h3>Public and Following Posts</h3>
+            <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
         </div>
     )
 }

@@ -69,16 +69,16 @@ function CreatePost() {
         
         axios.put('/server/authors/' + data.authorId + '/posts/', config)
         .then((response) => {
-            if ( response.data.status === 'Successful' ) {
-                console.log("Debug: Going to public feed.");
-                if ( response.data.feed === 'Public') {
-                    navigate('/feed');    
-                } else if ( response.data.feed === 'Friends' ) {
-                    navigate('/friends');
-                } else if ( response.data.feed === 'Private' ) {
-                    navigate('/messages');
-                }
-            }
+            // if ( response.data.status === 'Successful' ) {
+            //     console.log("Debug: Going to public feed.");
+            //     if ( response.data.feed === 'Public') {
+            //         navigate('/feed');    
+            //     } else if ( response.data.feed === 'Friends' ) {
+            //         navigate('/friends');
+            //     } else if ( response.data.feed === 'Private' ) {
+            //         navigate('/messages');
+            //     }
+            // }
         })
         .catch((e) =>{
             console.log(e);

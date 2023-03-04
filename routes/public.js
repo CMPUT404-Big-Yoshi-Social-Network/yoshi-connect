@@ -1,8 +1,8 @@
-const { following_scheme, login_scheme} = require('../db_schema/author_schema.js');
+const { following_scheme, login_scheme } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
-const Following = database.model('Friend', following_scheme);
+const Following = database.model('Following', following_scheme);
 const Login = database.model('Login', login_scheme);
 
 async function fetchFollowing(req, res) {
@@ -14,7 +14,7 @@ async function fetchFollowing(req, res) {
 
     await Following.findOne({username: username}, function(err, following){
         console.log("Debug: Following exists");
-        if (following != []) {
+        if (following != [] && following != null && following != undefined) {
             return res.json({
                 followings: following.followings
             });
@@ -33,7 +33,7 @@ async function fetchPublicPosts(req, res) {
     let followings = [];
     await Following.findOne({username: username}, function(err, followings){
         console.log("Debug: Followings exists");
-        if (followings != []) {
+        if (followings != [] && followings != null && followings != undefined) {
             followings = followings.followings
         }
     }).clone()

@@ -2,8 +2,10 @@ import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import Friend from './single.jsx';
 import Post from '../posts/post.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Friends() {
+    const navigate = useNavigate();
     const [friends, setFriends] = useState([]);
     const [friendPosts, setFriendPosts] = useState([]);
     const checkExpiry = () => {
@@ -73,6 +75,29 @@ function Friends() {
             console.error(err);
         });
     }, [setFriends, setFriendPosts]);
+    const LogOut = () => {
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/friends',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+                message: 'Logging Out'
+            }
+        }
+        axios
+        .post('/server/friends', config)
+        .then((response) => {
+            localStorage['sessionId'] = "";
+            navigate("/");
+        })
+        .catch(err => {
+          console.error(err);
+        });
+
+    }
     return (
         <div>
             <h3>Friends</h3>

@@ -14,7 +14,7 @@ async function fetchFriends(req, res) {
 
     await Friend.find({username: username}, function(err, friends){
         console.log("Debug: Friends exists");
-        if (friends != []) {
+        if (friends != [] && friends != undefined && friends != null) {
             return res.json({
                 friends: friends[0].friends
             });

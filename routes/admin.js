@@ -1,5 +1,5 @@
 const crypto_js = require('crypto-js');
-const { author_scheme, login_scheme } = require('../db_schema/author_schema.js');
+const { author_scheme, login_scheme } = require('../db_schema/authorSchema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
@@ -78,9 +78,9 @@ async function modifyAuthor(req, res){
 
 async function deleteAuthor(req, res){
     console.log('Debug: Attempt to delete an author.')
-    await Author.deleteOne({username: req.body.username}, function(err, author){
-        console.log(author);
-        if(!author){
+    await Author.deleteOne({username: req.body.username}, function(err, deleteObj){
+        console.log(deleteObj);
+        if(deleteObj.deletedCount == 0){
             return res.sendStatus(404);
         }
 

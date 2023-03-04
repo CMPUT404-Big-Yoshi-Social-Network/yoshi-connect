@@ -30,7 +30,7 @@ function Post() {
             console.log(response.data[0].posts);
             
             data.title = response.data[0].posts.title;
-            data.desc = response.data[0].posts.desc;
+            data.desc = response.data[0].posts.description;
             data.contentType = response.data[0].posts.contentType;
             data.visibility = response.data[0].posts.visibility;
             data.content = response.data[0].posts.content;
@@ -126,6 +126,7 @@ function Post() {
             {data.listed &&
                 <div>
                     {data.title === "" ? null : <h1>{data.title}</h1>}
+                    {data.desc === "" ? null : <h3>{data.desc}</h3>}
                     <button>IDK</button>
                     <button>Share</button>
                     <button>More</button>

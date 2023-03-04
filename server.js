@@ -39,7 +39,7 @@ const path = require('path');
 
 // Routing functions
 const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
-const { register_author, get_profile } = require('./routes/author');
+const { registerAuthor, getProfile } = require('./routes/author');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 
@@ -98,7 +98,7 @@ app.post('/server/signup', async (req, res) => {
     await checkUsername(req, res);
   } else {
     console.log('Debug: Signing up as an author')
-    await register_author(req, res);
+    await registerAuthor(req, res);
   }
 })
 
@@ -171,7 +171,7 @@ app.post('/server/feed', (req, res) => {
 app.get('/server/users/:username', async (req,res) => {
   let isExpired = await checkExpiry(req);
   if(isExpired  == "Expired") { return res.sendStatus(401); }
-  get_profile(req, res);
+  getProfile(req, res);
 })
 
 app.post('/server/users/:username', async (req, res) => {

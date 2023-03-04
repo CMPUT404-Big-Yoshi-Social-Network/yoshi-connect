@@ -1,10 +1,30 @@
-const { follower_scheme, following_scheme, friend_scheme } = require('../db_schema/author_schema.js');
+const { Follower, Following, Friend } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
-const Follower = database.model('Follower', follower_scheme);
-const Following = database.model('Following', following_scheme);
-const Friend = database.model('Friend', friend_scheme);
+
+async function createFollowers(username, authorId){
+    await Follower({
+        username: username,
+        authorId: authorId,
+        followers: []
+    }).save();
+}
+
+async function createFollowings(username, authorId){
+    await Following({
+        username: username,
+        authorId: authorId,
+        followings: []
+    }).save();
+}
+
+async function createFriends(username, authorId){
+    await Friend({
+        username: username,
+        authorId: authorId,
+        friends: []
+    }).save();
+}
 
 async function isFriend(req, res) {
     console.log('Debug: Checking if the author is a friend or follow.');
@@ -186,5 +206,8 @@ async function unfollowing(req, res) {
 module.exports={
     isFriend,
     unfriending,
-    unfollowing
+    unfollowing,
+    createFollowers,
+    createFollowings,
+    createFriends,
 }

@@ -1,15 +1,8 @@
-const { request_scheme, follower_scheme, following_scheme, friend_scheme, login_scheme, author_scheme } = require('../db_schema/author_schema.js');
+const { Request, Follower, Following, Friend, Login, Author } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
-const Request = database.model('Request', request_scheme);
-const Follower = database.model('Follower', follower_scheme);
-const Following = database.model('Following', following_scheme);
-const Friend = database.model('Friend', friend_scheme);
-const Login = database.model('Login', login_scheme);
-const Author = database.model('Author', author_scheme);
 
-async function saveRequest(req, res) {
+async function saveRequest(req, res) {  
     const senderUUID = await Author.findOne({username: req.body.data.sender});
     const receiverUUID = await Author.findOne({username: req.body.data.receiver});
 

@@ -19,11 +19,6 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Setting up database
-const mongoose = require('mongoose');
-mongoose.set('strictQuery', true);
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
-
 // Parsers
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -55,6 +50,11 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
+
+// Setting up database
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
 
 // Development check
 if (process.env.NODE_ENV === "development") {

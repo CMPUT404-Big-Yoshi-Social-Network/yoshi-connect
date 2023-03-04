@@ -27,7 +27,7 @@ function Settings() {
                 <div className='pubColM'>
                     You are viewing your settings. DEFAULT SHOULD BE ACCOUNT DETAILS!
                     <div className='profile-heading'>
-                        <img className='ad-pubUserImg' alt='rn-pubUser' src='/images/public/icon_profile.png' width={40}/>
+                        <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/>
                     </div>
                     <Card.Body>
                         <Form className='account-details-form'>
@@ -37,7 +37,7 @@ function Settings() {
                                     name="email"
                                     onChange={(e) => {setData({...data, email: e.target.value})}}
                                     type="email" className='account-details-box'/>
-                                </Form.Group>
+                            </Form.Group>
                             <Form.Group className="account-details-a">
                                 <p>Username</p>
                                 <Form.Control

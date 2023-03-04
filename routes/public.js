@@ -14,11 +14,13 @@ async function fetchFollowing(req, res) {
 
     await Following.findOne({username: username}, function(err, following){
         console.log("Debug: Following exists");
-        if (following != []) {
+        // TODO: ADD THIS BACK IN
+        if (following) {
             return res.json({
-                followings: following.followings
+                following: following.followings
             });
         }
+        
     }).clone()
 }
 
@@ -31,10 +33,11 @@ async function fetchPublicPosts(req, res) {
     }).clone();
 
     let followings = [];
-    await Following.findOne({username: username}, function(err, followings){
+    await Following.findOne({username: username}, function(err, following){
         console.log("Debug: Followings exists");
-        if (followings != []) {
-            followings = followings.followings
+        // TODO: Add this back in
+        if (following) {
+            followings = following.followings
         }
     }).clone()
 

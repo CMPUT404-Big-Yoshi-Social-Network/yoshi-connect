@@ -9,25 +9,17 @@ const Login = database.model('Login', login_scheme);
 async function addAuthor(req, res){
     console.log('Debug: Adding a new author to YoshiConnect');
 
-    let author_found = await Author.findOne({username: req.body.data.username}, function(err, author){
-        if(!author){
-            return;
-        }
-        console.log("Debug: Author does exist, Authentication failed");
-        return res.json({
-            username: req.body.data.username,
-            status: "Unsuccessful"
-        });
-    }).clone()
-    if(author_found) {
-        return;
+    let existingAuthor = await Author.findOne({username: req.body.data.username}).clone();
+
+    if(existingAuthor){
+        return res.sendStatus(400);
     }
 
     const username = req.body.data.username;
     const email = req.body.data.email;
     const password = req.body.data.password;
 
-    var author = new Author({
+    let author = new Author({
         username: username,
         password: crypto_js.SHA256(password),
         email: email,
@@ -36,23 +28,15 @@ async function addAuthor(req, res){
         admin: req.body.data.admin
     });
 
-    author.save(async (err, author, next) => {
+    author.save((err) => {
         if(err){
-            console.log(err);
-            return res.json({
-                status: "Unsuccessful"
-            });
+            return res.sendStatus(500);
         }
-        console.log("Debug: " + author.username + " added successfully to database");
+        return res.sendStatus(200);
     });
 
-    return res.json({
-        status: "Successful",
-        username: username,
-        password: password
-    })
+    console.log("Debug: " + author.username + " added successfully to database");
 
-    // Need to discuss how the author will get the credentials
 }
 
 async function modifyAuthor(req, res){
@@ -95,7 +79,7 @@ async function modifyAuthor(req, res){
 async function deleteAuthor(req, res){
     console.log('Debug: Attempt to delete an author.')
     await Author.deleteOne({username: req.body.username}, function(err, author){
-
+        console.log(author);
         if(!author){
             return res.sendStatus(404);
         }
@@ -104,7 +88,6 @@ async function deleteAuthor(req, res){
             return res.sendStatus(200)
         }).clone();
     }).clone();
-    
 }
 
 module.exports={

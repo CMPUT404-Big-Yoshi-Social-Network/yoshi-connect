@@ -9,65 +9,32 @@ function AddAuthor() {
         email: ''
       })
 
-      const checkUsernameInUse = async (username) => {
-        let config = {
-          method: 'post',
-          maxBodyLength: Infinity,
-          url: '/server/admin/dashboard',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          data: {
-            username: username,
-            status: 'Is username in use'
-          }
-        }
-  
-        const username_free = await axios(config)
-        .then((response) => {
-          if ( response.data.status === 'Successful' ) {
-            return true;
-          } else {
-            return false;
-          }
-        })
-        .catch(err => {
-          console.error(err);
-        }); 
-        return username_free
-      }
 
     const addAuthor = async (e) => {
         e.preventDefault();
-        let notUsed = await checkUsernameInUse(data.username);
         console.log('Debug: Attempting to add an author');
-        if (notUsed) {
-            let config = {
-                method: 'put',
-                maxBodyLength: Infinity,
-                url: '/server/admin/dashboard',
-                headers: {
+        let config = {
+            method: 'put',
+            maxBodyLength: Infinity,
+            url: '/server/admin/dashboard',
+            headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                data: {
-                    status: 'Add New Author',
-                    username: data.username,
-                    password: data.password,
-                    email: data.email,
-                    admin: false
-                }
+            },
+            data: {
+                status: 'Add New Author',
+                username: data.username,
+                password: data.password,
+                email: data.email,
+                admin: false
             }
-
-            axios
-            .put('/server/admin/dashboard', config)
-            .then((response) => {
-            })
-            .catch(err => {
-                console.error(err);
-            });
-        } else {
-            console.log('Debug: Username is already taken.')
         }
+
+        axios
+        .put('/server/admin/dashboard', config)
+        .then((response) => {})
+        .catch(err => {
+            console.error(err);
+        });
     }
     
     return (

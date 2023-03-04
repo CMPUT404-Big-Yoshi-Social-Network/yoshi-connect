@@ -7,7 +7,7 @@ import Posts from '../posts/posts.jsx';
 function FriendFeed() {
     const navigate = useNavigate();
     const [friendPosts, setFriendPosts] = useState([]);
-    const [data, setData] = useState({
+    const [viewer, setViewerId] = useState({
         viewerId: '',
     })
 
@@ -75,7 +75,7 @@ function FriendFeed() {
         .post('/server/posts/', config)
         .then((response) => {
             let viewerId = response.data.authorId;
-            setData(prevViewerId => ({...prevViewerId, viewerId}))
+            setViewerId(prevViewer => ({...prevViewer, viewerId}))
         })
         .catch(err => { });
 
@@ -100,14 +100,14 @@ function FriendFeed() {
            console.error(err);
        });
 
-    }, [setFriendPosts, setAuthorId, navigate]);
+    }, [setFriendPosts, setViewerId, navigate]);
     return (
         <div>
             <h1>Friends Feed</h1>
             <h3>Friends List</h3>
             <Friends/>
             <h3>Friends Posts</h3>
-            <Posts viewerId={data.viewerId} posts={friendPosts}/>
+            <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
         </div>
     )
 }

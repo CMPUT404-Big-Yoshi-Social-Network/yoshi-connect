@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from "react";
+import TopNav from '../feeds/topNav';
+import LeftNavBar from '../feeds/leftNav.jsx';
+import RightNavBar from '../feeds/rightNav.jsx';
 import './github.css';
 function GitHub() {
     const navigate = useNavigate();

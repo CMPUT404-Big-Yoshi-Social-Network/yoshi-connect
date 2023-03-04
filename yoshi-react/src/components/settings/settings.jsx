@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from "react";
+import './settings.css';
 function Settings() {
     const navigate = useNavigate();
     const loggedIn = () => {

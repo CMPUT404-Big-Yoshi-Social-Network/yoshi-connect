@@ -49,7 +49,7 @@ function Requests(props) {
         .catch(err => {
             console.error(err);
         });
-    }, [setRequests, username]);
+    }, [setRequests, username, url]);
     return (
         <div>
             <h3>Friend Requests</h3>

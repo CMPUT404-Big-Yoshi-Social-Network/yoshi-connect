@@ -32,7 +32,7 @@ function Profile() {
         viewer: null,
         viewed: null
     })
-    
+
     let addButton = document.getElementById("request");
     let exists = useRef(null);
     let friends = useRef(null);
@@ -126,7 +126,7 @@ function Profile() {
               console.error(err);
             });
         }
-    }, [username, exists, personal.viewed, personal.viewer, navigate]);
+    }, [username, exists, personal.viewed, personal.viewer, navigate, url]);
     const SendRequest = () => {
         if (addButton.innerText === "Add Friend") {
             addButton.innerText = "Sent!";

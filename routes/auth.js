@@ -32,9 +32,9 @@ mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 
 // Fetching schemas
-const { author_scheme, login_scheme } = require('../db_schema/authorSchema.js');
-const Login = database.model('Login', login_scheme);
-const Author = database.model('Author', author_scheme);
+const { authorScheme, loginScheme } = require('../db_schema/authorSchema.js');
+const Login = database.model('Login', loginScheme);
+const Author = database.model('Author', authorScheme);
 
 async function checkUsername(req, res) {
     await Author.findOne({username: req.body.username}, function(err, author){

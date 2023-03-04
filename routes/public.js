@@ -16,15 +16,16 @@ async function fetchFollowing(req, res) {
 
     await Following.findOne({username: username}, function(err, following){
         console.log("Debug: Following exists");
-        if (following != undefined) {
-            if (following != [] && following != null) {
-                return res.json({
-                    followings: following.followings
-                });
-            }
+        if(following == undefined){
+            return res.json({
+                following: []
+            })
         }
-        
-    }).clone()
+
+        return res.json({
+            following: following
+        })
+    }).clone();
 }
 
 async function fetchPublicPosts(req, res) {
@@ -36,35 +37,32 @@ async function fetchPublicPosts(req, res) {
     }).clone();
 
     let followings = [];
-    await Following.findOne({username: username}, function(err, following){
-        console.log("Debug: Following exists");
-        if (following != undefined) {
-            if (following != [] && following != null) {
-                followings = following.followings
-            }
+    const following = await Following.findOne({username: username}).clone()
+    if (following != undefined) {
+        if (following.followings != [] && following.followings != null) {
+            followings = following.followings
         }
-    }).clone()
+    }
 
     let publicPosts = [];
     if (followings != undefined) {
         for (let i = 0; i < followings.length; i++) {
-            await PostHistory.findOne({authorId: followings[i].authorId}, function(err, history){
-                if (history != []) {
-                    history.posts.forEach( (post) => {
-                        let plainPost = post.toObject();
-                        plainPost.authorId = followings[i].authorId;
-                        publicPosts.push(plainPost);
-                    });
-                }
-            }).clone()
+            let history = await PostHistory.findOne({authorId: followings[i].authorId});
+            if (history != []) {
+                console.log(history.posts)
+                history.posts.forEach( (post) => {
+                    let plainPost = post.toObject();
+                    plainPost.authorId = followings[i].authorId;
+                    publicPosts.push(plainPost);
+                });
+            }
         }
     }
 
     // TODO: Getting the PSA (Public Posts): Require to iterate through all the authors in order to get their posts array which indicates visibility
-
     return res.json({
         publicPosts: publicPosts
-    })
+    });
 }
 
 module.exports={

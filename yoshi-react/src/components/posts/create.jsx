@@ -16,6 +16,7 @@ function CreatePost() {
         unlisted: false,
         image: "",
         authorId: '',
+        specifics: [],
         postId: ''
     })
     const checkExpiry = () => { }
@@ -155,8 +156,9 @@ function CreatePost() {
 
                         <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
-                            <option value={"Public"}>PUBLIC</option>
-                            <option value={"Friends Only"}>FRIENDS</option>
+                            <option value={"Public"}>Public</option>
+                            <option value={"Friends"}>Friends</option>
+                            <option value={"Private"}>Private</option>
                         </select>
 
                         <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{
@@ -169,6 +171,10 @@ function CreatePost() {
                             <option value="False">True</option>
                         </select>
 
+                        <label><p style={{color:"white"}}>Message To:</p></label>
+                        <input className={"postMenuInput"} type="text" onChange={(e) => {
+                            setData({...data, specifics: [e.target.value]})
+                        }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {

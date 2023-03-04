@@ -159,6 +159,7 @@ async function create_post(req, res, postId){
     const published = new Date().toISOString();
     const visibility = req.body.data.visibility;
     const unlisted = !req.body.data.listed;
+    const specifics = req.body.data.specifics;
     const image = req.body.data.image;
 
     //Get the author's document
@@ -184,6 +185,7 @@ async function create_post(req, res, postId){
             comments: [],
             published: published,
             visibility: visibility,
+            specifics: specifics,
             unlisted: unlisted,
             image: image
         });
@@ -202,6 +204,7 @@ async function create_post(req, res, postId){
             comments: [],
             published: published,
             visibility: visibility,
+            specifics: specifics,
             unlisted: unlisted,
             image: image
         });

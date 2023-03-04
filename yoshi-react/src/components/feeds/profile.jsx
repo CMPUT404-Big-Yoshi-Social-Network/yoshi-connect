@@ -6,6 +6,8 @@ import TopNav from './topNav.jsx';
 import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
 import Requests from './requests.jsx';
+import './profile.css';
+
 function Profile() {
     const { username } = useParams();
     const [personal, setPersonal] = useState({

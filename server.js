@@ -52,7 +52,7 @@ app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Connect to database
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
@@ -304,6 +304,11 @@ app.delete('/server/users/:username', (req, res) => {
   }
 })
 
+app.get('/server/friends', (req, res) => {
+  console.log('Debug: Checking expiry of token')
+  sendCheckExpiry(req, res);
+})
+
 app.post('/server/friends', (req, res) => {
   console.log('Debug: Getting the author friends');
   fetchFriends(req, res);
@@ -314,14 +319,14 @@ app.post('/server/friends/posts', (req, res) => {
   fetchFriendPosts(req, res);
 })
 
-app.post('/server/following', (req, res) => {
+app.post('/server/following', async (req, res) => {
   console.log('Debug: Getting the author following');
-  fetchFollowing(req, res);
+  await fetchFollowing(req, res);
 })
 
-app.post('/server/public/posts', (req, res) => {
+app.post('/server/public/posts', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
-  fetchPublicPosts(req, res);
+  await fetchPublicPosts(req, res);
 })
 
 

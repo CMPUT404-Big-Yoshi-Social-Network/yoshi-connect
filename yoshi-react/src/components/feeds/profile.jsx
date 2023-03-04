@@ -114,12 +114,15 @@ function Profile() {
             axios
             .post(url, config)
             .then((response) => {
-                if (response.data.status) {
+                if (response.data.status === 'Friends') {
                     console.log('Debug: They are friends.')
                     friends.current = true;
-                } else if (!response.data.status) {
+                } else if (response.data.status === 'Follows') {
                     console.log('Debug: They are follows.')
-                    friends.current = false;
+                    friends.current = false; 
+                } else if (response.data.status === 'Strangers') {
+                    console.log('Debug: They are strangers.')
+                    friends.current = null; 
                 }
             })
             .catch(err => {

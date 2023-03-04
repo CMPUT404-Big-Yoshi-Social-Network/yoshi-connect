@@ -34,7 +34,7 @@ async function isFriend(req, res) {
     console.log('Debug: Checking if the author is a friend or follow.');
 
     checkFriend = false;
-    let status = '';
+    let status = 'Strangers';
 
     await Following.findOne({username: req.body.data.viewer}, function(err, following){
         console.log('Debug: See if viewer is viewing someone they follow.')
@@ -43,7 +43,7 @@ async function isFriend(req, res) {
             let idx = following.followings.map(obj => obj.username).indexOf(req.body.data.viewed);
             if (idx > -1) { 
                 console.log('Debug: They follow them (false).')
-                status = false;
+                status = 'Follows';
             } else {
                 checkFriend = true;
             }
@@ -53,14 +53,14 @@ async function isFriend(req, res) {
     }).clone()
 
     if (checkFriend) {
-        await Friend.findOne({username: req.body.data.viewer}, function(err, friend){
+        await Friend.findOne({username: req.body.data.viewer}, function(err, friend) {
             console.log('Debug: See if viewer is viewing someone they friended.')
             if (friend) {
                 console.log('Debug: This viewer does friend people, but do they friend the viewed.')
                 let idx = friend.friends.map(obj => obj.username).indexOf(req.body.data.viewed);
                 if (idx > -1) { 
                     console.log('Debug: They are friends (true).')
-                    status = true;
+                    status = 'Friends';
                 } 
             } 
         }).clone()

@@ -110,9 +110,8 @@ async function senderAdded(req, res) {
     console.log('Debug: Need to check if the receiver is already following the sender.')
 
     let friend = false; 
-    let success = null;
 
-    await Following.findOne({username: req.body.data.receiver}, function(err, following) {
+    await Following.findOne({username: req.body.data.receiver}, async function(err, following) {
         if (following) {
             console.log("Debug: Receiver has a following list. Now, we need to find the sender in their following list.");
             let idx = following.followings.map(obj => obj.username).indexOf(req.body.data.sender);
@@ -122,20 +121,25 @@ async function senderAdded(req, res) {
         } 
 
         if (!friend) {
-            success = addAsFollow(req);
+            if (await addAsFollow(req)) {
+                console.log('Debug: Delete the request since it has been accepted.')
+                await deleteRequest(req, res);
+            } else {
+                return res.json({
+                    status: false
+                });
+            }
         } else {
-            success = addAsFriend(req);
+            if (await addAsFriend(req)) {
+                console.log('Debug: Delete the request since it has been accepted.')
+                await deleteRequest(req, res);
+            } else {
+                return res.json({
+                    status: false
+                });
+            }
         }
     }).clone()
-
-    if (success) {
-        console.log('Debug: Delete the request since it has been accepted.')
-        await deleteRequest(req, res);
-    } else {
-        return res.json({
-            status: false
-        });
-    }
 }
 
 async function addAsFollow(req) {

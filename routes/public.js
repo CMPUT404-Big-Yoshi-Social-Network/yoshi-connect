@@ -1,9 +1,11 @@
 const { following_scheme, login_scheme } = require('../db_schema/author_schema.js');
+const { post_history_scheme } = require('../db_schema/post_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 const Following = database.model('Following', following_scheme);
 const Login = database.model('Login', login_scheme);
+const PostHistory = database.model('Posts', post_history_scheme);
 
 async function fetchFollowing(req, res) {
     let username = '';
@@ -42,16 +44,15 @@ async function fetchPublicPosts(req, res) {
         }
     }).clone()
 
-    // Refactor Later
     let publicPosts = [];
     if (followings != undefined) {
         for (let i = 0; i < followings.length; i++) {
-            await Post.findOne({username: followings[i].authorId}, function(err, post){
-                if (post != []) {
-                    post.posts.forEach( function (obj) {
+            await PostHistory.findOne({authorId: followings[i].authorId}, function(err, history){
+                if (history != []) {
+                    history.posts.forEach( function (obj) {
                         obj.authorId = followings[i].authorId;
                     });
-                    publicPosts = publicPosts.concat(post.posts); 
+                    publicPosts = publicPosts.concat(history.posts); 
                 }
             }).clone()
         }

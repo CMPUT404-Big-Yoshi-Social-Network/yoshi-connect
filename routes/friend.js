@@ -1,9 +1,11 @@
-const { friend_scheme, login_scheme} = require('../db_schema/author_schema.js');
+const { friend_scheme, login_scheme } = require('../db_schema/author_schema.js');
+const { post_history_scheme } = require('../db_schema/post_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const database = mongoose.connection;
 const Friend = database.model('Friend', friend_scheme);
 const Login = database.model('Login', login_scheme);
+const PostHistory = database.model('Posts', post_history_scheme);
 
 async function fetchFriends(req, res) {
     let authorId = '';
@@ -44,15 +46,17 @@ async function fetchFriendPosts(req, res) {
 
     // Refactor Later
     let friendsPosts = [];
-    for (let i = 0; i < friends.length; i++) {
-        await Post.findOne({username: friends[i].authorId}, function(err, post){
-            if (post != []) {
-                post.posts.forEach( function (obj) {
-                    obj.authorId = friends[i].authorId;
-                });
-                friendsPosts = friendsPosts.concat(post.posts);
-            }
-        }).clone()
+    if (friends != undefined) {
+        for (let i = 0; i < friends.length; i++) {
+            await PostHistory.findOne({authorId: friends[i].authorId}, function(err, history){
+                if (history != []) {
+                    history.posts.forEach( function (obj) {
+                        obj.authorId = friends[i].authorId;
+                    });
+                    friendsPosts = friendsPosts.concat(history.posts);
+                }
+            }).clone()
+        }
     }
 
     return res.json({

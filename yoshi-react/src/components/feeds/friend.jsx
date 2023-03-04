@@ -102,7 +102,7 @@ function FriendFeed() {
            console.error(err);
        });
 
-    }, [setFriendPosts, setViewerId, navigate]);
+    }, [setFriendPosts, setViewerId]);
     return (
         <div>
             <h1>Friends Feed</h1>

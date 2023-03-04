@@ -111,7 +111,7 @@ function PublicFeed() {
             <CreatePost/>
             <Notifications/>
             <Following/>
-            <h3>Public and Follower Posts</h3>
+            <h3>Public and Following Posts</h3>
             <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
         </div>
     )

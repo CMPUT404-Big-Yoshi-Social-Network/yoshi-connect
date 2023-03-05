@@ -8,60 +8,98 @@ const Login = database.model('Login', login_scheme);
 const PostHistory = database.model('Posts', post_history_scheme);
 
 async function fetchFriends(req, res) {
-    let authorId = '';
-    Login.findOne({token: req.cookies.token}, function(err, login) {
-        console.log('Debug: Retrieving current author logged in')
-        authorId = login.authorId
-    }).clone();
+    const login = await Login.findOne({token: req.cookies.token}).clone();
+    if(!login){
+        return res.sendStatus(404);
+    }
 
-    await Friend.findOne({authorId: authorId}, function(err, friends){
+    const username = login.username;
+    await Friend.findOne({username: username}, function(err, friends){
         console.log("Debug: Friends exists");
-        if (friends != undefined) {
-            if (friends != [] && friends != null) {
-                return res.json({
-                    friends: friends.friends
-                });
-            }
+        if(friends == undefined){
+            return res.json({
+                friends: []
+            });
         }
-    }).clone()
+
+        return res.json({
+            friends: friends.friends
+        })
+    }).clone();
 }
 
 async function fetchFriendPosts(req, res) {
-    console.log('Debug: Getting friend posts');
-    let username = '';
-    await Login.find({token: req.cookies.token}, function(err, login) {
-        console.log('Debug: Retrieving current author logged in')
-        username = login[0].username
-    }).clone();
+    console.log('Debug: Getting friends posts');
+    const login = await Login.findOne({token: req.cookies.token}).clone();
+    if (!login) { return res.sendStatus(404); }
+
+    console.log('Debug: Retrieving current author logged in')
+    const username = login.username
+    const friend = await Friend.aggregate([
+        {
+            $match: {'username': username} 
+        },
+        {
+            $unwind: '$friends'
+        },
+        {
+            $project: {
+                "friends.authorId": 1
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                friends: { $addToSet: "$friends.authorId"}
+            }
+        },
+    ]);
 
     let friends = [];
-    await Friend.findOne({username: username}, function(err, friends){
-        console.log("Debug: Friends exists");
-        if (friends != undefined) {
-            if (friends != [] && friends != null) {
-                friends = friends;
-            }
-        }
-    }).clone()
-
-    // Refactor Later
-    let friendsPosts = [];
-    if (friends != undefined) {
-        for (let i = 0; i < friends.length; i++) {
-            await PostHistory.findOne({authorId: friends[i].authorId}, function(err, history){
-                if (history != []) {
-                    history.posts.forEach( function (obj) {
-                        obj.authorId = friends[i].authorId;
-                    });
-                    friendsPosts = friendsPosts.concat(history.posts);
-                }
-            }).clone()
-        }
+    if(friend.length > 0){
+        friends = friend[0].friends;
+    }
+    
+    if(friends.length == 0){
+        return res.json({
+            friendPosts: []
+        });
     }
 
+    const posts = await PostHistory.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $in : ["$authorId", friends]
+                }
+            },
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: {
+                        dateString: "$posts.published"
+                    }
+                }
+            }
+        },
+        {
+            $sort: {"posts.published": -1}
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: {$push: "$posts"}
+            }
+        },
+    ]);
+
     return res.json({
-        friendPosts: friendsPosts
-    })
+        friendPosts: posts[0].posts_array
+    });
 }
 
 module.exports={

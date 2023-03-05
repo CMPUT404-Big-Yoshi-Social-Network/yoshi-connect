@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 const { PostHistory } = require('../db_schema/post_schema.js');
 const { createFollowers, createFollowings, createFriends } = require('./relations.js');
+const { create_post_history } = require('./post.js');
 
 async function register_author(req, res){
     if(await checkUsername(req) === "In use")
@@ -18,7 +19,6 @@ async function register_author(req, res){
         
     console.log("Debug: Author does not exist yet.");
 
-    //Check to make sure username, password, and email are present
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;

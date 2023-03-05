@@ -130,8 +130,8 @@ function CreatePost() {
                             else if(e.target.value === "False") bool = false;
                             setData({...data, unlisted: bool})
                         }} >
-                            <option value="True">True</option>
                             <option value="False">False</option>
+                            <option value="True">True</option>
                         </select>
 
                         <label><p style={{color:"white"}}>Message To:</p></label>

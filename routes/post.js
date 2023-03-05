@@ -151,7 +151,7 @@ async function create_post(req, res, postId){
     const categories = [""];
     const published = new Date().toISOString();
     const visibility = req.body.data.visibility;
-    const unlisted = !req.body.data.listed;
+    const unlisted = req.body.data.unlisted;
     const specifics = req.body.data.specifics;
     const image = req.body.data.image;
 
@@ -212,7 +212,7 @@ async function create_post(req, res, postId){
         let publicPost = await PublicPost.find();
         publicPost[0].posts.push({authorId: authorId, post: post});
         publicPost[0].num_posts = publicPost[0].num_posts++;
-        await publicPost.save();
+        await publicPost[0].save();
     }
 }
 
@@ -312,14 +312,14 @@ async function update_post(req, res){
             const publicPost = await PublicPost.find();
             publicPost[0].posts.push({authorId: authorId, post: post});
             publicPost[0].num_posts = publicPost[0].num_posts++;
-            await publicPost.save();
+            await publicPost[0].save();
         } else if (post.visibility == 'Public' && visibility != 'Public') {
             const publicPost = await PublicPost.find();
             let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
             if (idx > -1) { 
                 publicPost[0].posts.splice(idx, 1);
                 publicPost[0].num_posts = publicPost[0].num_posts--;
-                await publicPost.save();
+                await publicPost[0].save();
             }
         }
         post.visibility = visibility;
@@ -360,7 +360,7 @@ async function delete_post(req, res){
         if (idx > -1) { 
             publicPost[0].posts.splice(idx, 1);
             publicPost[0].num_posts = publicPost[0].num_posts--;
-            await publicPost.save();
+            await publicPost[0].save();
         }
     }
 

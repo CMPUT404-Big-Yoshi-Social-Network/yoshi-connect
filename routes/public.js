@@ -103,14 +103,13 @@ async function fetchPublicPosts(req, res) {
 
     let publicPosts = [];
     const publicPost = await PublicPost.find();
-    for (let i = 0; i < publicPost[0].length; i++) {
+    for (let i = 0; i < publicPost[0].posts.length; i++) {
         publicPosts.push(publicPost[0].posts[i].post);
     }
 
     const allPosts = posts[0].posts_array.concat(publicPosts);
 
-    // TODO: Getting the PSA (Public Posts): Require to iterate through all the authors in order to get their posts array which indicates visibility
-    if (posts[0].posts_array){
+    if (allPosts){
         return res.json({
             publicPosts: allPosts
         });

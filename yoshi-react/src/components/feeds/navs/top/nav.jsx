@@ -3,7 +3,9 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Form } from 'react-bootstrap';
 import React from 'react';
+import Popup from 'reactjs-popup';
 import './nav.css'
+import Notifications from '../../notifications/notifcation-box';
 
 function TopNav() {
     return (
@@ -22,7 +24,10 @@ function TopNav() {
                         className="topSearch"
                     />
                     {/* <Nav.Link className='topSearch' href="/search">Search</Nav.Link> */}
-                    <Nav.Link className='topNotif' href="/notifications">Notifications</Nav.Link>
+                    <br></br>
+                    <Popup trigger={<button>Notifications</button>}>
+                        <Notifications/>
+                    </Popup>
                 </Nav>
             </Container>
         </Navbar>

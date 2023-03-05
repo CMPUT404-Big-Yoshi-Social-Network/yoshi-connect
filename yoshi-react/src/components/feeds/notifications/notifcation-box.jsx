@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Requests from './requests.jsx';
+import Requests from './requests/requests.jsx';
 
 function Notifications() {
     useEffect(() => {

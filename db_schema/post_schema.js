@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 const database = mongoose.connection;
 const crypto = require('crypto');
 
-const post_scheme = new Schema({
+const postScheme = new Schema({
     type: 'post',
     _id: {type: String, default: crypto.randomUUID}, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
     title: String,
@@ -26,25 +26,25 @@ const post_scheme = new Schema({
     {versionKey: false
 });
 
-const post_history_scheme = new Schema({
+const postHistoryScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     authorId: String,
-    num_posts: Number,
-    posts: [post_scheme]},
+    numPosts: Number,
+    posts: [postScheme]},
     {versionKey: false
 })
 
-const inbox_scheme = new Schema({
+const inboxScheme = new Schema({
     type: 'inbox',
     _id: {type: String, default: crypto.randomUUID},
     author: String,
-    items: [post_scheme]},
+    items: [postScheme]},
     {versionKey: false
 });
 
-const Inbox = database.model('Inbox', inbox_scheme);
-const PostHistory = database.model('Posts', post_history_scheme);
-const Post = database.model('Post', post_scheme);
+const Inbox = database.model('Inbox', inboxScheme);
+const PostHistory = database.model('Posts', postHistoryScheme);
+const Post = database.model('Post', postScheme);
 
 module.exports = {
     PostHistory,

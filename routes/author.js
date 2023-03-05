@@ -1,14 +1,43 @@
+/*
+Copyright 2023 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Furthermore it is derived from the Python documentation examples thus
+some of the code is Copyright © 2001-2013 Python Software
+Foundation; All Rights Reserved
+*/
+
+// Used for passwords
 const crypto_js = require('crypto-js');
+
+// Used for tokens
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { Author, Login, Account } = require('../db_schema/author_schema.js');
-const { checkDisplayName } = require('../auth.js');
+
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const { create_post_history } = require('./post.js');
+
+// Additional functions
+const { checkDisplayName } = require('../auth.js');
+
+// Schemas
+const { Author, Login, Account } = require('../db_schema/author_schema.js');
 const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 
-async function register_author(req, res){
+async function registerAuthor(req, res){
     if(await checkDisplayName(req) === "In use") { return res.sendStatus(400); }
     console.log("Debug: Author does not exist yet.");
 
@@ -66,16 +95,15 @@ async function register_author(req, res){
         if (err) { return res.sendStatus(400); }
     });
 
-    await create_post_history(author._id);
+    await createPostHistory(author._id);
     await createFollowers(author._id);
     await createFriends(author._id);
     await createFollowings(author._id);
 }
 
-async function get_profile(req, res) {
+async function getProfile(req, res) {
     if (req.cookies == undefined || req.cookies["token"] == undefined) { return res.sendStatus(404); } 
 
-    console.log('Debug: Getting the token in the login database.')
     const login = await Login.findOne({token: req.cookies["token"]});
     if (login == undefined) { return res.sendStatus(404); }
 
@@ -107,7 +135,7 @@ async function getCurrentAuthor(req, res){
     }).clone();
 }
 
-async function getCurrentAuthorUsername(req, res){
+async function getCurrentAuthorDisplayName(req, res){
     await Login.findOne({token: req.body.data.sessionId}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         if(!login){ return res.sendStatus(404); }
@@ -116,8 +144,8 @@ async function getCurrentAuthorUsername(req, res){
 }
 
 module.exports={
-    register_author,
-    get_profile,
+    registerAuthor,
+    getProfile,
     getCurrentAuthor,
-    getCurrentAuthorUsername
+    getCurrentAuthorDisplayName
 }

@@ -19,37 +19,47 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import React, { useEffect } from "react";
-function Messages() {
+import Authors from './authors.jsx';
+import AddAuthor from "./addForm.jsx";
+import Popup from 'reactjs-popup';
+function AdminDashboard() {
     const navigate = useNavigate();
-    const url = '/server/messages';
-    const checkExpiry = () => {
+    const url = '/server/admin/dashboard';
+
+    const getDashboard = () => {
+        console.log('Debug: Getting Admin Dashboard.')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: '/',
         }
         axios
         .get(url, config)
         .then((response) => {
             if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
+                console.log("Debug: Your token is expired.");
                 LogOut();
-                navigate('/');
+                navigate('/login');
+            } else if(response.data.status === "NonAdmin"){
+                console.log("Debug: You're not an admin.")
+                navigate('/forbidden');
+            } else {
+                console.log("Successfully logged in.");
             }
-            else{console.log('Debug: Your token is not expired.')}
+            console.log('Debug: Your token is not expired.')
         })
         .catch(err => {
-            if (err.response.status === 401) {
-                console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); // 401 Not Found
+            if (err.response.status === 403) {
+                console.log("Debug: Forbidden.");
+                navigate('/forbidden'); 
             }
         });
     }
     useEffect(() => {
-       checkExpiry();
+       getDashboard();
     });
     const LogOut = () => {
         let config = {
@@ -60,13 +70,12 @@ function Messages() {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                message: 'Logging Out'
+                status: 'Logging Out'
             }
         }
         axios
         .post(url, config)
         .then((response) => {
-            localStorage['sessionId'] = "";
             navigate("/");
         })
         .catch(err => {
@@ -75,9 +84,14 @@ function Messages() {
     }
     return (
         <div>
-            Viewing your messages.
-        </div> 
+            <h1>Admin Dashboard</h1>
+            <button type="button" onClick={() => LogOut()}>Log Out</button>
+            <Popup trigger={<button>Add New Author</button>} position="right center">
+                <AddAuthor/>
+            </Popup>
+            <div><Authors/></div>
+        </div>
     )
 }
 
-export default Messages;
+export default AdminDashboard;

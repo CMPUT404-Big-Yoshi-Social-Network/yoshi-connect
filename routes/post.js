@@ -1,17 +1,20 @@
-const { PostHistory, Post, Like, Comment } = require('../db_schema/post_schema.js');
-const { Comment, Comments, Like, Likes } = require('../db_schema/comment_like_schema');
-const { Friend } = require('../db_schema/author_schema.js');
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
-async function create_post_history(author_id){
+// Schemas
+const { PostHistory, Post} = require('../db_schema/post_schema.js');
+const { Comment, Comments, Like, Likes } = require('../db_schema/interactionSchema.js');
+const { Friend } = require('../db_schema/author_schema.js');
+
+async function createPostHistory(authorId){
     console.log('Debug: Creating post history for user')
-    let new_post_history = new PostHistory ({
-        authorId: author_id,
+    let newPostHistory = new PostHistory ({
+        authorId: authorId,
         num_posts: 0,
         posts: []
     })
-    await new_post_history.save()
+    await newPostHistory.save()
     return;
 }
 
@@ -44,22 +47,22 @@ async function addLike(req, res){
 async function deleteLike(req, res){
     console.log('Debug: Removing a like')
 
-    let updated_posts = [];
+    let updatedPosts = [];
     let success = false;
     
     await PostHistory.findOne({authorId: req.body.authorId}, function(err, history){
         console.log('Debug: Find the post with the like.')
         if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
-            if (post_idx > -1) { 
-                let like_idx = history.posts[post_idx].likesSrc.items.map(obj => obj._id).indexOf(req.body.likeId);
-                history.posts[post_idx].likesSrc.items[like_idx].splice(like_idx, 1);
-                updated_posts = history.posts;
+            let postIdx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
+            if (postIdx > -1) { 
+                let like_idx = history.posts[postIdx].likesSrc.items.map(obj => obj._id).indexOf(req.body.likeId);
+                history.posts[postIdx].likesSrc.items[like_idx].splice(like_idx, 1);
+                updatedPosts = history.posts;
                 success = true;
             }
         }
     }).clone()
-    await PostHistory.findOneAndReplace({authorId: req.body.authorId}, {authorId: req.body.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+    await PostHistory.findOneAndReplace({authorId: req.body.authorId}, {authorId: req.body.receiver, num_posts: req.body.data.numPosts, posts: updatedPosts}).clone()
 
     return res.json({ status: success })
 }
@@ -93,47 +96,47 @@ async function addComment(req, res){
 
 async function deleteComment(req, res){
     console.log('Debug: Deleting a comment')
-    let updated_posts = [];
+    let updatedPosts = [];
     let success = false;
     await PostHistory.findOne({authorId: req.body.data.authorId}, function(err, history){
         console.log('Debug: Find the post with the comment.')
         if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
-            if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].commentsSrc.comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                history.posts[post_idx].commentsSrc.comments[com_idx].splice(com_idx, 1);
-                updated_posts = history.posts;
+            let postIdx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+            if (postIdx > -1) { 
+                let com_idx = history.posts[postIdx].commentsSrc.comments.map(obj => obj._id).indexOf(req.body.data.commentId);
+                history.posts[postIdx].commentsSrc.comments[com_idx].splice(com_idx, 1);
+                updatedPosts = history.posts;
                 success = true;
             }
         }
     }).clone()
-    await PostHistory.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+    await PostHistory.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updatedPosts}).clone()
 
     return res.json({ status: success })
 }
 
 async function editComment(req, res){
     console.log('Debug: Editing a comment')
-    let updated_posts = [];
+    let updatedPosts = [];
     let success = false;
     await PostHistory.findOne({authorId: req.body.data.authorId}, function(err, history){
         console.log('Debug: Find the post with the comment.')
         if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
-            if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].commentsSrc.comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                history.posts[post_idx].commentsSrc.comments[com_idx].comment = req.body.data.comment;
-                updated_posts = history.posts;
+            let postIdx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+            if (postIdx > -1) { 
+                let com_idx = history.posts[postIdx].commentsSrc.comments.map(obj => obj._id).indexOf(req.body.data.commentId);
+                history.posts[postIdx].commentsSrc.comments[com_idx].comment = req.body.data.comment;
+                updatedPosts = history.posts;
                 success = true;
             }
         }
     }).clone()
-    await PostHistory.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
+    await PostHistory.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updatedPosts}).clone()
 
     return res.json({ status: success })
 }
 
-async function create_post(req, res, postId){
+async function createPost(req, res, postId){
     console.log('Debug: Creating a post')
 
     // Post Attributes
@@ -149,15 +152,15 @@ async function create_post(req, res, postId){
     const unlisted = !req.body.data.listed;
     const specifics = req.body.data.specifics;
     const image = req.body.data.image;
-    const author = await Author.findOne({_id: req.params.author_id});
+    const author = await Author.findOne({_id: req.params.authorId});
 
     //Get the author's document
     //Should be refactored to do use an aggregate pipeline in case of large number of posts 
-    let post_history = await PostHistory.findOne({authorId: authorId});
+    let postHistory = await PostHistory.findOne({authorId: authorId});
 
-    if (post_history == null) {
+    if (postHistory == null) {
         console.log('Debug: Create a post history');
-        await create_post_history(req.params.author_id);
+        await createPostHistory(req.params.authorId);
     }
 
     if (postId == undefined) {
@@ -172,12 +175,12 @@ async function create_post(req, res, postId){
             author: author,
             categories: categories,
             count: 0,
-            commentsSrc: null, // TODO: ?
+            commentsSrc: null, // TODO: IS THIS VALID?
             comments: '', // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
             published: published,
             visibility: visibility,
             unlisted: unlisted,
-            likesSrc: null,
+            likesSrc: null, // TODO: IS THIS VALID?
             specifics: specifics,
             image: image
         });
@@ -198,7 +201,7 @@ async function create_post(req, res, postId){
         });
         new_post.likesSrc = likesSrc;
     } else {
-        const new_post = new Post({
+        const newPost = new Post({
             type: 'post',
             _id: postId, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
             title: title,
@@ -227,27 +230,27 @@ async function create_post(req, res, postId){
             post: post._id, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
             comments: []
         });
-        new_post.commentsSrc = commentsSrc;
-        new_post.comments = commentsSrc._id;
+        newPost.commentsSrc = commentsSrc;
+        newPost.comments = commentsSrc._id;
     
         const likesSrc = new Likes({
             type: 'liked',
             items: []
         });
-        new_post.likesSrc = likesSrc;
+        newPost.likesSrc = likesSrc;
     }
 
-    post_history = await PostHistory.findOne({authorId: authorId});
-    post_history.posts.push(post);
-    post_history.num_posts = post_history.num_posts + 1;
-    await post_history.save();
+    postHistory = await PostHistory.findOne({authorId: authorId});
+    postHistory.posts.push(post);
+    postHistory.numPosts = postHistory.numPosts + 1;
+    await postHistory.save();
 }
 
-async function get_post(req, res){
+async function getPost(req, res){
     console.log("Debug: Getting a post");
 
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
+    const authorId = req.params.authorId;
+    const postId = req.params.postId;
 
     let post = await PostHistory.aggregate([
         {
@@ -264,18 +267,18 @@ async function get_post(req, res){
     return res.json(post);
 }
 
-async function get_posts_paginated(req, res){
+async function getPostsPaginated(req, res){
     console.log('Debug: Paging the posts')
 
-    const authorId = req.params.author_id;
+    const authorId = req.params.authorId;
 
     let page = null;
     let size = null;
     if(req.query.page != undefined) { page = req.query.page; }
     if(req.query.size != undefined) { size = req.query.size; }
 
-    const start_index = (page - 1) * size; 
-    const end_index = page * size;
+    const startIndex = (page - 1) * size; 
+    const endIndex = page * size;
 
     /*
     let posts = await PostHistory.aggregate([
@@ -293,7 +296,7 @@ async function get_posts_paginated(req, res){
             $match: {'authorId': authorId}
         },
         {
-            $project: {_id: 1, posts: {$slice: ["$posts", start_index, end_index]}}
+            $project: {_id: 1, posts: {$slice: ["$posts", startIndex, endIndex]}}
         },
         {
             $unwind: "$posts"
@@ -303,11 +306,11 @@ async function get_posts_paginated(req, res){
     return res.sendStatus(200);
 }
 
-async function update_post(req, res){
+async function updatePost(req, res){
     console.log("Debug: Update a post");
 
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
+    const authorId = req.params.authorId;
+    const postId = req.params.postId;
 
     // Editable post attributes
     const title = req.body.title;
@@ -320,11 +323,11 @@ async function update_post(req, res){
     const specifics = req.body.specifics;
     const image = req.body.image;
 
-    const post_history = await PostHistory.findOne({authorId: authorId});
+    const postHistory = await PostHistory.findOne({authorId: authorId});
 
-    const post = post_history.posts.id(postId)
+    const post = postHistory.posts.id(postId)
 
-    let specifics_updated = false;
+    let specificsUpdated = false;
     post.title = title; 
     post.description = desc;
     post.contentType = contentType;
@@ -333,11 +336,11 @@ async function update_post(req, res){
         if ( (visibility == 'Friends' || visibility == 'Public') && post.specifics.length != 0) {
             console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
             post.specifics = [];
-            specifics_updated = true;
+            specificsUpdated = true;
         } 
         post.visibility = visibility;
     }
-    if ( !specifics_updated ) {
+    if ( !specificsUpdated ) {
         if ( post.specifics != specifics ) {
             post.specifics = specifics;
         }
@@ -346,35 +349,35 @@ async function update_post(req, res){
     post.unlisted = unlisted;
     post.image = image;
 
-    await post_history.save()
+    await postHistory.save()
     console.log("Debug: Post has been updated and saved.");
 
     return res.sendStatus(200);
 }
 
-async function delete_post(req, res){
+async function deletePost(req, res){
     console.log("Debug: Delete a post");
 
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
+    const authorId = req.params.authorId;
+    const postId = req.params.postId;
 
-    const post_history = await PostHistory.findOne({authorId: authorId});
-    if(post_history == undefined) { return sendStatus(500); }
-    const post = await post_history.posts.id(postId);
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+    if(postHistory == undefined) { return sendStatus(500); }
+    const post = await postHistory.posts.id(postId);
     if(post == null) { return res.sendStatus(404); }
 
     post.remove();
-    post_history.num_posts = post_history.num_posts - 1;
-    post_history.save();
+    postHistory.numPosts = postHistory.numPosts - 1;
+    postHistory.save();
 
     return res.sendStatus(200);
 }
 
 async function checkVisibility(req, res){
     console.log('Debug: Checks the visibility of the post for the viewer');
-    const authorId = req.params.author_id;
+    const authorId = req.params.authorId;
     const viewerId = req.body.data.viewerId;
-    const postId = req.params.post_id;
+    const postId = req.params.postId;
 
     let post = await PostHistory.aggregate([
         {
@@ -425,12 +428,12 @@ async function checkVisibility(req, res){
 
 
 module.exports={
-    create_post_history,
-    create_post,
-    get_post,
-    get_posts_paginated,
-    update_post,
-    delete_post,
+    createPostHistory,
+    createPost,
+    getPost,
+    getPostsPaginated,
+    updatePost,
+    deletePost,
     addLike,
     addComment,
     deleteLike,

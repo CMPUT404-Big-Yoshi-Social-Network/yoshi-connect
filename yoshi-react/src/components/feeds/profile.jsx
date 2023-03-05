@@ -1,3 +1,24 @@
+/*
+Copyright 2023 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Furthermore it is derived from the Python documentation examples thus
+some of the code is Copyright © 2001-2013 Python Software
+Foundation; All Rights Reserved
+*/
+
 import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
@@ -5,23 +26,27 @@ import axios from 'axios';
 
 function Profile() {
     const { username } = useParams();
+    const url = '/server/users/' + username;
     const [personal, setPersonal] = useState({
         person: null,
         viewer: null,
         viewed: null
     })
-    const navigate = useNavigate();
+
     let addButton = document.getElementById("request");
     let exists = useRef(null);
     let friends = useRef(null);
+
+    const navigate = useNavigate();
+
     const checkExpiry = () => {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: '/feed',
+            url: url,
         }
         axios
-        .get('/server/feed', config)
+        .get(url, config)
         .then((response) => {
             if (response.data.status === "Expired") {
                 console.log("Debug: Your token is expired.")
@@ -33,7 +58,7 @@ function Profile() {
         .catch(err => {
             if (err.response.status === 401) {
                 console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); // 401 Not Found
+                navigate('/unauthorized'); 
             }
         });
     }
@@ -42,7 +67,7 @@ function Profile() {
         let person = null;
         const isRealProfile = () => {
             axios
-            .get('/server/users/' + username)
+            .get(url)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
                 person = response.data.personal
@@ -69,7 +94,7 @@ function Profile() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: url,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -80,9 +105,9 @@ function Profile() {
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .post(url, config)
             .then((response) => {
-                if (response.data.status === 'Successful') {
+                if (response.data.status) {
                     console.log('Debug: Friend Request Exists.')
                     exists.current = true;
                 } else {
@@ -100,7 +125,7 @@ function Profile() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: url,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -111,28 +136,31 @@ function Profile() {
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .post(url, config)
             .then((response) => {
                 if (response.data.status === 'Friends') {
                     console.log('Debug: They are friends.')
                     friends.current = true;
                 } else if (response.data.status === 'Follows') {
                     console.log('Debug: They are follows.')
-                    friends.current = false;
+                    friends.current = false; 
+                } else if (response.data.status === 'Strangers') {
+                    console.log('Debug: They are strangers.')
+                    friends.current = null; 
                 }
             })
             .catch(err => {
               console.error(err);
             });
         }
-    }, [username, exists, personal.viewed, personal.viewer, navigate]);
+    }, [username, exists, personal.viewed, personal.viewer, navigate, url]);
     const SendRequest = () => {
         if (addButton.innerText === "Add Friend") {
             addButton.innerText = "Sent!";
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: url,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -143,9 +171,9 @@ function Profile() {
                 }
             }
             axios
-            .put('/server/users/' + username, config)
+            .put(url, config)
             .then((response) => {
-                console.log('Debug: Friend request sent!')
+                console.log('Debug: Friend request sent.')
             })
             .catch(err => {
               console.error(err);
@@ -155,7 +183,7 @@ function Profile() {
             let config = {
                 method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: url,
                 headers: {
                   'Content-Type': 'application/json'
                 },
@@ -166,9 +194,9 @@ function Profile() {
                 }
             }
             axios
-            .delete('/server/users/' + username, config)
+            .delete(url, config)
             .then((response) => {
-                console.log('Debug: Friend request deleted!')
+                console.log('Debug: Friend request deleted.')
             })
             .catch(err => {
               console.error(err);
@@ -178,7 +206,7 @@ function Profile() {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: url,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -189,7 +217,7 @@ function Profile() {
                 }
             }
             axios
-            .put('/server/users/' + username, config)
+            .put(url, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Friend is unfriended.')
@@ -204,7 +232,7 @@ function Profile() {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: url,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -215,7 +243,7 @@ function Profile() {
                 }
             }
             axios
-            .put('/server/users/' + username, config)
+            .put(url, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')

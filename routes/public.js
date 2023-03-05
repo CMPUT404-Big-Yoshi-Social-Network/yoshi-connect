@@ -1,9 +1,10 @@
-const { Following, Login } = require('../db_schema/author_schema.js');
-const { PostHistory } = require('../db_schema/post_schema.js');
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
 
+// Schemas
+const { Following, Login } = require('../db_schema/author_schema.js');
+const { PostHistory } = require('../db_schema/post_schema.js');
 
 async function fetchFollowing(req, res) {
     const login = await Login.findOne({token: req.body.data.sessionId}).clone();
@@ -42,31 +43,27 @@ async function fetchPublicPosts(req, res) {
             $match: {'username': username} 
         },
         {
-            $unwind: '$followings'
+            $unwind: '$items'
         },
         {
             $project: {
-                "followings.authorId": 1
+                "items.authorId": 1
             }
         },
         {
             $group: {
                 _id: null,
-                follows: { $addToSet: "$followings.authorId"}
+                items: { $addToSet: "$items.authorId"}
             }
         },
     ]);
 
     let followings = undefined
     if(following.length > 0){
-        followings = following[0].follows;
+        followings = following[0].items;
     }
-    console.log(followings);
-
     
-    if(followings == undefined){
-        return res.sendStatus(404);
-    }
+    if (followings == undefined) { return res.sendStatus(404); }
 
     const posts = await PostHistory.aggregate([
         {
@@ -98,8 +95,7 @@ async function fetchPublicPosts(req, res) {
             }
         },
     ]);
-
-    console.log(posts[0].posts_array);
+    
     /*
     let publicPosts = [];
     if (followings != undefined) {

@@ -21,13 +21,13 @@ Foundation; All Rights Reserved
 
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import Request from './request.jsx';
+import Author from './author.jsx';
 
-function Requests() {
-    const [requests, setRequests] = useState([]);
-    const url = '/server/requests';
+function Authors() {
+    const [authors, setAuthors] = useState([]);
+    const url = '/server/admin/dashboard';
     useEffect(() => {
-        console.log('Debug: Fetching all the requests for this user.')
+        console.log('Debug: Fetching all the authors.')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -36,27 +36,26 @@ function Requests() {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                sessionId: localStorage.getItem('sessionId'),
-                status: 'Fetching Requests'
+                status: 'Fetching Authors'
             }
         }
         axios
         .post(url, config)
         .then((response) => {
-            setRequests(response.data.requests)
+            setAuthors(response.data.authors)
         })
         .catch(err => {
             console.error(err);
         });
-    }, [setRequests]);
+    }, [setAuthors, url]);
     return (
         <div>
-            <h4>Friend Requests</h4>
-            {Object.keys(requests).map((request, idx) => (
-                <Request key={idx} {...requests[request]}/>
+            <h3>Authors</h3>
+            {Object.keys(authors).map((author, idx) => (
+                <Author key={idx} {...authors[author]}/>
             ))}
         </div>
     )
 }
 
-export default Requests;
+export default Authors;

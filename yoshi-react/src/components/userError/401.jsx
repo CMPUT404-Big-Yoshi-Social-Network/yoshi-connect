@@ -19,10 +19,12 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import App from './App.js';
+function UserUnauthorized() {
+    return (
+        <div>
+            You do not have valid credentials! Get outta here or I will call the police!
+        </div>
+    )
+}
 
-test('renders learn react link', () => {
-  render(<App />);
-});
+export default UserUnauthorized;

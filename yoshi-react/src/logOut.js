@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useCallback } from "react";
 
-const LogOut = useCallback(() => {
-  console.log('Debug: Attempting to log out.')
+const LogOut = () => {
   const navigate = useNavigate();
   let config = {
       method: 'post',
@@ -25,6 +23,6 @@ const LogOut = useCallback(() => {
   .catch(err => {
     console.error(err);
   });
-}, [navigate]);
+}
 
 export default LogOut;

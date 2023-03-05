@@ -53,7 +53,7 @@ function PublicFeed() {
         .catch(err => {
             if (err.response.status === 401) {
                 console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); // 401 Not Found
+                navigate('/unauthorized'); 
             }
         });
     }
@@ -133,7 +133,7 @@ function PublicFeed() {
                 let viewerId = response.data.authorId;
                 setViewerId({
                     viewerId: viewerId
-                  })
+                })
             })
             .catch(err => { });
         }

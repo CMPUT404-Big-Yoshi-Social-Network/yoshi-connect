@@ -26,7 +26,7 @@ import axios from 'axios';
 
 function Profile() {
     const { username } = useParams();
-    const url = '/server/users/' + username;
+    const url = '/server/authors/' + username;
     const [personal, setPersonal] = useState({
         person: null,
         viewer: null,

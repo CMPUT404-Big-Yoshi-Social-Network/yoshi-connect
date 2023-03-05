@@ -24,7 +24,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 function Request(props) {
-    const { senderId } = props;
+    const { senderId } = props.actor.displayName;
     const { username } = useParams();
     const url = '/server/requests';
     const addRequest = () => {
@@ -38,7 +38,7 @@ function Request(props) {
             },
             data: {
                 sender: senderId,
-                receiver: username.username,
+                receiver: username,
                 status: 'Sender is added by Receiver'
             }
         }

@@ -45,7 +45,7 @@ function Messages() {
         .catch(err => {
             if (err.response.status === 401) {
                 console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); // 401 Not Found
+                navigate('/unauthorized'); 
             }
         });
     }

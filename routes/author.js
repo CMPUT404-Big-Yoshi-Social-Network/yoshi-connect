@@ -142,9 +142,18 @@ async function getCurrentAuthorDisplayName(req, res){
     }).clone();
 }
 
+async function getAuthorId(req, res) {
+    await Author.findOne({displayName: req.body.data.displayName}, function(err, author) {
+        console.log('Debug: Retrieving authorId')
+        if(!author){ return null; }
+        return author._id;
+    }).clone();
+}
+
 module.exports={
     registerAuthor,
     getProfile,
     getCurrentAuthor,
-    getCurrentAuthorDisplayName
+    getCurrentAuthorDisplayName,
+    getAuthorId
 }

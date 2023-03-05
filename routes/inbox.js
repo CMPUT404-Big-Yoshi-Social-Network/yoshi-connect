@@ -1,5 +1,5 @@
 const { PostHistory, Post, Like, Comment, Inbox } = require('../db_schema/post_schema.js');
-const { Friend } = require('../db_schema/author_schema.js');
+const { Friend, Request } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
@@ -87,13 +87,36 @@ async function postInbox(req, res){
         return res.sendStatus(200);
     }
     else if(req.body.type === "follow") {
+        const senderUUID = await Author.findOne({username: req.body.data.sender});
+        const receiverUUID = await Author.findOne({username: req.body.data.receiver});
 
+        const request = new Request({
+            senderId: req.body.sender,
+            senderUUID: senderUUID,
+            receiverId: req.body.receiver,
+            receiverUUID: receiverUUID,
+        });
+
+        postInboxRequest(request, req.params.author_id);
+
+        return res.sendStatus(200);
     }
     else if(req.body.type === "like") {
+        
 
+        const like = new Like({
+            liker: req.body.liker
+        });
+
+        postInboxLike(like, req.params.author_id);
     }
     else if (req.body.type === "comment") {
+        const comment = new Comment({
+            commenter: req.body.commenter,
+            comment: req.body.comment
+        });
 
+        postInboxComment(comment, req.params.author_id);
     }
     else {
         res.sendStatus(400);
@@ -107,6 +130,26 @@ async function postInboxPost(post, authorId){
     inbox.save();
 }
 
+async function postInboxRequest(request, authorId){
+    const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
+
+    inbox.requests.push(request);
+    inbox.save();
+}
+
+async function postInboxLike(like, authorId){
+    const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
+
+    inbox.likes.push(like);
+    inbox.save();
+}
+
+async function postInboxComment(comment, authorId){
+    const inbox = await Inbox.findOne({authorid: authorId}, '_id comments');
+
+    inbox.comments.push(comment);
+    inbox.save();
+}
 async function deleteInbox(req, res){
 
 }

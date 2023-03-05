@@ -59,8 +59,6 @@ async function postInbox(req, res){
         const unlisted = req.body.unlisted //Expected to be false
         const authorId = req.body.authorId;
 
-        console.log(title, id, description, contentType, content, categories, count, comments, published, visibility, unlisted, authorId)
-
         if( title === undefined || id === undefined || description === undefined || contentType === undefined || content === undefined || categories === undefined || count === undefined || comments === undefined|| published === undefined || visibility === undefined || unlisted === undefined || authorId === undefined ){
             return res.sendStatus(400);
         }
@@ -151,7 +149,13 @@ async function postInboxComment(comment, authorId){
     inbox.save();
 }
 async function deleteInbox(req, res){
+    const inbox = await Inbox.findOne({authorid: authodId});
 
+    inbox.requests = [];
+    inbox.likes = [];
+    inbox.posts = [];
+    inbox.comment = [];
+    inbox.save();
 }
 
 module.exports = {

@@ -32,6 +32,7 @@ export default function AdminLogin() {
     })
 
     const getAdmin = (e) => {
+      console.log('Debug: Getting admin')
       e.preventDefault()
 
       let justLogged =  new Date();

@@ -1,9 +1,37 @@
+/*
+Copyright 2023 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Furthermore it is derived from the Python documentation examples thus
+some of the code is Copyright © 2001-2013 Python Software
+Foundation; All Rights Reserved
+*/
+
+// Used for passwords
 const crypto_js = require('crypto-js')
+
+// Used for tokens
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { Author, Login, Account } = require('./db_schema/author_schema.js');
+
+// Fetching database 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
+
+// Fetching schemas
+const { Login, Author, Account } = require('../db_schema/authorSchema.js');
 
 async function checkDisplayName(req) {
     const author = await Author.findOne({displayName: req.body.displayName});
@@ -11,10 +39,14 @@ async function checkDisplayName(req) {
     if (author == undefined) { return "Not in use"; }
 
     if (author.displayName == req.body.displayName) {
-        console.log("Debug: Username is taken, Authentication failed");
-        return "In use";
+        console.log("Debug: Username is taken, Authentication failed.");
+        return res.json({
+            status: false
+        });
     } else {
-        return "Not in use";
+        return res.json({
+            status: true
+        });
     }
 }
 
@@ -23,7 +55,7 @@ async function removeLogin(req, res) {
         console.log('Debug: Getting the token in the login database.');
         Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
             if (err) throw err;
-            console.log("Debug: Login token deleted");
+            console.log("Debug: Login token deleted.");
         })
     }
     return res.json({ status: "Expired" });
@@ -40,36 +72,31 @@ async function checkExpiry(req) {
 
         let expiresAt = new Date(login.expires);
         let current = new Date();
-        if (expiresAt.getTime() < current.getTime()) { return true } 
-        else { return false; }
+        if (expiresAt.getTime() < current.getTime()) { return false; } 
+        else { return true; }
     } else {
-        return true;
+        return false;
     }
 }
 
 async function sendCheckExpiry(req, res){
-    if (!(await checkExpiry(req))) {
+    let expiry = await checkExpiry(req);
+    if (!expiry) {
         return res.json({ status: "Not Expired" });
     } else { 
         return res.sendStatus(401); 
     }
 }
 
-async function checkAdmin(req, res){
+async function checkAdmin(req, res) {
     if (req.cookies["token"] != undefined) {
-        console.log('Debug: Checking the admin status')
-
-        const login = await Login.findOne({token: req.cookies["token"]});
-
-        if(login == null) { 
-            return false; 
-        } else if (login.admin === false) { 
-            return false; 
-        } else if (login.admin === true) { 
-            return true; 
-        }
-    } else { 
-        return false; 
+        console.log('Debug: Checking the admin status of the Token.');
+        const login_session = await Login.findOne({token: req.cookies["token"]});
+        if(login_session == null) { return false; }
+        if (login_session.admin === false) { return false; }
+        if (login_session.admin === true) { return true; }
+    } else {
+        return false;
     }
 }
 
@@ -79,7 +106,7 @@ async function authAuthor(req, res) {
 
     if (!displayName || !password) {
         console.log("Debug: displayName or Password not given, Authentication failed");
-        return res.json({ status: "Unsuccessful" });
+        return res.json({ status: false });
     }
 
     const account = await Account.findOne({displayName: req.body.displayName});
@@ -87,7 +114,7 @@ async function authAuthor(req, res) {
 
     if (!account || !author) {
         console.log("Debug: Author does not exist, Authentication failed");
-        return res.json({ status: "Unsuccessful" });
+        return res.json({ status: false });
     } else {
         req.account = account;
         req.author = author;
@@ -99,7 +126,7 @@ async function authAuthor(req, res) {
         if (req.cookies["token"] != null) {
             await Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
                 if (err) throw err;
-                console.log("Debug: Login token deleted");
+                console.log("Debug: Login token deleted.");
             }).clone()
         }
 
@@ -117,7 +144,7 @@ async function authAuthor(req, res) {
         if (req.route.path == '/admin') {
             if (!req.account.admin) {
                 console.log("Debug: You are not an admin. Your login will not be cached.")
-                return res.json({ status: "Unsuccessful" }); 
+                return res.json({ status: false }); 
             }
         }
 
@@ -125,12 +152,12 @@ async function authAuthor(req, res) {
         if(login == savedLogin){
             console.log("Debug: Login Cached.")
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
-            return res.json({ status: "Successful" });
+            return res.json({ status: true });
         } else {
-            return res.json({ status: "Unsuccessful" });
+            return res.json({ status: false });
         }
     } else {
-        return res.json({ status: "Unsuccessful" });
+        return res.json({ status: false });
     }
 }
 

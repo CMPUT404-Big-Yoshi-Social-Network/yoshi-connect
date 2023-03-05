@@ -1,6 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import renderer from "react-test-renderer";
-import Settings from "../../feeds/settings/settings";
+import { render } from "@testing-library/react";
+import Settings from "../../feeds/settings/settings.jsx";
 import "@testing-library/jest-dom";
 
 //test block

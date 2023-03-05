@@ -242,16 +242,7 @@ async function get_posts_paginated(req, res){
 
     const start_index = (page - 1) * size; 
     const end_index = page * size;
-    /*
-    let posts = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $slice: ["$posts", 1]
-        }
-    ])
-    */
+
     let posts = await PostHistory.aggregate([
         {
             $match: {'authorId': authorId}

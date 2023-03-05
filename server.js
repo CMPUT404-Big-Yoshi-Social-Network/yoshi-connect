@@ -238,7 +238,7 @@ app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if ( await checkExpiry(req, res) ) {
     return res.sendStatus(404);
   }
-  if ( req.body.data.status == 'Remove like' ) {
+  if ( req.body.status == 'Remove like' ) {
     console.log('Debug: Removing a like from a post!')
     deleteLike(req, res);
   } else if ( req.body.data.status == 'Remove comment' ) {

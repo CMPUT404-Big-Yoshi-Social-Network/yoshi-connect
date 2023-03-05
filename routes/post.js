@@ -41,23 +41,23 @@ async function deleteLike(req, res){
     console.log('Debug: Removing a like')
     let updated_posts = [];
     let success = false;
-    await PostHistory.findOne({authorId: req.body.authorId}, function(err, history){
+    await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
         console.log('Debug: Find the post with the like.')
         if (history) {
             let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
             if (post_idx > -1) { 
                 let like_idx = history.posts[post_idx].likes.map(obj => obj._id).indexOf(req.body.likeId);
-                history.posts[post_idx].likes[like_idx].splice(like_idx, 1);
+                history.posts[post_idx].likes.splice(like_idx, 1);
                 updated_posts = history.posts;
                 history.posts[post_idx].count--;
+                await history.save();
                 success = true;
             }
         }
     }).clone()
-    await PostHistory.findOneAndReplace({authorId: req.body.authorId}, {authorId: req.body.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
-
+ 
     return res.json({
-        status: success,
+        status: success
     })
 }
 

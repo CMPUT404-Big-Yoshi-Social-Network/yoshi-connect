@@ -28,8 +28,8 @@ async function addAuthor(req, res){
     console.log('Debug: Adding a new author.');
 
     let existingAuthor = await Author.findOne({username: req.body.data.username}).clone();
-
-    if (existingAuthor === undefined || existingAuthor === null) { 
+    if (existingAuthor !== undefined && existingAuthor !== null) { 
+        console.log('Debug: Author exists')
         return res.sendStatus(400); 
     }
 
@@ -39,7 +39,7 @@ async function addAuthor(req, res){
 
     let author = new Author({
         username: username,
-        password: password,
+        password: crypto_js.SHA256(password),
         email: email,
         about: '',
         pronouns: '',
@@ -51,7 +51,7 @@ async function addAuthor(req, res){
         return res.sendStatus(200);
     });
 
-    console.log("Debug: " + author.displayName + " added successfully to database.");
+    console.log("Debug: " + author.username + " added successfully to database.");
 
 }
 
@@ -90,10 +90,11 @@ async function modifyAuthor(req, res){
 
 async function deleteAuthor(req, res){
     console.log('Debug: Attempt to delete an author.')
-    await Author.deleteOne({username: req.body.authorId}, function(err, obj){
+    await Author.deleteOne({username: req.body.username}, function(err, obj){
+        console.log('Debug: Delete count for deleting an author ' + obj)
         if (obj.deletedCount == 0) { return res.sendStatus(404); }
 
-        Login.deleteMany({username: req.body.authorId}, function(err, obj) { return res.sendStatus(200) }).clone();
+        Login.deleteMany({username: req.body.username}, function(err, obj) { return res.sendStatus(200) }).clone();
     }).clone();
 }
 

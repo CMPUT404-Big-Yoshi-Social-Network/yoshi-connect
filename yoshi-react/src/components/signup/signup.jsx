@@ -28,7 +28,7 @@ function Signup() {
 
     const url = '/server/signup';
     const [data, setData] = useState({
-      username: '',
+      displayName: '',
       email: '',
       password: ''
     })
@@ -45,12 +45,12 @@ function Signup() {
           'Last-Modified': justLogged,
         },
         data: {
-          username: username,
+          displayName: data.displayName,
           status: 'Is username in use'
         }
       }
 
-      const usernameFree = await axios(config)
+      const displayNameFree = await axios(config)
       .then((response) => {
         if (response.data.status) {
           console.log("Debug: Going to public feed.")
@@ -62,14 +62,14 @@ function Signup() {
       .catch(err => {
         console.error(err);
       }); 
-      return usernameFree
+      return displayNameFree
     }
     
     const getAccount = async (e) => {
       e.preventDefault()
 
-      let usernameFree = await checkUsernameInUse(data.username);
-      if (usernameFree) {
+      let displayNameFree = await checkUsernameInUse(data.displayName);
+      if (displayNameFree) {
         let justLogged =  new Date();
 
 
@@ -108,10 +108,10 @@ function Signup() {
           <label>
             <p>Username</p>
           </label>
-            <input type="text" name="username" onChange={(e) => {
+            <input type="text" name="displayName" onChange={(e) => {
               setData({
                 ...data,
-                username: e.target.value
+                displayName: e.target.value
               })
             }}/>
           <label>

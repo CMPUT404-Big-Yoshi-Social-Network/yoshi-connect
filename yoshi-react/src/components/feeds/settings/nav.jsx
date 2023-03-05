@@ -33,7 +33,7 @@ function SettingsNav() {
     return (
         <Navbar className="flex-column">
             <Container>
-                <Navbar.Brand>Settings</Navbar.Brand>
+                <h1><Navbar.Brand>Settings</Navbar.Brand></h1>
                 <Nav>
                     <div>
                         <Nav.Link href="/settings">Account Details</Nav.Link>

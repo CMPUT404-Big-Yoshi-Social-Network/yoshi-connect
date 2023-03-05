@@ -5,10 +5,10 @@ import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
 import './public.css';
 import React, { useCallback, useEffect, useState } from "react";
-import Notifications from './notifcation-box.jsx';
-import CreatePost from '../posts/create.jsx';
+// import Notifications from './notifcation-box.jsx';
+// import CreatePost from '../posts/create.jsx';
 import Posts from '../posts/posts.jsx';
-import Following from './following.jsx';
+// import Following from './following.jsx';
 
 function PublicFeed() {
     const navigate = useNavigate();

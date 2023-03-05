@@ -2,10 +2,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
 import axios from 'axios';
-import TopNav from './topNav.jsx';
-import LeftNavBar from './leftNav.jsx';
-import RightNavBar from './rightNav.jsx';
-import Requests from './requests.jsx';
+// import TopNav from './topNav.jsx';
+// import LeftNavBar from './leftNav.jsx';
+// import RightNavBar from './rightNav.jsx';
+// import Requests from './requests.jsx';
 import './profile.css';
 import Posts from '../posts/posts.jsx';
 
@@ -72,7 +72,7 @@ function Profile() {
             });
         }
         isRealProfile();
-    }, [navigate, setPersonal])
+    }, [navigate, setPersonal, username])
     useEffect(() => {
         if (!personal.person) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')

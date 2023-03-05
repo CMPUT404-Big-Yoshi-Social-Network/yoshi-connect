@@ -144,7 +144,7 @@ app.get('/server/admin/dashboard', async (req, res) => {
 })
 
 app.post('/server/admin/dashboard', async (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
+  if (req.body.data.status == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
   } else if (req.body.data.status == 'Fetching Authors') {

@@ -1,7 +1,7 @@
 const crypto_js = require('crypto-js');
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { Author, Login, Account } = require('../db_schema/author_schema.js');
+const { Author, Login, Account, Authors } = require('../db_schema/author_schema.js');
 const { checkDisplayName } = require('../auth.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
@@ -11,6 +11,15 @@ const { createFollowers, createFollowings, createFriends } = require('./relation
 async function register_author(req, res){
     if(await checkDisplayName(req) === "In use") { return res.sendStatus(400); }
     console.log("Debug: Author does not exist yet.");
+
+    let authors = await Authors.find().clone();
+    if (authors === undefined || authors === null) {
+        authors = new Authors({
+            type: 'authors',
+            items: []
+        });  
+        await authors.save();      
+    }
 
     const displayName = req.body.displayName;
     const email = req.body.email;
@@ -38,6 +47,9 @@ async function register_author(req, res){
     });
     await author.save();
 
+    authors.items.push(author);
+    authors.save();
+
     console.log("Debug: " + author.displayName + " added successfully to database");
         
     let curr = new Date();
@@ -59,12 +71,8 @@ async function register_author(req, res){
         return res.json({ status: "Successful" });
     })
 
-    author.save(async (err, author, next) => {
-        if (err) { return res.sendStatus(400); }
-    });
-    account.save(async (err, account, next) => {
-        if (err) { return res.sendStatus(400); }
-    });
+    author.save(async (err, author, next) => { if (err) { return res.sendStatus(400); } });
+    account.save(async (err, account, next) => { if (err) { return res.sendStatus(400); } });
 
     await create_post_history(author._id);
     await createFollowers(author._id);

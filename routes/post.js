@@ -1,6 +1,6 @@
 const { Post_History, Post, Like, Comment } = require('../db_schema/post_schema.js');
 const { Comment, Comments, Like, Likes } = require('../db_schema/comment_like_schema');
-const { Friend } = require('../db_schema/author_schema.js');
+const { Friend, Author } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 

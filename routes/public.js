@@ -70,11 +70,15 @@ async function fetchPublicPosts(req, res) {
         });
     }
 
+    // TODO: EXCLUDE UNLISTED ITEMS (WHEN UNLISTED==TRUE)
     const posts = await PostHistory.aggregate([
         {
             $match: {
                 $expr: {
                     $in : ["$authorId", followings]
+                },
+                $expr: {
+                    $ne: ["$unlisted", true]
                 }
             },
         },
@@ -104,7 +108,9 @@ async function fetchPublicPosts(req, res) {
     let publicPosts = [];
     const publicPost = await PublicPost.find();
     for (let i = 0; i < publicPost[0].posts.length; i++) {
-        publicPosts.push(publicPost[0].posts[i].post);
+        if (!publicPost[0].posts[i].unlisted) {
+            publicPosts.push(publicPost[0].posts[i].post);
+        }
     }
 
     const allPosts = posts[0].posts_array.concat(publicPosts);

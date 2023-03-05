@@ -66,11 +66,15 @@ async function fetchFriendPosts(req, res) {
         });
     }
 
+    // TODO: EXCLUDE UNLISTED ITEMS (WHEN UNLISTED==TRUE)
     const posts = await PostHistory.aggregate([
         {
             $match: {
                 $expr: {
                     $in : ["$authorId", friends]
+                },
+                $expr: {
+                    $ne: ["$unlisted", true]
                 }
             },
         },

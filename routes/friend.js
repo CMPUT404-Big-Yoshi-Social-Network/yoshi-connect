@@ -95,6 +95,11 @@ async function fetchFriendPosts(req, res) {
             }
         },
         {
+            $addFields: {
+                "posts.authorId": "$authorId"
+            }
+        },
+        {
             $sort: {"posts.published": -1}
         },
         {

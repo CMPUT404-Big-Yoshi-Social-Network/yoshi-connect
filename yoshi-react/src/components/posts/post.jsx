@@ -4,6 +4,8 @@ import axios from 'axios';
 import Comment from './comment';
 import { useState } from 'react';
 import './post.css';
+import EditPost from "./edit";
+import Popup from 'reactjs-popup';
 
 function Post({viewerId, post}) {
     const postId = post._id;
@@ -108,6 +110,10 @@ function Post({viewerId, post}) {
                                 <Comment key={idx} {...post.comments[comment]}/>
                             ))}
                         </div>}
+                        <br></br>
+                    {
+                        post.authorId !== viewerId ? null : <Popup trigger={<button>Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
+                    }    
                 </div>}
         </div>
     )

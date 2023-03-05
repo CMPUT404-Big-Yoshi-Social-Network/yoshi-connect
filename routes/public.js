@@ -70,7 +70,6 @@ async function fetchPublicPosts(req, res) {
         });
     }
 
-    // TODO: EXCLUDE UNLISTED ITEMS (WHEN UNLISTED==TRUE)
     const posts = await PostHistory.aggregate([
         {
             $match: {
@@ -99,6 +98,11 @@ async function fetchPublicPosts(req, res) {
             }
         },
         {
+            $addFields: {
+                "posts.authorId": "$authorId"
+            }
+        },
+        {
             $sort: {"posts.published": -1}
         },
         {
@@ -109,15 +113,43 @@ async function fetchPublicPosts(req, res) {
         },
     ]);
 
-    let publicPosts = [];
-    const publicPost = await PublicPost.find();
-    for (let i = 0; i < publicPost[0].posts.length; i++) {
-        if (!publicPost[0].posts[i].post.unlisted) {
-            publicPosts.push(publicPost[0].posts[i].post);
-        }
-    }
-
-    const allPosts = posts[0].posts_array.concat(publicPosts);
+    const publicPosts = await PublicPost.aggregate([
+        { $match: {} },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {
+                $expr: {
+                    $ne: ["$posts.post.unlisted", true]
+                }
+            }
+        },
+        {
+            $set: {
+                "posts.post.published": {
+                    $dateFromString: {
+                        dateString: "$posts.post.published"
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                "posts.post.authorId": "$posts.authorId"
+            }
+        },
+        {
+            $sort: {"posts.post.published": -1}
+        },
+        {
+            $group: {
+                _id: null,
+                publicPosts: {$push: "$posts"}
+            }
+        }  
+    ]);
+    const allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
 
     if (allPosts){
         return res.json({

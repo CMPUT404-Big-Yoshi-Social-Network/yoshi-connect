@@ -70,7 +70,7 @@ function EditPost({viewerId, post}) {
             <form method='PUT'>
                 <label>
                     Title:
-                    <input type="text" name="title" value={data.title} onChange={(e) => {
+                    <input type="text" name="title" value={data.title || ''} onChange={(e) => {
                         setData({
                         ...data,
                         title: e.target.value
@@ -80,7 +80,7 @@ function EditPost({viewerId, post}) {
                 <br/>
                 <label>
                     Description:
-                    <input type="text" name="description" value={data.desc} onChange={(e) => {
+                    <input type="text" name="description" value={data.desc || ''} onChange={(e) => {
                         setData({
                         ...data,
                         desc: e.target.value
@@ -88,7 +88,7 @@ function EditPost({viewerId, post}) {
                     }}/>
                 </label>
                 <br/>
-                <select className={"postMenuDropDown"} id={"contentType"} name={"contentType"} value={data.contentType} onChange={(e) => {
+                <select className={"postMenuDropDown"} id={"contentType"} name={"contentType"} value={data.contentType || "plaintext"} onChange={(e) => {
                             setData({...data, contentType: e.target.value})}}>
                             <option value={"plaintext"}>PLAIN TEXT</option>
                             <option value={"markdown"}>MARKDOWN</option>
@@ -96,7 +96,7 @@ function EditPost({viewerId, post}) {
                 <br/>
                 <label>
                     Content:
-                    <input type="text" name="content" value={data.content} onChange={(e) => {
+                    <input type="text" name="content" value={data.content || ''} onChange={(e) => {
                         setData({
                         ...data,
                         content: e.target.value
@@ -105,11 +105,11 @@ function EditPost({viewerId, post}) {
                 </label>
                 <br/>
                 <label><p style={{color:"white"}}>Message To:</p></label>
-                        <input className={"postMenuInput"} type="text" value={data.specifics} onChange={(e) => {
+                        <input className={"postMenuInput"} type="text" value={data.specifics || ''} onChange={(e) => {
                             setData({...data, specifics: [e.target.value]})
                         }}></input>
                 <br/>
-                <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted} onChange={(e) =>{
+                <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
                             let bool;
                             if(e.target.value === "True") bool = true;
                             else if(e.target.value === "False") bool = false;
@@ -119,7 +119,7 @@ function EditPost({viewerId, post}) {
                             <option value="True">True</option>
                 </select>
                 <br/>
-                <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} value={data.visibility} onChange={(e) => {
+                <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} value={data.visibility || 'Public '} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
                             <option value={"Public"}>Public</option>
                             <option value={"Friends"}>Friends</option>

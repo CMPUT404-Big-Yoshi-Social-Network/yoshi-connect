@@ -4,7 +4,7 @@ const database = mongoose.connection;
 const crypto = require('crypto');
 
 const postScheme = new Schema({
-    type: 'post',
+    type: String,
     _id: {type: String, default: crypto.randomUUID}, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
     title: String,
     description: String,
@@ -12,16 +12,16 @@ const postScheme = new Schema({
     origin: String,
     contentType: String,
     content: String,
-    author: Author,
+    author: {type: mongoose.Schema.Types.ObjectId, ref: 'Author'},
     categories: [String],
     count: Number,
-    commentsSrc: Comments,
+    commentsSrc: {type: mongoose.Schema.Types.ObjectId, ref: 'Comments'},
     comments: String, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
     published: String,
     visibility: String,
     unlisted: Boolean,
-    likesSrc: Likes,
-    specifics: [Author],
+    likesSrc: {type: mongoose.Schema.Types.ObjectId, ref: 'Likes'},
+    specifics: [{type: mongoose.Schema.Types.ObjectId, ref: 'Author'}],
     image: String},
     {versionKey: false
 });
@@ -35,7 +35,7 @@ const postHistoryScheme = new Schema({
 })
 
 const inboxScheme = new Schema({
-    type: 'inbox',
+    type: String,
     _id: {type: String, default: crypto.randomUUID},
     author: String,
     items: [postScheme]},

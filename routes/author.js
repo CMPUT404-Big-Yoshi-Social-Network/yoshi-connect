@@ -25,18 +25,16 @@ const crypto_js = require('crypto-js');
 // Used for tokens
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { Author, Login, Account } = require('../db_schema/author_schema.js');
-const { checkDisplayName } = require('../auth.js');
 
 // Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Additional functions
-const { checkDisplayName } = require('../auth.js');
+const { checkDisplayName } = require('./auth.js');
 
 // Schemas
-const { Author, Login, Account } = require('../db_schema/author_schema.js');
+const { Author, Login, Account } = require('../db_schema/authorSchema.js');
 const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 
 async function registerAuthor(req, res){

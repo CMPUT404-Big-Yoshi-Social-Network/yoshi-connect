@@ -19,7 +19,7 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-const { Follower, Following, Friend, Author } = require('../db_schema/author_schema.js');
+const { Follower, Following, Friend, Author } = require('../db_schema/authorSchema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 

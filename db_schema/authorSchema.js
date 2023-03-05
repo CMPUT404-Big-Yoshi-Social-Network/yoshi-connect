@@ -22,12 +22,13 @@ Foundation; All Rights Reserved
 // Fetch database
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const database = mongoose.connection;
 
 // Used for passwords
 const crypto = require("crypto");
 
 const authorScheme = new Schema({
-    type: 'author',
+    type: String,
     _id: {type: String, default: crypto.randomUUID},
     url: String,
     host: String,
@@ -38,7 +39,7 @@ const authorScheme = new Schema({
 });
 
 const accountScheme = new Schema({
-    type: 'account',
+    type: String,
     _id: {type: String, default: crypto.randomUUID},
     displayName: String,
     password: String,
@@ -50,7 +51,7 @@ const accountScheme = new Schema({
 });
 
 const loginScheme = new Schema({
-    type: 'login',
+    type: String,
     _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     token: String,
@@ -60,7 +61,7 @@ const loginScheme = new Schema({
 });
 
 const followerScheme = new Schema({
-    type: 'followers',
+    type: String,
     _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     items: [authorScheme]},
@@ -68,18 +69,18 @@ const followerScheme = new Schema({
 });
 
 const followingScheme = new Schema({
-    type: 'followings',
+    type: String,
     _id: {type: String, default: crypto.randomUUID},
     authorId: String,
-    items: [author_scheme]},
+    items: [authorScheme]},
     {versionKey: false
 });
 
 const friendScheme = new Schema({
-    type: 'friends',
+    type: String,
     _id: {type: String, default: crypto.randomUUID},
     authorId: String,
-    items: [author_scheme]},
+    items: [authorScheme]},
     {versionKey: false
 });
 
@@ -87,8 +88,8 @@ const requestScheme = new Schema({
     type: String,
     _id: {type: String, default: crypto.randomUUID},
     summary: String,
-    actor: author_scheme,
-    object: author_scheme},
+    actor: authorScheme,
+    object: authorScheme},
     {versionKey: false
 });
 

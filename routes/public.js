@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Following, Login } = require('../db_schema/author_schema.js');
-const { PostHistory } = require('../db_schema/post_schema.js');
+const { Following, Login } = require('../db_schema/authorSchema.js');
+const { PostHistory } = require('../db_schema/postSchema.js');
 
 async function fetchFollowing(req, res) {
     const login = await Login.findOne({token: req.body.data.sessionId}).clone();

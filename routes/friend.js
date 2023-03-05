@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Friend, Login } = require('../db_schema/author_schema.js');
-const { PostHistory } = require('../db_schema/post_schema.js');
+const { Friend, Login } = require('../db_schema/authorSchema.js');
+const { PostHistory } = require('../db_schema/postSchema.js');
 
 async function fetchFriends(req, res) {
     let authorId = '';

@@ -24,7 +24,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Request, Follower, Following, Friend, Login, Author } = require('../db_schema/author_schema.js');
+const { Request, Follower, Following, Friend, Login, Author } = require('../db_schema/authorSchema.js');
 
 async function saveRequest(req, res) {  
     const sender = await Author.findOne({_id: req.body.data.sender});

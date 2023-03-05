@@ -1,6 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import renderer from "react-test-renderer";
-import Public from "../../../feeds/public/public";
+import { render } from "@testing-library/react";
+import Public from "../../../feeds/public/public.jsx";
 import "@testing-library/jest-dom";
 
 //test block

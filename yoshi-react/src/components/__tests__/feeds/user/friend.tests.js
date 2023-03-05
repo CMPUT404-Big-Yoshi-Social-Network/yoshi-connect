@@ -1,6 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import renderer from "react-test-renderer";
-import Friend from "../../../feeds/friends/friends";
+import { render } from "@testing-library/react";
+import Friend from "../../../feeds/friends/friends.jsx";
 import "@testing-library/jest-dom";
 
 //test block

@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import renderer from "react-test-renderer";
-import Welcome from "../../welcome/welcome";
+import Welcome from "../../welcome/welcome.jsx";
 import "@testing-library/jest-dom";
 
 //test block

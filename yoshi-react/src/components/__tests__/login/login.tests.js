@@ -1,6 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import renderer from "react-test-renderer";
-import Login from "../../login/login";
+import { render } from "@testing-library/react";
+import Login from "../../login/login.jsx";
 import "@testing-library/jest-dom";
 
 //test block

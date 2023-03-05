@@ -1,4 +1,4 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import renderer from "react-test-renderer";
-// import profile from "../../feeds/";
+import Profile from "../../../feeds/profile/profile";
 import "@testing-library/jest-dom";

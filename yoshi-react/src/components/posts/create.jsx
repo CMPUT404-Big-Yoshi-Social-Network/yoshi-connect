@@ -76,6 +76,7 @@ function CreatePost() {
     }
 
     function previewImage() {
+        // Localhost version but does display after post is saved
         const preview = document.querySelector("img");
         const file = document.querySelector("input[type=file]").files[0];
         const reader = new FileReader();
@@ -99,6 +100,27 @@ function CreatePost() {
           reader2.readAsArrayBuffer(file);
         }
     }
+
+    async function uploadImage() {
+        // Cloudinary Version
+        const data2 = new FormData();
+        const preview = document.querySelector("img");
+        const file = document.querySelector("input[type=file]").files[0];
+        data2.append("file", file);
+        data2.append("upload_preset", "biumvy2g");
+      
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/di9yhzyxv/image/upload`,
+          {
+            method: "POST",
+            body: data2,
+          }
+        );
+        const img = await res.json();
+        data.image = img.secure_url;
+        preview.src = img.secure_url;
+        
+      }
 
     return (
         <div>
@@ -162,7 +184,7 @@ function CreatePost() {
                         </div>
                         
                         <div className={"postMenuInput"}>
-                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={previewImage}/>
+                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={uploadImage}/>
                         <br/>
                         <img src="" style={{maxHeight: "15vh"}} alt="" />
                         </div>

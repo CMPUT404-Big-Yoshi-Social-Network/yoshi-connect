@@ -4,8 +4,10 @@ import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import Friends from './friends.jsx';
+import Notifications from './notifcation-box.jsx';
+import CreatePost from '../posts/create.jsx';
 import Posts from '../posts/posts.jsx';
+import Following from './following.jsx';
 import './friend.css';
 
 function FriendFeed() {
@@ -116,18 +118,18 @@ function FriendFeed() {
     }, []);
     return (
         <div>
-            {/* // <TopNav/>
-            // <div className='pubRow'>
-            //     <div className='pubColL'>
-            //         <LeftNavBar/>
-            //     </div>
-            //     <div className='pubColM'>
-            //             This is the friends feed!
-            //     </div>
-            //     <div className='pubColR'>
-            //         <RightNavBar/>
-            //     </div>
-            // </div> */}
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                        This is the friends feed!
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
             <h1>Friends Feed</h1>
             <h3>Friends List</h3>
             <Friends/>

@@ -28,19 +28,13 @@ async function addLike(req, res){
     let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
     if (idx > -1) { 
         postHistory.posts[idx].likes.push(like);
-        postHistory.posts[idx].count++;
+        await postHistory.save();
         success = true;
     } else {
         console.log('Debug: No such post exists!')
     }
 
-    return res.json({
-        status: success,
-        likeId: like._id,
-        liker: like.liker,
-        postId: postHistory.posts[idx]._id,
-        authorId: req.body.data.authorId
-    })
+    return res.json({ status: success })
 }
 
 async function deleteLike(req, res){

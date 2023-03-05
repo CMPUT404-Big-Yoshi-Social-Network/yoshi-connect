@@ -1,5 +1,5 @@
 const { PostHistory, Post, Like, Comment } = require('../db_schema/post_schema.js');
-const { Friend } = require('../db_schema/author_schema.js');
+const { Friend, Following, Follower } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
@@ -206,6 +206,17 @@ async function create_post(req, res, postId){
     post_history = await PostHistory.findOne({authorId: authorId});
     post_history.posts.push(post);
     post_history.num_posts = post_history.num_posts + 1;
+
+    if(visibility == "FRIENDS") {
+        
+    }
+    else if(visibility == "PRIVATE") {
+
+    }
+    else if(visibility == "PUBLIC") {
+
+    }
+
     await post_history.save();
 }
 

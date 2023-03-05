@@ -5,7 +5,7 @@ const { Author, Login } = require('../db_schema/author_schema.js');
 const { checkUsername } = require('../auth.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const { create_post_history } = require('./post.js');
+const { PostHistory } = require('../db_schema/post_schema.js');
 const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 
 async function register_author(req, res){
@@ -152,9 +152,25 @@ async function getCurrentAuthorUsername(req, res){
     }).clone();
 }
 
+async function fetchMyPosts(req, res) {
+    console.log('Debug: Getting friends posts');
+    const login = await Login.findOne({token: req.cookies.token}).clone();
+    if (!login) { return res.sendStatus(404); }
+
+    console.log('Debug: Retrieving current author logged in')
+    const authorId = login.authorId
+    await PostHistory.findOne({authorId: authorId}, function(err, history){
+        console.log("Debug: History exists");
+        return res.json({
+            posts: history.posts
+        });
+    }).clone()
+}
+
 module.exports={
     register_author,
     get_profile,
     getCurrentAuthor,
-    getCurrentAuthorUsername
+    getCurrentAuthorUsername,
+    fetchMyPosts
 }

@@ -1,0 +1,23 @@
+@font-face {
+    font-family: "Uni Neue";
+    src: url('../../fonts/UniNeue-Trial-Regular.eot');
+    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
+         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
+         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
+         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+}
+.topAdminNav{
+    display: inline-block;
+    font-family: 'Uni Neue', sans-serif;
+}
+
+.topAdminLogo {
+    display: inline-block;
+    padding: 0em 1em;
+}
+.topAdminNavBrand h1 {
+    display: inline-block;
+    color: #735DFA;
+    text-decoration: none;
+    font-family: 'Uni Neue', sans-serif;
+}

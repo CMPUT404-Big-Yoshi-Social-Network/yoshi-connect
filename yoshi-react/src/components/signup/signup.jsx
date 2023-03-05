@@ -1,6 +1,9 @@
 import axios from 'axios';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Form, Card, Button, Container, Image } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import './signup.css';
+
 export default function Signup() {
     const navigate = useNavigate();
     const [data, setData] = useState({
@@ -39,40 +42,44 @@ export default function Signup() {
         });
     }
     return(
-      <form>
-        <label>
-          <p>Username</p>
-        </label>
-          <input type="text" name="username" onChange={(e) => {
-            setData({
-              ...data,
-              username: e.target.value
-            })
-          }}/>
-        <label>
-          <p>Email</p>
-        </label>
-
-          <input type="email" name="email" onChange={(e) => {
-            setData({
-              ...data,
-              email: e.target.value
-            })
-          }}/>
-        <label>
-          <p>Password</p>
-        </label>
-
-          <input type="password" name="password" onChange={(e) => {
-            setData({
-              ...data,
-              password: e.target.value
-            })
-          }}/>
-        <div>
-
-          <button type="submit" onClick={getAccount}>Create Account</button>
-        </div>
-      </form>
+      <div className='signup'>
+        <Image fluid src='/images/yoshi_connect_logo2.png' alt='Logo' width={100} />
+        <Container className='signup-hello'>
+            Yoshi Connect
+        </Container>
+        <Card className="signup-card">
+          <Card.Header>
+              <h3>Sign Up</h3>
+          </Card.Header>
+          <Card.Body>
+              <Form className='signup-form'>
+              <Form.Group className="signup-a">
+                    <p>Email</p>
+                      <Form.Control
+                          name="email"
+                          onChange={(e) => {setData({...data, email: e.target.value})}}
+                          type="email" className='signup-box'/>
+                  </Form.Group>
+                  <Form.Group className="signup-a">
+                    <p>Username</p>
+                      <Form.Control
+                          name="username"
+                          onChange={(e) => {setData({...data, username: e.target.value})}}
+                          type="text" className='signup-box'/>
+                  </Form.Group>
+                  <Form.Group className="signup-a">
+                    <p>Password</p>
+                      <Form.Control
+                          name="password"
+                          onChange={(e) => {setData({...data, password: e.target.value})}}
+                          type="password" className='signup-box'/>
+                  </Form.Group>
+                  <br></br>
+                  <Button href='/' variant="warning" type="submit" className='signup-button'>Back</Button>
+                  <Button onClick={getAccount} variant="warning" type="submit" className='signup-button'>Next</Button>
+              </Form>
+          </Card.Body>
+        </Card>
+      </div>
     )
   }

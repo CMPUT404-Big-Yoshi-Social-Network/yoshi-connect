@@ -20,8 +20,10 @@ Foundation; All Rights Reserved
 */
 
 import axios from 'axios';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
+import '../login/login.css';
 
 export default function AdminLogin() { 
     const url = '/server/admin';
@@ -57,11 +59,13 @@ export default function AdminLogin() {
       })
     }
     return(
-      <form>
+      <div className='login'>
+        <form>
+          <h1>Admin</h1>
         <label>
           <p>Username</p>
         </label>
-          <input type="text" name="username" onChange={(e) => {
+          <input type="text" name="username" className='login-box' onChange={(e) => {
             setData({
               ...data,
               username: e.target.value
@@ -70,16 +74,19 @@ export default function AdminLogin() {
         <label>
           <p>Password</p>
         </label>
-
-          <input type="password" name="password" onChange={(e) => {
+          <input type="password" name="password" className='login-box' onChange={(e) => {
             setData({
               ...data,
               password: e.target.value
             })
           }}/>
         <div>
-          <button type="submit" onClick={getAdmin}>Submit</button>
+          <br/>
+          <Button onClick={getAdmin} variant="warning" type="submit" className='login-button'>Next</Button>
+          {/* <button type="submit" onClick={getAdmin}>Submit</button> */}
         </div>
       </form>
+      </div>
+      
     )
   }

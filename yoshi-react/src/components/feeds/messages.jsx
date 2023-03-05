@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect } from "react";
+import TopNav from './topNav.jsx';
+import LeftNavBar from './leftNav.jsx';
+import RightNavBar from './rightNav.jsx';
 function Messages() {
     const navigate = useNavigate();
     const checkExpiry = () => {
@@ -53,8 +56,19 @@ function Messages() {
     }
     return (
         <div>
-            Viewing your messages.
-        </div> 
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                    Viewing your messages.
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
+        </div>
     )
 }
 

@@ -1,4 +1,4 @@
-import "./App.css";
+import './App.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Welcome from "./components/welcome/welcome.jsx";
 import Login from "./components/login/login.jsx";
@@ -12,7 +12,10 @@ import Messages from "./components/feeds/messages.jsx";
 import PageNotFound from "./components/user-error/404.jsx";
 import UserForbidden from "./components/user-error/403.jsx";
 import UserUnauthorized from "./components/user-error/401.jsx";
+import BadRequest from './components/user-error/400.jsx';
+import Settings from './components/settings/settings.jsx';
 import ApiDocs from "./components/api-docs/api-docs.jsx";
+import React from 'react';
 
 const router = createBrowserRouter([
   {
@@ -58,6 +61,14 @@ const router = createBrowserRouter([
   {
     path: '/unauthorized/', 
     element: <UserUnauthorized/>   
+  },
+  {
+    path: '/badrequest/', 
+    element: <BadRequest/>   
+  },
+  {
+    path: '/settings/', 
+    element: <Settings/>   
   },
   {
     path: '/api-docs',

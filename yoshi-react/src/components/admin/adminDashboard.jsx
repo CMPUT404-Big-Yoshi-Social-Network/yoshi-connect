@@ -25,6 +25,11 @@ import axios from 'axios';
 import Authors from './authors.jsx';
 import AddAuthor from "./addForm.jsx";
 import Popup from 'reactjs-popup';
+// import TopAdminNav from './topAdminNav.jsx';
+// import LeftAdminNavBar from './leftAdminNav.jsx';
+// import RightAdminNavBar from './rightAdminNav.jsx';
+import './admin-dashboard.css';
+
 function AdminDashboard() {
     const navigate = useNavigate();
     const url = '/server/admin/dashboard';
@@ -90,6 +95,21 @@ function AdminDashboard() {
                 <AddAuthor/>
             </Popup>
             <div><Authors/></div>
+            
+            {/* <div>
+            <TopAdminNav/>
+            <div className='adminRow'>
+                <div className='adminColL'>
+                    <LeftAdminNavBar/>
+                </div>
+                <div className='adminColM'>
+                    Hello. You are viewing the admin dashboard.
+                </div>
+                <div className='adminColR'>
+                    <RightAdminNavBar/>
+                </div>
+            </div>
+        </div> */}
         </div>
     )
 }

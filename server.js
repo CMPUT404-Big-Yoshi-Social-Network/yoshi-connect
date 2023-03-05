@@ -330,6 +330,11 @@ app.delete('/server/users/:username', (req, res) => {
   }
 })
 
+app.get('/server/nav', async (req, res) => {
+  console.log('Debug: Getting the current author logged in');
+  await getCurrentAuthorUsername(req, res);
+})
+
 app.get('/server/friends', (req, res) => {
   console.log('Debug: Checking expiry of token')
   sendCheckExpiry(req, res);

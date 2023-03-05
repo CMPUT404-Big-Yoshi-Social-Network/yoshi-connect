@@ -1,8 +1,12 @@
 import { useNavigate } from 'react-router-dom';
+import TopNav from './topNav.jsx';
+import LeftNavBar from './leftNav.jsx';
+import RightNavBar from './rightNav.jsx';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import Friends from './friends.jsx';
 import Posts from '../posts/posts.jsx';
+import './friend.css';
 
 function FriendFeed() {
     const navigate = useNavigate();
@@ -108,6 +112,18 @@ function FriendFeed() {
     }, [setFriendPosts, setViewerId, viewer]);
     return (
         <div>
+            {/* // <TopNav/>
+            // <div className='pubRow'>
+            //     <div className='pubColL'>
+            //         <LeftNavBar/>
+            //     </div>
+            //     <div className='pubColM'>
+            //             This is the friends feed!
+            //     </div>
+            //     <div className='pubColR'>
+            //         <RightNavBar/>
+            //     </div>
+            // </div> */}
             <h1>Friends Feed</h1>
             <h3>Friends List</h3>
             <Friends/>

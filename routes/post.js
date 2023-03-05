@@ -235,15 +235,10 @@ async function get_posts_paginated(req, res){
     console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
 
-    console.log(req.query.page);
-    console.log(req.query.size);
-
     let page = 1;
     let size = 5;
-    if(req.query.page != undefined)
-        page = req.query.page;
-    if(req.query.size != undefined)
-        size = req.query.size;
+    if(req.query.page != undefined) { page = req.query.page; }
+    if(req.query.size != undefined) { size = req.query.size; }
 
     const start_index = (page - 1) * size; 
     const end_index = page * size;

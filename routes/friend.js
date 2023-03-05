@@ -1,11 +1,7 @@
-const { friend_scheme, login_scheme } = require('../db_schema/author_schema.js');
-const { post_history_scheme } = require('../db_schema/post_schema.js');
+const { Friend, Login } = require('../db_schema/author_schema.js');
+const { PostHistory } = require('../db_schema/post_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
-const Friend = database.model('Friend', friend_scheme);
-const Login = database.model('Login', login_scheme);
-const PostHistory = database.model('Posts', post_history_scheme);
 
 async function fetchFriends(req, res) {
     let authorId = '';

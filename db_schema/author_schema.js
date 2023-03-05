@@ -71,6 +71,13 @@ const Request = database.model('Request', request_scheme);
 const Follower = database.model('Follower', follower_scheme);
 
 module.exports = {
+    friend_scheme,
+    follower_scheme,
+    login_scheme,
+    author_scheme,
+    request_scheme,
+    follower_scheme,
+    author_scheme,
     Friend,
     Following,
     Login,

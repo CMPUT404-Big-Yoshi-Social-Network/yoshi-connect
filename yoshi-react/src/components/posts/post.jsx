@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useParams } from 'react-router-dom';
+import React from "react";
 import ReactCommonmark from "react-commonmark";
 import axios from 'axios';
 import Comment from './comment';
@@ -84,11 +83,8 @@ function Post({viewerId, post}) {
             {!post.unlisted &&
                 <div>
                     { post.title === "" ? null : <h1>{post.title}</h1> }
-                    { post.description === "" ? null : <h3>{post.description}</h3> }
-
-                    <hr size={"2px"} width={"fill"} color={"white"}/>
-
-                    { post.content === "" ? null : post.contentType === "type/plain" ? <p>{post.content}</p> : <p>Markdown:{post.content}</p> }
+                    { post.description === "" ? null : <h3>{ post.description }</h3> }
+                    { post.contentType === "type/plain" ? <p>{ post.content }</p> : post.contentType === "type/markdown" ? <ReactCommonmark source={post.content}/> : null }
 
                     <p>{post.published}</p>
 

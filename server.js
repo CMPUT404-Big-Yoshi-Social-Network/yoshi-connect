@@ -43,6 +43,7 @@ const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } 
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
+const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -151,6 +152,23 @@ app.post('/server/admin/dashboard', async (req, res) => {
     return res.json({
       authors: await Author.find()
     })
+  }
+})
+
+app.delete('/server/admin/dashboard', (req, res) => {
+  if (req.body.status == 'Delete an Author') {
+    console.log('Debug: Deleting an Author.');
+    deleteAuthor(req, res);
+  }
+})
+
+app.put('/server/admin/dashboard', (req, res) => {
+  if (req.body.data.status == 'Add New Author') {
+    console.log('Debug: Adding a new Author.');
+    addAuthor(req, res);
+  } else if (req.body.data.status == 'Modify an Author') {
+    console.log('Debug: Modifying the Author.')
+    modifyAuthor(req, res);
   }
 })
 

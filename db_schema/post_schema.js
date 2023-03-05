@@ -5,7 +5,7 @@ const crypto = require('crypto');
 
 const post_scheme = new Schema({
     type: 'post',
-    _id: String, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+    _id: {type: String, default: crypto.randomUUID}, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
     title: String,
     description: String,
     source: String,

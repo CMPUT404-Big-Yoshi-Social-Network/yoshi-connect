@@ -36,6 +36,7 @@ const account_scheme = new Schema({
 
 const login_scheme = new Schema({
     type: 'login',
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     token: String,
     expires: String,
@@ -45,6 +46,7 @@ const login_scheme = new Schema({
 
 const follower_scheme = new Schema({
     type: 'followers',
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     items: [author_scheme]},
     {versionKey: false
@@ -52,6 +54,7 @@ const follower_scheme = new Schema({
 
 const following_scheme = new Schema({
     type: 'followings',
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     items: [author_scheme]},
     {versionKey: false
@@ -59,6 +62,7 @@ const following_scheme = new Schema({
 
 const friend_scheme = new Schema({
     type: 'friends',
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     items: [author_scheme]},
     {versionKey: false
@@ -66,6 +70,7 @@ const friend_scheme = new Schema({
 
 const request_scheme = new Schema({
     type: String,
+    _id: {type: String, default: crypto.randomUUID},
     summary: String,
     actor: author_scheme,
     object: author_scheme},

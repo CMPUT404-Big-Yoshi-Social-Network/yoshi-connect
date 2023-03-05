@@ -9,7 +9,7 @@ const PostHistory = database.model('Posts', post_history_scheme);
 
 async function fetchFriends(req, res) {
     let authorId = '';
-    Login.findOne({token: req.cookies.tokend}, function(err, login) {
+    Login.findOne({token: req.cookies.token}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         authorId = login.authorId
     }).clone();

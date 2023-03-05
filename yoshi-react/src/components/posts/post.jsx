@@ -6,6 +6,7 @@ import { useState } from 'react';
 import './post.css';
 
 function Post({viewerId, post}) {
+    console.log(post)
     const postId = post._id;
     const authorId = post.authorId;
     const url = "/server/authors/" + authorId + "/posts/" + postId;

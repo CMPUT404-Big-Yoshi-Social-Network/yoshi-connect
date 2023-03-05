@@ -65,51 +65,55 @@ function FriendFeed() {
         checkExpiry();
     })
     useEffect(() => {
-       let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/posts/',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: {
-                sessionId: localStorage.getItem('sessionId'),
-                status: 'Fetching current authorId'
+        const getId = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/posts/',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    sessionId: localStorage.getItem('sessionId'),
+                    status: 'Fetching current authorId'
+                }
             }
+            axios
+            .post('/server/posts/', config)
+            .then((response) => {
+                let viewerId = response.data.authorId;
+                setViewerId({
+                    viewerId: viewerId
+                  })
+            })
+            .catch(err => { });
         }
-        axios
-        .post('/server/posts/', config)
-        .then((response) => {
-            let viewerId = response.data.authorId;
-            setViewerId({
-                ...viewer,
-                viewerId: viewerId
-              })
-        })
-        .catch(err => { });
 
-       console.log('Debug: Fetching all the friends post of this author');
-       config = {
-           method: 'post',
-           maxBodyLength: Infinity,
-           url: '/server/friends/posts',
-           headers: {
-               'Content-Type': 'application/x-www-form-urlencoded'
-           },
-           data: {
-               sessionId: localStorage.getItem('sessionId'),
-           }
-       }
-       axios
-       .post('/server/friends/posts', config)
-       .then((response) => {
-           setFriendPosts(response.data.friendPosts)
-       })
-       .catch(err => {
-           console.error(err);
-       });
+        const getPosts = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/friends/posts',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    sessionId: localStorage.getItem('sessionId'),
+                }
+            }
+            axios
+            .post('/server/friends/posts', config)
+            .then((response) => {
+                setFriendPosts(response.data.friendsPosts)
+            })
+            .catch(err => {
+                console.error(err);
+            });
+        }
 
-    }, [setFriendPosts, setViewerId, viewer]);
+        getId();
+        getPosts();
+    }, []);
     return (
         <div>
             {/* // <TopNav/>

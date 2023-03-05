@@ -3,9 +3,8 @@ import axios from 'axios';
 import TopNav from './topNav.jsx';
 import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
-import LogOut from '../../logOut.js';
 import './public.css';
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Notifications from './notifcation-box.jsx';
 import CreatePost from '../posts/create.jsx';
 import Posts from '../posts/posts.jsx';
@@ -17,7 +16,29 @@ function PublicFeed() {
     const [viewer, setViewerId] = useState({
         viewerId: '',
     })
-
+    const LogOut = useCallback(() => {
+        console.log('Debug: Attempting to log out.')
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/feed',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+                message: 'Logging Out'
+            }
+        }
+        axios
+        .post('/server/feed', config)
+        .then((response) => {
+            localStorage['sessionId'] = "";
+            navigate("/");
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }, [navigate]);
     useEffect(() => {
         const checkExpiry = () => {
             let config = {

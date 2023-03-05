@@ -125,7 +125,7 @@ async function get_profile(req, res) {
 }
 
 async function getCurrentAuthor(req, res){
-    await Login.findOne({token: req.body.data.sessionId}, function(err, login) {
+    await Login.findOne({token: req.cookies.token}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         if(!login){
             return res.sendStatus(404);
@@ -139,7 +139,7 @@ async function getCurrentAuthor(req, res){
 }
 
 async function getCurrentAuthorUsername(req, res){
-    await Login.findOne({token: req.body.data.sessionId}, function(err, login) {
+    await Login.findOne({token: req.cookies.token}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         if(!login){
             return res.sendStatus(404);            

@@ -9,7 +9,7 @@ const PostHistory = database.model('Posts', post_history_scheme);
 
 async function fetchFriends(req, res) {
     let authorId = '';
-    Login.findOne({token: req.body.data.sessionId}, function(err, login) {
+    Login.findOne({token: req.cookies.tokend}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         authorId = login.authorId
     }).clone();
@@ -29,7 +29,7 @@ async function fetchFriends(req, res) {
 async function fetchFriendPosts(req, res) {
     console.log('Debug: Getting friend posts');
     let username = '';
-    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+    await Login.find({token: req.cookies.token}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         username = login[0].username
     }).clone();

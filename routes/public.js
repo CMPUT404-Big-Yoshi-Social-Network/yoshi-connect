@@ -6,7 +6,7 @@ const database = mongoose.connection;
 
 
 async function fetchFollowing(req, res) {
-    const login = await Login.findOne({token: req.body.data.sessionId}).clone();
+    const login = await Login.findOne({token: req.cookies.token}).clone();
     if(!login){
         return res.sendStatus(404);
     }
@@ -31,7 +31,7 @@ async function fetchFollowing(req, res) {
 async function fetchPublicPosts(req, res) {
     
     console.log('Debug: Getting public/following posts');
-    const login = await Login.findOne({token: req.body.data.sessionId}).clone();
+    const login = await Login.findOne({token: req.cookies.token}).clone();
     if(!login){
         return res.sendStatus(404);
     }

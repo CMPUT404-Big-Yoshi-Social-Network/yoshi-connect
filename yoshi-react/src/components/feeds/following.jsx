@@ -30,7 +30,7 @@ function Following() {
     return (
         <div>
             <h3>Following</h3>
-            {(followings === []) ? null :
+            {(followings.length === 0) ? null :
                 <div>
                     {Object.keys(followings).map((following, idx) => (
                         <Follow key={idx} {...followings[following]}/>

@@ -40,14 +40,26 @@ const post_history_scheme = new Schema({
     {versionKey: false
 })
 
+const public_scheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    posts: [{
+        authorId: String,
+        post_scheme,
+    }],
+    num_posts: Number},
+    {versionKey: false
+})
+
 const PostHistory = database.model('Posts', post_history_scheme);
 const Post = database.model('Post', post_scheme);
 const Like = database.model('Like', like_scheme);
 const Comment = database.model('Comment', comment_scheme);
+const PublicPost = database.model('PublicPost', public_scheme);
 
 module.exports = {
     PostHistory,
     Post,
     Like,
-    Comment
+    Comment,
+    PublicPost
 }

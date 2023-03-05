@@ -1,4 +1,4 @@
-const { PostHistory, Post, Like, Comment } = require('../db_schema/post_schema.js');
+const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/post_schema.js');
 const { Friend } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
@@ -207,6 +207,13 @@ async function create_post(req, res, postId){
     post_history.posts.push(post);
     post_history.num_posts = post_history.num_posts + 1;
     await post_history.save();
+
+    if (visibility === 'Public') {
+        let publicPost = await PublicPost.find();
+        publicPost[0].posts.push(post);
+        publicPost.num_posts = publicPost[0].num_posts++;
+        await publicPost.save();
+    }
 }
 
 async function get_post(req, res){
@@ -301,7 +308,19 @@ async function update_post(req, res){
             console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
             post.specifics = [];
             specifics_updated = true;
-        } 
+        } else if (visibility == 'Public' && post.visibility != 'Public') {
+            const publicPost = await PublicPost.find();
+            publicPost[0].posts.push(post);
+            publicPost.num_posts = publicPost[0].num_posts++;
+            await publicPost.save();
+        } else if (post.visibility == 'Public' && visibility != 'Public') {
+            const publicPost = await PublicPost.find();
+            let idx = publicPost[0].posts.map(obj => obj._id).indexOf(postId);
+            if (idx > -1) { 
+                publicPost[0].posts.splice(idx, 1);
+                await publicPost.save();
+            }
+        }
         post.visibility = visibility;
     }
     if ( !specifics_updated ) {
@@ -330,9 +349,18 @@ async function delete_post(req, res){
     if(post_history == undefined)
         return sendStatus(500);
 
-    const post = await post_history.posts.id(postId);
+    const post = post_history.posts.id(postId);
     if(post == null)
         return res.sendStatus(404);
+
+    if (post.visibility == 'Public') {
+        const publicPost = await PublicPost.find();
+        let idx = publicPost[0].posts.map(obj => obj._id).indexOf(postId);
+        if (idx > -1) { 
+            publicPost[0].posts.splice(idx, 1);
+            await publicPost.save();
+        }
+    }
 
     post.remove();
     post_history.num_posts = post_history.num_posts - 1;

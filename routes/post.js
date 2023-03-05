@@ -291,7 +291,7 @@ async function update_post(req, res){
     const post_history = await PostHistory.findOne({authorId: authorId});
     const publicPost = await PublicPost.find();
 
-    const post = null;
+    let post = null;
     let postIdx = post_history.posts.map(obj => obj._id).indexOf(postId);
     if (postIdx > -1) { 
         post = post_history.posts[postIdx]
@@ -330,10 +330,11 @@ async function update_post(req, res){
     post.unlisted = unlisted;
     post.image = image;
 
-    let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
-    if (idx > -1) { 
-        publicPost[0].posts[idx] = post;
-        await publicPost[0].save();
+    for (let i = 0; i < publicPost[0].posts.length; i++) {
+        if (publicPost[0].posts[i].post._id === postId) {
+            publicPost[0].posts[i].post = post;
+            await publicPost[0].save();
+        }
     }
 
     await post_history.save()

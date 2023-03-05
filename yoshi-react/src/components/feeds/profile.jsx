@@ -21,40 +21,39 @@ function Profile() {
     let addButton = document.getElementById("request");
     let exists = useRef(null);
     let friends = useRef(null);
-    const checkExpiry = () => {
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: '/feed',
-        }
-        axios
-        .get('/server/feed', config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
-                LogOut();
-                navigate('/');
-            }
-            else{console.log('Debug: Your token is not expired.')}
-        })
-        .catch(err => {
-            if (err.response.status === 401) {
-                console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); // 401 Not Found
-            }
-        });
-    }
     useEffect(() => {
+        const checkExpiry = () => {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/feed',
+            }
+            axios
+            .get('/server/feed', config)
+            .then((response) => {
+                if (response.data.status === "Expired") {
+                    console.log("Debug: Your token is expired.")
+                    LogOut();
+                    navigate('/');
+                }
+                else{console.log('Debug: Your token is not expired.')}
+            })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    console.log("Debug: Not authorized.");
+                    navigate('/unauthorized'); // 401 Not Found
+                }
+            });
+        }
         checkExpiry();
     })
     useEffect(() => {
-        let person = null;
         const isRealProfile = () => {
             axios
             .get('/server/users/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
-                person = response.data.personal
+                const person = response.data.personal
                 const viewer = response.data.viewer
                 const viewed = response.data.viewed
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
@@ -73,7 +72,9 @@ function Profile() {
             });
         }
         isRealProfile();
-        if (!person) { 
+    }, [navigate, setPersonal])
+    useEffect(() => {
+        if (!personal.person) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
                 method: 'post',
@@ -103,15 +104,16 @@ function Profile() {
               console.error(err);
             });
         }
-
-        if (!exists.current && !person) {
+    }, [username, exists, personal]);
+    useEffect(() => {
+        if (!exists.current && !personal.person) {
             console.log('See if they are followers or friends.');
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
                 url: '/server/users/' + username,
                 headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 data: {
                     viewed: personal.viewed,
@@ -131,37 +133,37 @@ function Profile() {
                 }
             })
             .catch(err => {
-              console.error(err);
+            console.error(err);
             });
         }
-    }, [username, exists, personal.viewed, personal.viewer, navigate]);
+    }, [username, personal, exists, friends])
     useEffect(() => { 
-        if (personal.person) {
-            console.log('Debug: Getting my posts')
-            const getPosts = () => {
-                let config = {
-                    method: 'post',
-                    maxBodyLength: Infinity,
-                    url: '/server/users/posts',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    data: {
-                        sessionId: localStorage.getItem('sessionId'),
-                    }
+        console.log('Debug: Getting posts')
+        const getPosts = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/users/posts',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    personal: personal.person,
+                    viewed: personal.viewed,
+                    viewer: personal.viewer
                 }
-                axios
-                .post('/server/users/posts', config)
-                .then((response) => {
-                    setPosts(response.data.posts)
-                })
-                .catch(err => {
-                    console.error(err);
-                });
             }
-            getPosts();
+            axios
+            .post('/server/users/posts', config)
+            .then((response) => {
+                setPosts(response.data.posts)
+            })
+            .catch(err => {
+                console.error(err);
+            });
         }
-    }, [personal.person]);
+        getPosts();
+    }, [personal]);
     const SendRequest = () => {
         if (addButton.innerText === "Add Friend") {
             addButton.innerText = "Sent!";
@@ -305,7 +307,7 @@ function Profile() {
         </div> */}
             You are viewing profile. Welcome to {username}'s profile!
             { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
-            <h3>My Posts</h3>
+            <h3>Posts</h3>
             <Posts viewerId={null} posts={posts}/>   
         </div> 
     )

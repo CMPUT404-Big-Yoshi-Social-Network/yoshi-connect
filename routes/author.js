@@ -153,18 +153,29 @@ async function getCurrentAuthorUsername(req, res){
 }
 
 async function fetchMyPosts(req, res) {
-    console.log('Debug: Getting friends posts');
-    const login = await Login.findOne({token: req.cookies.token}).clone();
-    if (!login) { return res.sendStatus(404); }
+    console.log('Debug: Getting posts');
+    let author = null
+    if (req.body.data.personal) {
+        author = await Author.findOne({username: req.body.data.viewer}).clone();
+    } else {
+        author = await Author.findOne({username: req.body.data.viewed}).clone();
+    }
 
-    console.log('Debug: Retrieving current author logged in')
-    const authorId = login.authorId
-    await PostHistory.findOne({authorId: authorId}, function(err, history){
-        console.log("Debug: History exists");
+    if (author != null) {
+        console.log('Debug: Retrieving current author logged in')
+        const authorId = author._id
+        await PostHistory.findOne({authorId: authorId}, function(err, history){
+            console.log("Debug: History exists");
+            return res.json({
+                posts: history.posts
+            });
+        }).clone()
+    } else {
+        console.log('Debug: No posts')
         return res.json({
-            posts: history.posts
+            posts: []
         });
-    }).clone()
+    }
 }
 
 module.exports={

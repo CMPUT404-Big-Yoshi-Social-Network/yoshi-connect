@@ -1,3 +1,5 @@
+
+import React from 'react';
 import { Image } from 'react-bootstrap'
 import './404.css'
 

@@ -2,11 +2,15 @@ import { useNavigate } from 'react-router-dom';
 import TopNav from './topNav.jsx';
 import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import Friends from './friends.jsx';
 import Posts from '../posts/posts.jsx';
 
+=======
+import './friend.css';
+>>>>>>> 65f962224a2b5dccc6225fd25a71957edf30be6f
 function FriendFeed() {
     const navigate = useNavigate();
     const [friendPosts, setFriendPosts] = useState([]);

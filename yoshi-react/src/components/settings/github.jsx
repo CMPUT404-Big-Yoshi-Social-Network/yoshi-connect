@@ -1,5 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from "react";
+import TopNav from '../feeds/topNav';
+import LeftNavBar from '../feeds/leftNav.jsx';
+import RightNavBar from '../feeds/rightNav.jsx';
+import './github.css';
 function GitHub() {
     const navigate = useNavigate();
     const checkForAuthor = () => {
@@ -15,7 +19,18 @@ function GitHub() {
     });
     return (
         <div>
-            Viewing GitHub details
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                    Viewing GitHub details
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
         </div>
     )
 }

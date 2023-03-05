@@ -9,7 +9,9 @@ function Welcome() {
             <Container className='welcome-hello'>
                 Welcome to Yoshi Connect.
             </Container>
+            <div data-testid="signup">
             <Button className='welcome-button' href='/signup'>Sign Up</Button>
+            </div>
             <Button className='welcome-button' href='/login'>Log In</Button>
         </div>
     )

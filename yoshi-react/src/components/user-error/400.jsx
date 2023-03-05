@@ -1,5 +1,6 @@
-import { Image } from 'react-bootstrap'
-import './400.css'
+import { Image } from 'react-bootstrap';
+import React from 'react';
+import './400.css';
 
 function BadRequest() {
     return (

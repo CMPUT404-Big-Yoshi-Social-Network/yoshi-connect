@@ -1,4 +1,5 @@
 import { Image } from 'react-bootstrap'
+import React from 'react';
 import './401.css'
 
 function UserUnauthorized() {

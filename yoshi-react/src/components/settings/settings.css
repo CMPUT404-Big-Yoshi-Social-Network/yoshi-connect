@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
+
+.pubColL, .pubColM, .pubColR {
+    display: inline-block;
+}
+
+.pubColL, .pubColR {
+    width: 15%;
+}
+
+.pubColM {
+    width: 70%;
+    background-color: #090D0E;
+}

@@ -15,6 +15,7 @@ import UserUnauthorized from "./components/user-error/401.jsx";
 import BadRequest from './components/user-error/400.jsx';
 import Settings from './components/settings/settings.jsx';
 import ApiDocs from "./components/api-docs/api-docs.jsx";
+import React from 'react';
 
 const router = createBrowserRouter([
   {
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
     element: <Profile/>
   },
   {
-    path: '/messages/',
+    path: '/messages/', 
     element: <Messages/>
   },
   {

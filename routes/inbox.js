@@ -54,6 +54,7 @@ async function postInbox(req, res){
         const count = req.body.count;
         const comments = req.body.comments;
         const published = req.body.published;
+        const specifics = req.body.specifics;
         const visibility = req.body.visibility;
         const unlisted = req.body.unlisted //Expected to be false
         const authorID = req.body.author;
@@ -62,7 +63,24 @@ async function postInbox(req, res){
             return res.sendStatus(400);
         }
     
+        const post = Post({
+                title: title,
+                description: desc,
+                contentType: contentType,
+                content: content,
+                authorId: authorId,
+                categories: categories,
+                count: 0,
+                likes: [],
+                comments: [],
+                published: published,
+                visibility: visibility,
+                specifics: specifics,
+                unlisted: unlisted,
+                image: image
+        });
 
+        postInboxPost(post, req.params.author_id);
     }
     else if(req.body.type === "follow") {
 
@@ -75,6 +93,13 @@ async function postInbox(req, res){
     }
 }
 
+async function postInboxPost(post, authorId){
+    const inbox = await Inbox.findOne({authorId: authorId}, '_id posts');
+
+    inbox.posts.push(post);
+    inbox.save();
+}
+
 async function deleteInbox(req, res){
 
 }
@@ -84,4 +109,5 @@ module.exports = {
     getInbox,
     postInbox,
     deleteInbox,
+    postInboxPost,
 }

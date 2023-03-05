@@ -13,7 +13,8 @@ function Profile() {
     const [personal, setPersonal] = useState({
         person: null,
         viewer: null,
-        viewed: null
+        viewed: null,
+        viewerId: null
     })
     const [requestButton, setRequestButton] = useState('Add');
     const [posts, setPosts] = useState([]);
@@ -46,17 +47,22 @@ function Profile() {
         checkExpiry();
     })
     useEffect(() => {
+        let person = '';
+        let viewer = '';
+        let viewed = '';
+        console.log('Debug: Getting account details')
         const isRealProfile = () => {
             axios
             .get('/server/users/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
-                const person = response.data.personal
-                const viewer = response.data.viewer
-                const viewed = response.data.viewed
+                person = response.data.personal
+                viewer = response.data.viewer
+                viewed = response.data.viewed
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
                 setPersonal(prevViewer => ({...prevViewer, viewer}))
                 setPersonal(prevViewing => ({...prevViewing, viewed}))
+                getPosts(person, viewer, viewed);
             })
             .catch(err => {
                 if (err.response.status === 404) {
@@ -70,7 +76,53 @@ function Profile() {
             });
         }
         isRealProfile();
-    }, [navigate, setPersonal, username])
+        const getId = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/posts/',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    sessionId: localStorage.getItem('sessionId'),
+                    status: 'Fetching current authorId'
+                }
+            }
+            axios
+            .post('/server/posts/', config)
+            .then((response) => {
+                let viewerId = response.data.authorId;
+                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+            })
+            .catch(err => { });
+        }
+        getId();
+        console.log('Debug: Getting posts')
+        const getPosts = (person, viewer, viewed) => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/users/posts',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: {
+                    personal: person,
+                    viewed: viewed,
+                    viewer: viewer
+                }
+            }
+            axios
+            .post('/server/users/posts', config)
+            .then((response) => {
+                setPosts(response.data.posts)
+            })
+            .catch(err => {
+                console.error(err);
+            });
+        }
+    }, [navigate, username])
     useEffect(() => {
         if (!personal.person) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
@@ -135,33 +187,6 @@ function Profile() {
             });
         }
     }, [username, personal, exists, setRequestButton, requestButton])
-    useEffect(() => { 
-        console.log('Debug: Getting posts')
-        const getPosts = () => {
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/server/users/posts',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    personal: personal.person,
-                    viewed: personal.viewed,
-                    viewer: personal.viewer
-                }
-            }
-            axios
-            .post('/server/users/posts', config)
-            .then((response) => {
-                setPosts(response.data.posts)
-            })
-            .catch(err => {
-                console.error(err);
-            });
-        }
-        getPosts();
-    }, [personal]);
     const SendRequest = () => {
         if (requestButton === "Add") {
             setRequestButton('Sent');
@@ -307,7 +332,7 @@ function Profile() {
             { personal.person ? null : 
                 <button type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
             <h2>Posts</h2>
-            <Posts viewerId={null} posts={posts}/>   
+            <Posts viewerId={personal.viewerId} posts={posts}/>   
         </div> 
     )
 }

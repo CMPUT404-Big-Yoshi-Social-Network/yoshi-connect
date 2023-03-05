@@ -170,21 +170,54 @@ async function fetchMyPosts(req, res) {
         author = await Author.findOne({username: req.body.data.viewed}).clone();
     }
 
-    if (author != null) {
-        console.log('Debug: Retrieving current author logged in')
-        const authorId = author._id
-        await PostHistory.findOne({authorId: authorId}, function(err, history){
-            console.log("Debug: History exists");
-            return res.json({
-                posts: history.posts
-            });
-        }).clone()
-    } else {
-        console.log('Debug: No posts')
-        return res.json({
-            posts: []
-        });
-    }
+    const posts = await PostHistory.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $in : ["$authorId", [author._id]]
+                }
+            },
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {
+                $expr: {
+                    $ne: ["$posts.unlisted", true]
+                }
+            }
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: {
+                        dateString: "$posts.published"
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                "posts.authorId": "$authorId"
+            }
+        },
+        {
+            $sort: {"posts.published": -1}
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: {$push: "$posts"}
+            }
+        },
+    ]);
+
+    console.log(posts[0].posts_array)
+
+    return res.json({
+        posts: posts[0].posts_array
+    });
 }
 
 async function updateAuthor(req, res){

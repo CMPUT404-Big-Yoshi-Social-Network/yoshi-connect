@@ -282,21 +282,26 @@ async function update_post(req, res){
     console.log("Debug: Update a post");
 
     const authorId = req.params.author_id;
-    const postId = req.params.post_id;
+    const postId = req.body.data.postId;
 
-    const title = req.body.title;
-    const desc = req.body.desc;
-    const contentType = req.body.contentType;
-    const content = req.body.content;
-    const categories = req.body.categories;
-    const visibility = req.body.visibility;
-    const unlisted = req.body.listed;
-    const specifics = req.body.specifics;
-    const image = req.body.image;
+    const title = req.body.data.title;
+    const desc = req.body.data.desc;
+    const contentType = req.body.data.contentType;
+    const content = req.body.data.content;
+    const categories = req.body.data.categories;
+    const visibility = req.body.data.visibility;
+    const unlisted = req.body.data.listed;
+    const specifics = req.body.data.specifics;
+    const image = req.body.data.image;
 
     const post_history = await PostHistory.findOne({authorId: authorId});
+    const publicPost = await PublicPost.find();
 
-    const post = post_history.posts.id(postId)
+    const post = null;
+    let postIdx = post_history.posts.map(obj => obj._id).indexOf(postId);
+    if (postIdx > -1) { 
+        post = post_history.posts[postIdx]
+    }
 
     let specifics_updated = false;
     post.title = title; 
@@ -309,12 +314,10 @@ async function update_post(req, res){
             post.specifics = [];
             specifics_updated = true;
         } else if (visibility == 'Public' && post.visibility != 'Public') {
-            const publicPost = await PublicPost.find();
             publicPost[0].posts.push({authorId: authorId, post: post});
             publicPost[0].num_posts = publicPost[0].num_posts++;
             await publicPost[0].save();
         } else if (post.visibility == 'Public' && visibility != 'Public') {
-            const publicPost = await PublicPost.find();
             let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
             if (idx > -1) { 
                 publicPost[0].posts.splice(idx, 1);
@@ -332,6 +335,12 @@ async function update_post(req, res){
     post.categories = categories;
     post.unlisted = unlisted;
     post.image = image;
+
+    let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
+    if (idx > -1) { 
+        publicPost[0].posts[idx] = post;
+        await publicPost[0].save();
+    }
 
     await post_history.save()
     console.log("Debug: Post has been updated and saved.");

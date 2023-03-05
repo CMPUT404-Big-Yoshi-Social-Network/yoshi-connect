@@ -18,9 +18,9 @@ function EditPost({viewerId, post}) {
     const modifyPost = () => {
         console.log('Debug: Creating a post')
         let config = {
-            method: 'put',
+            method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/authors/' + post.authorId + '/posts/',
+            url: '/server/authors/' + post.authorId + '/posts/' + data.postId,
             headers: {
             'Content-Type': 'multipart/form-data'
             },
@@ -38,7 +38,7 @@ function EditPost({viewerId, post}) {
             }
         }
         
-        axios.put('/server/authors/' + post.authorId + '/posts/', config)
+        axios.post('/server/authors/' + post.authorId + '/posts/' + data.postId, config)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }

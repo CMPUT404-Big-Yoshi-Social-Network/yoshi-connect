@@ -14,7 +14,6 @@ function Requests() {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                sessionId: localStorage.getItem('sessionId'),
                 status: 'Fetching Requests'
             }
         }

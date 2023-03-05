@@ -71,9 +71,9 @@ async function findRequest(req, res) {
 
 async function findAllRequests(req, res) {
     let username = '';
-    await Login.find({token: req.body.data.sessionId}, async function(err, login) {
+    await Login.findOne({token: req.cookies.token}, async function(err, login) {
         console.log('Debug: Retrieving current author logged in')
-        username = login[0].username
+        username = login.username
         
         await Request.find({receiverId: username}, function(err, requests){
             console.log("Debug: Requests exists");

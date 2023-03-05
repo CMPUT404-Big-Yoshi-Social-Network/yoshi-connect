@@ -25,7 +25,7 @@ export default function Login() {
 
       axios(config)
       .then((response) => {
-        if ( response.data.status === 'Successful' ) {
+        if (response.data.status) {
           console.log("Debug: SessionId saved locally.");
           localStorage['sessionId'] = response.data.sessionId;
 

@@ -17,6 +17,7 @@ const like_scheme = new Schema({
 
 const post_scheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
+    authorId: String,
     title: String,
     description: String,
     contentType: String,

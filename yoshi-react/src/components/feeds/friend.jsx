@@ -118,18 +118,18 @@ function FriendFeed() {
     }, []);
     return (
         <div>
-            {/* // <TopNav/>
-            // <div className='pubRow'>
-            //     <div className='pubColL'>
-            //         <LeftNavBar/>
-            //     </div>
-            //     <div className='pubColM'>
-            //             This is the friends feed!
-            //     </div>
-            //     <div className='pubColR'>
-            //         <RightNavBar/>
-            //     </div>
-            // </div> */}
+            <TopNav/>
+            <div className='pubRow'>
+                <div className='pubColL'>
+                    <LeftNavBar/>
+                </div>
+                <div className='pubColM'>
+                        This is the friends feed!
+                </div>
+                <div className='pubColR'>
+                    <RightNavBar/>
+                </div>
+            </div>
             <h1>Friends Feed</h1>
             <h3>Friends List</h3>
             <Friends/>

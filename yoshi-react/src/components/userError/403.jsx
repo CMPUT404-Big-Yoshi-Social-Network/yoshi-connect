@@ -19,10 +19,12 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import App from './App.js';
+function UserForbidden() {
+    return (
+        <div>
+            You do not have permission to access this! This is private stuff!
+        </div>
+    )
+}
 
-test('renders learn react link', () => {
-  render(<App />);
-});
+export default UserForbidden;

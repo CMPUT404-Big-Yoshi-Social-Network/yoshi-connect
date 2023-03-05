@@ -28,14 +28,14 @@ function Following() {
        });
     }, []);
     return (
-        <div>
+        <div className='following-column' style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Following</h3>
             {(followings.length === 0) ? null :
-                <div>
-                    {Object.keys(followings).map((following, idx) => (
-                        <Follow key={idx} {...followings[following]}/>
-                    ))}
-                </div>
+            <div>
+                {Object.keys(followings).map((following, idx) => (
+                    <Follow className='following' key={idx} {...followings[following]}/>
+                ))}
+            </div>
             }
         </div>
     )

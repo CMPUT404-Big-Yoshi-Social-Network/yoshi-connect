@@ -1,5 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import { Nav } from 'react-bootstrap';
+import './create.css';
 
 function CreatePost() {
     const [data, setData] = useState({
@@ -123,8 +125,8 @@ function CreatePost() {
       }
 
     return (
-        <div>
-            <button className={"createPostButton"} type={"button"} value={"Create Post"} onClick={togglePostMenu}>CREATE NEW POST</button>
+        <>
+            <Nav.Link className='rn-post' type={"button"} value={"Create Post"} onClick={togglePostMenu}>Create Post</Nav.Link>
             {isOpen &&    
                 <div className={"postMenuPage"}>
                     <div className={"postMenuBox"}>
@@ -198,7 +200,7 @@ function CreatePost() {
                 </div>
             </div>
             }   
-        </div>        
+        </>        
     )
 }
 

@@ -103,9 +103,11 @@ async function fetchPublicPosts(req, res) {
     ]);
 
     // TODO: Getting the PSA (Public Posts): Require to iterate through all the authors in order to get their posts array which indicates visibility
-    return res.json({
-        publicPosts: posts[0].posts_array
-    });
+    if (posts[0].posts_array){
+        return res.json({
+            publicPosts: posts[0].posts_array
+        });
+    }
 }
 
 module.exports={

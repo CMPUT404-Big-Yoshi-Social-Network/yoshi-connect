@@ -5,6 +5,8 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import './rightNav.css';
+import CreatePost from '../posts/create.jsx';
+
 
 function RightNavBar() {
     const [username, setUsername] = useState();
@@ -46,9 +48,9 @@ function RightNavBar() {
                         <Nav.Link className='rn-msgs' href="/messages">Messages</Nav.Link>
                     </div>
                     <div className='rn-div'>
-                    {/* TODO: Create post */}
                         <img className='rn-pubPostImg' alt='rn-pubPostImg' src='/images/public/icon_create_post.png' width={25}/>
-                        <Nav.Link className='rn-post'href="/post">Create Post</Nav.Link>
+                        <CreatePost className='rn-post'/>
+                        {/* <Nav.Link className='rn-post' href="/post">Create Post</Nav.Link> */}
                     </div>
                 </Nav>
                 <div className='rn-div'>

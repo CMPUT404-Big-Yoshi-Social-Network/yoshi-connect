@@ -7,7 +7,7 @@ import axios from 'axios';
 import Notifications from './notifcation-box.jsx';
 import CreatePost from '../posts/create.jsx';
 import Posts from '../posts/posts.jsx';
-import Following from './following.jsx';
+import Friends from './friends.jsx';
 import './friend.css';
 
 function FriendFeed() {
@@ -124,13 +124,12 @@ function FriendFeed() {
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                        This is the friends feed!
+                    <h1>Friends Feed</h1>
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>
                 </div>
             </div>
-            <h1>Friends Feed</h1>
             <h3>Friends List</h3>
             <Friends/>
             <h3>Friends Posts</h3>

@@ -1,8 +1,7 @@
 const { Following, Login } = require('../db_schema/author_schema.js');
-const { PostHistory } = require('../db_schema/post_schema.js');
+const { PostHistory, PublicPost } = require('../db_schema/post_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
 
 
 async function fetchFollowing(req, res) {
@@ -102,10 +101,16 @@ async function fetchPublicPosts(req, res) {
         },
     ]);
 
+    let publicPosts = [];
+    publicPost = await PublicPost.find();
+    publicPosts = publicPost[0].posts;
+
+    const allPosts = posts[0].posts_array.concat(publicPosts);
+
     // TODO: Getting the PSA (Public Posts): Require to iterate through all the authors in order to get their posts array which indicates visibility
     if (posts[0].posts_array){
         return res.json({
-            publicPosts: posts[0].posts_array
+            publicPosts: allPosts
         });
     }
 }

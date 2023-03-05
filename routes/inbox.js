@@ -9,7 +9,8 @@ async function createInbox(username, authorId){
         username: username,
         posts: [],
         likes:[],
-        comments: []  
+        comments: [],
+        requests: []
     }).save();
 
     return;
@@ -61,7 +62,7 @@ async function postInbox(req, res){
             return res.sendStatus(400);
         }
     
-        
+
     }
     else if(req.body.type === "follow") {
 

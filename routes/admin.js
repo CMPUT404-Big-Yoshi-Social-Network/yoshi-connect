@@ -57,7 +57,8 @@ async function addAuthor(req, res){
 
 async function modifyAuthor(req, res){
 
-    const author = await Author.findOne({username: req.body.data.newUsername}).clone();
+    const author = await Author.findOne({_id: req.body.data.authorId}).clone();
+
     if(author == undefined){ 
         console.log('Debug: Could not find author.')
         return res.sendStatus(404); 

@@ -80,11 +80,11 @@ async function register_author(req, res){
         }
     });
 
-    await create_post_history(author._id);
-    await createFollowers(author._id);
-    await createFriends(author._id);
-    await createFollowings(author._id);
-    await createInbox(author._id);
+    await create_post_history(author.username, author._id);
+    await createFollowers(author.username, author._id);
+    await createFriends(author.username, author._id);
+    await createFollowings(author.username, author._id);
+    await createInbox(author.username, author._id);
 }
 
 async function get_profile(req, res) {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import Friend from './single.jsx';
+import Friend from './friend.jsx';
 
 function Friends() {
     const [friends, setFriends] = useState([]);

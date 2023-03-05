@@ -7,7 +7,6 @@ import axios from 'axios';
 // import Notifications from './notifcation-box.jsx';
 // import CreatePost from '../posts/create.jsx';
 import Posts from '../../posts/posts.jsx';
-import Friends from './friends.jsx';
 import './friendFeed.css';
 
 function FriendFeed() {
@@ -130,8 +129,6 @@ function FriendFeed() {
                     <RightNavBar/>
                 </div>
             </div>
-            <h3>Friends List</h3>
-            <Friends/>
             <h3>Friends Posts</h3>
             <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
         </div>

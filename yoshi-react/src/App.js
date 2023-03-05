@@ -6,7 +6,7 @@ import Signup from "./components/signup/signup.jsx";
 import AdminLogin from "./components/admin/admin.jsx";
 import AdminDashboard from "./components/admin/adminDashboard.jsx";
 import PublicFeed from "./components/feeds/public/public.jsx";
-import FriendFeed from "./components/feeds/friends/friend.jsx";
+import FriendFeed from "./components/feeds/friends/friendFeed.jsx";
 import Profile from "./components/feeds/profile/profile.jsx";
 import Messages from "./components/feeds/messages/messages.jsx";
 import PageNotFound from "./components/user-error/404.jsx";

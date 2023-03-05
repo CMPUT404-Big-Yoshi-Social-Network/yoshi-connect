@@ -1,37 +1,30 @@
 const crypto_js = require('crypto-js');
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { author_scheme, login_scheme } = require('../db_schema/author_schema.js');
+const { Author, Login } = require('../db_schema/author_schema.js');
+const { checkUsername } = require('../auth.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
-const Author = database.model('Author', author_scheme);
-const Login = database.model('Login', login_scheme);
+const { create_post_history } = require('./post.js');
+const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 
 async function register_author(req, res){
-    let author_found = await Author.findOne({username: req.body.username}, function(err, author){
-        if(!author){
-            return;
-        }
-        console.log("Debug: Author does exist, Authentication failed");
+    if(await checkUsername(req) === "In use")
+        //TODO: Make this a 400
         return res.json({
-            username: req.body.username,
+            message: "Username already in use.",
             status: "Unsuccessful"
         });
-    }).clone()
-    if(author_found)
-        return
         
-    console.log("Debug: Author does not exist yet.")
-
-    const authorId = (await Author.find().sort({authorId:-1}).limit(1))[0].authorId + 1;
+    console.log("Debug: Author does not exist yet.");
 
     //Check to make sure username, password, and email are present
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
     if( !username || !email || !password ){
-        console.log("Debug: Did not fill in all the cells.")
+        console.log("Debug: Did not fill in all the cells.");
+        //TODO: Make this a 400
         return res.json({
             message: "You are missing username or email or password.",
             status: "Unsuccessful"
@@ -46,43 +39,51 @@ async function register_author(req, res){
         pronouns: ".../...",
         admin: false
     });
+    
+    let saved_author = await author.save();
+
+    console.log("Debug: " + author.username + " added successfully to database");
+        
+    let curr = new Date();
+    let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
+    let token = uidgen.generateSync();
+
+    let login = new Login({
+        authorId: author._id,
+        username: username,
+        token: token,
+        admin: false,
+        expires: expiresAt
+    });
+
+    await login.save((err, login) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log("Debug: Login Cached.")
+        res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
+        return res.json({
+            sessionId: token,
+            status: "Successful"
+        });
+    })
 
     await author.save(async (err, author, next) => {
         if(err){
             console.log(err);
+            //TODO Make this a 400
             return res.json({
-                message: "You could not be added to the database.",
                 status: "Unsuccessful"
             });
         }
-        console.log("Debug: " + author.username + " added successfully to database");
-        
-        let curr = new Date();
-        let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
-        let token = uidgen.generateSync();
-
-        let login = new Login({
-            authorId: author._id,
-            username: username,
-            token: token,
-            admin: false,
-            expires: expiresAt
-        });
-
-        await login.save((err, login) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            console.log("Debug: Login Cached.")
-            res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
-            return res.json({
-                username: username,
-                authorId: authorId,
-                status: "Successful"
-            });
-        })
     });
+
+    await create_post_history(author._id);
+    await createFollowers(author.username, author._id);
+    await createFriends(author.username, author._id);
+    await createFollowings(author.username, author._id);
+
 }
 
 async function get_profile(req, res) {
@@ -123,17 +124,37 @@ async function get_profile(req, res) {
     }
 }
 
-async function getCurrentAuthorUsername(req, res){
-    let login = await Login.find({token: req.cookies['token']});
-    console.log('Debug: Retrieving current author logged in')
-    return res.json({
-        username: login[0].username
-    })
+async function getCurrentAuthor(req, res){
+    await Login.findOne({token: req.cookies.token}, function(err, login) {
+        console.log('Debug: Retrieving current author logged in')
+        if(!login){
+            return res.sendStatus(404);
+        }
+
+        return res.json({
+            authorId: login.authorId
+        });
+
+    }).clone();
 }
 
+async function getCurrentAuthorUsername(req, res){
+    await Login.findOne({token: req.cookies.token}, function(err, login) {
+        console.log('Debug: Retrieving current author logged in')
+        if(!login){
+            return res.sendStatus(404);            
+        }
+
+        return res.json({
+            username: login.username
+        })
+        
+    }).clone();
+}
 
 module.exports={
     register_author,
     get_profile,
+    getCurrentAuthor,
     getCurrentAuthorUsername
 }

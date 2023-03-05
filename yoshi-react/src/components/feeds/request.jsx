@@ -1,10 +1,33 @@
 import React from "react";
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useEffect, useState } from "react";
 
 function Request(props) {
     const { senderId } = props;
-    const { username } = useParams();
+    const [username, setUsername] = useState({
+        username: ''
+    })
+    useEffect(() => {
+        let config = {
+             method: 'post',
+             maxBodyLength: Infinity,
+             url: '/server/requests/',
+             headers: {
+                 'Content-Type': 'application/json'
+             },
+             data: {
+                 sessionId: localStorage.getItem('sessionId'),
+                 status: 'Fetching current authorId'
+             }
+         }
+         axios
+         .post('/server/requests/', config)
+         .then((response) => {
+             let username = response.data.username;
+             setUsername(prevUsername => ({...prevUsername, username}))
+         })
+         .catch(err => { });
+     }, []);
     const addRequest = () => {
         console.log('Debug: Adding Author')
         let config = {
@@ -12,11 +35,11 @@ function Request(props) {
             maxBodyLength: Infinity,
             url: '/server/requests',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             },
             data: {
                 sender: senderId,
-                receiver: username,
+                receiver: username.username,
                 status: 'Sender is added by Receiver'
             }
         }

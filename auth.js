@@ -1,26 +1,21 @@
 const crypto_js = require('crypto-js')
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { author_scheme, login_scheme } = require('./db_schema/author_schema.js');
+const { Author, Login } = require('./db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
-const Login = database.model('Login', login_scheme);
-const Author = database.model('Author', author_scheme);
 
-async function checkUsername(req, res) {
-    await Author.findOne({username: req.body.username}, function(err, author){
-        if(author){
-            console.log("Debug: Username is taken, Authentication failed");
-            return res.json({
-                status: "Unsuccessful"
-            });
-        } else {
-            return res.json({
-                status: "Successful"
-            });
-        }
-    }).clone()
+async function checkUsername(req) {
+    const author = await Author.findOne({username: req.body.username});
+
+    if(author == undefined)
+        return "Not in use";
+
+    if(author.username == req.body.username){
+        console.log("Debug: Username is taken, Authentication failed");
+        return "In use";
+    }
+    return "Not in use";
 }
 
 async function removeLogin(req, res) {
@@ -36,32 +31,35 @@ async function removeLogin(req, res) {
         status: "Expired"
     });
 }
-
+/*
+Returns:
+    True: If Token is expired
+    False: If Token is not expired
+*/
 async function checkExpiry(req) {
     if(req.cookies == undefined){
-        return "Expired"
+        return true
     }
 
     if (req.cookies["token"] != undefined) {
         console.log('Debug: Checking the Expiry Date of Token')
         const login = await Login.findOne({token: req.cookies["token"]}).clone();
         if(login == null)
-            return "Expired";
+            return true;
         let expiresAt = new Date(login.expires);
         let current = new Date();
         if (expiresAt.getTime() < current.getTime()) {
-            return "Expired"
+            return true
         } 
         else {
-            return "Not Expired"
+            return false
         }
     }
-    return "Expired"
+    return true
 }
 
 async function sendCheckExpiry(req, res){
-    let expiry = await checkExpiry(req);
-    if((expiry) == "Not Expired"){
+    if(!(await checkExpiry(req))){
         return res.json({
             message: "Token still valid.",
             status: "Not Expired"
@@ -102,8 +100,7 @@ async function authAuthor(req, res) {
     if(!author){
         console.log("Debug: Author does not exist, Authentication failed");
         return res.json({
-            username: req.body.username,
-            status: "Unsuccessful"
+            status: false
         });
     }
     req.author = author;
@@ -136,9 +133,7 @@ async function authAuthor(req, res) {
             if (!req.author.admin) {
                 console.log("Debug: You are not an admin. Your login will not be cached.")
                 return res.json({
-                    username: req.body.username,
-                    authorId: req.author._id,
-                    status: "Unsuccessful"
+                    status: false
                 }); 
             }
         }
@@ -148,19 +143,15 @@ async function authAuthor(req, res) {
             console.log("Debug: Login Cached.")
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
             return res.json({
-                username: req.body.username,
-                authorId: req.author._id,
-                status: "Successful"
+                status: true
             });
         }
         return res.json({
-            username: req.body.username,
-            status: "Unsuccessful"
+            status: false
         });
     }
     return res.json({
-        username: req.body.username,
-        status: "Unsuccessful"
+        status: false
     });
 }
 

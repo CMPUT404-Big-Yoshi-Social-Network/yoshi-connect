@@ -27,8 +27,10 @@ export default function Login() {
 
       axios(config)
       .then((response) => {
-        if ( response.data.status === 'Successful' ) {
-          console.log("Debug: Token received.");
+        if (response.data.status) {
+          console.log("Debug: SessionId saved locally.");
+          localStorage['sessionId'] = response.data.sessionId;
+
           console.log("Debug: Going to public feed.")
           navigate('/feed');
         }

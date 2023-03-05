@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
+
+.login {
+    color: white;
+    font-family: "Uni Neue";
+    text-align: center;
+    margin-top: 10em;
+}
+.login-hello{
+    font-size: 25px;
+} 
+.login-card h3{
+    color: #A7E7F8;
+    /* margin-left: 20.1rem; */
+    font-family: 'Signika', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+}
+.login-text p{
+    /* margin-left: 20.1em; */
+    font-family: 'Signika', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+}
+/* attempt to dynamically align things
+ .
+ container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  } */
+.login-box{
+    background-image: radial-gradient(circle, #050125, #090D0E);
+    color: white;
+    width: 15%;
+    border: #4A5460 0.2em solid;
+    border-radius: .5em;
+    padding: .5em;
+}
+.login-button{
+    color: white;
+    font-size: 18px;
+    margin: 0em 2em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
+}
+.login-button:hover{
+    background-color: #A7E7F8;
+    color: black;
+}

@@ -14,7 +14,6 @@ function Requests() {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                sessionId: localStorage.getItem('sessionId'),
                 status: 'Fetching Requests'
             }
         }
@@ -29,7 +28,7 @@ function Requests() {
     }, [setRequests]);
     return (
         <div>
-            <h3>Friend Requests</h3>
+            <h4>Friend Requests</h4>
             {Object.keys(requests).map((request, idx) => (
                 <Request key={idx} {...requests[request]}/>
             ))}

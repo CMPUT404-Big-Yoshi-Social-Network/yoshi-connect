@@ -37,10 +37,13 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile, getCurrentAuthor } = require('./routes/author');
-const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment } = require('./routes/post');
+const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername } = require('./routes/author');
+const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility, fetchLikers } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
+const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
+const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
+const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -50,7 +53,10 @@ app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Connect to database
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
+
+// Schemas
+const { Author } = require('./db_schema/author_schema.js');
 
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
@@ -137,10 +143,32 @@ app.get('/server/admin/dashboard', async (req, res) => {
   })
 })
 
-app.post('/server/admin/dashboard', (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
+app.post('/server/admin/dashboard', async (req, res) => {
+  if (req.body.data.status == 'Logging Out') {
     console.log('Debug: Logging out as Admin')
     removeLogin(req, res);
+  } else if (req.body.data.status == 'Fetching Authors') {
+    console.log('Debug: Getting all authors.')
+    return res.json({
+      authors: await Author.find()
+    })
+  }
+})
+
+app.delete('/server/admin/dashboard', (req, res) => {
+  if (req.body.status == 'Delete an Author') {
+    console.log('Debug: Deleting an Author.');
+    deleteAuthor(req, res);
+  }
+})
+
+app.put('/server/admin/dashboard', (req, res) => {
+  if (req.body.data.status == 'Add New Author') {
+    console.log('Debug: Adding a new Author.');
+    addAuthor(req, res);
+  } else if (req.body.data.status == 'Modify an Author') {
+    console.log('Debug: Modifying the Author.')
+    modifyAuthor(req, res);
   }
 })
 
@@ -191,8 +219,16 @@ app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   console.log('Debug: Updating a specific post by a specific author')
   if ( await checkExpiry(req, res) ) {
     return res.sendStatus(404);
+  } else if ( req.body.data.status == 'Checking Visibility') {
+    console.log('Debug: Checking the visibility of a post');
+    checkVisibility(req, res);
+  } else if ( req.body.data.status == 'Fetching likers') {
+    console.log('Debug: Viewing list of likers for a specific post');
+    fetchLikers(req, res);
+  } else {
+    console.log('Debug: Updating a post');
+    await update_post(req, res);
   }
-  await update_post(req, res);
 })
 
 app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -225,6 +261,8 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   } else if ( req.body.data.status == 'Edit comment' ) {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);
+  } else {
+    await create_post(req, res, req.params.post_id);
   }
 })
 
@@ -235,11 +273,14 @@ app.get('/server/users/:username', async (req,res) => {
   get_profile(req, res);
 })
 
-app.post('/server/requests', (req, res) => {
+app.post('/server/requests', async (req, res) => {
   if (req.body.data.status == 'Fetching Requests') {
     console.log('Debug: Getting friend requests')
     findAllRequests(req, res);
-  }
+  } else if ( req.body.data.status == 'Fetching current authorId') { 
+      console.log('Debug: Getting the current author logged in');
+      await getCurrentAuthorUsername(req, res);
+    } 
 })
 
 app.put('/server/requests', (req, res) => {
@@ -287,6 +328,36 @@ app.delete('/server/users/:username', (req, res) => {
     console.log('Debug: Deleting Friend Request')
     deleteRequest(req, res);
   }
+})
+
+app.get('/server/nav', async (req, res) => {
+  console.log('Debug: Getting the current author logged in');
+  await getCurrentAuthorUsername(req, res);
+})
+
+app.get('/server/friends', (req, res) => {
+  console.log('Debug: Checking expiry of token')
+  sendCheckExpiry(req, res);
+})
+
+app.post('/server/friends', (req, res) => {
+  console.log('Debug: Getting the author friends');
+  fetchFriends(req, res);
+})
+
+app.post('/server/friends/posts', (req, res) => {
+  console.log('Debug: Getting the author friends posts');
+  fetchFriendPosts(req, res);
+})
+
+app.post('/server/following', async (req, res) => {
+  console.log('Debug: Getting the author following');
+  await fetchFollowing(req, res);
+})
+
+app.post('/server/public/posts', async (req, res) => {
+  console.log('Debug: Getting the author following/public posts');
+  await fetchPublicPosts(req, res);
 })
 
 

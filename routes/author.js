@@ -1,17 +1,16 @@
 const crypto_js = require('crypto-js');
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { author_scheme, login_scheme } = require('../db_schema/author_schema.js');
+const { Author, Login } = require('../db_schema/author_schema.js');
 const { checkUsername } = require('../auth.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
-const Author = database.model('Author', author_scheme);
-const Login = database.model('Login', login_scheme);
-const {create_post_history} = require('./post.js');
+const { create_post_history } = require('./post.js');
+const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 
 async function register_author(req, res){
     if(await checkUsername(req) === "In use")
+        //TODO: Make this a 400
         return res.json({
             message: "Username already in use.",
             status: "Unsuccessful"
@@ -25,6 +24,7 @@ async function register_author(req, res){
     const password = req.body.password;
     if( !username || !email || !password ){
         console.log("Debug: Did not fill in all the cells.");
+        //TODO: Make this a 400
         return res.json({
             message: "You are missing username or email or password.",
             status: "Unsuccessful"
@@ -72,6 +72,7 @@ async function register_author(req, res){
     await author.save(async (err, author, next) => {
         if(err){
             console.log(err);
+            //TODO Make this a 400
             return res.json({
                 status: "Unsuccessful"
             });
@@ -79,6 +80,10 @@ async function register_author(req, res){
     });
 
     await create_post_history(author._id);
+    await createFollowers(author.username, author._id);
+    await createFriends(author.username, author._id);
+    await createFollowings(author.username, author._id);
+
 }
 
 async function get_profile(req, res) {
@@ -120,18 +125,36 @@ async function get_profile(req, res) {
 }
 
 async function getCurrentAuthor(req, res){
-    let authorId = '';
-    await Login.find({token: req.body.data.sessionId}, function(err, login) {
+    await Login.findOne({token: req.cookies.token}, function(err, login) {
         console.log('Debug: Retrieving current author logged in')
-        authorId = login[0].authorId
+        if(!login){
+            return res.sendStatus(404);
+        }
+
+        return res.json({
+            authorId: login.authorId
+        });
+
     }).clone();
-    return res.json({
-        authorId: authorId
-    })
+}
+
+async function getCurrentAuthorUsername(req, res){
+    await Login.findOne({token: req.cookies.token}, function(err, login) {
+        console.log('Debug: Retrieving current author logged in')
+        if(!login){
+            return res.sendStatus(404);            
+        }
+
+        return res.json({
+            username: login.username
+        })
+        
+    }).clone();
 }
 
 module.exports={
     register_author,
     get_profile,
-    getCurrentAuthor
+    getCurrentAuthor,
+    getCurrentAuthorUsername
 }

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const database = mongoose.connection;
 
 const crypto = require('crypto');
 
@@ -25,40 +26,55 @@ const login_scheme = new Schema({
 
 const follower_scheme = new Schema({
     username: String,
+    authorId: String,
     followers: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
 
 const following_scheme = new Schema({
     username: String,
+    authorId: String,
     followings: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
 
 const friend_scheme = new Schema({
     username: String,
+    authorId: String,
     friends: [{
         username: String,
+        authorId: String
     }]},
     {versionKey: false
 });
 
 const request_scheme = new Schema({
     senderId: String,
+    senderUUID: String,
     receiverId: String,
+    receiverUUID: String,
     status: String},
     {versionKey: false
 });
 
+const Friend = database.model('Friend', friend_scheme);
+const Following = database.model('Following', following_scheme);
+const Login = database.model('Login', login_scheme);
+const Author = database.model('Author', author_scheme);
+const Request = database.model('Request', request_scheme);
+const Follower = database.model('Follower', follower_scheme);
+
 module.exports = {
-    author_scheme,
-    login_scheme,
-    friend_scheme,
-    following_scheme,
-    follower_scheme,
-    request_scheme
+    Friend,
+    Following,
+    Login,
+    Author,
+    Request,
+    Follower
 }

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-
+const database = mongoose.connection;
 const crypto = require('crypto');
 
 const comment_scheme = new Schema({
@@ -26,6 +26,7 @@ const post_scheme = new Schema({
     comments: [comment_scheme],
     published: String,
     visibility: String,
+    specifics: [String],
     unlisted: Boolean,
     image: String},
     {versionKey: false
@@ -38,9 +39,15 @@ const post_history_scheme = new Schema({
     posts: [post_scheme]},
     {versionKey: false
 })
+
+const PostHistory = database.model('Posts', post_history_scheme);
+const Post = database.model('Post', post_scheme);
+const Like = database.model('Like', like_scheme);
+const Comment = database.model('Comment', comment_scheme);
+
 module.exports = {
-    post_scheme,
-    post_history_scheme,
-    like_scheme,
-    comment_scheme
+    PostHistory,
+    Post,
+    Like,
+    Comment
 }

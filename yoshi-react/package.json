@@ -12,11 +12,18 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "body-parser": "^1.20.1",
+    "boostrap": "^2.0.0",
+    "bootstrap": "^5.2.3",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.7.2",
+    "react-commonmark": "^3.0.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
     "react-scripts": "^5.0.1",
-    "scripts": "^0.1.0"
+    "scripts": "^0.1.0",
+    "styled-components": "^5.3.6",
+    "swagger-ui-express": "^4.6.2",
+    "reactjs-popup": "^2.0.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -41,5 +48,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "resolutions": {
+    "styled-components": "^5"
   }
 }

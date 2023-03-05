@@ -44,7 +44,7 @@ const public_scheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     posts: [{
         authorId: String,
-        post_scheme,
+        post: post_scheme,
     }],
     num_posts: Number},
     {versionKey: false

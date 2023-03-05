@@ -102,8 +102,10 @@ async function fetchPublicPosts(req, res) {
     ]);
 
     let publicPosts = [];
-    publicPost = await PublicPost.find();
-    publicPosts = publicPost[0].posts;
+    const publicPost = await PublicPost.find();
+    for (let i = 0; i < publicPost[0].length; i++) {
+        publicPosts.push(publicPost[0].posts[i].post);
+    }
 
     const allPosts = posts[0].posts_array.concat(publicPosts);
 

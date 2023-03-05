@@ -13,7 +13,7 @@ import PageNotFound from "./components/user-error/404.jsx";
 import UserForbidden from "./components/user-error/403.jsx";
 import UserUnauthorized from "./components/user-error/401.jsx";
 import BadRequest from './components/user-error/400.jsx';
-import Settings from './components/settings/settings.jsx';
+import Settings from './components/feeds/settings/settings.jsx';
 import ApiDocs from "./components/api-docs/api-docs.jsx";
 import React from 'react';
 

@@ -1,10 +1,35 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import LogOut from '../../logOut.js';
-import './settingsNav.css';
+import './nav.css';
+import { useNavigate } from 'react-router-dom';
+import React from "react";
+import axios from 'axios';
 
-function RightNavBar() {
+function SettingsNav() {
+    const navigate = useNavigate();
+    const LogOut = () => {
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/feed',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+                message: 'Logging Out'
+            }
+        }
+        axios
+        .post('/server/feed', config)
+        .then((response) => {
+            localStorage['sessionId'] = "";
+            navigate("/");
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
     return (
         <Navbar className="flex-column">
             <Container>
@@ -27,3 +52,5 @@ function RightNavBar() {
         </Navbar>
     )
 }
+
+export default SettingsNav;

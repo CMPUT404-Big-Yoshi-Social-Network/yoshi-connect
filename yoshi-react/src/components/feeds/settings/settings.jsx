@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
-import TopNav from '../feeds/navs/top/nav';
-import LeftNavBar from '../feeds/navs/left/nav.jsx';
-import RightNavBar from '../feeds/navs/right/nav.jsx';
+import TopNav from '../navs/top/nav.jsx';
+import LeftNavBar from '../navs/left/nav.jsx';
+import RightNavBar from '../navs/right/nav.jsx';
 import { Card, Form, Button } from 'react-bootstrap';
 import './settings.css';
 import axios from 'axios';

@@ -2,10 +2,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
 import axios from 'axios';
-// import TopNav from './topNav.jsx';
-// import LeftNavBar from './leftNav.jsx';
-// import RightNavBar from './rightNav.jsx';
-// import Requests from './requests.jsx';
+// import TopNav from '../navs/top/nav.jsx';
+// import LeftNavBar from '../navs/left/nav.jsx';
+// import RightNavBar from '../navs/right/nav.jsx';
 import './profile.css';
 import Posts from '../../posts/posts.jsx';
 

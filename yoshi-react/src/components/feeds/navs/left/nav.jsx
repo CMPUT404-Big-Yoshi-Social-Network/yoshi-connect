@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import Following from '../../follows/following.jsx';
 import './nav.css';
 import Friends from '../../friends/friends.jsx';
+import SettingsNav from '../../settings/nav.jsx';
 
 function LeftNavBar() {
     const url = window.location.pathname;
@@ -15,7 +16,7 @@ function LeftNavBar() {
         <div className='left-column'>
             { url === '/feed' || url === '/' + {username} ? <Following/> :
                 url === '/friends' ? <Friends/> : 
-                url === '/settings' ? <h1>Settings Stuff</h1> : 
+                url === '/settings' ? <SettingsNav/> : 
                 url === '/messages' ? <h1>Messages Stuff</h1> : null
             }
         </div>

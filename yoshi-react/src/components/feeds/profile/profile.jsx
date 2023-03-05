@@ -7,7 +7,7 @@ import axios from 'axios';
 // import RightNavBar from './rightNav.jsx';
 // import Requests from './requests.jsx';
 import './profile.css';
-import Posts from '../posts/posts.jsx';
+import Posts from '../../posts/posts.jsx';
 
 function Profile() {
     const { username } = useParams();
@@ -135,7 +135,7 @@ function Profile() {
             console.error(err);
             });
         }
-    }, [username, personal, exists, setRequestButton])
+    }, [username, personal, exists, setRequestButton, requestButton])
     useEffect(() => { 
         console.log('Debug: Getting posts')
         const getPosts = () => {

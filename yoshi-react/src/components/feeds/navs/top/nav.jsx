@@ -3,7 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Form } from 'react-bootstrap';
 import React from 'react';
-import './topNav.css'
+import './nav.css'
 
 function TopNav() {
     return (

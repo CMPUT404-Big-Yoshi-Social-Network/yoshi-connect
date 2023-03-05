@@ -1,23 +1,22 @@
 import { useNavigate } from 'react-router-dom';
+import TopNav from '../navs/top/nav.jsx';
+import LeftNavBar from '../navs/left/nav.jsx';
+import RightNavBar from '../navs/right/nav.jsx';
+import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import TopNav from './topNav.jsx';
-import LeftNavBar from './leftNav.jsx';
-import RightNavBar from './rightNav.jsx';
-import './public.css';
-import React, { useCallback, useEffect, useState } from "react";
 // import Notifications from './notifcation-box.jsx';
 // import CreatePost from '../posts/create.jsx';
-import Posts from '../posts/posts.jsx';
-// import Following from './following.jsx';
+import Posts from '../../posts/posts.jsx';
+import Friends from './friends.jsx';
+import './friendFeed.css';
 
-function PublicFeed() {
+function FriendFeed() {
     const navigate = useNavigate();
-    const [publicPosts, setPublicPosts] = useState([]);
+    const [friendPosts, setFriendPosts] = useState([]);
     const [viewer, setViewerId] = useState({
         viewerId: '',
     })
-    const LogOut = useCallback(() => {
-        console.log('Debug: Attempting to log out.')
+    const LogOut = () => {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -38,36 +37,35 @@ function PublicFeed() {
         .catch(err => {
           console.error(err);
         });
-    }, [navigate]);
-    useEffect(() => {
-        const checkExpiry = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-    
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                if (response.data.status === "Expired") {
-                    console.log("Debug: Your token is expired.")
-                    LogOut();
-                    navigate('/');
-                }
-                else{console.log('Debug: Your token is not expired.')}
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); // 401 Not Found
-                }
-            });
+    }
+
+    const checkExpiry = () => {
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: '/feed',
         }
+        axios
+        .get('/server/feed', config)
+        .then((response) => {
+            if (response.data.status === "Expired") {
+                console.log("Debug: Your token is expired.")
+                LogOut();
+                navigate('/');
+            }
+            else{console.log('Debug: Your token is not expired.')}
+        })
+        .catch(err => {
+            if (err.response.status === 401) {
+                console.log("Debug: Not authorized.");
+                navigate('/unauthorized'); 
+            }
+        });
+    }
 
+    useEffect(() => {
         checkExpiry();
-    }, [LogOut, navigate]) 
-
+    })
     useEffect(() => {
         const getId = () => {
             let config = {
@@ -97,7 +95,7 @@ function PublicFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/public/posts',
+                url: '/server/friends/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -106,9 +104,9 @@ function PublicFeed() {
                 }
             }
             axios
-            .post('/server/public/posts', config)
+            .post('/server/friends/posts', config)
             .then((response) => {
-                setPublicPosts(response.data.publicPosts)
+                setFriendPosts(response.data.friendPosts)
             })
             .catch(err => {
                 console.error(err);
@@ -118,7 +116,6 @@ function PublicFeed() {
         getId();
         getPosts();
     }, []);
-
     return (
         <div>
             <TopNav/>
@@ -127,19 +124,18 @@ function PublicFeed() {
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
+                    <h1>Friends Feed</h1>
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>
                 </div>
             </div>
-            {/* <h1>Public Feed</h1>
-            <button type="button" onClick={() => LogOut()}>Log Out</button>
-            {/* <CreatePost/> */}
-            {/* <Notifications/> */}
-            {/* <Following/> */}
+            <h3>Friends List</h3>
+            <Friends/>
+            <h3>Friends Posts</h3>
+            <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
         </div>
     )
 }
 
-export default PublicFeed;
+export default FriendFeed;

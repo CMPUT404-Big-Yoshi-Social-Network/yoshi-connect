@@ -3,8 +3,8 @@ import React from 'react';
 // import Container from 'react-bootstrap/Container';
 // import Nav from 'react-bootstrap/Nav';
 // import Navbar from 'react-bootstrap/Navbar';
-import Following from './following.jsx';
-import './leftNav.css';
+import Following from '../../follows/following.jsx';
+import './nav.css';
 
 function LeftNavBar() {
     return (

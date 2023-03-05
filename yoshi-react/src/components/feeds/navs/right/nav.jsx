@@ -4,8 +4,8 @@ import axios from 'axios';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import './rightNav.css';
-import CreatePost from '../posts/create.jsx';
+import './nav.css';
+import CreatePost from '../../../posts/create.jsx';
 
 
 function RightNavBar() {

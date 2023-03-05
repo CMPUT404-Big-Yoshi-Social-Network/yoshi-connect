@@ -46,7 +46,7 @@ async function getInbox(req, res){
 async function postInbox(req, res){
     if(req.body.type === "post") {
         const title = req.body.title;
-        const id = req.body.id;
+        const id = req.body._id;
         const description = req.body.description;
         const contentType = req.body.contentType;
         const content = req.body.content;
@@ -57,15 +57,17 @@ async function postInbox(req, res){
         const specifics = req.body.specifics;
         const visibility = req.body.visibility;
         const unlisted = req.body.unlisted //Expected to be false
-        const authorID = req.body.author;
+        const authorId = req.body.authorId;
 
-        if( !title || !id || !description || !contentType || !content || !categories || !count || !comments || !published || !visibility || !unlisted || !authorID){
+        console.log(title, id, description, contentType, content, categories, count, comments, published, visibility, unlisted, authorId)
+
+        if( title === undefined || id === undefined || description === undefined || contentType === undefined || content === undefined || categories === undefined || count === undefined || comments === undefined|| published === undefined || visibility === undefined || unlisted === undefined || authorId === undefined ){
             return res.sendStatus(400);
         }
     
         const post = Post({
                 title: title,
-                description: desc,
+                description: description,
                 contentType: contentType,
                 content: content,
                 authorId: authorId,
@@ -77,10 +79,12 @@ async function postInbox(req, res){
                 visibility: visibility,
                 specifics: specifics,
                 unlisted: unlisted,
-                image: image
+                image: ""
         });
 
         postInboxPost(post, req.params.author_id);
+
+        return res.sendStatus(200);
     }
     else if(req.body.type === "follow") {
 
@@ -90,6 +94,9 @@ async function postInbox(req, res){
     }
     else if (req.body.type === "comment") {
 
+    }
+    else {
+        res.sendStatus(400);
     }
 }
 

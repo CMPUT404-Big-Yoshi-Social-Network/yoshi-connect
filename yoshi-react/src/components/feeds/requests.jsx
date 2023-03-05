@@ -52,9 +52,13 @@ function Requests() {
     return (
         <div>
             <h4>Friend Requests</h4>
-            {Object.keys(requests).map((request, idx) => (
-                <Request key={idx} {...requests[request]}/>
-            ))}
+            { requests.length !== 0 ?  null : 
+                <div>
+                    {Object.keys(requests).map((request, idx) => (
+                        <Request key={idx} {...requests[request]}/>
+                    ))} 
+                </div>
+            }
         </div>
     )
 }

@@ -105,7 +105,7 @@ async function findRequest(req, res) {
 
 async function findAllRequests(req, res) {
     let authorId = '';
-    await Login.findOne({token: req.body.data.sessionId}, async function(err, login) {
+    await Login.findOne({token: req.cookies.token}, async function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         authorId = login.authorId
         

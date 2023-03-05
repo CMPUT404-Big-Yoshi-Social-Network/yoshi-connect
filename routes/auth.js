@@ -60,10 +60,10 @@ async function removeLogin(req, res) {
 async function checkExpiry(req) {
     if(req.cookies == undefined) { return true; }
 
-    if (req.cookies["token"] != undefined) {
+    if (req.cookies.token != undefined) {
         console.log('Debug: Checking the Expiry Date of Token')
 
-        const login = await Login.findOne({token: req.cookies["token"]}).clone();
+        const login = await Login.findOne({token: req.cookies.token}).clone();
         if(login == null) { return true; }
 
         let expiresAt = new Date(login.expires);

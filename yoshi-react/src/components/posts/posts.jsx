@@ -3,6 +3,7 @@ import Post from './post.jsx';
 
 function Posts({viewerId, posts}) { 
     const postsExist = posts.length !== 0;
+    console.log(posts)
 
     return (
         <div>

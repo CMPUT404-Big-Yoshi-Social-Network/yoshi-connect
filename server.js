@@ -329,16 +329,16 @@ app.post('/server/public/posts', async (req, res) => {
   await fetchPublicPosts(req, res);
 })
 
-app.get('/server/authors/:author_id/Inbox', async (req, res) => {
+app.get('/server/authors/:author_id/inbox', async (req, res) => {
   console.log('Debug: Getting an authors inbox');
   await getInbox(req, res);
 })
 
-app.post('/server/authors/:author_id/Inbox', async (req, res) => {
+app.post('/server/authors/:author_id/inbox', async (req, res) => {
   await postInbox(req, res);
 })
 
-app.delete('server/authors/:author_id/Inbox', async (req, res) => {
+app.delete('server/authors/:author_id/inbox', async (req, res) => {
   await deleteInbox(req, res);
 })
 

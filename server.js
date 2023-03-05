@@ -40,7 +40,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
+const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin, checkDisplayName } = require('./routes/auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorDisplayName } = require('./routes/author');
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
@@ -101,13 +101,8 @@ app.get('/favicon.ico', (req, res) => {
  *        description: NEEDS TO BE REFACTORED Signup not possible, username, is already taken, field missing, etc.
  */
 app.post('/server/signup', async (req, res) => {
-  if (req.body.status == 'Is username in use') {
-    console.log('Debug: Checking if the username is already taken.')
-    await checkUsername(req, res);
-  } else {
-    console.log('Debug: Signing up as an author.')
-    await registerAuthor(req, res);
-  }
+  console.log('Debug: Signing up as an author.')
+  await registerAuthor(req, res);
 })
 
 /**
@@ -175,7 +170,13 @@ app.put('/server/admin/dashboard', (req, res) => {
 app.post('/server/admin/dashboard', async (req, res) => {
   if (req.body.status == 'Is username in use') {
     console.log('Debug: Checking if the username is already taken.')
-    await checkUsername(req, res);
+    if (!(await checkDisplayName(req, res))) {
+      return res.json({
+        status: true
+      })
+    } else {
+      return res.sendStatus(400);
+    }
   } else if (req.body.data.status == 'Logging Out') {
     console.log('Debug: Logging out as Admin.')
     removeLogin(req, res);

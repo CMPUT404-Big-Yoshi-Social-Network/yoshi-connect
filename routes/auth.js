@@ -33,20 +33,16 @@ mongoose.set('strictQuery', true);
 // Fetching schemas
 const { Login, Author, Account } = require('../db_schema/authorSchema.js');
 
-async function checkDisplayName(req) {
+async function checkDisplayName(req, res) {
     const author = await Author.findOne({displayName: req.body.displayName});
 
-    if (author == undefined) { return "Not in use"; }
+    if (author == undefined || author == null) { return true; }
 
     if (author.displayName == req.body.displayName) {
         console.log("Debug: Username is taken, Authentication failed.");
-        return res.json({
-            status: false
-        });
+        return false;
     } else {
-        return res.json({
-            status: true
-        });
+        return true;
     }
 }
 

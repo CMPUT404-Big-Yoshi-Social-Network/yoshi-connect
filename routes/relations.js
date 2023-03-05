@@ -35,7 +35,7 @@ async function createFollowings(authorId){
     await Following({
         type: 'followings',
         authorId: authorId,
-        items: [author_scheme]
+        items: []
     }).save();
 }
 

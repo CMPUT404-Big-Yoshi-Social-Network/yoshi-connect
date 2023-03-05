@@ -32,19 +32,20 @@ mongoose.set('strictQuery', true);
 
 // Additional functions
 const { checkDisplayName } = require('./auth.js');
+const { createPostHistory } = require('./post.js');
 
 // Schemas
 const { Author, Login, Account } = require('../db_schema/authorSchema.js');
 const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 
 async function registerAuthor(req, res){
-    if(await checkDisplayName(req) === "In use") { return res.sendStatus(400); }
+    if(!(await checkDisplayName(req))) { return res.sendStatus(400); }
     console.log("Debug: Author does not exist yet.");
 
     const displayName = req.body.displayName;
     const email = req.body.email;
     const password = req.body.password;
-    if( !username || !email || !password ){ return res.sendStatus(400); }
+    if( !displayName || !email || !password ){ return res.sendStatus(400); }
 
     var account = new Account({
         type: 'account',
@@ -66,9 +67,6 @@ async function registerAuthor(req, res){
         profileImage: ''
     });
     await author.save();
-
-    authors.items.push(author);
-    authors.save();
 
     console.log("Debug: " + author.displayName + " added successfully to database");
         
@@ -98,6 +96,8 @@ async function registerAuthor(req, res){
     await createFollowers(author._id);
     await createFriends(author._id);
     await createFollowings(author._id);
+
+    return true;
 }
 
 async function getProfile(req, res) {

@@ -32,9 +32,11 @@ function Signup() {
       email: '',
       password: ''
     })
-
-    const checkUsernameInUse = async (username) => {
+    
+    const getAccount = async (e) => {
+      e.preventDefault()
       let justLogged =  new Date();
+
 
       let config = {
         method: 'post',
@@ -44,63 +46,25 @@ function Signup() {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged,
         },
-        data: {
-          displayName: data.displayName,
-          status: 'Is username in use'
-        }
+        data: data
       }
 
-      const displayNameFree = await axios(config)
+      axios(config)
       .then((response) => {
+        console.log("Debug: Token received.");
         if (response.data.status) {
-          console.log("Debug: Going to public feed.")
-          return true;
-        } else {
-          return false;
+          console.log("Debug: SessionId saved locally.");
+          window.localStorage.setItem('sessionId', response.data.sessionId);
+          console.log("Debug: Going to public feed.");
+          navigate('/feed');
         }
       })
       .catch(err => {
-        console.error(err);
-      }); 
-      return displayNameFree
-    }
-    
-    const getAccount = async (e) => {
-      e.preventDefault()
-
-      let displayNameFree = await checkUsernameInUse(data.displayName);
-      if (displayNameFree) {
-        let justLogged =  new Date();
-
-
-        let config = {
-          method: 'post',
-          maxBodyLength: Infinity,
-          url: url,
-          headers: {
-            'Content-Type': 'application/json',
-            'Last-Modified': justLogged,
-          },
-          data: data
+        if (err.response.status === 400) {
+          console.log("Debug: Username in use, or you did not fill all the cells.");
+          navigate('/notfound'); 
         }
-
-        axios(config)
-        .then((response) => {
-          console.log("Debug: Token received.");
-          if (response.data.status) {
-            console.log("Debug: SessionId saved locally.");
-            window.localStorage.setItem('sessionId', response.data.sessionId);
-            console.log("Debug: Going to public feed.");
-            navigate('/feed');
-          }
-        })
-        .catch(err => {
-          if (err.response.status === 400) {
-            console.log("Debug: Username in use, or you did not fill all the cells.");
-            navigate('/notfound'); 
-          }
-        });
-      }
+      });
     }
     return(
       <div>

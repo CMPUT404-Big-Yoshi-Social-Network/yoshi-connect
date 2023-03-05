@@ -16,11 +16,10 @@ function Profile() {
         viewer: null,
         viewed: null
     })
+    const [requestButton, setRequestButton] = useState('Add');
     const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
-    let addButton = document.getElementById("request");
     let exists = useRef(null);
-    let friends = useRef(null);
     useEffect(() => {
         const checkExpiry = () => {
             let config = {
@@ -126,17 +125,17 @@ function Profile() {
             .then((response) => {
                 if (response.data.status === 'Friends') {
                     console.log('Debug: They are friends.')
-                    friends.current = true;
+                    setRequestButton('Unfriend');
                 } else if (response.data.status === 'Follows') {
                     console.log('Debug: They are follows.')
-                    friends.current = false;
+                    setRequestButton('Unfollow');
                 }
             })
             .catch(err => {
             console.error(err);
             });
         }
-    }, [username, personal, exists, friends])
+    }, [username, personal, exists, setRequestButton])
     useEffect(() => { 
         console.log('Debug: Getting posts')
         const getPosts = () => {
@@ -165,8 +164,8 @@ function Profile() {
         getPosts();
     }, [personal]);
     const SendRequest = () => {
-        if (addButton.innerText === "Add Friend") {
-            addButton.innerText = "Sent!";
+        if (requestButton === "Add") {
+            setRequestButton('Sent');
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
@@ -188,8 +187,8 @@ function Profile() {
             .catch(err => {
               console.error(err);
             });
-        } else if ((addButton.innerText === "Sent!")) {
-            addButton.innerText = "Add Friend";
+        } else if (requestButton === "Sent") {
+            setRequestButton('Add')
             let config = {
                 method: 'delete',
                 maxBodyLength: Infinity,
@@ -211,7 +210,7 @@ function Profile() {
             .catch(err => {
               console.error(err);
             });
-        } else if (addButton.innerText === "Unfriend") {
+        } else if (requestButton === 'Unfriend') {
             console.log('Debug: We want to unfriend.')
             let config = {
                 method: 'put',
@@ -231,13 +230,13 @@ function Profile() {
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Friend is unfriended.')
-                    addButton.innerText = "Add Friend";
+                    setRequestButton('Add');
                 }
             })
             .catch(err => {
               console.error(err);
             });
-        } else if (addButton.innerText === "Unfollow") {
+        } else if (requestButton === "Unfollow") {
             console.log('Debug: We want to unfollow.')
             let config = {
                 method: 'put',
@@ -257,7 +256,7 @@ function Profile() {
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')
-                    addButton.innerText = "Add Friend";
+                    setRequestButton('Add');
                 }
             })
             .catch(err => {
@@ -306,7 +305,8 @@ function Profile() {
             </div>
         </div> */}
             <h1>{username} Profile</h1>
-            { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
+            { personal.person ? null : 
+                <button type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
             <h2>Posts</h2>
             <Posts viewerId={null} posts={posts}/>   
         </div> 

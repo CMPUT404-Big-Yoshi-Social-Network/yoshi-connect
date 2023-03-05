@@ -29,9 +29,13 @@ function Friends() {
     return (
         <div>
             <h3>Friends</h3>
-            {Object.keys(friends).map((friend, idx) => (
-                <Friend key={idx} {...friends[friend]}/>
-            ))}
+            { (friends === undefined) ? null :
+                <div>
+                    {Object.keys(friends).map((friend, idx) => (
+                        <Friend key={idx} {...friends[friend]}/>
+                    ))}
+                </div>
+            }
         </div>
     )
 }

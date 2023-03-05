@@ -91,7 +91,7 @@ function Post({viewerId, post}) {
 
                     <p>{post.published}</p>
 
-                    { !like.liked ? <button onClick={removeLike}>Unlike</button> : <button onClick={addLike}>Like</button> } 
+                    { !like.liked ? <button onClick={addLike}>Like</button> : <button onClick={removeLike}>Unlike</button>} 
 
                     { showComment ? <button onClick={toggleComments}>Close Comments</button> : <button onClick={toggleComments}>Open Comments</button> }
 

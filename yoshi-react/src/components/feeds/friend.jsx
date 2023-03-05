@@ -4,8 +4,10 @@ import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import Friends from './friends.jsx';
+import Notifications from './notifcation-box.jsx';
+import CreatePost from '../posts/create.jsx';
 import Posts from '../posts/posts.jsx';
+import Following from './following.jsx';
 import './friend.css';
 
 function FriendFeed() {

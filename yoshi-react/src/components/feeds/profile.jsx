@@ -7,6 +7,7 @@ import LeftNavBar from './leftNav.jsx';
 import RightNavBar from './rightNav.jsx';
 import Requests from './requests.jsx';
 import './profile.css';
+import Posts from '../posts/posts.jsx';
 
 function Profile() {
     const { username } = useParams();
@@ -15,6 +16,7 @@ function Profile() {
         viewer: null,
         viewed: null
     })
+    const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
     let addButton = document.getElementById("request");
     let exists = useRef(null);
@@ -44,6 +46,8 @@ function Profile() {
     }
     useEffect(() => {
         checkExpiry();
+    })
+    useEffect(() => {
         let person = null;
         const isRealProfile = () => {
             axios
@@ -131,6 +135,33 @@ function Profile() {
             });
         }
     }, [username, exists, personal.viewed, personal.viewer, navigate]);
+    useEffect(() => { 
+        if (personal.person) {
+            console.log('Debug: Getting my posts')
+            const getPosts = () => {
+                let config = {
+                    method: 'post',
+                    maxBodyLength: Infinity,
+                    url: '/server/users/posts',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: {
+                        sessionId: localStorage.getItem('sessionId'),
+                    }
+                }
+                axios
+                .post('/server/users/posts', config)
+                .then((response) => {
+                    setPosts(response.data.posts)
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+            }
+            getPosts();
+        }
+    }, [personal.person]);
     const SendRequest = () => {
         if (addButton.innerText === "Add Friend") {
             addButton.innerText = "Sent!";
@@ -274,6 +305,8 @@ function Profile() {
         </div> */}
             You are viewing profile. Welcome to {username}'s profile!
             { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
+            <h3>My Posts</h3>
+            <Posts viewerId={null} posts={posts}/>   
         </div> 
     )
 }

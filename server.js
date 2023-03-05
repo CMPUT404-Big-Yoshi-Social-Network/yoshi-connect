@@ -37,7 +37,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername } = require('./routes/author');
+const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility, fetchLikers } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -273,6 +273,11 @@ app.get('/server/users/:username', async (req,res) => {
   get_profile(req, res);
 })
 
+app.post('/server/users/posts', async (req, res) => {
+  console.log('Debug: Getting the author posts');
+  await fetchMyPosts(req, res);
+})
+
 app.post('/server/requests', async (req, res) => {
   if (req.body.data.status == 'Fetching Requests') {
     console.log('Debug: Getting friend requests')
@@ -360,10 +365,9 @@ app.post('/server/public/posts', async (req, res) => {
   await fetchPublicPosts(req, res);
 })
 
-
 app.get('/',(req, res) => {
   res.render("index");
-});
+}); 
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));

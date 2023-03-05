@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// import TopNav from './topNav.jsx';
-// import LeftNavBar from './leftNav.jsx';
-// import RightNavBar from './rightNav.jsx';
+import TopNav from './topNav.jsx';
+import LeftNavBar from './leftNav.jsx';
+import RightNavBar from './rightNav.jsx';
 import './public.css';
 import React, { useCallback, useEffect, useState } from "react";
 import Notifications from './notifcation-box.jsx';
@@ -121,25 +121,23 @@ function PublicFeed() {
 
     return (
         <div>
-                        {/* <TopNav/>
+            <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                        Welcome to Yoshi Connect. This is the public feed!
+                    <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>
                 </div>
-            </div> */}
-            <h1>Public Feed</h1>
+            </div>
+            {/* <h1>Public Feed</h1>
             <button type="button" onClick={() => LogOut()}>Log Out</button>
-            <CreatePost/>
-            <Notifications/>
-            <Following/>
-            <h3>Public and Following Posts</h3>
-            <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
+            {/* <CreatePost/> */}
+            {/* <Notifications/> */}
+            {/* <Following/> */}
         </div>
     )
 }

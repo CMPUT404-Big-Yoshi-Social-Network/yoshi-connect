@@ -17,8 +17,3 @@
     border: #24292F 0.1em solid;
     font-family: 'Uni Neue', sans-serif;
 }
-
-.rn-feed, .rn-friends, .rn-msgs{
-    text-decoration: none;
-    color: white;
-}

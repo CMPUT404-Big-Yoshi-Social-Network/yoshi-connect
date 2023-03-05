@@ -26,6 +26,7 @@
     border-radius: 0.50em;
     padding: .4em 1.5em;
     text-decoration: none;
+    display: inline-block;
 }
 .welcome-button:hover{
     background-color: #A7E7F8;

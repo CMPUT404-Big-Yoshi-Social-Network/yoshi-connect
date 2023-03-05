@@ -3,6 +3,7 @@ import ReactCommonmark from "react-commonmark";
 import axios from 'axios';
 import Comment from './comment';
 import { useState } from 'react';
+import './post.css';
 
 function Post({viewerId, post}) {
     console.log(post)
@@ -79,8 +80,7 @@ function Post({viewerId, post}) {
     }
     
     return (
-        <div style={{backgroundColor: "grey"}}>
-            <hr size={"2px"} width={"fill"} color={"black"}/>
+        <div className="post">
             {!post.unlisted &&
                 <div>
                     { post.title === "" ? null : <h1>{post.title}</h1> }

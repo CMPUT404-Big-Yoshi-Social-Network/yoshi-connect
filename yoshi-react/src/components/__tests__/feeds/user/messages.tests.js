@@ -1,6 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import renderer from "react-test-renderer";
-import Messages from "../../../feeds/messages/messages";
+import { render } from "@testing-library/react";
+import Messages from "../../../feeds/messages/messages.jsx";
 import "@testing-library/jest-dom";
 
 //test block

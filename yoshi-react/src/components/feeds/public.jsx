@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import TopNav from './topNav.jsx';
-import LeftNavBar from './leftNav.jsx';
-import RightNavBar from './rightNav.jsx';
+// import TopNav from './topNav.jsx';
+// import LeftNavBar from './leftNav.jsx';
+// import RightNavBar from './rightNav.jsx';
 import './public.css';
 import React, { useCallback, useEffect, useState } from "react";
 import Notifications from './notifcation-box.jsx';

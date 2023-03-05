@@ -76,14 +76,18 @@ async function fetchPublicPosts(req, res) {
             $match: {
                 $expr: {
                     $in : ["$authorId", followings]
-                },
-                $expr: {
-                    $ne: ["$unlisted", true]
                 }
             },
         },
         {
             $unwind: "$posts"
+        },
+        {
+            $match: {
+                $expr: {
+                    $ne: ["$unlisted", true]
+                }
+            }
         },
         {
             $set: {
@@ -108,7 +112,7 @@ async function fetchPublicPosts(req, res) {
     let publicPosts = [];
     const publicPost = await PublicPost.find();
     for (let i = 0; i < publicPost[0].posts.length; i++) {
-        if (!publicPost[0].posts[i].unlisted) {
+        if (!publicPost[0].posts[i].post.unlisted) {
             publicPosts.push(publicPost[0].posts[i].post);
         }
     }

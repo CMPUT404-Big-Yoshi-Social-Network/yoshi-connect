@@ -72,14 +72,18 @@ async function fetchFriendPosts(req, res) {
             $match: {
                 $expr: {
                     $in : ["$authorId", friends]
-                },
-                $expr: {
-                    $ne: ["$unlisted", true]
                 }
             },
         },
         {
             $unwind: "$posts"
+        },
+        {
+            $match: {
+                $expr: {
+                    $ne: ["$unlisted", true]
+                }
+            }
         },
         {
             $set: {

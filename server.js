@@ -54,6 +54,9 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 // Connect to database
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
+// Schemas
+const { Author } = require('./db_schema/author_schema.js');
+
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }

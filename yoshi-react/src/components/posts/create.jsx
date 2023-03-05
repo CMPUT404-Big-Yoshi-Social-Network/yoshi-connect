@@ -75,32 +75,6 @@ function CreatePost() {
         console.log("Toggling post menu");
     }
 
-    function previewImage() {
-        // Localhost version but does display after post is saved
-        const preview = document.querySelector("img");
-        const file = document.querySelector("input[type=file]").files[0];
-        const reader = new FileReader();
-        const reader2 = new FileReader();
-
-        reader2.onload = function (event) {
-            var blob = new Blob([event.target.result]); 
-            window.URL = window.URL || window.webkitURL;
-            var blobURL = window.URL.createObjectURL(blob); 
-            data.image = blobURL;
-        }
-    
-        reader.addEventListener(
-          "load",
-          () => { preview.src = reader.result; },
-          false
-        );
-      
-        if (file) {
-          reader.readAsDataURL(file);
-          reader2.readAsArrayBuffer(file);
-        }
-    }
-
     async function uploadImage() {
         // Cloudinary Version
         const data2 = new FormData();
@@ -134,7 +108,7 @@ function CreatePost() {
                     <form encType='multipart/form-data'>
                         <label><p style={{color:"white"}}>Content Type</p></label>
                         <label><p style={{color:"white"}}>Visibility</p></label>
-                        <label><p style={{color:"white"}}>Listed</p></label>
+                        <label><p style={{color:"white"}}>Unlisted</p></label>
                         <select className={"postMenuDropDown"} id={"contentType"} name={"contentType"}onChange={(e) => {
                             setData({...data, contentType: e.target.value})}}>
                             <option value={"plaintext"}>PLAIN TEXT</option>
@@ -154,8 +128,8 @@ function CreatePost() {
                             else if(e.target.value === "False") bool = false;
                             setData({...data, unlisted: bool})
                         }} >
-                            <option value="True">False</option>
-                            <option value="False">True</option>
+                            <option value="True">True</option>
+                            <option value="False">False</option>
                         </select>
 
                         <label><p style={{color:"white"}}>Message To:</p></label>

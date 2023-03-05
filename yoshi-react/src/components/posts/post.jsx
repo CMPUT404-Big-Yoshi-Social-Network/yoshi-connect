@@ -5,6 +5,7 @@ import Comment from './comment';
 import { useState } from 'react';
 
 function Post({viewerId, post}) {
+    console.log(post)
     const postId = post._id;
     const authorId = post.authorId;
     const url = "/server/authors/" + authorId + "/posts/" + postId;

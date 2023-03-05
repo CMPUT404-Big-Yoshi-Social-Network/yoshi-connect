@@ -15,6 +15,13 @@ const author_scheme = new Schema({
     {versionKey: false
 });
 
+const authors_scheme = new Schema({
+    type: 'authors',
+    items: [author_scheme],
+    _id: {type: String, default: crypto.randomUUID}},
+    {versionKey: false
+});
+
 const account_scheme = new Schema({
     type: 'account',
     _id: {type: String, default: crypto.randomUUID},
@@ -72,6 +79,7 @@ const Author = database.model('Author', author_scheme);
 const Request = database.model('Request', request_scheme);
 const Follower = database.model('Follower', follower_scheme);
 const Account = database.model('Account', account_scheme);
+const Authors = database.model('Authors', authors_scheme);
 
 module.exports = {
     Friend,

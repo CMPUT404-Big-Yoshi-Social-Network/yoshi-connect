@@ -67,8 +67,6 @@ async function addAuthor(req, res){
         return res.sendStatus(200);
     });
 
-    // TODO: SAVE INTO AUTHORS DB LIST 
-
     console.log("Debug: " + author.displayName + " added successfully to database.");
 
 }
@@ -100,8 +98,6 @@ async function modifyAuthor(req, res){
     author.displayName = req.body.data.newDisplayName;
     author.save();
 
-    // TODO: UPDATE AUTHORS DB
-
     await Login.find({authorId: req.body.data.authorId}, function(err, logins){
         if (err) { res.sendStatus(500); }
         for(let i = 0; i < logins.length; i++){
@@ -123,8 +119,6 @@ async function deleteAuthor(req, res){
     await Account.deleteOne({authorId: req.body.authorId}, function(err, obj){
         if (obj.deletedCount == 0) { return res.sendStatus(404); }
     }).clone();
-
-    // TODO: Delete from AUTHORS db
 }
 
 module.exports={

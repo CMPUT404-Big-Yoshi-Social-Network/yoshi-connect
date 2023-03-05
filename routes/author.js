@@ -25,13 +25,10 @@ const crypto_js = require('crypto-js');
 // Used for tokens
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-<<<<<<< HEAD
-const { Author, Login, Account, Authors } = require('../db_schema/author_schema.js');
+const { Author, Login, Account } = require('../db_schema/author_schema.js');
 const { checkDisplayName } = require('../auth.js');
-=======
 
 // Database
->>>>>>> 6d7c871075b154999bfe348ef95b8f823b363baf
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
@@ -45,15 +42,6 @@ const { createFollowers, createFollowings, createFriends } = require('./relation
 async function registerAuthor(req, res){
     if(await checkDisplayName(req) === "In use") { return res.sendStatus(400); }
     console.log("Debug: Author does not exist yet.");
-
-    let authors = await Authors.find().clone();
-    if (authors === undefined || authors === null) {
-        authors = new Authors({
-            type: 'authors',
-            items: []
-        });  
-        await authors.save();      
-    }
 
     const displayName = req.body.displayName;
     const email = req.body.email;

@@ -22,7 +22,8 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-export default function Signup() {
+
+function Signup() {
     const navigate = useNavigate();
 
     const url = '/server/signup';
@@ -99,43 +100,47 @@ export default function Signup() {
             navigate('/notfound'); 
           }
         });
+      }
     }
     return(
-      <form>
-        <label>
-          <p>Username</p>
-        </label>
-          <input type="text" name="username" onChange={(e) => {
-            setData({
-              ...data,
-              username: e.target.value
-            })
-          }}/>
-        <label>
-          <p>Email</p>
-        </label>
+      <div>
+        <form>
+          <label>
+            <p>Username</p>
+          </label>
+            <input type="text" name="username" onChange={(e) => {
+              setData({
+                ...data,
+                username: e.target.value
+              })
+            }}/>
+          <label>
+            <p>Email</p>
+          </label>
 
-          <input type="email" name="email" onChange={(e) => {
-            setData({
-              ...data,
-              email: e.target.value
-            })
-          }}/>
-        <label>
-          <p>Password</p>
-        </label>
+            <input type="email" name="email" onChange={(e) => {
+              setData({
+                ...data,
+                email: e.target.value
+              })
+            }}/>
+          <label>
+            <p>Password</p>
+          </label>
 
-          <input type="password" name="password" onChange={(e) => {
-            setData({
-              ...data,
-              password: e.target.value
-            })
-          }}/>
-        <div>
+            <input type="password" name="password" onChange={(e) => {
+              setData({
+                ...data,
+                password: e.target.value
+              })
+            }}/>
+          <div>
 
-          <button type="submit" onClick={getAccount}>Create Account</button>
-        </div>
-      </form>
+            <button type="submit" onClick={getAccount}>Create Account</button>
+          </div>
+        </form>
+      </div>
     )
-  }
 }
+
+export default Signup;

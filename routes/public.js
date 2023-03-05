@@ -113,7 +113,7 @@ async function fetchPublicPosts(req, res) {
         },
     ]);
 
-    const publicPosts = await PublicPost.aggregate([
+    let publicPosts = await PublicPost.aggregate([
         { $match: {} },
         {
             $unwind: "$posts"
@@ -145,7 +145,7 @@ async function fetchPublicPosts(req, res) {
         {
             $group: {
                 _id: null,
-                publicPosts: {$push: "$posts"}
+                publicPosts: {$push: "$posts.post"}
             }
         }  
     ]);

@@ -1,6 +1,7 @@
 const { PostHistory, Post, Like, Comment, Inbox } = require('../db_schema/post_schema.js');
 const { Friend, Request } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
+const { response } = require('express');
 mongoose.set('strictQuery', true);
 
 async function createInbox(username, authorId){
@@ -149,13 +150,8 @@ async function postInboxComment(comment, authorId){
     inbox.save();
 }
 async function deleteInbox(req, res){
-    const inbox = await Inbox.findOne({authorid: authodId});
-
-    inbox.requests = [];
-    inbox.likes = [];
-    inbox.posts = [];
-    inbox.comment = [];
-    inbox.save();
+    const responses = await Inbox.updateOne({authorId: req.params.author_id},{$set: {'requests': [], 'likes': [], 'posts': [], 'comments': []}}).clone();
+    return res.sendStatus(200);
 }
 
 module.exports = {

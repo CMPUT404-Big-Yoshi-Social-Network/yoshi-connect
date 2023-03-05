@@ -71,6 +71,7 @@ export default function Signup() {
       if (usernameFree) {
         let justLogged =  new Date();
 
+
         let config = {
           method: 'post',
           maxBodyLength: Infinity,
@@ -86,15 +87,18 @@ export default function Signup() {
         .then((response) => {
           console.log("Debug: Token received.");
           if (response.data.status) {
-            console.log("Debug: Going to public feed.")
-            window.localStorage.setItem("token", response.data.token);
+            console.log("Debug: SessionId saved locally.");
+            window.localStorage.setItem('sessionId', response.data.sessionId);
+            console.log("Debug: Going to public feed.");
             navigate('/feed');
           }
         })
         .catch(err => {
-          console.error(err);
+          if (err.response.status === 400) {
+            console.log("Debug: Username in use, or you did not fill all the cells.");
+            navigate('/notfound'); 
+          }
         });
-      }
     }
     return(
       <form>

@@ -23,8 +23,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import Request from './request.jsx';
 
-function Requests(props) {
-    const { username } = props;
+function Requests() {
     const [requests, setRequests] = useState([]);
     const url = '/server/requests';
     useEffect(() => {
@@ -37,7 +36,7 @@ function Requests(props) {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                receiver: username,
+                sessionId: localStorage.getItem('sessionId'),
                 status: 'Fetching Requests'
             }
         }
@@ -49,10 +48,10 @@ function Requests(props) {
         .catch(err => {
             console.error(err);
         });
-    }, [setRequests, username, url]);
+    }, [setRequests]);
     return (
         <div>
-            <h3>Friend Requests</h3>
+            <h4>Friend Requests</h4>
             {Object.keys(requests).map((request, idx) => (
                 <Request key={idx} {...requests[request]}/>
             ))}

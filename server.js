@@ -28,6 +28,10 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require('swagger-jsdoc');
 const {options} = require('./openAPI/options.js');
 
+// Multer
+const multer = require('multer');
+// const upload = multer({dest: 'uploads/'});
+
 // dotenv
 require('dotenv').config();
 
@@ -36,13 +40,14 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-
-// Routing functions
-const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
-const { registerAuthor, getProfile } = require('./routes/author');
+const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
+const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorDisplayName } = require('./routes/author');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { addAuthor, deleteAuthor, modifyAuthor } = require('./routes/admin');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
+const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
+const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 
 // App uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
@@ -55,10 +60,10 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 // Setting up database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
-const { author_scheme } = require('./db_schema/authorSchema.js');
-const database = mongoose.connection;
-const Author = database.model('Author', author_scheme);
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
+
+// Schemas
+const { Author } = require('./db_schema/authorSchema.js');
 
 // Development check
 if (process.env.NODE_ENV === "development") {
@@ -134,12 +139,12 @@ app.post('/server/admin', async (req, res) => {
 })
 
 app.get('/server/admin/dashboard', async (req, res) => {
-  console.log('Debug: Checking expiry of token.')
-  if(await checkAdmin(req, res) === false){
+  console.log('Debug: Checking expiry of token')
+  if(!(await checkAdmin(req, res))){
     return res.sendStatus(403)
   }
 
-  if((await checkExpiry(req, res)) == "Expired"){
+  if((await checkExpiry(req, res))){
     return res.json({
       status: false
     })
@@ -195,11 +200,112 @@ app.post('/server/feed', (req, res) => {
   }
 })
 
-/** Profile routing */
+app.post('/server/posts/', async (req, res) => {
+  if ( req.body.data.status == 'Fetching current authorId') { 
+    console.log('Debug: Getting the current author logged in');
+    await getCurrentAuthor(req, res);
+  } else {
+    console.log('Debug: Paging the posts created by other (not the logged in author)');
+    await getPostsPaginated(req, res);
+  }
+})
+
+app.put('/server/authors/:authorId/posts/', async (req, res) => {
+  console.log('Debug: Creating a post')
+  await createPost(req, res);
+})
+
+app.get('/server/authors/:authorId/posts/', async (req, res) => {
+  console.log('Debug: Paging the posts created by the logged in author');
+    if ( await checkExpiry(req, res) ) {
+      return res.sendStatus(404);
+    }
+  await getPostsPaginated(req, res);
+})
+
+app.get('/server/authors/:authorId/posts/:postId', async (req, res) => {
+  console.log('Debug: Viewing a specific post by a specific author');
+  if ( await checkExpiry(req, res) ) {
+    return res.sendStatus(404);
+  }
+  await getPost(req, res);
+})
+
+app.post('/server/authors/:authorId/posts/:postId', async (req, res) => {
+  console.log('Debug: Updating a specific post by a specific author')
+  if ( await checkExpiry(req, res) ) {
+    return res.sendStatus(404);
+  } else if ( req.body.data.status == 'Checking Visibility') {
+    console.log('Debug: Checking the visibility of a post');
+    checkVisibility(req, res);
+  } else {
+    console.log('Debug: Updating a post');
+    await updatePost(req, res);
+  }
+})
+
+app.delete('/server/authors/:authorId/posts/:postId', async (req, res) => {
+   console.log('Debug: Deleting a specific post by a specific author')
+  if ( await checkExpiry(req, res) ) {
+    return res.sendStatus(404);
+  }
+  if ( req.body.data.status == 'Remove like' ) {
+    console.log('Debug: Removing a like from a post!')
+    deleteLike(req, res);
+  } else if ( req.body.data.status == 'Remove comment' ) {
+    console.log('Debug: Removing a comment from a post!')
+    deleteComment(req, res);
+  } else {
+    await deletePost(req, res);
+  }
+})
+
+app.put('/server/authors/:authorId/posts/:postId', async (req, res) => {
+  if ( await checkExpiry(req, res) ) {
+    return res.sendStatus(404);
+  }
+
+  if ( req.body.data.status == 'Add like' ) {
+    console.log('Debug: Adding a like to a post!');
+    addLike(req, res);
+  } else if ( req.body.data.status == 'Add comment' ) {
+    console.log('Debug: Adding a comment to a post!');
+    addComment(req, res);
+  } else if ( req.body.data.status == 'Edit comment' ) {
+    console.log('Debug: Updating a comment on a post!')
+    editComment(req, res);
+  } else {
+    await createPost(req, res, req.params.postId);
+  }
+})
+
 app.get('/server/users/:username', async (req,res) => {
-  let isExpired = await checkExpiry(req);
-  if(isExpired  == "Expired") { return res.sendStatus(401); }
+  if(await checkExpiry(req)) { return res.sendStatus(401); }
   getProfile(req, res);
+})
+
+app.post('/server/requests', async (req, res) => {
+  if (req.body.data.status == 'Fetching Requests') {
+    console.log('Debug: Getting friend requests')
+    findAllRequests(req, res);
+  } else if ( req.body.data.status == 'Fetching current authorId') { 
+      console.log('Debug: Getting the current author logged in');
+      await getCurrentAuthorDisplayName(req, res);
+    } 
+})
+
+app.put('/server/requests', (req, res) => {
+  if (req.body.data.status == 'Sender is added by Receiver') {
+    console.log('Debug: Sender added by Receiver')
+    senderAdded(req, res);
+  } 
+})
+
+app.delete('/server/requests', (req, res) => {
+  if (req.body.status == 'Sender is rejected by Receiver') {
+    console.log('Debug: Sender rejected by Receiver')
+    deleteRequest(req, res);
+  }
 })
 
 app.post('/server/users/:username', async (req, res) => {
@@ -235,29 +341,31 @@ app.delete('/server/users/:username', (req, res) => {
   }
 })
 
-/** Requests routing */
-app.post('/server/requests', (req, res) => {
-  if (req.body.data.status == 'Fetching Requests') {
-    console.log('Debug: Getting friend requests.')
-    findAllRequests(req, res);
-  }
+app.get('/server/friends', (req, res) => {
+  console.log('Debug: Checking expiry of token')
+  sendCheckExpiry(req, res);
 })
 
-app.put('/server/requests', (req, res) => {
-  if (req.body.data.status == 'Sender is added by Receiver') {
-    console.log('Debug: Sender added by Receiver.')
-    senderAdded(req, res);
-  } 
+app.post('/server/friends', (req, res) => {
+  console.log('Debug: Getting the author friends');
+  fetchFriends(req, res);
 })
 
-app.delete('/server/requests', (req, res) => {
-  if (req.body.status == 'Sender is rejected by Receiver') {
-    console.log('Debug: Sender rejected by Receiver.')
-    deleteRequest(req, res);
-  }
+app.post('/server/friends/posts', (req, res) => {
+  console.log('Debug: Getting the author friends posts');
+  fetchFriendPosts(req, res);
 })
 
-/** General routing */
+app.post('/server/following', async (req, res) => {
+  console.log('Debug: Getting the author following');
+  await fetchFollowing(req, res);
+})
+
+app.post('/server/public/posts', async (req, res) => {
+  console.log('Debug: Getting the author following/public posts');
+  await fetchPublicPosts(req, res);
+})
+
 app.get('/',(req, res) => {
   res.render("index");
 });

@@ -27,61 +27,94 @@ const { Schema } = mongoose;
 const crypto = require("crypto");
 
 const authorScheme = new Schema({
-    _id: { type: String, default: crypto.randomUUID },
-    username: String,
+    type: 'author',
+    _id: {type: String, default: crypto.randomUUID},
+    url: String,
+    host: String,
+    displayName: String,
+    github: String,
+    profileImage: String},
+    {versionKey: false
+});
+
+const authorsScheme = new Schema({
+    type: 'authors',
+    items: [authorScheme],
+    _id: {type: String, default: crypto.randomUUID}},
+    {versionKey: false
+});
+
+const accountScheme = new Schema({
+    type: 'account',
+    _id: {type: String, default: crypto.randomUUID},
+    displayName: String,
     password: String,
     email: String,
     about: String,
     pronouns: String,
-    admin: Boolean,},
+    admin: Boolean},
     {versionKey: false
 });
 
 const loginScheme = new Schema({
+    type: 'login',
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
-    username: String,
     token: String,
-    admin: Boolean,
-    expires: String,},
+    expires: String,
+    admin: Boolean},
     {versionKey: false
 });
 
 const followerScheme = new Schema({
-    username: String,
-    followers: [{
-        username: String,
-    }]},
+    type: 'followers',
+    _id: {type: String, default: crypto.randomUUID},
+    authorId: String,
+    items: [authorScheme]},
     {versionKey: false
 });
 
 const followingScheme = new Schema({
-    username: String,
-    followings: [{
-        username: String,
-    }]},
+    type: 'followings',
+    _id: {type: String, default: crypto.randomUUID},
+    authorId: String,
+    items: [author_scheme]},
     {versionKey: false
 });
 
 const friendScheme = new Schema({
-    username: String,
-    friends: [{
-        username: String,
-    }]},
+    type: 'friends',
+    _id: {type: String, default: crypto.randomUUID},
+    authorId: String,
+    items: [author_scheme]},
     {versionKey: false
 });
 
 const requestScheme = new Schema({
-    senderId: String,
-    receiverId: String,
-    status: String},
+    type: String,
+    _id: {type: String, default: crypto.randomUUID},
+    summary: String,
+    actor: author_scheme,
+    object: author_scheme},
     {versionKey: false
 });
 
+const Friend = database.model('Friend', friendScheme);
+const Following = database.model('Following', followingScheme);
+const Login = database.model('Login', loginScheme);
+const Author = database.model('Author', authorScheme);
+const Request = database.model('Request', requestScheme);
+const Follower = database.model('Follower', followerScheme);
+const Account = database.model('Account', accountScheme);
+const Authors = database.model('Authors', authorsScheme);
+
 module.exports = {
-    authorScheme,
-    loginScheme,
-    friendScheme,
-    followingScheme,
-    followerScheme,
-    requestScheme
+    Friend,
+    Following,
+    Login,
+    Author,
+    Request,
+    Follower,
+    Account,
+    Authors
 }

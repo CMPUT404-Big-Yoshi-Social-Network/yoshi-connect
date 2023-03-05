@@ -50,8 +50,11 @@ export default function Login() {
 
       axios(config)
       .then((response) => {
-        if ( response.data.status) {
+        if (response.data.status) {
           console.log("Debug: Token received and going to public feed.");
+          localStorage['sessionId'] = response.data.sessionId;
+
+          console.log("Debug: Going to public feed.")
           navigate('/feed');
         }
       })

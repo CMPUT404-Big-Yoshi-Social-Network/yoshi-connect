@@ -20,8 +20,8 @@ Foundation; All Rights Reserved
 */
 
 import React from "react";
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useEffect, useState } from "react";
 
 function Request(props) {
     const { senderId } = props;
@@ -34,11 +34,11 @@ function Request(props) {
             maxBodyLength: Infinity,
             url: url,
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             },
             data: {
                 sender: senderId,
-                receiver: username,
+                receiver: username.username,
                 status: 'Sender is added by Receiver'
             }
         }

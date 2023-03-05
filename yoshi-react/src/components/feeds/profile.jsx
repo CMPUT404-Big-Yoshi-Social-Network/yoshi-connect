@@ -23,7 +23,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
 import axios from 'axios';
-import Requests from './requests.jsx';
+
 function Profile() {
     const { username } = useParams();
     const url = '/server/users/' + username;
@@ -39,7 +39,31 @@ function Profile() {
 
     const navigate = useNavigate();
 
+    const checkExpiry = () => {
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: url,
+        }
+        axios
+        .get(url, config)
+        .then((response) => {
+            if (response.data.status === "Expired") {
+                console.log("Debug: Your token is expired.")
+                LogOut();
+                navigate('/');
+            }
+            else{console.log('Debug: Your token is not expired.')}
+        })
+        .catch(err => {
+            if (err.response.status === 401) {
+                console.log("Debug: Not authorized.");
+                navigate('/unauthorized'); 
+            }
+        });
+    }
     useEffect(() => {
+        checkExpiry();
         let person = null;
         const isRealProfile = () => {
             axios
@@ -231,12 +255,32 @@ function Profile() {
             });
         }
     }
+    const LogOut = () => {
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/server/feed',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+                message: 'Logging Out'
+            }
+        }
+        axios
+        .post('/server/feed', config)
+        .then((response) => {
+            localStorage['sessionId'] = "";
+            navigate("/");
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
     return (
         <div>
             You are viewing profile. Welcome to {username}'s profile!
             { personal.person ? null : exists.current ? <button type="button" id='request' onClick={() => SendRequest()}>Sent!</button> : friends.current ? <button type="button" id='request' onClick={() => SendRequest()}>Unfriend</button> : friends.current === false ? <button type="button" id='request' onClick={() => SendRequest()}>Unfollow</button> : <button type="button" id='request' onClick={() => SendRequest()}>Add Friend</button>}
-            <br></br>
-            { personal.person ? <div><Requests username={username}/></div> : null }
         </div> 
     )
 }

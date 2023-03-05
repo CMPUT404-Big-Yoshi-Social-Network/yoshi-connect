@@ -29,26 +29,25 @@ const uidgen = new UIDGenerator();
 // Fetching database 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const database = mongoose.connection;
 
 // Fetching schemas
-const { authorScheme, loginScheme } = require('../db_schema/authorSchema.js');
-const Login = database.model('Login', loginScheme);
-const Author = database.model('Author', authorScheme);
+const { Login, Author, Account } = require('../db_schema/authorSchema.js');
 
-async function checkUsername(req, res) {
-    await Author.findOne({username: req.body.username}, function(err, author){
-        if(author){
-            console.log("Debug: Username is taken, Authentication failed.");
-            return res.json({
-                status: false
-            });
-        } else {
-            return res.json({
-                status: true
-            });
-        }
-    }).clone()
+async function checkDisplayName(req) {
+    const author = await Author.findOne({displayName: req.body.displayName});
+
+    if (author == undefined) { return "Not in use"; }
+
+    if (author.displayName == req.body.displayName) {
+        console.log("Debug: Username is taken, Authentication failed.");
+        return res.json({
+            status: false
+        });
+    } else {
+        return res.json({
+            status: true
+        });
+    }
 }
 
 async function removeLogin(req, res) {
@@ -59,34 +58,34 @@ async function removeLogin(req, res) {
             console.log("Debug: Login token deleted.");
         })
     }
-    return res.json({
-        status: "Expired"
-    });
+    return res.json({ status: "Expired" });
 }
 
 async function checkExpiry(req) {
-    if(req.cookies == undefined){ return "Expired"; }
+    if(req.cookies == undefined) { return true; }
 
     if (req.cookies["token"] != undefined) {
-        console.log('Debug: Checking the Expiry Date of Token.');
+        console.log('Debug: Checking the Expiry Date of Token')
+
         const login = await Login.findOne({token: req.cookies["token"]}).clone();
-        if(login == null) { return "Expired"; }
+        if(login == null) { return true; }
 
         let expiresAt = new Date(login.expires);
         let current = new Date();
-        if (expiresAt.getTime() < current.getTime()) { return "Expired" } else { return "Not Expired" }
+        if (expiresAt.getTime() < current.getTime()) { return false; } 
+        else { return true; }
+    } else {
+        return false;
     }
-    return "Expired"
 }
 
 async function sendCheckExpiry(req, res){
     let expiry = await checkExpiry(req);
-    if (expiry == "Not Expired") {
-        return res.json({
-            status: "Not Expired"
-        });
+    if (!expiry) {
+        return res.json({ status: "Not Expired" });
+    } else { 
+        return res.sendStatus(401); 
     }
-    else { return res.sendStatus(401); }
 }
 
 async function checkAdmin(req, res) {
@@ -96,35 +95,35 @@ async function checkAdmin(req, res) {
         if(login_session == null) { return false; }
         if (login_session.admin === false) { return false; }
         if (login_session.admin === true) { return true; }
+    } else {
+        return false;
     }
-    return false;
 }
 
 async function authAuthor(req, res) {
-    const username = req.body.username;
+    const displayName = req.body.displayName;
     const password = req.body.password;
 
-    if (!username || !password) {
-        console.log("Debug: Username or Password not given, Authentication failed.");
-        return res.json({
-            status: false
-        });
-    }
-
-    const author = await Author.findOne({username: req.body.username});
-
-    if(!author){
-        console.log("Debug: Author does not exist, Authentication failed.");
+    if (!displayName || !password) {
+        console.log("Debug: displayName or Password not given, Authentication failed");
         return res.json({ status: false });
     }
 
-    console.log("Server's model: ", req.author);
-    req.author = author;
+    const account = await Account.findOne({displayName: req.body.displayName});
+    const author = await Author.findOne({displayName: req.body.displayName});
 
-    const p_hashed_password = req.author.password;
-    if(p_hashed_password == crypto_js.SHA256(password)){
-        console.log("Debug: Authentication successful.");
-        if(req.cookies["token"] != null) {
+    if (!account || !author) {
+        console.log("Debug: Author does not exist, Authentication failed");
+        return res.json({ status: false });
+    } else {
+        req.account = account;
+        req.author = author;
+    }
+
+    const hashedPassword = req.account.password;
+    if(hashedPassword == crypto_js.SHA256(password)){
+        console.log("Debug: Authentication successful");
+        if (req.cookies["token"] != null) {
             await Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
                 if (err) throw err;
                 console.log("Debug: Login token deleted.");
@@ -134,45 +133,38 @@ async function authAuthor(req, res) {
         let curr = new Date();
         let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
         let token = uidgen.generateSync();
-
         let login = new Login({
+            type:'login',
             authorId: req.author._id,
-            username: req.body.username,
             token: token,
-            admin: req.author.admin,
-            expires: expiresAt
+            expires: expiresAt,
+            admin: req.account.admin
         });
 
         if (req.route.path == '/admin') {
-            if (!req.author.admin) {
+            if (!req.account.admin) {
                 console.log("Debug: You are not an admin. Your login will not be cached.")
-                return res.json({
-                    status: false
-                }); 
+                return res.json({ status: false }); 
             }
         }
 
-        login_saved = await login.save();
-        if(login == login_saved){
-            console.log("Debug: Login cached.")
+        savedLogin = await login.save();
+        if(login == savedLogin){
+            console.log("Debug: Login Cached.")
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
-            return res.json({
-                status: true
-            });
+            return res.json({ status: true });
+        } else {
+            return res.json({ status: false });
         }
-        return res.json({
-            status: false
-        });
+    } else {
+        return res.json({ status: false });
     }
-    return res.json({
-        status: false
-    });
 }
 
 module.exports = {
     authAuthor,
     removeLogin,
-    checkUsername,
+    checkDisplayName,
     checkExpiry,
     sendCheckExpiry,
     checkAdmin

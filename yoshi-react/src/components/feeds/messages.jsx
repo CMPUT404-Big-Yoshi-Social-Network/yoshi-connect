@@ -19,8 +19,60 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-import React from "react";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import React, { useEffect } from "react";
 function Messages() {
+    const navigate = useNavigate();
+    const url = '/server/messages';
+    const checkExpiry = () => {
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: url,
+        }
+        axios
+        .get(url, config)
+        .then((response) => {
+            if (response.data.status === "Expired") {
+                console.log("Debug: Your token is expired.")
+                LogOut();
+                navigate('/');
+            }
+            else{console.log('Debug: Your token is not expired.')}
+        })
+        .catch(err => {
+            if (err.response.status === 401) {
+                console.log("Debug: Not authorized.");
+                navigate('/unauthorized'); // 401 Not Found
+            }
+        });
+    }
+    useEffect(() => {
+       checkExpiry();
+    });
+    const LogOut = () => {
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: url,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: {
+                message: 'Logging Out'
+            }
+        }
+        axios
+        .post(url, config)
+        .then((response) => {
+            localStorage['sessionId'] = "";
+            navigate("/");
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
     return (
         <div>
             Viewing your messages.

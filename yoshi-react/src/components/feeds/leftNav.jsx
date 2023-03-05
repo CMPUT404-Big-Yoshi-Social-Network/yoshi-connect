@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';

@@ -1,11 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TopNav from '../feeds/topNav';
 import LeftNavBar from '../feeds/leftNav.jsx';
 import RightNavBar from '../feeds/rightNav.jsx';
+import { Card, Form, Button } from 'react-bootstrap';
 import './settings.css';
+
 function Settings() {
     const navigate = useNavigate();
+    const [data, setData] = useState({
+        username: '',
+        email: '',
+        password: ''
+      })
     const loggedIn = () => {
         const token = localStorage.getItem('token');
         if (token === null) {
@@ -55,7 +62,7 @@ function Settings() {
                             </Form.Group>
                             <br></br>
                             <Button href='/' variant="warning" type="submit" className='signup-button'>Back</Button>
-                            <Button onClick={getAccount} variant="warning" type="submit" className='signup-button'>Next</Button>
+                            {/* <Button onClick={getAccount} variant="warning" type="submit" className='signup-button'>Next</Button> */}
                         </Form>
                     </Card.Body>
                 </div>

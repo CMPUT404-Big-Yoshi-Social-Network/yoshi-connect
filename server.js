@@ -37,7 +37,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts } = require('./routes/author');
+const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility, fetchLikers } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -363,6 +363,20 @@ app.post('/server/following', async (req, res) => {
 app.post('/server/public/posts', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
   await fetchPublicPosts(req, res);
+})
+
+app.post('/server/settings', async (req, res) => {
+  console.log('Debug: Updating author account details');
+  if (req.body.data.status === 'Get Author') {
+    await getCurrentAuthorAccountDetails(req, res);
+  }
+})
+
+app.put('/server/settings', async (req, res) => {
+  console.log('Debug: Updating author account details');
+  if (req.body.data.status === 'Modify an Author') {
+    await updateAuthor(req, res);
+  }
 })
 
 app.get('/',(req, res) => {

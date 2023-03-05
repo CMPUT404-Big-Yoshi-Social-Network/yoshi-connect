@@ -152,6 +152,15 @@ async function getCurrentAuthorUsername(req, res){
     }).clone();
 }
 
+async function getCurrentAuthorAccountDetails(req, res) {
+    const login = await Login.findOne({token: req.cookies.token})
+    const author = await Author.findOne({_id: login.authorId})
+    return res.json({
+        username: author.username,
+        email: author.email
+    })
+}
+
 async function fetchMyPosts(req, res) {
     console.log('Debug: Getting posts');
     let author = null
@@ -178,10 +187,34 @@ async function fetchMyPosts(req, res) {
     }
 }
 
+async function updateAuthor(req, res){
+    const login = await Login.findOne({token: req.cookies.token})
+    const author = await Author.findOne({_id: login.authorId}).clone();
+
+    if(author == undefined){ 
+        console.log('Debug: Could not find author.')
+        return res.sendStatus(404); 
+    }
+
+    if (author.username != req.body.data.newUsername) {
+        console.log('Debug: Checking if username is taken.')
+        existing_author = await Author.findOne({username: req.body.data.newUsername});
+        if (existing_author) { return res.sendStatus(400); }
+    }
+
+    console.log('Debug: Found the author.');
+    author.username = req.body.data.newUsername;
+    author.password = crypto_js.SHA256(req.body.data.newPassword);
+    author.email = req.body.data.newEmail;
+    author.save();
+}
+
 module.exports={
     register_author,
     get_profile,
     getCurrentAuthor,
     getCurrentAuthorUsername,
-    fetchMyPosts
+    fetchMyPosts,
+    getCurrentAuthorAccountDetails,
+    updateAuthor
 }

@@ -9,12 +9,12 @@ import axios from 'axios';
 
 function Settings() {
     const navigate = useNavigate();
-    const [data, setData] = useState({
-        username: '',
-        email: '',
-        password: ''
-      })
-      useEffect(() => {
+    const [newAuthor, setNewAuthor] = useState({
+        newUsername: '',
+        newPassword: '',
+        newEmail: ''
+    })
+    useEffect(() => {
         const checkExpiry = () => {
             let config = {
                 method: 'get',
@@ -40,6 +40,31 @@ function Settings() {
         }
         checkExpiry();
     })
+    useEffect(() => {
+        const getAuthor = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/settings/',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    status: 'Get Author'
+                }
+            }
+            axios
+            .post('/server/settings/', config)
+            .then((response) => {
+                setNewAuthor({
+                    newUsername: response.data.username,
+                    newEmail: response.data.email
+                })
+            })
+            .catch(err => { });
+        }
+        getAuthor();
+    }, [])
     const LogOut = () => {
         let config = {
             method: 'post',
@@ -62,6 +87,33 @@ function Settings() {
           console.error(err);
         });
     }
+    const modify = (e) => {
+        e.preventDefault();
+        console.log('Debug: Attempting to modify an author.');
+        let config = {
+            method: 'put',
+            maxBodyLength: Infinity,
+            url: '/server/settings',
+            headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            data: {
+                status: 'Modify an Author',
+                newUsername: newAuthor.newUsername,
+                newPassword: newAuthor.newPassword,
+                newEmail: newAuthor.newEmail
+            }
+        }
+
+        axios
+        .put('/server/settings', config)
+        .then((response) => {
+            console.log('Debug: Author has been updated!')
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    }
     return (
         <div className='settings'>
             <TopNav/>
@@ -81,26 +133,29 @@ function Settings() {
                                 <Form.Control
                                     //href={`/users/${username}`}>{username} 
                                     name="username"
-                                    onChange={(e) => {setData({...data, username: e.target.value})}}
+                                    value={newAuthor.newUsername}
+                                    autoComplete="off"
+                                    onChange={(e) => {setNewAuthor({...newAuthor, newUsername: e.target.value})}}
                                     type="text" className='account-details-box'/>
                         </Form.Group>
                         <Form.Group className="account-details-a">
                             <p>Email</p>
                                 <Form.Control
                                     name="email"
-                                    onChange={(e) => {setData({...data, email: e.target.value})}}
+                                    value={newAuthor.newEmail}
+                                    onChange={(e) => {setNewAuthor({...newAuthor, newEmail: e.target.value})}}
                                     type="email" className='account-details-box'/>
                             </Form.Group>
                             <Form.Group className="account-details-a">
                                 <p>Password</p>
                                 <Form.Control
                                     name="password"
-                                    onChange={(e) => {setData({...data, password: e.target.value})}}
+                                    onChange={(e) => {setNewAuthor({...newAuthor, newPassword: e.target.value})}}
                                     type="password" className='account-details-box'/>
                             </Form.Group>
                             <br></br>
                             <Button href='/' variant="warning" type="submit" className='signup-button'>Back</Button>
-                            {/* <Button onClick={getAccount} variant="warning" type="submit" className='signup-button'>Next</Button> */}
+                            <Button onClick={modify} variant="warning" type="submit" className='signup-button'>Next</Button>
                         </Form>
                     </Card.Body>
                 </div>

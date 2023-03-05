@@ -1,6 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import renderer from "react-test-renderer";
-import AdminDashboard from "../../../admin/adminDashboard";
+import { render } from "@testing-library/react";
+import AdminDashboard from "../../../admin/adminDashboard.jsx";
 import "@testing-library/jest-dom";
 
 //test block

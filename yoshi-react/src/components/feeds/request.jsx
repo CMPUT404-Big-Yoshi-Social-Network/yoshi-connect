@@ -21,7 +21,7 @@ Foundation; All Rights Reserved
 
 import React from "react";
 import axios from 'axios';
-import { useEffect, useState } from "react";
+import { useParams } from 'react-router-dom';
 
 function Request(props) {
     const { senderId } = props;

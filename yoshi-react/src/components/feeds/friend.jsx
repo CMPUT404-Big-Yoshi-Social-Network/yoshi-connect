@@ -36,7 +36,7 @@ function FriendFeed() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: url,
+            url: '/feed',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },

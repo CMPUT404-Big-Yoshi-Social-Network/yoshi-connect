@@ -188,7 +188,6 @@ async function create_post(req, res, postId){
             page: 0,
             size: 0,
             post: post._id, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
-            _id: '', // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
             comments: []
         });
         new_post.commentsSrc = commentsSrc;
@@ -227,7 +226,6 @@ async function create_post(req, res, postId){
             page: 0,
             size: 0,
             post: post._id, // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
-            _id: '', // "http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
             comments: []
         });
         new_post.commentsSrc = commentsSrc;

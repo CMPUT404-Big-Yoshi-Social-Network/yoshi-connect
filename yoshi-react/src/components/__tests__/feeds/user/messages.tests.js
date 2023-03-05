@@ -1,4 +1,4 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import renderer from "react-test-renderer";
-// import messages from "../../feeds/";
+import Messages from "../../../feeds/messages/messages";
 import "@testing-library/jest-dom";

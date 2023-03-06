@@ -9,6 +9,10 @@
 .topAdminNav{
     display: inline-block;
     font-family: 'Uni Neue', sans-serif;
+    position: fixed;
+    background-image: radial-gradient(circle, #050125, #090D0E);
+    height: 8%;
+    width: 100%;
 }
 
 .topAdminLogo {

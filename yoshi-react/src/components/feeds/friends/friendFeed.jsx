@@ -123,14 +123,13 @@ function FriendFeed() {
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    <h1>Friends Feed</h1>
+                    <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>
                 </div>
             </div>
-            <h3>Friends Posts</h3>
-            <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
+
         </div>
     )
 }

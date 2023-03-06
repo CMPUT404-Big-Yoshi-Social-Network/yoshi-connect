@@ -27,6 +27,11 @@ const { Following, Login } = require('../dbSchema/authorScheme.js');
 const { PostHistory, PublicPost } = require('../dbSchema/postScheme.js');
 
 async function fetchFollowing(req, res) {
+    /**
+     * Description: Finds an author's followers in the database 
+     * Returns: Status 404 if the author is not logged in
+     *          The author's followers
+     */
     const login = await Login.findOne({token: req.cookies.token}).clone();
     if(!login){
         return res.sendStatus(404);
@@ -50,8 +55,13 @@ async function fetchFollowing(req, res) {
 }
 
 async function fetchPublicPosts(req, res) {
-    
+    /**
+     * Description: Retrives the public/following posts from the database 
+     * Returns: Status 404 if the author is not logged in
+     *          The public posts and the author's following posts
+     */    
     console.log('Debug: Getting public/following posts');
+
     const login = await Login.findOne({token: req.cookies.token}).clone();
     if(!login){
         return res.sendStatus(404);

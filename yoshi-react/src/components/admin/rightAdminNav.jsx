@@ -30,8 +30,11 @@ import { Container, Nav, Navbar, Button } from 'react-bootstrap';
 import './rightAdminNav.css';
 
 function RightAdminNavBar() {
+    /**
+     * Description: Represents the right navigation bar
+     * Returns: N/A
+     */
     //const { username } = useParams();
-
     return (
         <Navbar className="right-admin-column">
             <Container>

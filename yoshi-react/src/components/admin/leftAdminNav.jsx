@@ -33,6 +33,10 @@ import React from 'react';
 import './leftAdminNav.css';
 
 function LeftAdminNavBar() {
+    /**
+     * Description: Represents the left navigation bar
+     * Returns: N/A
+     */
     return (
         <div className='left-admin-column'>
         </div>

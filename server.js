@@ -378,12 +378,9 @@ UPDATED API
  *    description: Get a list of authors, paginated. by default it's page 1 with size 1. Currently pages are broken
  *    responses:
  *      200:
- *        description: a list of authors
+ *        description: A list of authors
  */
 app.get('/api/authors', async (req, res) => {
-  /**
-   * Description: Gets Author paginated given a query of pages and how big each page is 
-   */
   const page = req.query.page;
   const size = req.query.size;
   if(page == undefined)
@@ -398,10 +395,18 @@ app.get('/api/authors', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId:
+ *  get:
+ *    description: Fetchs a single Author object from the database and sends it back as a JSON object
+ *    responses:
+ *      404:
+ *        description: Returns Status 404 when an Author does not exist 
+ *      500:
+ *        description: Returns Status 500 when the server is unable to retrieve the Author from the database
+ */
 app.get('/api/authors/:authorId', async (req, res) => {
-  /**
-   * Description: GET request for a single Author
-   */
   if(req.params.authorId == undefined)
     return res.sendStatus(404);
 
@@ -427,6 +432,19 @@ app.get('/api/authors/:authorId', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId:
+ *  post:
+ *    description: Gets the author's cookies from the database and sends the status
+ *    responses:
+ *      404:
+ *        description: Returns Status 404 when the cookies don't exist
+ *      400:
+ *        description: Returns Status 400 when the body type doesn't match the author 
+ *      400:
+ *        description: Returns Status 400 when the author ID, host, nor username are valid 
+ */
 app.post('/api/authors/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);
@@ -443,6 +461,15 @@ app.post('/api/authors/:authorId', async (req, res) => {
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/followers:
+ *  get:
+ *    description: Gets the author's followers and friends as objects from the database and sends it back as a JSON object
+ *    responses:
+ *      404:
+ *        description: Returns Status 404 when there are no existing followers or friends
+ */
 app.get('/api/authors/:authorId/followers', async (req, res) => {
   /**
    * Description: Getting followers of current author 
@@ -507,6 +534,17 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/followers/:foreignAuthorId:
+ *  get:
+ *    description: Gets the author's followers' and friends' profiles as objects from the database and sends it back as a JSON object
+ *    responses:
+ *      404:
+ *        description: Returns Status 404 when the follower or friend object is not found
+ *      404:
+ *        description: Returns Status 404 when the profile doesn't exist
+ */
 app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -565,6 +603,17 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
   return res.sendStatus(404);
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/followers/:foreignAuthorId:
+ *  put:
+ *    description: Adds a Follower (Foreign Author) to the Author's Follower List in the database
+ *    responses:
+ *      401:
+ *        description: Returns Status 401 when the adding the Follower is not authorized 
+ *      400:
+ *        description: Returns Status 400 when server is unable to process the user's request 
+ */
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
 
   const authorId = req.params.authorId;
@@ -578,6 +627,17 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
     return res.sendStatus(400);
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/followers/:foreignAuthorId:
+ *  delete:
+ *    description: Deletes a Follower (Foreign Author) to Author 
+ *    responses:
+ *      400:
+ *        description: If the request has no type or if the type is not a follow request
+ *      200:
+ *        description: If the Follower (Foreign Author) was successfully deleted 
+ */
 app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   if(req.body.type == undefined || req.body.type != "follower")
     return res.sendStatus(400)
@@ -590,6 +650,15 @@ app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res)
   return res.sendStatus(statusCode);
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/requests/:foreignAuthorId:
+ *  put:
+ *    description: Saves the Request for the Foreign Author from the Author into the database 
+ *    responses:
+ *      200:
+ *        description: Returns the JSON object representing the Request  
+ */
 app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -604,6 +673,15 @@ app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => 
   })
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/requests/:foreignAuthorId:
+ *  delete:
+ *    description: Deletes a Request made by the Author  to Foreign Author
+ *    responses:
+ *     200:
+ *        description: Returns the JSON object representing the Request 
+ */
 app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -618,6 +696,19 @@ app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) 
   })
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId:
+ *  get:
+ *    description: Gets the a specific Post from the database made by a specific Author 
+ *    responses:
+ *      200:
+ *        description: Returns the Post as a JSON object
+ *      404:
+ *        description: When the Post or Author is not found 
+ *      500: 
+ *        description: When the server is unable to get the Post
+ */
 app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
   if(req.params.authorId == undefined) return res.sendStatus(404);
   const authorId = req.params.authorId;
@@ -647,6 +738,17 @@ app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId:
+ *  post:
+ *    description: Updates an existing Post made by a specific Author 
+ *    responses:
+ *      200:
+ *        description: Returns Status 200 when the server successfully updated the Post
+ *      404:
+ *        description: Returns Status 404 when the server was unable to find any Post related to the given URL
+ */
 app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -660,6 +762,19 @@ app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId:
+ *  delete:
+ *    description: Deletes a specific Post made by a specific Author
+ *    responses:
+ *      200:
+ *        description: Returns Status 200 if the server successfully deleted the Post
+ *      404:
+ *        description: Returns Status 404 if the server was unable to find either the Author or the Author's Post
+ *      500:
+ *        description: Returns Status 500 if the server was unable to delete the Post
+ */
 app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -675,6 +790,19 @@ app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId:
+ *  put:
+ *    description: Creates a Post object made by a specific Author 
+ *    responses:
+ *      200:
+ *        description: Returns Status 200 if the Post was able to be stored into the database 
+ *      404:
+ *        description: Returns Status 404 if the Author or Post does not exist 
+ *      500: 
+ *        description: Returns Status 500 if the server was unable to create and save the Post
+ */
 app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -690,6 +818,15 @@ app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }  
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts:
+ *  get:
+ *    description: Fetches the posts of a specific Author 
+ *    responses:
+ *      200:
+ *        description: Returns a list of Posts by a specific Author
+ */
 app.get('/api/authors/:authorId/posts', async (req, res) => {
   const authorId = req.params.authorId;
   const page = req.query.page;
@@ -704,6 +841,19 @@ app.get('/api/authors/:authorId/posts', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts:
+ *  post:
+ *    description: Creates a Post given no PostId (i.e., needs to be generated)
+ *    responses:
+ *      200:
+ *        description: Returns Status 200 if the Post was successfully created and saved into the database
+ *      404:
+ *        description: Returns Status 404 if the Author does not exist 
+ *      500 
+ *        description: Returns Status 500 if the server was unable to store or create the Post 
+ */
 app.post('/api/authors/:authorId/posts', async (req, res) => {
   const authorId = req.params.authorId;
 
@@ -718,6 +868,15 @@ app.post('/api/authors/:authorId/posts', async (req, res) => {
   }  
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId/comments:
+ *  get:
+ *    description: Gets the comments related to a specific Post made by a specific Author (paginated)
+ *    responses:
+ *      200:
+ *        description: Returns Status 200 when the comments have been successfully found (i.e., returns list of comments)
+ */
 app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -734,6 +893,15 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
     })
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId/comments:
+ *  post:
+ *    description: Creates a comment for a specific Post made by a specific Author
+ *    responses:
+ *      200:
+ *        description: Returns 200 when the comment was successfully made (i.e., returns the comment)
+ */
 app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -750,6 +918,16 @@ app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
     }) 
 })
 
+
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId/likes:
+ *  get:
+ *    description: Fetches the likes related to a specific Post made by a specific Author (paginated)
+ *    responses:
+ *      200:
+ *        description: Returns 200 if the likes were successfully fetched (i.e., return the likes )
+ */
 app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;

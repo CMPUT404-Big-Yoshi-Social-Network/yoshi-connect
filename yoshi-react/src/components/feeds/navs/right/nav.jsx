@@ -34,6 +34,10 @@ import Navbar from 'react-bootstrap/Navbar';
 import './nav.css';
 
 function RightNavBar() {
+    /**
+     * Description: Represents the right navigation bar
+     * Returns: N/A
+     */
     const [username, setUsername] = useState();
 
     const getUsername = () => {

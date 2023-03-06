@@ -37,9 +37,9 @@ function Welcome() {
             <Container className='welcome-hello'>
                 Welcome to Yoshi Connect.
             </Container>
-            <div data-testid="signup">
-                <Button className='welcome-button' href='/signup'>Sign Up</Button>
-                <Button className='welcome-button' href='/login'>Log In</Button>
+            <div>
+                <Button className='welcome-button' href='/signup' data-testid="signup">Sign Up</Button>
+                <Button className='welcome-button' href='/login' data-testid="login">Log In</Button>
             </div>
             
         </div>

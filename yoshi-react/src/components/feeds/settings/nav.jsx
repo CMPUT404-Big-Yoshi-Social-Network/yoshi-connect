@@ -31,8 +31,19 @@ import Navbar from 'react-bootstrap/Navbar';
 import './nav.css';
 
 function SettingsNav() {
+    /**
+     * Description: Represents the left navigation bar
+     * Functions:
+     *     - LogOut():
+     * Returns: N/A
+     */
     const navigate = useNavigate();
     const LogOut = () => {
+        /**
+         * Description: Logs the user out
+         * Request: POST
+         * Returns: N/A
+         */
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

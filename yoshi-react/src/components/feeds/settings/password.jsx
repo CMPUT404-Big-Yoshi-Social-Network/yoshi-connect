@@ -32,8 +32,18 @@ import RightNavBar from '../feeds/rightNav.jsx';
 import './password.css';
 
 function PasswordChange() {
+    /**
+     * Description: Represents the change password page in settings
+     * Functions:
+     *     - useEffect(): Before rendering, checks if the author is logged in
+     * Returns: N/A
+     */
     const navigate = useNavigate();
     const checkForAuthor = () => {
+        /**
+         * Description: Checks if the author is logged in to authorize routing
+         * Returns: N/A
+         */
         const token = localStorage.getItem('token');
         if (token === null) {
             console.log("Debug: You are not logged in.")

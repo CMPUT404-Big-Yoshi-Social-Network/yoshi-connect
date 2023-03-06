@@ -35,6 +35,19 @@ import Posts from '../../posts/posts.jsx';
 import './profile.css';
 
 function Profile() {
+    /**
+     * Description: Represents an author's profile 
+     * Functions:
+     *     - useEffect(): Checks if the author is logged in before redirecting to the feeds route 
+     *     - useEffect(): Gets and checks for the existing account details
+     *     - getId(): Gets the author's ID and sets their viewer ID for posts
+     *     - getPosts(): Get's the post details
+     *     - useEffect(): Checks if the viewer has already sent a friend request
+     *     - useEffect(): Checks if the author is a follower or a friend
+     *     - SendRequest(): Handles sending and deleting a friend request, unfriending, and unfollowing
+     *     - LogOut(): Logs the author out  
+     * Returns: N/A
+     */
     const { username } = useParams();
     const [personal, setPersonal] = useState({
         person: null,
@@ -47,6 +60,11 @@ function Profile() {
     const navigate = useNavigate();
     let exists = useRef(null);
     useEffect(() => {
+        /**
+         * Description: Before render, checks if the author is logged in to redirect to the main feed
+         * Request: GET
+         * Returns: N/A
+         */
         const checkExpiry = () => {
             let config = {
                 method: 'get',
@@ -73,11 +91,21 @@ function Profile() {
         checkExpiry();
     })
     useEffect(() => {
+        /**
+         * Description: Get the account details of the author
+         * Request: GET
+         * Returns: N/A
+         */
         let person = '';
         let viewer = '';
         let viewed = '';
         console.log('Debug: Getting account details')
         const isRealProfile = () => {
+            /**
+             * Description: Checks if the author account exists
+             * Request: GET
+             * Returns: N/A
+             */
             axios
             .get('/server/users/' + username)
             .then((response) => {
@@ -103,6 +131,11 @@ function Profile() {
         }
         isRealProfile();
         const getId = () => {
+            /**
+             * Description: Gets the author's ID and sets their viewer ID for posts
+             * Request: POST
+             * Returns: N/A
+             */
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
@@ -126,6 +159,11 @@ function Profile() {
         getId();
         console.log('Debug: Getting posts')
         const getPosts = (person, viewer, viewed) => {
+            /**
+             * Description: Checks if the author account exists
+             * Request: GET
+             * Returns: N/A
+             */
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
@@ -150,6 +188,11 @@ function Profile() {
         }
     }, [navigate, username])
     useEffect(() => {
+        /**
+         * Description: Checks if the viewer has already sent a friend request
+         * Request: POST
+         * Returns: N/A
+         */
         if (!personal.person) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
@@ -182,6 +225,11 @@ function Profile() {
         }
     }, [username, exists, personal]);
     useEffect(() => {
+        /**
+         * Description: Checks if the author is a follower or a friend
+         * Request: POST
+         * Returns: N/A
+         */
         if (!exists.current && !personal.person) {
             console.log('See if they are followers or friends.');
             let config = {
@@ -214,6 +262,11 @@ function Profile() {
         }
     }, [username, personal, exists, setRequestButton, requestButton])
     const SendRequest = () => {
+        /**
+         * Description: Handles sending and deleting a friend request, unfriending, and unfollowing
+         * Request: PUT, DELETE
+         * Returns: N/A
+         */
         if (requestButton === "Add") {
             setRequestButton('Sent');
             let config = {
@@ -315,6 +368,11 @@ function Profile() {
         }
     }
     const LogOut = () => {
+        /**
+         * Description: Logs the author out 
+         * Request: POST
+         * Returns: N/A
+         */
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

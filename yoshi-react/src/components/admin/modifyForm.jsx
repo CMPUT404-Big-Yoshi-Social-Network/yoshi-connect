@@ -24,6 +24,12 @@ import { useState } from 'react';
 import axios from 'axios';
 
 function ModifyAuthor(props) {
+    /**
+     * Description: Represents an aupdated author 
+     * Functions:
+     *     - modify(): Updates the author in the database
+     * Returns: N/A
+     */
     const [data, setData] = useState({
         newUsername: props.username,
         newPassword: props.password,
@@ -35,6 +41,11 @@ function ModifyAuthor(props) {
     const url = '/server/admin/dashboard';
 
     const modify = (e) => {
+        /**
+         * Description: Updates the author in the database
+         * Request: PUT
+         * Returns: N/A
+         */
         e.preventDefault();
         console.log('Debug: Attempting to modify an author.');
         let config = {

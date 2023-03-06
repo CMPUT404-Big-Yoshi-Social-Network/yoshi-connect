@@ -26,6 +26,10 @@ import React from "react";
 import Post from './post.jsx';
 
 function Posts({viewerId, posts}) { 
+    /**
+     * Description: Represents the post 
+     * Returns: N/A
+     */
     return (
         <div>
             { (posts === undefined) ? null : 

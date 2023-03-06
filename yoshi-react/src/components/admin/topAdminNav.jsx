@@ -29,6 +29,10 @@ import Navbar from 'react-bootstrap/Navbar';
 import './topAdminNav.css'
 
 function TopAdminNav() {
+    /**
+     * Description: Represents the top navigation bar
+     * Returns: N/A
+     */
     return (
         // TODO: Need to Add Search functionality and Notification Functionality
         // Might need to query notifications and use map (refer to leftNav.jsx

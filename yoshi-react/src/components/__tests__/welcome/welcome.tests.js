@@ -33,3 +33,10 @@ test("on inital render, the sign up button is there", async () => {
     fireEvent.click(signupButton);
     expect(signupButton).toBeEnabled();
 });
+
+test("on inital render, the login button is there", async () => {
+    render(<BrowserRouter><Welcome/></BrowserRouter>);
+    const loginButton = screen.getByTestId("login");
+    fireEvent.click(loginButton);
+    expect(loginButton).toBeEnabled();
+});

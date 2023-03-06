@@ -25,11 +25,24 @@ import axios from 'axios';
 import { useEffect, useState } from "react";
 
 function Request(props) {
+    /**
+     * Description: Represents the request
+     * Functions:
+     *     - useEffect(): Before render, checks the author ID and sends the username
+     *     - addRequest(): Adds the authour if the request is accpeted
+     *     - rejectRequest(): Deletes a request if it is rejected by the author 
+     * Returns: N/A
+     */
     const { senderId } = props;
     const [username, setUsername] = useState({
         username: ''
     })
     useEffect(() => {
+        /**
+         * Description: Before render, checks the author ID and sends the username
+         * Request: POST
+         * Returns: N/A
+         */
         let config = {
              method: 'post',
              maxBodyLength: Infinity,
@@ -51,6 +64,11 @@ function Request(props) {
          .catch(err => { });
      }, []);
     const addRequest = () => {
+        /**
+         * Description: Adds the authour if the request is accpeted
+         * Request: PUT
+         * Returns: N/A
+         */
         console.log('Debug: Adding Author')
         let config = {
             method: 'put',
@@ -74,6 +92,11 @@ function Request(props) {
         });
     }
     const rejectRequest = () => {
+        /**
+         * Description: Deletes a request if it is rejected by the author 
+         * Request: DELETE
+         * Returns: N/A
+         */
         console.log('Debug: Rejecting Author')
         let config = {
             method: 'delete',

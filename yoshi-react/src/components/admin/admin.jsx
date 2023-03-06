@@ -29,6 +29,12 @@ import { Button } from 'react-bootstrap';
 import '../login/login.css';
 
 export default function AdminLogin() { 
+    /**
+     * Description: Represents an admin 
+     * Functions:
+     *     - getAdmin(): Varifies admin and redirects to the admin dashboard
+     * Returns: N/A
+     */
     const url = '/server/admin';
     const navigate = useNavigate();
     const [data, setData] = useState({
@@ -37,6 +43,10 @@ export default function AdminLogin() {
     })
 
     const getAdmin = (e) => {
+      /**
+       * Description: Varifies admin and redirects to the admin dashboard
+       * Returns: N/A
+       */
       console.log('Debug: Getting admin')
       e.preventDefault()
 

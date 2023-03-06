@@ -375,13 +375,25 @@ app.put('/server/settings', async (req, res) => {
 START OF NEW API STUFF VERY IMPORTANT DO NOT DELETE
 
 */
-
+/**
+ * @openapi
+ * /api/authors:
+ *  get:
+ *    description: Get a list of authors, paginated. by default it's page 1 with size 1. Currently pages are broken
+ *    responses:
+ *      200:
+ *        description: a list of authors
+ */
 app.get('/api/authors', async (req, res) => {
   /**
    * Description: Gets Author paginated given a query of pages and how big each page is 
    */
   const page = req.query.page;
   const size = req.query.size;
+  if(page == undefined)
+    page = 1;
+  if(size == undefined)
+    size = 5;
   const sanitizedAuthors = await getAuthors(page, size);
 
   return res.json({

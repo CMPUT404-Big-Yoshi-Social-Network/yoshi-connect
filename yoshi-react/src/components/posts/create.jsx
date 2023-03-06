@@ -128,7 +128,7 @@ function CreatePost() {
          * Returns: N/A
          */
         const formData = new FormData();
-        const preview = document.querySelector("img");
+        const preview = document.querySelector("img[src=''");
         const file = document.querySelector("input[type=file]").files[0];
 
         formData.append("file", file);

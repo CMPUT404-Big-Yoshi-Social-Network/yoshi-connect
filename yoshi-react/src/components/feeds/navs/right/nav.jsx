@@ -18,7 +18,7 @@ function RightNavBar() {
             setUsername(response.data.username)            //console.log('Username:', username);
         })
         .catch(err => {
-            console.log(err);
+            setUsername('');
         });
     }
     

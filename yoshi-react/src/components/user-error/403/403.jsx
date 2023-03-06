@@ -19,11 +19,20 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React from 'react';
+
+// User Interface
 import { Image } from 'react-bootstrap'
+
+// Styling
 import './403.css'
 
 function UserForbidden() {
+    /**
+     * Description: Represents a User Forbidden Error (Status 403)
+     * Returns: N/A
+     */
     return (
         <div className="sc403">
             <h1>403</h1>

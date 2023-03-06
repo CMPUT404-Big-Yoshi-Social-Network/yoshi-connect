@@ -19,19 +19,28 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-import { Image } from 'react-bootstrap'
-import React from 'react';
-import './401.css'
+// User Interface
+import { Image } from 'react-bootstrap';
 
-function UserUnauthorized() {
+// Functionality
+import React from 'react';
+
+// Styling
+import './400.css';
+
+function BadRequest() {
+    /**
+     * Description: Represents a Bad Request Error (Status 400) 
+     * Returns: N/A
+     */
     return (
-        <div className="sc401">
-            <h1>401</h1>
-            <h2>Your authorization failed</h2>
-            <h3>UNAUTHORIZED</h3>
-            <Image src='/images/status_code_401.png'/>
+        <div className="sc400">
+            <h1>400</h1>
+            <h2>Your request resulted in an error</h2>
+            <h3>BAD REQUEST</h3>
+            <Image src='/images/status_code_400.png'/>
         </div>
     )
 }
 
-export default UserUnauthorized;
+export default BadRequest;

@@ -25,7 +25,7 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { PostHistory, Post, Like, Comment, PublicPost } = require('../dbSchema/postScheme.js');
-const { Friend } = require('../dbSchema/authorScheme.js');
+const { Friend, Author } = require('../dbSchema/authorScheme.js');
 
 async function createPostHistory(author_id){
     /**
@@ -800,6 +800,62 @@ async function getComments(authorId, postId) {
     }   
 }
 
+async function createComment(authorId, postId, newComment, domain) {
+    console.log('Debug: Adding a comment')
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+    const author = await Author.findOne({authorId: authorId});
+
+    var comment = new Comment({
+        author: author,
+        comment: newComment.content,
+        contentType: newComment.contentType,
+        published: new Date().toISOString(),
+        _id: domain + "authors/" + authorId + "/posts/" + postId + "/comments/" + uidgen.generateSync()
+    });
+
+    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.postId);
+    if (idx > -1) { 
+        postHistory.posts[idx].comments.push(comment);
+        postHistory.posts[idx].count + 1;
+        postHistory.save();
+    }
+    else {
+        console.log('Debug: No such post exists!')
+    }
+
+    return comment  
+}
+
+async function apifetchLikes(authorId, postId) {
+    // TODO: Paginate
+    const posts = PostHistory.find(
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            index: { $indexOfArray: ['_id', postId] }
+        },
+        {
+            $unwind: '$index'
+        },
+        {
+            $group: {
+                _id: null,
+                post_array: { $push: "$index" }
+            }
+        }
+    )
+
+    if (posts[0] != undefined) {
+        return posts[0].post_array.likes;
+    } else {
+        return [];
+    }   
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -819,5 +875,6 @@ module.exports={
     apideletePost,
     apicreatePost,
     fetchPosts,
-    getComments
+    getComments,
+    createComment
 }

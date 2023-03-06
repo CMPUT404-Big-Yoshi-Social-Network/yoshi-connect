@@ -46,7 +46,7 @@ const path = require('path');
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, getComments, fetchPosts, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, getComments, apifetchLikes, fetchPosts, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
@@ -727,17 +727,19 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
 
   return res.json({
     "type": "comments",
-    "authorId": authorId,
-    "postId": postId,
+    "page": 1,
+    "size": 5,
+    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
+    "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
     "comments": comments
     })
 })
-//TODO 
+
 app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const comment = createComment(authorId, postId, req.body);
+  const comment = createComment(authorId, postId, req.body, process.env.DOMAIN_NAME);
 
   return res.json({
     "type": "comment",
@@ -745,14 +747,24 @@ app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
     "comment": comment.comment,
     "contentType": comment.contentType,
     "published": comment.published,
-    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id
+    "id": comment._id
     }) 
 })
 
-//Likes
-
-//TODO 
 app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+  
+  const likes = apifetchLikes(authorId, postId);
+
+  return res.json({
+    "type": "likes",
+    "page": 1, 
+    "size": 5,
+    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
+    "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/likes",
+    "likes": likes
+    })
 
 })
 //TODO 
@@ -770,19 +782,13 @@ app.get('/api/authors/:authorId/liked', async (req, res) => {
 //Inbox
 
 //TODO 
-app.get('/api/authors/:authorId/inbox', async (req, res) => {
-
-})
+app.get('/api/authors/:authorId/inbox', async (req, res) => { })
 
 //TODO 
-app.post('/api/authors/:authorId/inbox', async (req, res) => {
-
-})
+app.post('/api/authors/:authorId/inbox', async (req, res) => { })
 
 //TODO 
-app.delete('/api/authors/:authorId/inbox', async (req, res) => {
-
-})
+app.delete('/api/authors/:authorId/inbox', async (req, res) => { })
 
 /*
 

@@ -120,13 +120,7 @@ function Post({viewerId, post}) {
 
                     <p>{post.published}</p>
                     <br></br>
-<<<<<<< HEAD
-                    {numLikes}
-                    { !like ? <button onClick={addLike}>Like</button> : <button onClick={removeLike}>Unlike</button>} 
-=======
-                    
-                    { !like ? <span>{num_likes}<button onClick={addLike}>Like</button></span> : <span>{num_likes + 1}<button onClick={removeLike}>Unlike</button></span>} 
->>>>>>> 478e6a5e8796f377cf9c65ccf7db59a5df205fed
+                    { !like ? <span>{numLikes}<button onClick={addLike}>Like</button></span> : <span>{numLikes}<button onClick={removeLike}>Unlike</button></span>} 
                     <br></br>
                     {numComments}
                     { showComment ? <button onClick={toggleComments}>Close Comments</button> : <button onClick={toggleComments}>Open Comments</button> }

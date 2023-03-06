@@ -16,5 +16,5 @@ test("on inital render, the sign up button is there", async () => {
     fireEvent.click(signupButton);
 
     //assert the expected result
-    await waitFor(() => expect(signupButton).toBeEnabled());
+    expect(signupButton).toBeEnabled();
 });

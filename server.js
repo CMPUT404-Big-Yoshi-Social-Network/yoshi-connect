@@ -556,12 +556,21 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
 
 //TODO 
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  if(req.type != "Follow")
+    return res.sendStatus(400)
 
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
+
+  
 })
 
 
 //TODO 
 app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
+
 
 })
 

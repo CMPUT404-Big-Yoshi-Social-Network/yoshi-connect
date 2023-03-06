@@ -300,5 +300,6 @@ module.exports={
     fetchMyPosts,
     getCurrentAuthorAccountDetails,
     updateAuthor,
-    getAuthor
+    getAuthor,
+    apiUpdateAuthor,
 }

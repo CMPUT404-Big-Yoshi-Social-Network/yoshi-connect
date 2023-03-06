@@ -19,12 +19,17 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+
+
+// Functionality
+import React from 'react';
 // import { useParams } from 'react-router-dom';
 // import { useEffect, useState } from 'react';
+
+// User Interface
 // import Container from 'react-bootstrap/Container';
 // import Nav from 'react-bootstrap/Nav';
 // import Navbar from 'react-bootstrap/Navbar';
-import React from 'react';
 import './leftAdminNav.css';
 
 function LeftAdminNavBar() {

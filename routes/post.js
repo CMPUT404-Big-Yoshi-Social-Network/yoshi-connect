@@ -675,6 +675,55 @@ async function apideletePost(authorId, postId) {
     return res.sendStatus(200); 
 }
 
+async function apicreatePost(authorId, postId, newPost, domain) {
+    const title = newPost.title;
+    const source = newPost.source;
+    const desc = newPost.desc;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const published = new Date().toISOString();
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    const specifics = newPost.specifics;
+    const image = newPost.image;
+
+    let postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if (postHistory == null) {
+        console.log('Debug: Create a post history');
+        await createPostHistory(authorId);
+    }
+
+    if(postId == undefined) {
+        postId = uidgen.generateSync();
+    }
+    var post = new Post({
+        _id: domain + "/authors/" + authorId + "/posts/" + postId,
+        title: title,
+        source: source,
+        origiin, origin,
+        description: desc,
+        contentType: contentType,
+        content: content,
+        authorId: authorId,
+        categories: categories,
+        count: 0,
+        likes: [],
+        comments: [],
+        published: published,
+        visibility: visibility,
+        specifics: specifics,
+        unlisted: unlisted,
+        image: image
+    });
+
+    postHistory = await PostHistory.findOne({authorId: authorId});
+    postHistory.posts.push(post);
+    postHistory.num_posts = postHistory.num_posts + 1;
+    await postHistory.save();  
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -691,5 +740,6 @@ module.exports={
     hasLiked,
     apigetPost,
     apiupdatePost,
-    apideletePost
+    apideletePost,
+    apicreatePost
 }

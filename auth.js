@@ -19,19 +19,15 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Password
 const crypto_js = require('crypto-js')
-
-// UUID Identification Generator
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-
-// Database
+const { Author, Login } = require('./db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Author, Login } = require('./db_schema/author_schema.js');
+const { Author, Login } = require('./db_schema/authorScheme.js');
 
 async function checkUsername(req) {
     const author = await Author.findOne({username: req.body.username});

@@ -19,20 +19,11 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality
 import React from 'react';
-
-// User Interface
 import {Button, Container, Image} from 'react-bootstrap';
-
-// Styling
 import './welcome.css'
 
 function Welcome() {
-    /**
-     * Description: Represents the Welcome screen with routes to the Signup or Login 
-     * Returns: N/A
-     */
     return (
         <div className='welcome'>
             <Image fluid src='/images/yoshi_connect_logo2.png' alt='Logo' width={100} />

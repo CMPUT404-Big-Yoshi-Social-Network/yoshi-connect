@@ -23,27 +23,27 @@ Foundation; All Rights Reserved
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
 @font-face {
     font-family: "Uni Neue";
-    src: url('../../../fonts/UniNeue-Trial-Regular.eot');
-    src: url('../../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
-         url('../../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
-         url('../../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
-         url('../../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+    src: url('../../fonts/UniNeue-Trial-Regular.eot');
+    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
+         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
+         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
+         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
 }
 
-.sc403{
+.sc404{
     text-align: center;
 }
-.sc403 h1{
+.sc404 h1{
     font-size: 100pt;
     font-family: 'Uni Neue';
 }
-.sc403 h2{
+.sc404 h2{
     margin-top: -2em;
     font-size: 30pt;
     font-family: 'Signika', sans-serif;
     font-weight: 500;
 }
-.sc403 h3{
+.sc404 h3{
     font-size: 18pt;
     font-family: 'DM Sans', sans-serif;
 }

@@ -19,15 +19,16 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Database
+const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/post_schema.js');
+const { Friend, Author } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/post_schema.js');
-const { Friend } = require('../db_schema/author_schema.js');
+const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/postScheme.js');
+const { Friend } = require('../db_schema/authorScheme.js');
 
-async function create_post_history(author_id){
+async function createPostHistory(author_id){
     console.log('Debug: Creating post history for user')
     let new_post_history = new PostHistory ({
         authorId: author_id,
@@ -219,7 +220,7 @@ async function create_post(req, res, postId){
 
     if (post_history == null) {
         console.log('Debug: Create a post history');
-        await create_post_history(authorId);
+        await createPostHistory(authorId);
     }
 
     if(postId == undefined){
@@ -538,7 +539,7 @@ async function hasLiked(req, res) {
 }
 
 module.exports={
-    create_post_history,
+    createPostHistory,
     create_post,
     get_post,
     get_posts_paginated,

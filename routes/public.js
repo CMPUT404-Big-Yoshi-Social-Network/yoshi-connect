@@ -63,55 +63,51 @@ async function fetchPublicPosts(req, res) {
         followings = following[0].follows;
     }
 
-    
-    if(followings.length == 0){
-        return res.json({
-            publicPosts: []
-        });
-    }
-
-    const posts = await PostHistory.aggregate([
-        {
-            $match: {
-                $expr: {
-                    $in : ["$authorId", followings]
-                }
+    let posts = [[]];
+    if(followings.length != 0){
+        posts = await PostHistory.aggregate([
+            {
+                $match: {
+                    $expr: {
+                        $in : ["$authorId", followings]
+                    }
+                },
             },
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {
-                $expr: {
-                    $ne: ["$unlisted", true]
-                }
-            }
-        },
-        {
-            $set: {
-                "posts.published": {
-                    $dateFromString: {
-                        dateString: "$posts.published"
+            {
+                $unwind: "$posts"
+            },
+            {
+                $match: {
+                    $expr: {
+                        $ne: ["$unlisted", true]
                     }
                 }
-            }
-        },
-        {
-            $addFields: {
-                "posts.authorId": "$authorId"
-            }
-        },
-        {
-            $sort: {"posts.published": -1}
-        },
-        {
-            $group: {
-                _id: null,
-                posts_array: {$push: "$posts"}
-            }
-        },
-    ]);
+            },
+            {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: {
+                            dateString: "$posts.published"
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    "posts.authorId": "$authorId"
+                }
+            },
+            {
+                $sort: {"posts.published": -1}
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: {$push: "$posts"}
+                }
+            },
+        ]);
+    }
 
     let publicPosts = await PublicPost.aggregate([
         { $match: {} },
@@ -151,10 +147,12 @@ async function fetchPublicPosts(req, res) {
     ]);
 
     let allPosts = null;
-    if (publicPosts[0] != undefined && posts[0] != undefined) {
-        posts[0].posts_array.concat(publicPosts[0].publicPosts);
+    if (publicPosts[0] != undefined && posts[0] != undefined && posts[0].length != 0) {
+        allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
     } else if (posts[0].posts_array != undefined) {
         allPosts = posts[0].posts_array;
+    } else if (publicPosts[0].publicPosts != undefined) {
+        allPosts = publicPosts[0].publicPosts;
     } else {
         allPosts = [];
     }
@@ -162,7 +160,7 @@ async function fetchPublicPosts(req, res) {
     if (allPosts){
         return res.json({
             publicPosts: allPosts
-        });
+          });
     }
 }
 

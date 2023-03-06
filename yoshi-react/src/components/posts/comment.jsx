@@ -1,5 +1,7 @@
 import React from "react";
 import axios from 'axios';
+import EditComment from "./editComment";
+import Popup from 'reactjs-popup';
 
 function Comment(props) {
     const deleteComment = () => {
@@ -11,7 +13,7 @@ function Comment(props) {
             headers: { 'Content-Type': 'application/json' },
             data: {
                 commenter: props.commenter,
-                commentId: null,
+                commentId: props._id,
                 authorId: props.authorId,
                 postId: props.postId,
                 status: "Remove comment"
@@ -23,8 +25,12 @@ function Comment(props) {
         <div id='comment'>
             <h4>{ props.viewerId }</h4>
             { props.comment }
-            <button onClick={deleteComment}>Delete</button>
-            <button>Edit</button>
+            {
+                props.commenter !== props.viewerId ? null : <Popup trigger={<button>Edit</button>}><EditComment {...props}/></Popup>
+            }    
+            {
+                props.commenter !== props.viewerId ? null : <button onClick={deleteComment}>Delete</button>
+            }    
         </div>
     )
 }

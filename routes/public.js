@@ -152,7 +152,7 @@ async function fetchPublicPosts(req, res) {
 
     let allPosts = null;
     if (publicPosts[0] != undefined && posts[0] != undefined) {
-        posts[0].posts_array.concat(publicPosts[0].publicPosts);
+        allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
     } else if (posts[0].posts_array != undefined) {
         allPosts = posts[0].posts_array;
     } else {
@@ -160,9 +160,7 @@ async function fetchPublicPosts(req, res) {
     }
 
     if (allPosts){
-        return res.json({
-            publicPosts: allPosts
-        });
+        return allPosts;
     }
 }
 

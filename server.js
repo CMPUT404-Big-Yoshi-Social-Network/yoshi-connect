@@ -363,7 +363,10 @@ app.post('/server/following', async (req, res) => {
 
 app.post('/server/public/posts', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
-  await fetchPublicPosts(req, res);
+  const publicPosts = await fetchPublicPosts(req, res);
+  return res.json({
+    publicPosts: publicPosts
+});
 })
 
 app.post('/server/settings', async (req, res) => {

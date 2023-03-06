@@ -100,9 +100,6 @@ function PublicFeed() {
                 url: '/server/public/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    sessionId: localStorage.getItem('sessionId'),
                 }
             }
             axios

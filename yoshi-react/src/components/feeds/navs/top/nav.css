@@ -7,12 +7,10 @@
          url('../../../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
 }
 .topNav{
-    display: inline-block;
     font-family: 'Uni Neue', sans-serif;
 }
 
 .topLogo {
-    display: inline-block;
     padding: 0em 1em;
 }
 .topNavBrand h1 {
@@ -21,23 +19,28 @@
     text-decoration: none;
     font-family: 'Uni Neue', sans-serif;
 }
-.topNav2{
+.topNavSearch{
     display: inline-block;
-    margin: 0em 6.5em;
-    font-size: 14pt;
+    margin-left: 6.5em;
 }
 .topSearch{
-    margin-top: -.5em;
-    position: fixed;
+    position: relative;
+    width: 200%;
     text-decoration: none;
-    width: 15%;
     background-image: radial-gradient(circle, #050125, #090D0E);
     color: white;
     border: #4A5460 0.1em solid;
     border-radius: .5em;
     padding: .5em;
 }
-.topNotif{
-    margin-left: 30em;
+.topNavNotif{
+    position: relative;
+    margin-left: 15em;
     text-decoration: none;
+    display: inline-block;
+}
+.topNavNotif:hover{
+    /* border: #4A5460 solid;
+    border-radius: .5em; */
+    cursor: pointer;
 }

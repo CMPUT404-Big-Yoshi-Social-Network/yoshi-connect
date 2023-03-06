@@ -50,7 +50,6 @@ function RightNavBar() {
                     <div className='rn-div'>
                         <img className='rn-pubPostImg' alt='rn-pubPostImg' src='/images/public/icon_create_post.png' width={25}/>
                         <CreatePost className='rn-post'/>
-                        {/* <Nav.Link className='rn-post' href="/post">Create Post</Nav.Link> */}
                     </div>
                 </Nav>
                 <div className='rn-div'>

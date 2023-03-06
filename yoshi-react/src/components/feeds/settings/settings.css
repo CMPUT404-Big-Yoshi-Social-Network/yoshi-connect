@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
-
 .pubColL, .pubColM, .pubColR {
     display: inline-block;
 }
@@ -11,4 +9,33 @@
 .pubColM {
     width: 70%;
     background-color: #090D0E;
+}
+.settingColM{
+    text-align: center;
+}
+.account-details-box{
+    color: white;
+    background-color: #4A5460;
+    width: 15%;
+    border: #4A5460 0.2em solid;
+    border-radius: .5em;
+    padding: .5em;
+}
+.save-setting{
+    color: black;
+    /* float: right;
+    margin-right: 20em; */
+    background-color: #c7f336;
+    border: #c7f336;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.save-setting:hover{
+    background-color: #f36464;
+    border: #f36464;
+    color: white;
+    cursor: pointer;
 }

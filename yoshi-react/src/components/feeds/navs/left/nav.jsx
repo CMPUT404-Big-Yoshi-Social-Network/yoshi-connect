@@ -17,7 +17,7 @@ function LeftNavBar() {
             { url === '/feed' || url === '/' + {username} ? <Following/> :
                 url === '/friends' ? <Friends/> : 
                 url === '/settings' ? <SettingsNav/> : 
-                url === '/messages' ? <h1>Messages Stuff</h1> : null
+                url === '/messages' ? <h2 style={{paddingLeft: '1em'}}>Messages</h2> : null
             }
         </div>
     )

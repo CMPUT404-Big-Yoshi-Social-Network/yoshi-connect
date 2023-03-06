@@ -62,7 +62,9 @@ function Messages() {
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    Viewing your messages.
+                    <div style={{paddingLeft: '1em'}}>
+                        Viewing your messages with X user.
+                    </div>
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

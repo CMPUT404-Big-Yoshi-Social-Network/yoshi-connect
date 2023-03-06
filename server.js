@@ -467,7 +467,18 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
 
 //TODO 
 app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
 
+  const followers = await getFollowers(authorId);
+  
+  for(let i = 0; i < followers.length; i++){
+    const follower = followers[i];
+    if(follower.authorId == foreignId)
+      return res.sendStatus(200);
+  }
+
+  return res.sendStatus(404);
 })
 
 

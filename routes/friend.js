@@ -27,28 +27,33 @@ const { Friend, Login, Follower } = require('../dbSchema/authorScheme.js');
 const { PostHistory } = require('../dbSchema/postScheme.js');
 
 async function fetchFriends(req, res) {
+    /**
+     * Desciption: Fetches the friends of a specified author from the database
+     * Returns: Status 404 if there is no associated token with a login document 
+     *          Either returns the list of friends or an empty list of friends if the author has no friends
+     */
     const login = await Login.findOne({token: req.cookies.token}).clone();
-    if(!login){
-        return res.sendStatus(404);
-    }
+    if (!login) { return res.sendStatus(404); }
 
     const username = login.username;
     await Friend.findOne({username: username}, function(err, friends){
         console.log("Debug: Friends exists");
-        if(friends == undefined){
-            return res.json({
-                friends: []
-            });
-        }
-
-        return res.json({
-            friends: friends.friends
-        })
+        if (friends == undefined) { return res.json({ friends: [] }); }
+        return res.json({ friends: friends.friends })
     }).clone();
 }
 
 async function fetchFriendPosts(req, res) {
-    console.log('Debug: Getting friends posts');
+    /**
+     * Description: Fetches the posts of friends of the author 
+     *              Aggregates with $match, $unwind, $project, and $group in order to collect all friends 
+     *              Aggregates with $match (by authorId), $unwind, $match (to get only listed posts), $set, 
+     *              $addFields (couples post to authorId), $sort (by publishing date), and $group in order 
+     *              to collect all the friends' posts
+     * Returns: Status 404 if there is no associated token in the login collection
+     *          If the author has no friends, it will return an empty array 
+     *          If successful, it will return the posts 
+     */
     const login = await Login.findOne({token: req.cookies.token}).clone();
     if (!login) { return res.sendStatus(404); }
 
@@ -62,9 +67,7 @@ async function fetchFriendPosts(req, res) {
             $unwind: '$friends'
         },
         {
-            $project: {
-                "friends.authorId": 1
-            }
+            $project: { "friends.authorId": 1 }
         },
         {
             $group: {
@@ -75,17 +78,12 @@ async function fetchFriendPosts(req, res) {
     ]);
 
     let friends = [];
-    if(friend.length > 0){
-        friends = friend[0].friends;
-    }
-    
-    if(friends.length == 0){
-        return res.json({
-            friendPosts: []
-        });
+    if (friend.length > 0) { 
+        friends = friend[0].friends; 
+    } else { 
+        return res.json({ friendPosts: [] }); 
     }
 
-    // TODO: EXCLUDE UNLISTED ITEMS (WHEN UNLISTED==TRUE)
     const posts = await PostHistory.aggregate([
         {
             $match: {
@@ -114,9 +112,7 @@ async function fetchFriendPosts(req, res) {
             }
         },
         {
-            $addFields: {
-                "posts.authorId": "$authorId"
-            }
+            $addFields: { "posts.authorId": "$authorId" }
         },
         {
             $sort: {"posts.published": -1}
@@ -129,9 +125,7 @@ async function fetchFriendPosts(req, res) {
         },
     ]);
 
-    return res.json({
-        friendPosts: posts[0].posts_array
-    });
+    return res.json({ friendPosts: posts[0].posts_array });
 }
 
 /**
@@ -139,20 +133,24 @@ async function fetchFriendPosts(req, res) {
  */
 
 async function getFollowers(id){
+    /**
+     * Description: Gets all the follows of an author
+     * Returns: Status 404 if there are no existing followers
+     *          If successful, returns a list of followers
+     */
     const followers = await Follower.findOne({authorId: id});
-
-    if(!followers)
-        return 404;
-        
+    if (!followers) { return 404; }
     return followers.followers;
 }
 
 async function getFriends(id){
+    /**
+     * Description: Gets all the friends of an author
+     * Returns: Status 404 if there are no existing friends
+     *          If successful, returns a list of friends
+     */
     const friends = await Friend.findOne({authorId: id});
-
-    if(!friends)
-        return 404;
-
+    if (!friends) { return 404; }
     return friends.friends;
 }
 module.exports={

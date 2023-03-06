@@ -58,7 +58,7 @@ async function registerAuthor(req, res){
     const password = req.body.password;
     const checkEmail = await Author.findOne({email: email})
 
-    if( !username || !email || !password ){ return res.sendStatus(400); }
+    if ( !username || !email || !password ) { return res.sendStatus(400); }
     if (checkEmail !== undefined && checkEmail !== null) { return res.sendStatus(400); }
 
     var author = new Author({
@@ -88,10 +88,7 @@ async function registerAuthor(req, res){
         if (err) { res.sendStatus(500); }
         console.log("Debug: Login cached.")
         res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
-        return res.json({
-            sessionId: token,
-            status: "Successful"
-        });
+        return res.json({ sessionId: token, status: "Successful" });
     })
 
     await createPostHistory(author._id);
@@ -109,10 +106,10 @@ async function getProfile(req, res) {
      *          If successful, it returns the viewed author (profile owner), viewer (viewing the profile), 
      *          and indicator for if the viewer author is looking at their own account
      */
-    if(req.cookies == undefined){ return res.sendStatus(404); } else if (req.cookies.token == undefined) { return res.sendStatus(404); }
+    if (req.cookies == undefined) { return res.sendStatus(404); } else if (req.cookies.token == undefined) { return res.sendStatus(404); }
 
     const login = await Login.findOne({token: req.cookies.token});
-    if(login == undefined){ return res.sendStatus(404); }
+    if (login == undefined) { return res.sendStatus(404); }
 
     const author = await Author.findOne({username: req.path.split("/")[req.path.split("/").length - 1]})
     if (!author) { 
@@ -124,7 +121,7 @@ async function getProfile(req, res) {
             viewer: login.username,
             personal: true
         });
-    } else if(author.username != login.username){
+    } else if(author.username != login.username) {
         console.log("Debug: This is not your personal account.")
         return res.json({
             viewed: author.username,
@@ -266,25 +263,22 @@ async function getAuthor(authorId){
 }
 
 async function apiUpdateAuthor(token, author){
-    if(await authLogin(token, author.id, author.displayName) == false){
-        return 401;
-    }
+    /**
+     * Description: Updates an existing author in the database
+     * Returns: Status 401 if the there is no valid authentication 
+     *          Status 200 if the author was successfully updated
+     */
+    if (await authLogin(token, author.id, author.displayName) == false) { return 401; }
 
     const authorProfile = await Author.findOne({_id: author.id});
-        
+
     const pronouns = author.pronouns;
     const about = author.about;
     const github = author.github;
 
-    if(pronouns){
-        authorProfile.pronouns = pronouns;
-    }
-    if(about){
-        authorProfile.about = about;
-    }
-    if(github){
-        authorProfile.github = github;
-    }
+    if (pronouns) { authorProfile.pronouns = pronouns; }
+    if (about) { authorProfile.about = about; }
+    if (github) { authorProfile.github = github; }
 
     await authorProfile.save();
 

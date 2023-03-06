@@ -346,7 +346,7 @@ function Profile() {
                 <div className='profColM'>
                     <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>
                     { personal.person ? null : 
-                        <button style={{marginLeft: '1.8em'}} type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
+                        <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
                     <Posts viewerId={personal.viewerId} posts={posts}/>   
                 </div>

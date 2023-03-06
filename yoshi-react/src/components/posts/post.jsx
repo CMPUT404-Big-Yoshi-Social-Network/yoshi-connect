@@ -230,7 +230,6 @@ function Post({viewerId, post}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-
                             {
                                 Object.keys(post.comments).map((comment, idx) => (
                                 <Comment key={idx} authorId={authorId} viewerId={viewerId} postId={postId} {...post.comments[comment]}/>

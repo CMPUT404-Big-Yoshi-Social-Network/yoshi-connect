@@ -66,9 +66,9 @@ function Comment(props) {
             <h4>{ props.commenter }</h4>
             { props.comment }
             { props.commenter !== props.viewerId ? null : 
-                <Popup trigger={<button>Edit</button>}><EditComment {...props}/></Popup> }    
+                <Popup className='post-buttons' trigger={<button>Edit</button>}><EditComment {...props}/></Popup> }    
             { props.commenter !== props.viewerId ? null : 
-                <button onClick={deleteComment}>Delete</button> }    
+                <button className='post-buttons' onClick={deleteComment}>Delete</button> }    
         </div>
     )
 }

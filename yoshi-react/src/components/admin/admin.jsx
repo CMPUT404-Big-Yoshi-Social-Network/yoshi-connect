@@ -30,14 +30,9 @@ import '../login/login.css';
 
 export default function AdminLogin() { 
     /**
-     * Description: Represents a post 
+     * Description: Represents an admin 
      * Functions:
-     *     - getAdmin(): Checks if the current viewer of a post has already liked the post 
-     *     - toggleComments(): Hides and Unhides the comment section
-     *     - deletePost(): Deletes an author's post (only the post they own)
-     *     - addLike(): Adds a like to a specific post by current viewer
-     *     - removeLike(): Removes a like to a specific post by current viewer
-     *     - makeComment(): Adds a comment to a specific post by current viewer
+     *     - getAdmin(): Varifies admin and redirects to the admin dashboard
      * Returns: N/A
      */
     const url = '/server/admin';
@@ -48,6 +43,10 @@ export default function AdminLogin() {
     })
 
     const getAdmin = (e) => {
+      /**
+       * Description: Varifies admin and redirects to the admin dashboard
+       * Returns: N/A
+       */
       console.log('Debug: Getting admin')
       e.preventDefault()
 

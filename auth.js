@@ -183,11 +183,23 @@ async function authAuthor(req, res) {
     });
 }
 
+async function authLogin(token, authorId, displayName){
+    const login = await Login.findOne({token: token});
+    if(!login)
+        return false;
+
+    if(login.authorId == authorId && login.username == displayName)
+        return true;
+
+    return false;
+}
+
 module.exports = {
     authAuthor,
     removeLogin,
     checkUsername,
     checkExpiry,
     sendCheckExpiry,
-    checkAdmin
+    checkAdmin,
+    authLogin
 }

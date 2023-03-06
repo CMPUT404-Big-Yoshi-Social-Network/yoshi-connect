@@ -19,12 +19,18 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from "react";
+
+// Child Component
 import TopNav from '../feeds/topNav';
 import LeftNavBar from '../feeds/leftNav.jsx';
 import RightNavBar from '../feeds/rightNav.jsx';
+
+// Styling
 import './password.css';
+
 function PasswordChange() {
     const navigate = useNavigate();
     const checkForAuthor = () => {

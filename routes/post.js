@@ -19,7 +19,9 @@ async function create_post_history(author_id){
 async function addLike(req, res){
     console.log('Debug: Adding a like')
     const postHistory = await PostHistory.findOne({authorId: req.body.data.authorId});
+    let publicPost = await PublicPost.find();
     let success = false;
+    let numLikes = 0;
 
     var like = new Like({
         liker: req.body.data.liker
@@ -27,20 +29,34 @@ async function addLike(req, res){
 
     let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
     if (idx > -1) { 
-        postHistory.posts[idx].likes.push(like);
-        await postHistory.save();
-        success = true;
+        let likerIdx = postHistory.posts[idx].likes.map(obj => obj.liker).indexOf(like.liker);
+        if (likerIdx <= -1) {
+            console.log('Debug: Adding that like!')
+            postHistory.posts[idx].likes.push(like);
+            numLikes = postHistory.posts[idx].likes.length;
+            await postHistory.save();
+            success = true;
+
+            for (let i = 0; i < publicPost[0].posts.length; i++) {
+                if (publicPost[0].posts[i].post._id === req.body.data.postId) {
+                    publicPost[0].posts[i].post.likes.push(like);
+                    numLikes = publicPost[0].posts[i].post.likes.length;
+                    await publicPost[0].save();
+                }
+            }
+        }
     } else {
         console.log('Debug: No such post exists!')
     }
 
-    return res.json({ status: success })
+    return res.json({ status: success, numLikes: numLikes })
 }
 
 async function deleteLike(req, res){
     console.log('Debug: Removing a like')
-    let updated_posts = [];
     let success = false;
+    let numLikes = 0;
+    let publicPost = await PublicPost.find();
     await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
         console.log('Debug: Find the post with the like.')
         if (history) {
@@ -48,23 +64,31 @@ async function deleteLike(req, res){
             if (post_idx > -1) { 
                 let like_idx = history.posts[post_idx].likes.map(obj => obj._id).indexOf(req.body.likeId);
                 history.posts[post_idx].likes.splice(like_idx, 1);
-                updated_posts = history.posts;
-                history.posts[post_idx].count--;
                 await history.save();
                 success = true;
+
+                for (let i = 0; i < publicPost[0].posts.length; i++) {
+                    if (publicPost[0].posts[i].post._id === req.body.data.postId) {
+                        let like_idx = publicPost[0].posts[i].likes.map(obj => obj._id).indexOf(req.body.likeId);
+                        publicPost[0].posts[i].likes.splice(like_idx, 1);
+                        numLikes = publicPost[0].posts[i].likes.length;
+                        await publicPost[0].save();
+                    }
+                }
             }
         }
     }).clone()
  
     return res.json({
-        status: success
+        status: success,
+        numLikes: numLikes
     })
 }
 
 async function addComment(req, res){
     console.log('Debug: Adding a comment')
     const postHistory = await PostHistory.findOne({authorId: req.body.authorId});
-    const author = await Author.findOne({_id: req.body.authorId}).clone();
+    let publicPost = await PublicPost.find();
     let success = false;
 
     var comment = new Comment({
@@ -75,18 +99,29 @@ async function addComment(req, res){
     let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.postId);
     if (idx > -1) { 
         postHistory.posts[idx].comments.push(comment);
+        postHistory.posts[idx].count + 1;
+        postHistory.save();
         success = true;
+
+        for (let i = 0; i < publicPost[0].posts.length; i++) {
+            if (publicPost[0].posts[i].post._id === req.body.postId) {
+                publicPost[0].posts[i].post.count + 1;
+                publicPost[0].posts[i].post.comments.push(comment);
+                await publicPost[0].save();
+            }
+        }
     } else {
         console.log('Debug: No such post exists!')
     }
-    postHistory.save();
 
-    return res.json({ status: success, username: author.username })
+    return res.json({ status: success, numComments: postHistory.posts[idx].count })
 }
 
 async function deleteComment(req, res){
     console.log('Debug: Deleting a comment')
     let success = false;
+    let numComments = 0;
+    let publicPost = await PublicPost.find();
     await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
         console.log('Debug: Find the post with the comment.')
         if (history) {
@@ -95,14 +130,27 @@ async function deleteComment(req, res){
                 console.log('Debug: Found comment')
                 let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.commentId);
                 history.posts[post_idx].comments.splice(com_idx, 1);
+                history.posts[idx].count - 1;
+                numComments = history.posts[idx].count;
                 success = true;
                 await history.save();
+
+                for (let i = 0; i < publicPost[0].posts.length; i++) {
+                    if (publicPost[0].posts[i].post._id === req.body.data.postId) {
+                        let com_idx = publicPost[0].posts[i].comments.map(obj => obj._id).indexOf(req.body.commentId);
+                        publicPost[0].posts[i].comments.splice(com_idx, 1);
+                        publicPost[0].posts[i].count - 1;
+                        numComments = publicPost[0].posts[i].count;
+                        await publicPost[0].save();
+                    }
+                }
             }
         }
     }).clone()
     
     return res.json({
-        status: success
+        status: success,
+        numComments: numComments
     })
 }
 

@@ -71,11 +71,8 @@ async function deleteRequest(req, res) {
 
     await Request.deleteOne({sendId: sender, receiverId: receiver}, function(err, request){
         if(request){
-            console.log("Debug: Request does exist and was deleted.");
-            return res.json({ status: "Successful" });
-        } else {
-            return res.json({ status: "Unsuccessful" });
-        }
+            console.log("Debug: Request does exist and was deleted.")
+        } 
     }).clone()
 }
 
@@ -186,6 +183,7 @@ async function adding(friend, req, res) {
                 });
                 follower.save(async (err, follower, next) => {
                     if(err){
+                        console.log(err);
                         success = false;
                     }
                 })
@@ -243,6 +241,7 @@ async function adding(friend, req, res) {
     
                 newFriend.save(async (err, friend, next) => {
                     if(err){
+                        console.log(err);
                         success = false;
                     }
                 })

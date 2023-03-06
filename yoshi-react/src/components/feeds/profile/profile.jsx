@@ -145,7 +145,7 @@ function Profile() {
                 setPosts(response.data.posts)
             })
             .catch(err => {
-                console.error(err);
+                setPosts(undefined);
             });
         }
     }, [navigate, username])
@@ -177,7 +177,7 @@ function Profile() {
                 }
             })
             .catch(err => {
-              console.error(err);
+              exists.current = false;
             });
         }
     }, [username, exists, personal]);
@@ -209,7 +209,7 @@ function Profile() {
                 }
             })
             .catch(err => {
-            console.error(err);
+                setRequestButton('Add')
             });
         }
     }, [username, personal, exists, setRequestButton, requestButton])
@@ -235,7 +235,7 @@ function Profile() {
                 console.log('Debug: Friend request sent!')
             })
             .catch(err => {
-              console.error(err);
+              console.log('Debug: Friend request not sent!')
             });
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
@@ -258,7 +258,7 @@ function Profile() {
                 console.log('Debug: Friend request deleted!')
             })
             .catch(err => {
-              console.error(err);
+              console.log('Debug: Friend request not deleted!')
             });
         } else if (requestButton === 'Unfriend') {
             console.log('Debug: We want to unfriend.')
@@ -284,7 +284,7 @@ function Profile() {
                 }
             })
             .catch(err => {
-              console.error(err);
+              setRequestButton('Unfriend');
             });
         } else if (requestButton === "Unfollow") {
             console.log('Debug: We want to unfollow.')
@@ -310,7 +310,7 @@ function Profile() {
                 }
             })
             .catch(err => {
-              console.error(err);
+              setRequestButton('Unfollow')
             });
         }
     }
@@ -333,7 +333,7 @@ function Profile() {
             navigate("/");
         })
         .catch(err => {
-          console.error(err);
+          console.log('Debug: Did not log out')
         });
     }
     return (

@@ -282,9 +282,6 @@ app.post('/server/requests', async (req, res) => {
 
 app.put('/server/requests', (req, res) => {
   if (req.body.data.status == 'Sender is added by Receiver') {
-    return res.json({
-      status: "here"
-    })
     console.log('Debug: Sender added by Receiver')
     senderAdded(req, res);
   } 

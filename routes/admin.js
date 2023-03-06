@@ -19,12 +19,22 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Password
 const crypto_js = require('crypto-js');
-const { Login, Author } = require('../db_schema/author_schema.js');
+
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
+// Schemas
+const { Login, Author } = require('../db_schema/author_schema.js');
+
 async function addAuthor(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Adding a new author.');
 
     let existingAuthor = await Author.findOne({username: req.body.data.username}).clone();
@@ -52,11 +62,16 @@ async function addAuthor(req, res){
     });
 
     console.log("Debug: " + author.username + " added successfully to database.");
-
 }
 
 async function modifyAuthor(req, res){
-
+    /**
+     * Description: Modifies an existing author in the database 
+     * Returns: Status 404 if the author could not be found 
+     *          Status 400 if the admin inputs a displayName or email is already taken 
+     *          Status 500 if there is an error finding a current login (token)
+     *          Status 200 if the author is successfully 
+     */
     const author = await Author.findOne({_id: req.body.data.authorId}).clone();
 
     if(author == undefined){ 
@@ -67,6 +82,12 @@ async function modifyAuthor(req, res){
     if (author.username != req.body.data.newUsername) {
         console.log('Debug: Checking if username is taken.')
         existing_author = await Author.findOne({username: req.body.data.newUsername});
+        if (existing_author) { return res.sendStatus(400); }
+    }
+
+    if (author.email != req.body.data.newEmail) {
+        console.log('Debug: Checking if username is taken.')
+        existing_author = await Author.findOne({email: req.body.data.newEmail});
         if (existing_author) { return res.sendStatus(400); }
     }
 
@@ -90,6 +111,11 @@ async function modifyAuthor(req, res){
 }
 
 async function deleteAuthor(req, res){
+    /**
+     * Description: Deletes an existing author 
+     * Returns: Status 404 if the author could not be found 
+     *          Status 200 after the login (token) for the author is deleted along with their author account 
+     */
     console.log('Debug: Attempt to delete an author.')
     await Author.deleteOne({username: req.body.username}, function(err, obj){
         console.log('Debug: Delete count for deleting an author ' + obj)

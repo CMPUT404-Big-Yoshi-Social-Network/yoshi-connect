@@ -125,7 +125,7 @@ function Post({viewerId, post}) {
                             </form>
 
                             {Object.keys(post.comments).map((comment, idx) => (
-                                <Comment key={idx} authorId={authorId} postId={postId} {...post.comments[comment]}/>
+                                <Comment key={idx} authorId={authorId} viewerId={viewerId} postId={postId} {...post.comments[comment]}/>
                             ))}
                         </div>}
                         <br></br>

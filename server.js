@@ -259,7 +259,7 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   } else if ( req.body.data.status == 'Add like' ) {
     console.log('Debug: Adding a like to a post!');
     addLike(req, res);
-  } else if ( req.body.data.status == 'Edit comment' ) {
+  } else if ( req.body.data.status == 'Modify comment' ) {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);
   } else {

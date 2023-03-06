@@ -21,13 +21,16 @@ Foundation; All Rights Reserved
 
 // Setting up database
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+mongoose.set('strictQuery', true);
 require('dotenv').config();
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 // OpenAPI
 const {options} = require('./openAPI/options.js');
+
+// Parsers
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 // Swaggerio
 const swaggerUi = require("swagger-ui-express");

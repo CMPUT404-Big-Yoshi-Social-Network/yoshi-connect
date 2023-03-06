@@ -39,6 +39,7 @@ const authorScheme = new Schema({
 });
 
 const loginScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     username: String,
     token: String,
@@ -48,6 +49,7 @@ const loginScheme = new Schema({
 });
 
 const followerScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
     username: String,
     authorId: String,
     followers: [{
@@ -58,6 +60,7 @@ const followerScheme = new Schema({
 });
 
 const followingScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
     username: String,
     authorId: String,
     followings: [{
@@ -68,6 +71,7 @@ const followingScheme = new Schema({
 });
 
 const friendScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
     username: String,
     authorId: String,
     friends: [{
@@ -78,6 +82,7 @@ const friendScheme = new Schema({
 });
 
 const requestScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
     senderId: String,
     senderUUID: String,
     receiverId: String,

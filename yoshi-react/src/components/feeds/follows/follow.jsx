@@ -24,11 +24,7 @@ import React from "react";
 
 function Follow(props) {
     /**
-<<<<<<< HEAD
-     * Description: Represents a following  
-=======
      * Description: Represents the author as a follower 
->>>>>>> 33d7ad38ae704338d90a5c8e17151fd898d01ab1
      * Returns: N/A
      */
     return (

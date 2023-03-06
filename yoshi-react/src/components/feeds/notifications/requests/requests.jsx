@@ -27,8 +27,19 @@ import React, { useEffect, useState } from "react";
 import Request from './request.jsx';
 
 function Requests() {
+    /**
+     * Description: Represents all the requests
+     * Functions:
+     *     - useEffect(): Before render, checks the and sends the requests
+     * Returns: N/A
+     */
     const [requests, setRequests] = useState([]);
     useEffect(() => {
+        /**
+         * Description: Before render, checks the author ID and sends the username
+         * Request: POST
+         * Returns: N/A
+         */
         console.log('Debug: Fetching all the requests for this user')
         let config = {
             method: 'post',

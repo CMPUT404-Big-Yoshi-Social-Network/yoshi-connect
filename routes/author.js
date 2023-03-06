@@ -294,14 +294,24 @@ async function apiUpdateAuthor(token, author){
     return 200;
 }
 
-async function fetchAuthors(page, size){
-
+async function getAuthors(page, size){
+    
     const authors = await Author.find(
+        {
+            limit: size,
+            skip: page * size 
+        }
+    ).limit(size);
+    
+
+    /*
+    const authors = await Author.aggregate(
         {
             $limit: size,
             $skip: page * size 
         }
-    );
+    )
+    */
     let sanitizedAuthors = [];
 
     for(let i = 0; i < authors.length; i++){
@@ -333,5 +343,5 @@ module.exports={
     updateAuthor,
     getAuthor,
     apiUpdateAuthor,
-    fetchAuthors
+    getAuthors
 }

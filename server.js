@@ -45,7 +45,7 @@ const path = require('path');
 
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
-const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, fetchAuthors } = require('./routes/author');
+const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, fetchPosts, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -379,8 +379,7 @@ app.get('/api/authors', async (req, res) => {
    */
   const page = req.query.page;
   const size = req.query.size;
-
-  const sanitizedAuthors = await fetchAuthors(page, size);
+  const sanitizedAuthors = await getAuthors(page, size);
 
   return res.json({
     "type": "authors",

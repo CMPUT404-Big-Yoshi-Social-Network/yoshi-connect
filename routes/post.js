@@ -19,8 +19,6 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/post_schema.js');
-const { Friend, Author } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 

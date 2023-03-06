@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-
+require('dotenv').config();
 // OpenAPI
 const {options} = require('./openAPI/options.js');
 
@@ -63,7 +63,6 @@ if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
 
-const openapiSpecification = swaggerJsdoc(options);
 app.use('/server/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(openapiSpecification)
@@ -560,7 +559,7 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  
+
 })
 
 

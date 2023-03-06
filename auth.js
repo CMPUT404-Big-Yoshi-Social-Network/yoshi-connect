@@ -22,7 +22,6 @@ Foundation; All Rights Reserved
 const crypto_js = require('crypto-js')
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-const { Author, Login } = require('./db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 

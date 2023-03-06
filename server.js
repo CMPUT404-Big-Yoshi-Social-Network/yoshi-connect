@@ -497,7 +497,6 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
   });
 })
 
-//TODO 
 app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -556,7 +555,6 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
   return res.sendStatus(404);
 })
 
-//TODO 
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
 
   const authorId = req.params.authorId;
@@ -570,8 +568,6 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
     return res.sendStatus(400);
 })
 
-
-//TODO 
 app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   if(req.body.type == undefined || req.body.item == undefined || req.body.type != "follower")
     return res.sendStatus(400)
@@ -652,8 +648,6 @@ app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
-
-//TODO 
 app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -669,8 +663,6 @@ app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
-
-//TODO 
 app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;

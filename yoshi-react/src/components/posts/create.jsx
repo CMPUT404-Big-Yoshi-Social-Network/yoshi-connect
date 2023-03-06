@@ -21,8 +21,6 @@ Foundation; All Rights Reserved
 
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import { Nav } from 'react-bootstrap';
-import './create.css';
 
 function CreatePost() {
     const [data, setData] = useState({
@@ -101,7 +99,7 @@ function CreatePost() {
     async function uploadImage() {
         // Cloudinary Version
         const data2 = new FormData();
-        const preview = document.querySelector("img");
+        const preview = document.querySelector("img[src=''");
         const file = document.querySelector("input[type=file]").files[0];
         data2.append("file", file);
         data2.append("upload_preset", "biumvy2g");
@@ -120,8 +118,8 @@ function CreatePost() {
       }
 
     return (
-        <>
-            <Nav.Link className='rn-post' type={"button"} value={"Create Post"} onClick={togglePostMenu}>Create Post</Nav.Link>
+        <div>
+            <button className={"createPostButton"} type={"button"} value={"Create Post"} onClick={togglePostMenu}>CREATE NEW POST</button>
             {isOpen &&    
                 <div className={"postMenuPage"}>
                     <div className={"postMenuBox"}>
@@ -131,7 +129,7 @@ function CreatePost() {
                     <form encType='multipart/form-data'>
                         <label><p style={{color:"white"}}>Content Type</p></label>
                         <label><p style={{color:"white"}}>Visibility</p></label>
-                        <label><p style={{color:"white"}}>Unlisted</p></label>
+                        <label><p style={{color:"white"}}>Listed</p></label>
                         <select className={"postMenuDropDown"} id={"contentType"} name={"contentType"}onChange={(e) => {
                             setData({...data, contentType: e.target.value})}}>
                             <option value={"plaintext"}>PLAIN TEXT</option>
@@ -151,8 +149,8 @@ function CreatePost() {
                             else if(e.target.value === "False") bool = false;
                             setData({...data, unlisted: bool})
                         }} >
-                            <option value="False">False</option>
-                            <option value="True">True</option>
+                            <option value="True">False</option>
+                            <option value="False">True</option>
                         </select>
 
                         <label><p style={{color:"white"}}>Message To:</p></label>
@@ -195,7 +193,7 @@ function CreatePost() {
                 </div>
             </div>
             }   
-        </>        
+        </div>        
     )
 }
 

@@ -538,12 +538,12 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/followers/:foreignAuthorId:
  *  get:
- *    description: <insert what this request is trying to do>
+ *    description: Gets the author's followers' and friends' profiles as objects from the database and sends it back as a JSON object
  *    responses:
  *      404:
- *        description: Returns Status 404 when 
+ *        description: Returns Status 404 when the follower or friend object is not found
  *      404:
- *        description: Returns Status 404 when 
+ *        description: Returns Status 404 when the profile doesn't exist
  */
 app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -609,10 +609,10 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
  *  put:
  *    description: <insert what this request is trying to do>
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      401:
+ *        description: Returns Status 401 when 
+ *      400:
+ *        description: Returns Status 400 when 
  */
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
 

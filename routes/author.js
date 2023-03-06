@@ -209,7 +209,7 @@ async function fetchMyPosts(req, res) {
             }
         },
     ]);
-    if (!posts) { return res.sendStatus(404); }
+    if (!posts || !posts[0] || !posts[0].posts_array) { return res.sendStatus(404); }
 
     return res.json({ posts: posts[0].posts_array });
 }

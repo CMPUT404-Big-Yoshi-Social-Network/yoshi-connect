@@ -42,7 +42,7 @@ const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, 
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
-const { fetchFriends, fetchFriendPosts, getFollowers, getFriends } = require('./routes/friend');
+const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
@@ -553,13 +553,17 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
 
 //TODO 
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
-  if(req.type != "Follow")
+  if(req.body.type != "follow")
     return res.sendStatus(400)
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-
+  const follower = await addFollower(authorId, foreignId, req.body, req, res);
+  if(follower == 401)
+    return res.sendStatus(401);
+  else if(follower == 400)
+    return res.sendStatus(400);
 })
 
 
@@ -568,7 +572,7 @@ app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res)
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-
+  
 })
 
 //Friends and followers request

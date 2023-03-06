@@ -368,8 +368,9 @@ app.put('/server/settings', async (req, res) => {
 })
 
 /*
-START OF NEW API STUFF VERY IMPORTANT DO NOT DELETE
+UPDATED API
 */
+
 /**
  * @openapi
  * /api/authors:

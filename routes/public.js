@@ -95,7 +95,7 @@ async function fetchPublicPosts(req, res) {
         followings = following[0].follows;
     }
 
-    let posts = [[]];
+    let posts = null;
     if(followings.length != 0){
         posts = await PostHistory.aggregate([
             {
@@ -179,16 +179,15 @@ async function fetchPublicPosts(req, res) {
     ]);
 
     let allPosts = null;
-    if (publicPosts[0] != undefined && posts[0].length != 0) {
+    if (publicPosts[0] != undefined && posts != undefined) {
         allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
-    } else if (posts[0].length != 0) {
+    } else if (posts != undefined) {
         allPosts = posts[0].posts_array;
     } else if (publicPosts[0] != undefined) {
         allPosts = publicPosts[0].publicPosts;
     } else {
         allPosts = [];
     }
-    console.log(allPosts)
 
     if (allPosts){
         return res.json({

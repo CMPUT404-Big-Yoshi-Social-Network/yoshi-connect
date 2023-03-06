@@ -248,7 +248,7 @@ async function createPost(req, res, postId){
     //Should be refactored to do use an aggregate pipeline in case of large number of posts
     let post_history = await PostHistory.findOne({authorId: authorId});
 
-    if (post_history == null) {
+    if (!post_history) {
         console.log('Debug: Create a post history');
         await createPostHistory(authorId);
     }

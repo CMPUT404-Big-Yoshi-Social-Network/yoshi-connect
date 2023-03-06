@@ -26,7 +26,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Author, Login } = require('./db_schema/authorScheme.js');
+const { Author, Login } = require('./dbSchema/authorScheme.js');
 
 async function checkUsername(req) {
     const author = await Author.findOne({username: req.body.username});
@@ -54,11 +54,7 @@ async function removeLogin(req, res) {
         status: "Expired"
     });
 }
-/*
-Returns:
-    True: If Token is expired
-    False: If Token is not expired
-*/
+
 async function checkExpiry(req) {
     if(req.cookies == undefined){
         return true

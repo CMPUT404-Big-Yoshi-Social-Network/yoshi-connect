@@ -23,9 +23,14 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Request, Follower, Following, Friend, Login, Author } = require('../db_schema/authorScheme.js');
+const { Request, Follower, Following, Friend, Login, Author } = require('../dbSchema/authorScheme.js');
 
 async function saveRequest(req, res) {  
+    /**
+     * Description: Saves the request to the database
+     * Returns: If successful, { status: "Successful"} also returns a message
+     *          If failed, { status: "Unsuccessful" } also returns a message
+     */
     const senderUUID = await Author.findOne({username: req.body.data.sender});
     const receiverUUID = await Author.findOne({username: req.body.data.receiver});
 
@@ -37,25 +42,24 @@ async function saveRequest(req, res) {
         status: 'Stranger'
     });
 
-    await request.save(async (err, author, next) => {
-        if(err){
-            console.log(err);
-            return res.json({
-                message: "You could not send a friend request (could not be saved in database).",
-                status: "Unsuccessful"
-            });
+    request.save(async (err, author, next) => {
+        if (err) {
+            return res.json({ status: "Unsuccessful" });
         } else {
-            return res.json({
-                message: "Request saved.",
-                status: "Successful"
-            });
+            return res.json({ status: "Successful" });
         }
     });
 }
 
 async function deleteRequest(req, res) {
+    /**
+     * Description: Deletes the request from the database
+     * Returns: If successful, { status: "Successful"}
+     *          If failed, { status: "Unsuccessful" } 
+     */
     let sender = null;
     let receiver = null;
+
     if (req.body.sender === undefined) {
         sender = req.body.data.sender;
         receiver = req.body.data.receiver;
@@ -63,60 +67,62 @@ async function deleteRequest(req, res) {
         sender = req.body.sender;
         receiver = req.body.receiver;
     }
+
     await Request.deleteOne({sendId: sender, receiverId: receiver}, function(err, request){
         if(request){
             console.log("Debug: Request does exist and was deleted.");
-            return res.json({
-                status: "Successful"
-            });
+            return res.json({ status: "Successful" });
         } else {
-            return res.json({
-                status: "Unsuccessful"
-            });
+            return res.json({ status: "Unsuccessful" });
         }
     }).clone()
 }
 
 async function findRequest(req, res) {
+    /**
+     * Description: Gets the correct request form the database
+     * Returns: If successful, { status: "Successful"}
+     *          If failed, { status: "Unsuccessful" } 
+     */
     await Request.findOne({sendId: req.body.data.sender, receiverId: req.body.data.receiver}, function(err, request){
         if(request){
             console.log("Debug: Request does exist.");
-            return res.json({
-                status: "Successful"
-            });
+            return res.json({ status: "Successful" });
         } else {
-            return res.json({
-                status: "Unsuccessful"
-            });
+            return res.json({ status: "Unsuccessful" });
         }
     }).clone()
 }
 
 async function findAllRequests(req, res) {
+    /**
+     * Description: Gets the all request form the database
+     * Returns: A list of all requests in the form {requests: [request]} 
+     */
     let username = '';
     await Login.findOne({token: req.cookies.token}, async function(err, login) {
         console.log('Debug: Retrieving current author logged in')
         username = login.username
-        
         await Request.find({receiverId: username}, function(err, requests){
             console.log("Debug: Requests exists");
-            return res.json({
-                requests: requests
-            });
+            return res.json({ requests: requests });
         }).clone()
     }).clone();
 }
 
 async function senderAdded(req, res) {
+    /**
+     * Description: Checks if the author is already following the sender, calls the function adding if not following
+     * Returns: N/A 
+     */
     console.log('Debug: Need to check if the receiver is already following the sender.')
+
     let friend = false; 
     await Following.findOne({username: req.body.data.receiver}, function(err, following){
         if (following) {
             console.log("Debug: Receiver has a following list. Now, we need to find the sender in their following list.");
             let idx = following.followings.map(obj => obj.username).indexOf(req.body.data.sender);
-            if (idx > -1) { 
-                friend = true;
-            }
+            if (idx > -1) { friend = true; }
         } else {
             console.log('The Receiver does not currently have a following list (following no one).')
         }
@@ -125,20 +131,25 @@ async function senderAdded(req, res) {
 }
 
 async function adding(friend, req, res) {
+    /**
+     * Description: Adds the sender to either the following list, the followers list, or the friends list depending on the status of the two users 
+     *              after the author accepts the request. It then deletes the request
+     * Returns: If successful, N/A
+     *          If failed, { status: "Unsuccessful" }       
+     */
     let success = true;
+
     const senderUUID = await Author.findOne({username: req.body.data.sender});
     const receiverUUID = await Author.findOne({username: req.body.data.receiver});
+
     if (!friend) {
         console.log('Debug: Added as a follower.')
-
-        let new_following = [];
-        await Following.findOne({username: req.body.data.sender}, function(err, following){
+        await Following.findOne({username: req.body.data.sender}, async function(err, following){
             console.log('Debug: Add receiver to sender following list')
             if (following) {
                 console.log('Debug: Sender already has a following list, must add to existing list.')
                 following.followings.push({username: req.body.data.receiver, authorId: receiverUUID});
-
-                new_following = following.followings;
+                await following.save();
             } else {
                 console.log('Debug: Sender does not have a following list (has not followed anyone), must make one.')
                 var following = new Following({
@@ -151,25 +162,17 @@ async function adding(friend, req, res) {
                 });
     
                 following.save(async (err, following, next) => {
-                    if(err){
-                        console.log(err);
-                        success = false;
-                    }
+                    if (err) { success = false; }
                 })
             }
         }).clone()
-        if (new_following.length) {
-            await Following.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, authorId: senderUUID, followings: new_following}).clone()
-        }
 
-        let new_follower = [];
         console.log('Debug: Add sender to follower list.')
-        await Follower.findOne({username: req.body.data.receiver}, function(err, follower){
-            console.log('Debug: Add sender to receiver follower list')
+        await Follower.findOne({username: req.body.data.receiver}, async function(err, follower){
             if (follower) {
                 console.log('Debug: Receiver already has a follower list, must add to existing list.')
                 follower.followers.push({username: req.body.data.sender, authorId: senderUUID});
-                new_follower = follower.followers;
+                await follower.save();
             } else {
                 console.log('Debug: Receiver does not have a follower list (has no followers), must make one.')
                 var follower = new Follower({
@@ -188,57 +191,48 @@ async function adding(friend, req, res) {
                 })
             }
         }).clone()
-        if (new_follower.length) {
-            await Follower.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, authorId: receiverUUID, followers: new_follower}).clone()
-        }
 
         if (success) {
             console.log('Debug: Delete the request since it has been accepted.')
             await deleteRequest(req, res);
         } else {
-            return res.json({
-                status: "Unsuccessful"
-            });
+            return res.json({ status: "Unsuccessful" });
         }
     } else {
         console.log('Debug: These authors need to be added as friends.')
-        let new_following = [];
-        await Following.findOne({username: req.body.data.receiver}, function(err, following){
+
+        await Following.findOne({username: req.body.data.receiver}, async function(err, following){
             console.log('Debug: Find sender from receiver following list.')
             if (following) {
                 let idx = following.followings.map(obj => obj.username).indexOf(req.body.data.sender);
                 if (idx > -1) { 
                     following.followings.splice(idx, 1);
-                    new_following = following.followings;
+                    await following.save();
                 }
             }
         }).clone()
-        await Following.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, followings: new_following}).clone()
-
-        let new_follower = [];
-        await Follower.findOne({username: req.body.data.sender}, function(err, follower){
+        
+        await Follower.findOne({username: req.body.data.sender}, async function(err, follower){
             console.log('Debug: Remove receiver from sender follower list.')
             if (follower) {
                 console.log('Debug: We found sender follower list, now we need to delete receiver.')
                 let idx = follower.followers.map(obj => obj.username).indexOf(req.body.data.receiver);
                 if (idx > -1) { 
                     follower.followers.splice(idx, 1);
-                    new_follower = follower.followers;
+                    await follower.save();
                 }                
             } 
         }).clone()
-        await Follower.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, followers: new_follower}).clone()
-
-        let new_friend_receiver = [];
-        await Friend.findOne({username: req.body.data.receiver}, function(err, friend){
+        
+        await Friend.findOne({username: req.body.data.receiver}, async function(err, friend){
             console.log('Debug: Add sender to receiver friend list.')
             if (friend) {
                 console.log('Debug: Receiver has friend list.')
                 friend.friends.push({username: req.body.data.sender, authorId: senderUUID});
-                new_friend_receiver = friend.friends;
+                await friend.save();
             } else {
                 console.log('Debug: Receiver does not have a friend list yet.')
-                var new_friend = new Friend({
+                var newFriend = new Friend({
                     username: req.body.data.receiver,
                     authorId: receiverUUID,
                     friends: [{
@@ -247,7 +241,7 @@ async function adding(friend, req, res) {
                     }]
                 });
     
-                new_friend.save(async (err, friend, next) => {
+                newFriend.save(async (err, friend, next) => {
                     if(err){
                         console.log(err);
                         success = false;
@@ -255,20 +249,15 @@ async function adding(friend, req, res) {
                 })
             }
         }).clone()
-        if (new_friend_receiver.length) {
-            await Friend.findOneAndReplace({username: req.body.data.receiver}, {username: req.body.data.receiver, authorId: receiverUUID, friends: new_friend_receiver}).clone()
-        }
 
-        let new_friend_sender = [];
-        await Friend.findOne({username: req.body.data.sender}, function(err, friend){
-            console.log('Debug: Add receiver to sender friend list.')
+        await Friend.findOne({username: req.body.data.sender}, async function(err, friend){
             if (friend) {
                 console.log('Debug: Sender has friend list.')
                 friend.friends.push({username: req.body.data.receiver, authorId: receiverUUID});
-                new_friend_sender = friend.friends;
+                await friend.save();
             } else {
                 console.log('Debug: Sender does not have a friend list yet.')
-                var new_friend = new Friend({
+                var newFriend = new Friend({
                     username: req.body.data.sender,
                     authorId: senderUUID,
                     friends: [{
@@ -277,25 +266,17 @@ async function adding(friend, req, res) {
                     }]
                 });
     
-                new_friend.save(async (err, friend, next) => {
-                    if(err){
-                        console.log(err);
-                        success = false;
-                    }
+                newFriend.save(async (err, friend, next) => {
+                    if (err) { success = false; }
                 })
             }
         }).clone()
-        if (new_friend_sender.length) {
-            await Friend.findOneAndReplace({username: req.body.data.sender}, {username: req.body.data.sender, authorId: senderUUID, friends: new_friend_sender}).clone();
-        }
 
         if (success) {
             console.log('Debug: Delete the request since it has been accepted.')
             await deleteRequest(req, res);
         } else {
-            return res.json({
-                status: "Unsuccessful"
-            });
+            return res.json({ status: "Unsuccessful" });
         }
 
     }

@@ -19,13 +19,15 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
+// Password
 const crypto = require('crypto');
 
-const author_scheme = new Schema({
+const authorScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     username: String,
     password: String,
@@ -36,7 +38,7 @@ const author_scheme = new Schema({
     {versionKey: false
 });
 
-const login_scheme = new Schema({
+const loginScheme = new Schema({
     authorId: String,
     username: String,
     token: String,
@@ -45,7 +47,7 @@ const login_scheme = new Schema({
     {versionKey: false
 });
 
-const follower_scheme = new Schema({
+const followerScheme = new Schema({
     username: String,
     authorId: String,
     followers: [{
@@ -55,7 +57,7 @@ const follower_scheme = new Schema({
     {versionKey: false
 });
 
-const following_scheme = new Schema({
+const followingScheme = new Schema({
     username: String,
     authorId: String,
     followings: [{
@@ -65,7 +67,7 @@ const following_scheme = new Schema({
     {versionKey: false
 });
 
-const friend_scheme = new Schema({
+const friendScheme = new Schema({
     username: String,
     authorId: String,
     friends: [{
@@ -75,7 +77,7 @@ const friend_scheme = new Schema({
     {versionKey: false
 });
 
-const request_scheme = new Schema({
+const requestScheme = new Schema({
     senderId: String,
     senderUUID: String,
     receiverId: String,
@@ -84,12 +86,12 @@ const request_scheme = new Schema({
     {versionKey: false
 });
 
-const Friend = database.model('Friend', friend_scheme);
-const Following = database.model('Following', following_scheme);
-const Login = database.model('Login', login_scheme);
-const Author = database.model('Author', author_scheme);
-const Request = database.model('Request', request_scheme);
-const Follower = database.model('Follower', follower_scheme);
+const Friend = database.model('Friend', friendScheme);
+const Following = database.model('Following', followingScheme);
+const Login = database.model('Login', loginScheme);
+const Author = database.model('Author', authorScheme);
+const Request = database.model('Request', requestScheme);
+const Follower = database.model('Follower', followerScheme);
 
 module.exports = {
     Friend,

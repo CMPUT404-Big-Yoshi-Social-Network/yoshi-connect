@@ -39,7 +39,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
-const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower } = require('./routes/friend');
@@ -57,7 +57,7 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 // Schemas
-const { Author } = require('./db_schema/authorScheme.js');
+const { Author } = require('./dbSchema/authorScheme.js');
 
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
@@ -194,13 +194,13 @@ app.post('/server/posts/', async (req, res) => {
     await getAuthorByPost(req, res);
   } else {
     console.log('Debug: Paging the posts created by other (not the logged in author)');
-    await get_posts_paginated(req, res);
+    await getPostsPaginated(req, res);
   }
 })
 
 app.put('/server/authors/:author_id/posts/', async (req, res) => {
   console.log('Debug: Creating a post')
-  await create_post(req, res);
+  await createPost(req, res);
 })
 
 app.get('/server/authors/:author_id/posts/', async (req, res) => {
@@ -208,7 +208,7 @@ app.get('/server/authors/:author_id/posts/', async (req, res) => {
 	if ( await checkExpiry(req, res) ) {
 	  return res.sendStatus(404);
 	}
-  await get_posts_paginated(req, res);
+  await getPostsPaginated(req, res);
 })
 
 app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -216,7 +216,7 @@ app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if ( await checkExpiry(req, res) ) {
 	return res.sendStatus(404);
   }
-  await get_post(req, res);
+  await getPost(req, res);
 })
 
 app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
@@ -228,7 +228,7 @@ app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
 	checkVisibility(req, res);
   } else if (req.body.data.status == 'Modify') {
 	console.log('Debug: Updating a post');
-	await update_post(req, res);
+	await updatePost(req, res);
   }
 })
 
@@ -244,7 +244,7 @@ app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
 	console.log('Debug: Removing a comment from a post!')
 	deleteComment(req, res);
   } else if ( req.body.status == 'Remove post') {
-	await delete_post(req, res);
+	await deletePost(req, res);
   }
 })
 
@@ -262,7 +262,7 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);
   } else {
-	await create_post(req, res, req.params.post_id);
+	await createPost(req, res, req.params.post_id);
   }
 })
 

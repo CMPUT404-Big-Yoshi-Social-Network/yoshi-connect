@@ -19,23 +19,26 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
+
+// Password
 const crypto = require('crypto');
 
-const comment_scheme = new Schema({
+const commentScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     commenter: String,
     comment: String
 })
 
-const like_scheme = new Schema({
+const likeScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     liker: String
 })
 
-const post_scheme = new Schema({
+const postScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     title: String,
     description: String,
@@ -43,8 +46,8 @@ const post_scheme = new Schema({
     content: String,
     categories: [String],
     count: Number,
-    likes: [like_scheme],
-    comments: [comment_scheme],
+    likes: [likeScheme],
+    comments: [commentScheme],
     published: String,
     visibility: String,
     specifics: [String],
@@ -53,29 +56,29 @@ const post_scheme = new Schema({
     {versionKey: false
 });
 
-const post_history_scheme = new Schema({
+const postHistoryScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     num_posts: Number,
-    posts: [post_scheme]},
+    posts: [postScheme]},
     {versionKey: false
 })
 
-const public_scheme = new Schema({
+const publicScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     posts: [{
         authorId: String,
-        post: post_scheme,
+        post: postScheme,
     }],
     num_posts: Number},
     {versionKey: false
 })
 
-const PostHistory = database.model('Posts', post_history_scheme);
-const Post = database.model('Post', post_scheme);
-const Like = database.model('Like', like_scheme);
-const Comment = database.model('Comment', comment_scheme);
-const PublicPost = database.model('PublicPost', public_scheme);
+const PostHistory = database.model('Posts', postHistoryScheme);
+const Post = database.model('Post', postScheme);
+const Like = database.model('Like', likeScheme);
+const Comment = database.model('Comment', commentScheme);
+const PublicPost = database.model('PublicPost', publicScheme);
 
 module.exports = {
     PostHistory,

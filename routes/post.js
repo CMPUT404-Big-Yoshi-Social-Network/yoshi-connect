@@ -23,8 +23,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/postScheme.js');
-const { Friend } = require('../db_schema/authorScheme.js');
+const { PostHistory, Post, Like, Comment, PublicPost } = require('../dbSchema/postScheme.js');
+const { Friend } = require('../dbSchema/authorScheme.js');
 
 async function createPostHistory(author_id){
     console.log('Debug: Creating post history for user')
@@ -197,7 +197,7 @@ async function editComment(req, res){
     return res.json({ status: success })
 }
 
-async function create_post(req, res, postId){
+async function createPost(req, res, postId){
     console.log('Debug: Creating a post')
     let authorId = req.params.author_id;
     //Setup the rest of the post
@@ -273,7 +273,7 @@ async function create_post(req, res, postId){
     }
 }
 
-async function get_post(req, res){
+async function getPost(req, res){
     console.log("Debug: Getting a post");
 
     const authorId = req.params.author_id;
@@ -295,7 +295,7 @@ async function get_post(req, res){
     return res.json(post);
 }
 
-async function get_posts_paginated(req, res){
+async function getPostsPaginated(req, res){
     console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
 
@@ -335,7 +335,7 @@ async function get_posts_paginated(req, res){
     return res.sendStatus(200);
 }
 
-async function update_post(req, res){
+async function updatePost(req, res){
     console.log("Debug: Update a post");
 
     const authorId = req.params.author_id;
@@ -406,7 +406,7 @@ async function update_post(req, res){
     return res.sendStatus(200);
 }
 
-async function delete_post(req, res){
+async function deletePost(req, res){
     console.log("Debug: Delete a post");
 
     const authorId = req.params.author_id;
@@ -538,11 +538,11 @@ async function hasLiked(req, res) {
 
 module.exports={
     createPostHistory,
-    create_post,
-    get_post,
-    get_posts_paginated,
-    update_post,
-    delete_post,
+    createPost,
+    getPost,
+    getPostsPaginated,
+    updatePost,
+    deletePost,
     addLike,
     addComment,
     deleteLike,

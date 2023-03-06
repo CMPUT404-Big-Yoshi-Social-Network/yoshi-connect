@@ -19,13 +19,16 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
+import React from 'react';
+import Popup from 'reactjs-popup';
+
+// User Interface
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Form } from 'react-bootstrap';
-import React from 'react';
-import Popup from 'reactjs-popup';
-import './nav.css'
 import Notifications from '../../notifications/notifcation-box';
+import './nav.css'
 
 function TopNav() {
     return (

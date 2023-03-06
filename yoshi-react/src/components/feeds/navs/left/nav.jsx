@@ -19,16 +19,21 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality 
 // import { useParams } from 'react-router-dom';
 import React from 'react';
 import { useParams } from 'react-router-dom';
+
+// Child Component
+import Following from '../../follows/following.jsx';
+import Friends from '../../friends/friends.jsx';
+import SettingsNav from '../../settings/nav.jsx';
+
+// User Interface
 // import Container from 'react-bootstrap/Container';
 // import Nav from 'react-bootstrap/Nav';
 // import Navbar from 'react-bootstrap/Navbar';
-import Following from '../../follows/following.jsx';
 import './nav.css';
-import Friends from '../../friends/friends.jsx';
-import SettingsNav from '../../settings/nav.jsx';
 
 function LeftNavBar() {
     const url = window.location.pathname;

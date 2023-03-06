@@ -599,10 +599,10 @@ app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const request = await deleteRequest(authorId, foreignId, req.body.type, res);
+  const request = await deleteRequest(authorId, foreignId, res);
 
   return res.json({
-    "type": req.body.type,
+    "type": request.type,
     "summary": request.summary,
     "actor": request.actor,
     "object": request.object
@@ -613,35 +613,41 @@ app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) 
 //Post
 //TODO 
 app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
-
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 })
 
 
 //TODO 
 app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
-
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 })
 
 
 //TODO 
 app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
-
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 })
 
 
 //TODO 
 app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
-
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 })
 
 
 //TODO 
 app.get('/api/authors/:authorId/posts', async (req, res) => {
+  const authorId = req.params.authorId;
 
 })
 //TODO 
 
 app.post('/api/authors/:authorId/posts', async (req, res) => {
+  const authorId = req.params.authorId;
 
 })
 

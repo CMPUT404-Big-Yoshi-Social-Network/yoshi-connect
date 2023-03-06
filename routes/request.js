@@ -25,6 +25,11 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { Request, Follower, Following, Friend, Login, Author } = require('../dbSchema/authorScheme.js');
 
+/**
+     * Description: saves the request to the database
+     * Returns: if successful, { status: "Successful"} also returns a message
+     *          if failed, { status: "Unsuccessful" } also returns a message
+     */
 async function saveRequest(req, res) {  
     const senderUUID = await Author.findOne({username: req.body.data.sender});
     const receiverUUID = await Author.findOne({username: req.body.data.receiver});
@@ -53,6 +58,11 @@ async function saveRequest(req, res) {
     });
 }
 
+/**
+     * Description: deltes the request from the database
+     * Returns: if successful, { status: "Successful"}
+     *          if failed, { status: "Unsuccessful" } 
+     */
 async function deleteRequest(req, res) {
     let sender = null;
     let receiver = null;
@@ -77,6 +87,11 @@ async function deleteRequest(req, res) {
     }).clone()
 }
 
+/**
+     * Description: Gets the correct request form the database
+     * Returns: if successful, { status: "Successful"}
+     *          if failed, { status: "Unsuccessful" } 
+     */
 async function findRequest(req, res) {
     await Request.findOne({sendId: req.body.data.sender, receiverId: req.body.data.receiver}, function(err, request){
         if(request){
@@ -92,6 +107,10 @@ async function findRequest(req, res) {
     }).clone()
 }
 
+/**
+     * Description: Gets the all request form the database
+     * Returns: a list of all requests in the form {requests: [request]} 
+     */
 async function findAllRequests(req, res) {
     let username = '';
     await Login.findOne({token: req.cookies.token}, async function(err, login) {
@@ -107,6 +126,10 @@ async function findAllRequests(req, res) {
     }).clone();
 }
 
+/**
+     * Description: Checks if the author is already following the sender, calls the function adding if not following
+     * Returns: N/A 
+     */
 async function senderAdded(req, res) {
     console.log('Debug: Need to check if the receiver is already following the sender.')
     let friend = false; 
@@ -124,6 +147,12 @@ async function senderAdded(req, res) {
     }).clone()
 }
 
+/**
+     * Description: Adds the sender to either the following list, the followers list, or the friends list depending on the status of the two users 
+     *              after the author accepts the request. It then deletes the request
+     * Returns: if successful, N/A
+     *          if failed, { status: "Unsuccessful" }       
+     */
 async function adding(friend, req, res) {
     let success = true;
     const senderUUID = await Author.findOne({username: req.body.data.sender});

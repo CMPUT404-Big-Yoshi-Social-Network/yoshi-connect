@@ -38,7 +38,7 @@ const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor } = require('./routes/author');
-const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility, fetchLikers, getAuthorByPost } = require('./routes/post');
+const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
@@ -186,13 +186,15 @@ app.post('/server/feed', (req, res) => {
 
 app.post('/server/posts/', async (req, res) => {
   if ( req.body.data.status == 'Fetching current authorId') { 
-	console.log('Debug: Getting the current author logged in');
-	await getCurrentAuthor(req, res);
+    console.log('Debug: Getting the current author logged in');
+    await getCurrentAuthor(req, res);
+  } else if (req.body.data.status == 'Checking if post is already liked') {
+    await hasLiked(req, res);
   } else if (req.body.data.status == 'Fetching authorId') {
-	await getAuthorByPost(req, res);
+    await getAuthorByPost(req, res);
   } else {
-	console.log('Debug: Paging the posts created by other (not the logged in author)');
-	await get_posts_paginated(req, res);
+    console.log('Debug: Paging the posts created by other (not the logged in author)');
+    await get_posts_paginated(req, res);
   }
 })
 
@@ -224,9 +226,6 @@ app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   } else if ( req.body.data.status == 'Checking Visibility') {
 	console.log('Debug: Checking the visibility of a post');
 	checkVisibility(req, res);
-  } else if ( req.body.data.status == 'Fetching likers') {
-	console.log('Debug: Viewing list of likers for a specific post');
-	fetchLikers(req, res);
   } else if (req.body.data.status == 'Modify') {
 	console.log('Debug: Updating a post');
 	await update_post(req, res);

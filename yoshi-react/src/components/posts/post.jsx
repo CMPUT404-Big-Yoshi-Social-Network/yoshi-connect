@@ -5,23 +5,54 @@ import Comment from './comment';
 import { useState } from 'react';
 import './post.css';
 import EditPost from "./edit";
+import { useEffect } from "react";
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post}) {
     const postId = post._id;
     const authorId = post.authorId;
     const url = "/server/authors/" + authorId + "/posts/" + postId;
-    const num_likes = post.likes.length;
-    const num_comments = post.comments.length;
+
+    const [numLikes, setNumLikes] = useState(post.likes.length)
+    const numComments = post.comments.length
 
     const [comment, setComment] = useState({
         newComment: ""
     })
     const [showComment, setShowComment] = useState(false)
 
-    const [like, setLike] = useState({
-        liked: false
-    })
+    const [like, setLike] = useState(false)
+
+    useEffect(() => { 
+        console.log('Debug: Checking if the viewer has already liked the post')
+        const hasLiked = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/posts/',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    viewerId: viewerId,
+                    postId: postId,
+                    authorId: authorId,
+                    status: 'Checking if post is already liked'
+                }
+            }
+            axios
+            .post('/server/posts/', config)
+            .then((response) => {
+                if (response.data.status === 'liked') {
+                    setLike(true);
+                } else {
+                    setLike(false);
+                }
+            })
+            .catch(err => { });
+        }
+        hasLiked();
+    }, [authorId, postId, viewerId])
 
     const toggleComments = () => { 
         console.log("Debug: Toggle Comments");
@@ -58,7 +89,11 @@ function Post({viewerId, post}) {
                 status: "Add like"
             }
         };
-        axios.put(url, config).then((response) => {}).catch((error) => { console.log(error); });
+        axios.put(url, config)
+        .then((response) => {
+            setNumLikes(response.data.numLikes);
+        })
+        .catch((error) => { console.log(error); });
         setLike(true);
     }
 
@@ -76,8 +111,12 @@ function Post({viewerId, post}) {
                 status: "Remove like"
             }
         };
-        axios.delete(url, config).then((response) => {}).catch((error) => { console.log(error); });
-        setLike(false);
+        axios.delete(url, config)
+        .then((response) => {
+            setNumLikes(response.data.numLikes);
+            setLike(false);
+        })
+        .catch((error) => { console.log(error); });
     }
 
     const makeComment = () => {
@@ -96,7 +135,8 @@ function Post({viewerId, post}) {
             } 
         };
         axios(config)
-        .then((response) => { })
+        .then((response) => { 
+        })
         .catch((error) => { console.log(error); });
     }
     
@@ -111,10 +151,9 @@ function Post({viewerId, post}) {
 
                     <p>{post.published}</p>
                     <br></br>
-                    {num_likes}
-                    { !like.liked ? <button onClick={addLike}>Like</button> : <button onClick={removeLike}>Unlike</button>} 
+                    { !like ? <span>{numLikes}<button onClick={addLike}>Like</button></span> : <span>{numLikes}<button onClick={removeLike}>Unlike</button></span>} 
                     <br></br>
-                    {num_comments}
+                    {numComments}
                     { showComment ? <button onClick={toggleComments}>Close Comments</button> : <button onClick={toggleComments}>Open Comments</button> }
 
                     {showComment && 
@@ -128,9 +167,11 @@ function Post({viewerId, post}) {
                                 <button onClick={makeComment}>Add Comment</button>
                             </form>
 
-                            {Object.keys(post.comments).map((comment, idx) => (
+                            {
+                                Object.keys(post.comments).map((comment, idx) => (
                                 <Comment key={idx} authorId={authorId} viewerId={viewerId} postId={postId} {...post.comments[comment]}/>
-                            ))}
+                                )
+                            )}
                         </div>}
                         <br></br>
                     {

@@ -23,11 +23,11 @@ Foundation; All Rights Reserved
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
 @font-face {
     font-family: "Uni Neue";
-    src: url('../../fonts/UniNeue-Trial-Regular.eot');
-    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
-         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
-         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
-         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+    src: url('../../../fonts/UniNeue-Trial-Regular.eot');
+    src: url('../../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
+         url('../../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
+         url('../../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
+         url('../../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
 }
 
 .sc403{

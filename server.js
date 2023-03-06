@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -127,48 +127,48 @@ app.post('/server/admin', async (req, res) => {
 app.get('/server/admin/dashboard', async (req, res) => {
   console.log('Debug: Checking expiry of token')
   if(!(await checkAdmin(req, res))){
-    return res.sendStatus(403)
+	return res.sendStatus(403)
   }
 
   if((await checkExpiry(req, res))){
-    return res.json({
-      status: "Unsuccessful",
-      message: "Token expired"
-    })
+	return res.json({
+	  status: "Unsuccessful",
+	  message: "Token expired"
+	})
   }
 
   return res.json({
-    status: "Successful",
-    message: "Here's the dashboard"
+	status: "Successful",
+	message: "Here's the dashboard"
   })
 })
 
 app.post('/server/admin/dashboard', async (req, res) => {
   if (req.body.data.status == 'Logging Out') {
-    console.log('Debug: Logging out as Admin')
-    removeLogin(req, res);
+	console.log('Debug: Logging out as Admin')
+	removeLogin(req, res);
   } else if (req.body.data.status == 'Fetching Authors') {
-    console.log('Debug: Getting all authors.')
-    return res.json({
-      authors: await Author.find()
-    })
+	console.log('Debug: Getting all authors.')
+	return res.json({
+	  authors: await Author.find()
+	})
   }
 })
 
 app.delete('/server/admin/dashboard', (req, res) => {
   if (req.body.status == 'Delete an Author') {
-    console.log('Debug: Deleting an Author.');
-    deleteAuthor(req, res);
+	console.log('Debug: Deleting an Author.');
+	deleteAuthor(req, res);
   }
 })
 
 app.put('/server/admin/dashboard', (req, res) => {
   if (req.body.data.status == 'Add New Author') {
-    console.log('Debug: Adding a new Author.');
-    addAuthor(req, res);
+	console.log('Debug: Adding a new Author.');
+	addAuthor(req, res);
   } else if (req.body.data.status == 'Modify an Author') {
-    console.log('Debug: Modifying the Author.')
-    modifyAuthor(req, res);
+	console.log('Debug: Modifying the Author.')
+	modifyAuthor(req, res);
   }
 })
 
@@ -179,20 +179,20 @@ app.get('/server/feed', (req, res) => {
 
 app.post('/server/feed', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
-    removeLogin(req, res);
+	console.log('Debug: Logging out as Author')
+	removeLogin(req, res);
   }
 })
 
 app.post('/server/posts/', async (req, res) => {
   if ( req.body.data.status == 'Fetching current authorId') { 
-    console.log('Debug: Getting the current author logged in');
-    await getCurrentAuthor(req, res);
+	console.log('Debug: Getting the current author logged in');
+	await getCurrentAuthor(req, res);
   } else if (req.body.data.status == 'Fetching authorId') {
-    await getAuthorByPost(req, res);
+	await getAuthorByPost(req, res);
   } else {
-    console.log('Debug: Paging the posts created by other (not the logged in author)');
-    await get_posts_paginated(req, res);
+	console.log('Debug: Paging the posts created by other (not the logged in author)');
+	await get_posts_paginated(req, res);
   }
 })
 
@@ -203,16 +203,16 @@ app.put('/server/authors/:author_id/posts/', async (req, res) => {
 
 app.get('/server/authors/:author_id/posts/', async (req, res) => {
   console.log('Debug: Paging the posts created by the logged in author');
-    if ( await checkExpiry(req, res) ) {
-      return res.sendStatus(404);
-    }
+	if ( await checkExpiry(req, res) ) {
+	  return res.sendStatus(404);
+	}
   await get_posts_paginated(req, res);
 })
 
 app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   console.log('Debug: Viewing a specific post by a specific author');
   if ( await checkExpiry(req, res) ) {
-    return res.sendStatus(404);
+	return res.sendStatus(404);
   }
   await get_post(req, res);
 })
@@ -220,42 +220,42 @@ app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
 app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   console.log('Debug: Updating a specific post by a specific author')
   if ( await checkExpiry(req, res) ) {
-    return res.sendStatus(404);
+	return res.sendStatus(404);
   } else if ( req.body.data.status == 'Checking Visibility') {
-    console.log('Debug: Checking the visibility of a post');
-    checkVisibility(req, res);
+	console.log('Debug: Checking the visibility of a post');
+	checkVisibility(req, res);
   } else if ( req.body.data.status == 'Fetching likers') {
-    console.log('Debug: Viewing list of likers for a specific post');
-    fetchLikers(req, res);
+	console.log('Debug: Viewing list of likers for a specific post');
+	fetchLikers(req, res);
   } else if (req.body.data.status == 'Modify') {
-    console.log('Debug: Updating a post');
-    await update_post(req, res);
+	console.log('Debug: Updating a post');
+	await update_post(req, res);
   }
 })
 
 app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
    console.log('Debug: Deleting a specific post by a specific author')
   if ( await checkExpiry(req, res) ) {
-    return res.sendStatus(404);
+	return res.sendStatus(404);
   }
   if ( req.body.status == 'Remove like' ) {
-    console.log('Debug: Removing a like from a post!')
-    deleteLike(req, res);
+	console.log('Debug: Removing a like from a post!')
+	deleteLike(req, res);
   } else if ( req.body.status == 'Remove comment' ) {
-    console.log('Debug: Removing a comment from a post!')
-    deleteComment(req, res);
+	console.log('Debug: Removing a comment from a post!')
+	deleteComment(req, res);
   } else if ( req.body.status == 'Remove post') {
-    await delete_post(req, res);
+	await delete_post(req, res);
   }
 })
 
 app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if ( await checkExpiry(req, res) ) {
-    return res.sendStatus(404);
+	return res.sendStatus(404);
   }
   if ( req.body.status == 'Add comment' ) {
-    console.log('Debug: Adding a comment to a post!');
-    addComment(req, res);
+	console.log('Debug: Adding a comment to a post!');
+	addComment(req, res);
   } else if ( req.body.data.status == 'Add like' ) {
     console.log('Debug: Adding a like to a post!');
     addLike(req, res);
@@ -263,13 +263,13 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);
   } else {
-    await create_post(req, res, req.params.post_id);
+	await create_post(req, res, req.params.post_id);
   }
 })
 
 app.get('/server/users/:username', async (req,res) => {
   if(await checkExpiry(req))
-    return res.sendStatus(401);
+	return res.sendStatus(401);
 
   get_profile(req, res);
 })
@@ -281,58 +281,58 @@ app.post('/server/users/posts', async (req, res) => {
 
 app.post('/server/requests', async (req, res) => {
   if (req.body.data.status == 'Fetching Requests') {
-    console.log('Debug: Getting friend requests')
-    findAllRequests(req, res);
+	console.log('Debug: Getting friend requests')
+	findAllRequests(req, res);
   } else if ( req.body.data.status == 'Fetching current authorId') { 
-      console.log('Debug: Getting the current author logged in');
-      await getCurrentAuthorUsername(req, res);
-    } 
+	  console.log('Debug: Getting the current author logged in');
+	  await getCurrentAuthorUsername(req, res);
+	} 
 })
 
 app.put('/server/requests', (req, res) => {
   if (req.body.data.status == 'Sender is added by Receiver') {
-    console.log('Debug: Sender added by Receiver')
-    senderAdded(req, res);
+	console.log('Debug: Sender added by Receiver')
+	senderAdded(req, res);
   } 
 })
 
 app.delete('/server/requests', (req, res) => {
   if (req.body.status == 'Sender is rejected by Receiver') {
-    console.log('Debug: Sender rejected by Receiver')
-    deleteRequest(req, res);
+	console.log('Debug: Sender rejected by Receiver')
+	deleteRequest(req, res);
   }
 })
 
 app.post('/server/users/:username', async (req, res) => {
   if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
-    removeLogin(req, res);
+	console.log('Debug: Logging out as Author')
+	removeLogin(req, res);
   } else if (req.body.data.status == 'Does Request Exist') {
-    console.log('Debug: Checking if Friend Request Exists')
-    findRequest(req, res);
+	console.log('Debug: Checking if Friend Request Exists')
+	findRequest(req, res);
   } else if (req.body.data.status == 'Friends or Follows') {
-    console.log('Debug: Checking if they are friends or follows.')
-    await isFriend(req, res);
+	console.log('Debug: Checking if they are friends or follows.')
+	await isFriend(req, res);
   }
 })
 
 app.put('/server/users/:username', async (req, res) => {
   if (req.body.data.status == 'Save Request') {
-    console.log('Debug: Saving Friend Request')
-    saveRequest(req, res);
+	console.log('Debug: Saving Friend Request')
+	saveRequest(req, res);
   } else if (req.body.data.status == 'Unfriending') {
-    console.log('Debug: Viewer unfriending viewed.')
-    await unfriending(req, res);
+	console.log('Debug: Viewer unfriending viewed.')
+	await unfriending(req, res);
   } else if (req.body.data.status == 'Unfollowing') {
-    console.log('Debug: Viewer unfollowing viewer.')
-    await unfollowing(req, res);
+	console.log('Debug: Viewer unfollowing viewer.')
+	await unfollowing(req, res);
   }
 })
 
 app.delete('/server/users/:username', (req, res) => {
   if (req.body.status == 'Delete Request') {
-    console.log('Debug: Deleting Friend Request')
-    deleteRequest(req, res);
+	console.log('Debug: Deleting Friend Request')
+	deleteRequest(req, res);
   }
 })
 
@@ -369,17 +369,144 @@ app.post('/server/public/posts', async (req, res) => {
 app.post('/server/settings', async (req, res) => {
   console.log('Debug: Updating author account details');
   if (req.body.data.status === 'Get Author') {
-    await getCurrentAuthorAccountDetails(req, res);
+	await getCurrentAuthorAccountDetails(req, res);
   }
 })
 
 app.put('/server/settings', async (req, res) => {
   console.log('Debug: Updating author account details');
   if (req.body.data.status === 'Modify an Author') {
-    await updateAuthor(req, res);
+	await updateAuthor(req, res);
   }
 })
 
+/*
+
+START OF NEW API STUFF VERY IMPORTANT DO NOT DELETE
+
+*/
+
+//Authors 
+app.get('/api/authors', async (req, res) => {
+  //Paginated authors
+})
+
+//Single Author
+app.get('/api/authors/:authorId', async (req, res) => {
+  //Get authorId profile
+})
+
+app.post('/api/authors/:authorId', async (req, res) => {
+  //update authorid profile
+})
+
+//Followers
+app.get('/api/authors/:authorId/followers')
+
+//TODO 
+app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+
+})
+
+//Friends and followers request
+//TODO later
+
+
+//Post
+//TODO 
+app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.get('/api/authors/:authorId/posts', async (req, res) => {
+
+})
+//TODO 
+
+app.post('/api/authors/:authorId/posts', async (req, res) => {
+
+})
+
+//comments
+
+//TODO 
+app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+
+})
+//TODO 
+app.post('', async (req, res) => {
+
+})
+
+//Likes
+
+//TODO 
+app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
+
+})
+//TODO 
+app.get('/api/authors/:authorId/posts/:postId/comments/:commentId', async (req, res) => {
+
+})
+
+//Liked
+
+//TODO 
+app.get('/api/authors/:authorId/liked', async (req, res) => {
+
+})
+
+//Inbox
+
+//TODO 
+app.get('/api/authors/:authorId/inbox', async (req, res) => {
+
+})
+//TODO 
+app.post('/api/authors/:authorId/inbox', async (req, res) => {
+
+})
+//TODO 
+app.delete('/api/authors/:authorId/inbox', async (req, res) => {
+
+})
+/*
+
+END OF NEW API STUFF
+
+*/
 app.get('/',(req, res) => {
   res.render("index");
 }); 

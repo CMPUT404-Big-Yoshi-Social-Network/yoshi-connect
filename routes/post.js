@@ -86,24 +86,23 @@ async function addComment(req, res){
 
 async function deleteComment(req, res){
     console.log('Debug: Deleting a comment')
-    let updated_posts = [];
     let success = false;
-    await PostHistory.findOne({authorId: req.body.data.authorId}, function(err, history){
+    await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
         console.log('Debug: Find the post with the comment.')
         if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
             if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                history.posts[post_idx].comments[com_idx].splice(com_idx, 1);
-                updated_posts = history.posts;
+                console.log('Debug: Found comment')
+                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.commentId);
+                history.posts[post_idx].comments.splice(com_idx, 1);
                 success = true;
+                await history.save();
             }
         }
     }).clone()
-    await PostHistory.findOneAndReplace({authorId: req.body.data.authorId}, {authorId: req.body.data.receiver, num_posts: req.body.data.numPosts, posts: updated_posts}).clone()
-
+    
     return res.json({
-        status: success,
+        status: success
     })
 }
 

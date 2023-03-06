@@ -253,7 +253,6 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if ( await checkExpiry(req, res) ) {
     return res.sendStatus(404);
   }
-
   if ( req.body.status == 'Add comment' ) {
     console.log('Debug: Adding a comment to a post!');
     addComment(req, res);

@@ -262,7 +262,7 @@ async function getAuthor(authorId){
     return author;
 }
 
-async function apiUpdateAuthor(token, author, admin){
+async function apiUpdateAuthor(token, author){
     /**
      * Description: Updates an existing author in the database
      * Returns: Status 401 if the there is no valid authentication 
@@ -294,13 +294,43 @@ async function apiUpdateAuthor(token, author, admin){
     return 200;
 }
 
-async function fetchAuthors(page, size){
-    return Author.find(
+async function getAuthors(page, size){
+    
+    const authors = await Author.find(
+        {
+            limit: size,
+            skip: page * size 
+        }
+    ).limit(size);
+    
+
+    /*
+    const authors = await Author.aggregate(
         {
             $limit: size,
             $skip: page * size 
         }
     )
+    */
+    let sanitizedAuthors = [];
+
+    for(let i = 0; i < authors.length; i++){
+        const author = authors[i];
+
+        sanitizedAuthors.push({
+                "type": "author",
+                "id" : author._id,
+                "host": process.env.DOMAIN_NAME,
+                "displayname": author.username,
+                "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+                "github": "",
+                "profileImage": "",
+                "email": author.email, 
+                "about": author.about,
+                "pronouns": author.pronouns
+        })
+    }
+    return sanitizedAuthors;
 }
 
 module.exports={
@@ -313,5 +343,5 @@ module.exports={
     updateAuthor,
     getAuthor,
     apiUpdateAuthor,
-    fetchAuthors
+    getAuthors
 }

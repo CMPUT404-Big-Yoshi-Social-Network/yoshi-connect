@@ -715,8 +715,10 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
 
   return res.json({
     "type": "comments",
-    "authorId": authorId,
-    "postId": postId,
+    "page": 1,
+    "size": 5,
+    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId
+    "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
     "comments": comments
     })
 })
@@ -758,19 +760,13 @@ app.get('/api/authors/:authorId/liked', async (req, res) => {
 //Inbox
 
 //TODO 
-app.get('/api/authors/:authorId/inbox', async (req, res) => {
-
-})
+app.get('/api/authors/:authorId/inbox', async (req, res) => { })
 
 //TODO 
-app.post('/api/authors/:authorId/inbox', async (req, res) => {
-
-})
+app.post('/api/authors/:authorId/inbox', async (req, res) => { })
 
 //TODO 
-app.delete('/api/authors/:authorId/inbox', async (req, res) => {
-
-})
+app.delete('/api/authors/:authorId/inbox', async (req, res) => { })
 
 /*
 

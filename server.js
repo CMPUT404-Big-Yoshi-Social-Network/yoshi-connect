@@ -37,7 +37,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor } = require('./routes/author');
+const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -392,8 +392,10 @@ app.get('/api/authors', async (req, res) => {
 
 //Single Author
 app.get('/api/authors/:authorId', async (req, res) => {
+  if(req.params.authorId == undefined)
+    return res.sendStatus(404);
+
   author = await getAuthor(req.params.authorId);
-  console.log(author);
 
   if(author === 404)
     return res.sendStatus(404);
@@ -403,17 +405,31 @@ app.get('/api/authors/:authorId', async (req, res) => {
 
   return res.json({
     "type": "author",
-    "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+    "id" : author._id,
     "host": process.env.DOMAIN_NAME,
     "displayname": author.username,
-    "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
+    "url":  process.env.DOMAIN_NAME + "users/" + author._id,
     "github": "",
-    "profileImage": ""
+    "profileImage": "",
+    "about": author.about,
+    "pronouns": author.pronouns
   });
 })
 
 app.post('/api/authors/:authorId', async (req, res) => {
-  //update authorid profile
+  if(!req.cookies["token"])
+    return res.sendStatus(401);
+  if(req.body.type !== 'author')
+    return res.sendStatus(400);
+
+  const authorId = req.body.id;
+  const host = req.body.host;
+  const username = req.body.displayName;
+
+  if(!authorId || !host || !username)
+    return res.sendStatus(400);
+
+  return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
 
 //Followers

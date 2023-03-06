@@ -23,8 +23,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Friend, Login, Follower } = require('../db_schema/authorScheme.js');
-const { PostHistory } = require('../db_schema/postScheme.js');
+const { Friend, Login, Follower } = require('../dbSchema/authorScheme.js');
+const { PostHistory } = require('../dbSchema/postScheme.js');
 
 async function fetchFriends(req, res) {
     const login = await Login.findOne({token: req.cookies.token}).clone();

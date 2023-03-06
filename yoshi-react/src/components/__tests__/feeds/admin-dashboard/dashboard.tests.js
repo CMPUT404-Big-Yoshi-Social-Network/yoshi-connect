@@ -19,10 +19,13 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import { render } from "@testing-library/react";
-import AdminDashboard from "../../../admin/adminDashboard.jsx";
 import "@testing-library/jest-dom";
 import { BrowserRouter } from 'react-router-dom';
+
+// Tested Component
+import AdminDashboard from "../../../admin/adminDashboard.jsx";
 
 test("test description here", async () => {
     render(<BrowserRouter><AdminDashboard/></BrowserRouter>);

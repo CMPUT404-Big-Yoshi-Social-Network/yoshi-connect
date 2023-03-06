@@ -23,7 +23,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Follower, Following, Friend } = require('../db_schema/authorScheme.js');
+const { Follower, Following, Friend } = require('../dbSchema/authorScheme.js');
 
 async function createFollowers(username, authorId){
     await Follower({

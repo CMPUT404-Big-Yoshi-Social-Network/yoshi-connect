@@ -715,15 +715,27 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const comments = getComments(authorId, postId);
 
   return res.json({
-    "type": comments,
+    "type": "comments",
     "authorId": authorId,
     "postId": postId,
     "comments": comments
     })
 })
 //TODO 
-app.post('', async (req, res) => {
+app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
+  const comment = createComment(authorId, postId, req.body);
+
+  return res.json({
+    "type": "comment",
+    "author": comment.author,
+    "comment": comment.comment,
+    "contentType": comment.contentType,
+    "published": comment.published,
+    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id
+    }) 
 })
 
 //Likes

@@ -378,12 +378,9 @@ UPDATED API
  *    description: Get a list of authors, paginated. by default it's page 1 with size 1. Currently pages are broken
  *    responses:
  *      200:
- *        description: a list of authors
+ *        description: A list of authors
  */
 app.get('/api/authors', async (req, res) => {
-  /**
-   * Description: Gets Author paginated given a query of pages and how big each page is 
-   */
   const page = req.query.page;
   const size = req.query.size;
   if(page == undefined)
@@ -410,9 +407,6 @@ app.get('/api/authors', async (req, res) => {
  *        description: Returns Status 500 when the server is unable to retrieve the Author from the database
  */
 app.get('/api/authors/:authorId', async (req, res) => {
-  /**
-   * Description: GET request for a single Author
-   */
   if(req.params.authorId == undefined)
     return res.sendStatus(404);
 
@@ -750,12 +744,12 @@ app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/posts/:postId:
  *  post:
- *    description: <insert what this request is trying to do>
+ *    description: Updates an existing Post made by a specific Author 
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns Status 200 when the server successfully updated the Post
+ *      404:
+ *        description: Returns Status 404 when the server was unable to find any Post related to the given URL
  */
 app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -774,12 +768,14 @@ app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/posts/:postId:
  *  delete:
- *    description: <insert what this request is trying to do>
+ *    description: Deletes a specific Post made by a specific Author
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns Status 200 if the server successfully deleted the Post
+ *      404:
+ *        description: Returns Status 404 if the server was unable to find either the Author or the Author's Post
+ *      500:
+ *        description: Returns Status 500 if the server was unable to delete the Post
  */
 app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -800,12 +796,14 @@ app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/posts/:postId:
  *  put:
- *    description: <insert what this request is trying to do>
+ *    description: Creates a Post object made by a specific Author 
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns Status 200 if the Post was able to be stored into the database 
+ *      404:
+ *        description: Returns Status 404 if the Author or Post does not exist 
+ *      500: 
+ *        description: Returns Status 500 if the server was unable to create and save the Post
  */
 app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -826,12 +824,10 @@ app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/posts:
  *  get:
- *    description: <insert what this request is trying to do>
+ *    description: Fetches the posts of a specific Author 
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns a list of Posts by a specific Author
  */
 app.get('/api/authors/:authorId/posts', async (req, res) => {
   const authorId = req.params.authorId;
@@ -851,12 +847,14 @@ app.get('/api/authors/:authorId/posts', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/posts:
  *  post:
- *    description: <insert what this request is trying to do>
+ *    description: Creates a Post given no PostId (i.e., needs to be generated)
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns Status 200 if the Post was successfully created and saved into the database
+ *      404:
+ *        description: Returns Status 404 if the Author does not exist 
+ *      500 
+ *        description: Returns Status 500 if the server was unable to store or create the Post 
  */
 app.post('/api/authors/:authorId/posts', async (req, res) => {
   const authorId = req.params.authorId;
@@ -876,12 +874,10 @@ app.post('/api/authors/:authorId/posts', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/posts/:postId/comments:
  *  get:
- *    description: <insert what this request is trying to do>
+ *    description: Gets the comments related to a specific Post made by a specific Author (paginated)
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns Status 200 when the comments have been successfully found (i.e., returns list of comments)
  */
 app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
@@ -903,12 +899,10 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/posts/:postId/comments:
  *  post:
- *    description: <insert what this request is trying to do>
+ *    description: Creates a comment for a specific Post made by a specific Author
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns 200 when the comment was successfully made (i.e., returns the comment)
  */
 app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
@@ -931,12 +925,10 @@ app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/posts/:postId/likes:
  *  get:
- *    description: <insert what this request is trying to do>
+ *    description: Fetches the likes related to a specific Post made by a specific Author (paginated)
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns 200 if the likes were successfully fetched (i.e., return the likes )
  */
 app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;

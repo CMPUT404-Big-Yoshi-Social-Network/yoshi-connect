@@ -238,6 +238,16 @@ async function updateAuthor(req, res){
  * API STUFF keep seperate from other things for now
 */
 
+async function authLogin(token, authorId, displayName){
+    const login = await Login.findOne({token: token});
+    if(!login)
+        return false;
+
+    if(login.authorId == authorId && login.username == displayName)
+        return true;
+
+    return false;
+}
 async function getAuthor(authorId){
     
     const author = await Author.findOne({_id: authorId}, function (err, author) {

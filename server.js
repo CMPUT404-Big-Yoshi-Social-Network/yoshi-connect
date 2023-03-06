@@ -241,10 +241,10 @@ app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if ( req.body.status == 'Remove like' ) {
     console.log('Debug: Removing a like from a post!')
     deleteLike(req, res);
-  } else if ( req.body.data.status == 'Remove comment' ) {
+  } else if ( req.body.status == 'Remove comment' ) {
     console.log('Debug: Removing a comment from a post!')
     deleteComment(req, res);
-  } else {
+  } else if ( req.body.status == 'Remove post') {
     await delete_post(req, res);
   }
 })

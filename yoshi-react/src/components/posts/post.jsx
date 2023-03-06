@@ -26,6 +26,22 @@ function Post({viewerId, post}) {
         setShowComment(!showComment);
     }
 
+    const deletePost = () => {
+        console.log("Debug: Deleting Post");
+        let config = {
+            method: "delete",
+            maxBodyLength: "Infinity",
+            url: url,
+            headers: { 'Content-Type': 'application/json' },
+            data: {
+                authorId: authorId,
+                postId: postId,
+                status: "Remove post"
+            }
+        };
+        axios.delete(url, config).then((response) => {}).catch((error) => { console.log(error); });
+    }
+
     const addLike = () => {
         console.log("Debug: Adding Like");
         let config = {
@@ -113,6 +129,9 @@ function Post({viewerId, post}) {
                         <br></br>
                     {
                         post.authorId !== viewerId ? null : <Popup trigger={<button>Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
+                    }    
+                    {
+                        post.authorId !== viewerId ? null : <button onClick={deletePost}>Delete</button>
                     }    
                 </div>}
         </div>

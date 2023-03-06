@@ -149,7 +149,15 @@ async function fetchPublicPosts(req, res) {
             }
         }  
     ]);
-    const allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
+
+    let allPosts = null;
+    if (publicPosts[0] != undefined && posts[0] != undefined) {
+        posts[0].posts_array.concat(publicPosts[0].publicPosts);
+    } else if (posts[0].posts_array != undefined) {
+        allPosts = posts[0].posts_array;
+    } else {
+        allPosts = [];
+    }
 
     if (allPosts){
         return res.json({

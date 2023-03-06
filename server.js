@@ -41,7 +41,7 @@ const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
-const { fetchFriends, fetchFriendPosts, getFollowers } = require('./routes/friend');
+const { fetchFriends, fetchFriendPosts, getFollowers, getFriends } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
@@ -437,12 +437,18 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
   const authorId = req.params.authorId;
 
   const followers = await getFollowers(authorId);
+  const friends = await getFriends(authorId);
+
+  if(followers == 404 || friends == 404)
+    return res.send(404);
 
   santizedFollowers = [];
   for(let i = 0; i < followers.length; i++){
-    follower = followers[i];
+    const follower = followers[i];
 
     const followerProfile = await Author.findOne({_id: follower.authorId}); 
+    if(!followerProfile)
+      continue
 
     santizedFollower = {
       "type": "author",
@@ -459,6 +465,27 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
     santizedFollowers.push(santizedFollower);
   }
 
+  for(let i = 0; i < friends.length; i++){
+    const friend = friends[i];
+
+    const friendProfile = await Author.findOne({_id: friend.authorId}); 
+    if(!friendProfile)
+      continue
+    santizedFollower = {
+      "type": "author",
+      "id" : friendProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": friendProfile.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
+      "github": "",
+      "profileImage": "",
+      "about": friendProfile.about,
+      "pronouns": friendProfile.pronouns
+    }
+
+    santizedFollows.push(santizedFollower);
+  }
+
   return res.json({
     type: "followers",
     items: santizedFollowers
@@ -471,11 +498,54 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
   const foreignId = req.params.foreignAuthorId;
 
   const followers = await getFollowers(authorId);
-  
+  const friends = await getFriends(authorId);
+
+  if(followers == 404 || friends == 404)
+    return res.send(404);
+
   for(let i = 0; i < followers.length; i++){
     const follower = followers[i];
-    if(follower.authorId == foreignId)
-      return res.sendStatus(200);
+    if(follower.authorId == foreignId){
+
+      const followerProfile = await Author.findOne({_id: follower.authorId}); 
+      if(!followerProfile)
+        continue
+
+      return res.json({
+        "type": "author",
+        "id" : followerProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": followerProfile.username,
+        "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+        "github": "",
+        "profileImage": "",
+        "about": followerProfile.about,
+        "pronouns": followerProfile.pronouns
+      });
+    }
+  }
+
+  for(let i = 0; i < friends.length; i++){
+    const friend = friends[i];
+    if(friend.authorId = foreignId){
+
+      const friendProfile = await Author.findOne({_id: friend.authorId}); 
+
+      if(!friendProfile)
+        continue
+
+      return res.json({
+        "type": "author",
+        "id" : friendProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": friendProfile.username,
+        "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
+        "github": "",
+        "profileImage": "",
+        "about": friendProfile.about,
+        "pronouns": friendProfile.pronouns
+      })
+    }
   }
 
   return res.sendStatus(404);

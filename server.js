@@ -398,6 +398,17 @@ app.get('/api/authors', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId:
+ *  get:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.get('/api/authors/:authorId', async (req, res) => {
   /**
    * Description: GET request for a single Author
@@ -427,6 +438,17 @@ app.get('/api/authors/:authorId', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId:
+ *  post:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.post('/api/authors/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);
@@ -443,6 +465,17 @@ app.post('/api/authors/:authorId', async (req, res) => {
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/followers:
+ *  get:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.get('/api/authors/:authorId/followers', async (req, res) => {
   /**
    * Description: Getting followers of current author 
@@ -507,6 +540,17 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/followers/:foreignAuthorId:
+ *  get:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -565,6 +609,17 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
   return res.sendStatus(404);
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/followers/:foreignAuthorId:
+ *  put:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
 
   const authorId = req.params.authorId;
@@ -578,6 +633,17 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
     return res.sendStatus(400);
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/followers/:foreignAuthorId:
+ *  delete:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   if(req.body.type == undefined || req.body.type != "follower")
     return res.sendStatus(400)
@@ -590,6 +656,17 @@ app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res)
   return res.sendStatus(statusCode);
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/requests/:foreignAuthorId:
+ *  put:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -604,6 +681,17 @@ app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => 
   })
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/requests/:foreignAuthorId:
+ *  delete:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -618,6 +706,17 @@ app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) 
   })
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId:
+ *  get:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
   if(req.params.authorId == undefined) return res.sendStatus(404);
   const authorId = req.params.authorId;
@@ -647,6 +746,17 @@ app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId:
+ *  post:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -660,6 +770,17 @@ app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId:
+ *  delete:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -675,6 +796,17 @@ app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId:
+ *  put:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -690,6 +822,17 @@ app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }  
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts:
+ *  get:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.get('/api/authors/:authorId/posts', async (req, res) => {
   const authorId = req.params.authorId;
   const page = req.query.page;
@@ -704,6 +847,17 @@ app.get('/api/authors/:authorId/posts', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts:
+ *  post:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.post('/api/authors/:authorId/posts', async (req, res) => {
   const authorId = req.params.authorId;
 
@@ -718,6 +872,17 @@ app.post('/api/authors/:authorId/posts', async (req, res) => {
   }  
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId/comments:
+ *  get:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -734,6 +899,17 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
     })
 })
 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId/comments:
+ *  post:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -750,6 +926,18 @@ app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
     }) 
 })
 
+
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId/likes:
+ *  get:
+ *    description: <insert what this request is trying to do>
+ *    responses:
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ *      <response like 200 or 401>:
+ *        description: <insert description of what this response means in this context> 
+ */
 app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;

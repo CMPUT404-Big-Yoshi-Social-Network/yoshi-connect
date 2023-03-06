@@ -381,9 +381,6 @@ UPDATED API
  *        description: A list of authors
  */
 app.get('/api/authors', async (req, res) => {
-  /**
-   * Description: Gets Author paginated given a query of pages and how big each page is 
-   */
   const page = req.query.page;
   const size = req.query.size;
   if(page == undefined)
@@ -410,9 +407,6 @@ app.get('/api/authors', async (req, res) => {
  *        description: Returns Status 500 when the server is unable to retrieve the Author from the database
  */
 app.get('/api/authors/:authorId', async (req, res) => {
-  /**
-   * Description: GET request for a single Author
-   */
   if(req.params.authorId == undefined)
     return res.sendStatus(404);
 

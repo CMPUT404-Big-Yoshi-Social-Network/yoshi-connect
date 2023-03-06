@@ -41,6 +41,11 @@ async function create_post_history(author_id){
 }
 
 async function addLike(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Adding a like')
     const postHistory = await PostHistory.findOne({authorId: req.body.data.authorId});
     let publicPost = await PublicPost.find();
@@ -77,6 +82,11 @@ async function addLike(req, res){
 }
 
 async function deleteLike(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Removing a like')
     let success = false;
     let numLikes = 0;
@@ -110,6 +120,11 @@ async function deleteLike(req, res){
 }
 
 async function addComment(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Adding a comment')
     const postHistory = await PostHistory.findOne({authorId: req.body.authorId});
     let publicPost = await PublicPost.find();
@@ -142,6 +157,11 @@ async function addComment(req, res){
 }
 
 async function deleteComment(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Deleting a comment')
     let success = false;
     let numComments = 0;
@@ -179,6 +199,11 @@ async function deleteComment(req, res){
 }
 
 async function editComment(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Editing a comment')
     let success = false;
     await PostHistory.findOne({authorId: req.body.data.authorId}, function(err, history){
@@ -199,6 +224,11 @@ async function editComment(req, res){
 }
 
 async function create_post(req, res, postId){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Creating a post')
     let authorId = req.params.author_id;
     //Setup the rest of the post
@@ -275,6 +305,11 @@ async function create_post(req, res, postId){
 }
 
 async function get_post(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log("Debug: Getting a post");
 
     const authorId = req.params.author_id;
@@ -297,6 +332,11 @@ async function get_post(req, res){
 }
 
 async function get_posts_paginated(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
 
@@ -337,6 +377,11 @@ async function get_posts_paginated(req, res){
 }
 
 async function update_post(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log("Debug: Update a post");
 
     const authorId = req.params.author_id;
@@ -408,6 +453,11 @@ async function update_post(req, res){
 }
 
 async function delete_post(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log("Debug: Delete a post");
 
     const authorId = req.params.author_id;
@@ -440,6 +490,11 @@ async function delete_post(req, res){
 }
 
 async function checkVisibility(req, res){
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Checks the visibility of the post for the viewer');
     const authorId = req.params.author_id;
     const viewerId = req.body.data.viewerId;
@@ -502,6 +557,11 @@ async function checkVisibility(req, res){
 }
 
 async function fetchLikers(req, res) {
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     console.log('Debug: Getting the likers for a specific post.');
 
     const authorId = req.body.data.authorId;
@@ -524,6 +584,11 @@ async function fetchLikers(req, res) {
 }
 
 async function hasLiked(req, res) {
+    /**
+     * Description: Adds an author to the database 
+     * Returns: Status 200 if the author is successfully saved into the database
+     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     */
     const likers = await fetchLikers(req, res);
     for (let i = 0; i < likers.length; i++) {
         if (likers[i].liker === req.body.data.viewerId) {

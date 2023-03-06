@@ -25,3 +25,17 @@ Foundation; All Rights Reserved
     padding: 1em;
     border-radius: 1.5em;
 }
+.post-buttons{
+    margin: .1em;
+    color: white;
+    padding: .5em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: .5em;
+    cursor: pointer;
+    display: inline-block;
+}
+.post-buttons:hover{
+    background-color: #a7e7f8;
+    border: #a7e7f8;
+}

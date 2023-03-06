@@ -152,7 +152,7 @@ function EditPost({viewerId, post}) {
                         <br/>
                         <img src="" style={{maxHeight: "15vh"}} alt="" />
                 </div>
-                <button type="submit" onClick={modifyPost}>Edit Author</button>
+                <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Author</button>
             </form>
         </div>
     )

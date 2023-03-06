@@ -283,10 +283,82 @@ async function adding(friend, req, res) {
     }
 }
 
+/**
+ * API UPDATE
+ */
+
+async function sendRequest(authorId, foreignId, res) {
+    const actor = await Author.findOne({_id: authorId});  
+    const object = await Author.findOne({_id: foreignId});
+    let summary = ''
+    let type = ''
+
+    let needFriend = false;
+    
+    console.log('Debug: We need to check if object follows actor (meaning they will become friends).');
+    await Following.findOne({authorId: object._id}, function(err, following){
+        if (following == undefined) { 
+            let idx = following.followings.map(obj => obj.authorId).indexOf(actor._id);
+            if (idx > -1) { 
+              needFriend = true;  
+            }
+        }
+    }).clone();
+
+    if (needFriend) {
+        type = 'friend'
+        summary = actor.username + "wants to " + type + " " + object.username;
+    } else {
+        type = 'follow'
+        summary = actor.username + "wants to " + type + " " + object.username;
+    }
+
+    const request = new Request({
+        type: type,
+        sender: actor.username,
+        senderId: actor._id,
+        receiverId: object._id,
+        receiver: object.username
+    });
+    request.save(async (err, request, next) => { if (err) { return 400; } });
+
+    request.save(async (err, author, next) => {
+        if (err) {
+            return res.json({ status: "Unsuccessful" });
+        } else {
+            return res.json({ status: "Successful" });
+        }
+    });
+
+    return {
+        type: type,
+        summary: summary,
+        actor: actor,
+        object: object
+    }
+}
+
+async function deleteRequest(authorId, foreignId, res) {
+    const actor = await Author.findOne({_id: authorId});  
+    const object = await Author.findOne({_id: foreignId});
+    let summary = '';
+
+    const request = await Request.findOneAndDelete({senderId: actor._id, receiverId: object._id}); 
+    summary = actor.username + " wants to undo " + request.type + " request to " + object.username;  
+
+    return {
+        type: request.type,
+        summary: summary,
+        actor: actor,
+        object: object
+    }
+}
+
 module.exports={
     saveRequest,
     deleteRequest,
     findRequest,
     findAllRequests,
-    senderAdded
+    senderAdded,
+    sendRequest
 }

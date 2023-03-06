@@ -594,6 +594,71 @@ async function hasLiked(req, res) {
     })
 }
 
+/**
+ * 
+ * API STUFF
+ */
+
+async function apigetPost(authorId, postId){
+    let post = await PostHistory.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {'posts._id' : postId}
+        }
+    ]);
+    if(post.length == 0) return 404;
+    return post   
+}
+
+async function apiupdatePost(authorId, postId, newPost) {
+    const title = newPost.title;
+    const desc = newPost.desc;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    const specifics = newPost.specifics;
+    const image = newPost.image;
+
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+
+    let post = null;
+    let postIdx = postHistory.posts.map(obj => obj._id).indexOf(postId);
+    if (postIdx > -1) { 
+        post = postHistory.posts[postIdx]
+    }
+
+    let specifics_updated = false;
+    post.title = title; 
+    post.description = desc;
+    post.contentType = contentType;
+    post.content = content;
+    if (post.visibility != visibility) {
+        if ( (visibility == 'Friends' || visibility == 'Public') && post.specifics.length != 0) {
+            console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
+            post.specifics = [];
+            specifics_updated = true;
+        } 
+        post.visibility = visibility;
+    }
+    if (!specifics_updated) {
+        if (post.specifics != specifics) { post.specifics = specifics; }
+    }
+    post.categories = categories;
+    post.unlisted = unlisted;
+    post.image = image;
+
+    await postHistory.save()
+
+    return 200;
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -607,5 +672,7 @@ module.exports={
     deleteComment,
     editComment,
     checkVisibility,
-    hasLiked
+    hasLiked,
+    apigetPost,
+    apiupdatePost
 }

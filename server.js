@@ -46,8 +46,8 @@ const path = require('path');
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, fetchAuthors } = require('./routes/author');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
-const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, apiupdatePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
+const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
@@ -556,7 +556,6 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
   return res.sendStatus(404);
 })
 
-
 //TODO 
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
 
@@ -583,42 +582,100 @@ app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res)
   const follower = req.body.item
 })
 
-//Friends and followers request
-//TODO later
+app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
 
+  const request = await sendRequest(authorId, foreignId, res);
 
-//Post
-//TODO 
-app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
-
+  return res.json({
+    "type": request.type,
+    "summary": request.summary,
+    "actor": request.actor,
+    "object": request.object
+  })
 })
 
+app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
 
-//TODO 
+  const request = await deleteRequest(authorId, foreignId, res);
+
+  return res.json({
+    "type": request.type,
+    "summary": request.summary,
+    "actor": request.actor,
+    "object": request.object
+  })
+})
+
+app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
+  if(req.params.authorId == undefined) return res.sendStatus(404);
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+
+  let post = await apigetPost(authorId, postId);
+
+  if(post === 404) return res.sendStatus(404);
+  if(post === 500) return res.sendStatus(500);
+
+  return res.json({
+    "type": "post",
+    "title" : post.title,
+    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+    "source": post.source,
+    "origin": post.origin,
+    "description": post.description,
+    "contentType": post.contentType,
+    "author": post.author, 
+    "categories": post.categories,
+    "count": post.count,
+    "comments": post.comments,
+    "commentSrc": post.commentSrc,
+    "published": post.published,
+    "visibility": post.visibility,
+    "unlisted": post.unlisted
+  });
+})
+
 app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
+  const status = await apiupdatePost(authorId, postId, req.body);
+  
+  if (status == 200) {
+    return res.sendStatus(status);
+  } else {
+    return res.sendStatus(404);
+  }
 })
 
 
 //TODO 
 app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
-
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 })
 
 
 //TODO 
 app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
-
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 })
 
 
 //TODO 
 app.get('/api/authors/:authorId/posts', async (req, res) => {
+  const authorId = req.params.authorId;
 
 })
 //TODO 
 
 app.post('/api/authors/:authorId/posts', async (req, res) => {
+  const authorId = req.params.authorId;
 
 })
 

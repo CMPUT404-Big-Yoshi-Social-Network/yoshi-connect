@@ -225,7 +225,7 @@ async function editComment(req, res){
     return res.json({ status: success })
 }
 
-async function create_post(req, res, postId){
+async function createPost(req, res, postId){
     /**
      * Description: Creates an author's post in the database 
      * Returns: N/A
@@ -305,7 +305,7 @@ async function create_post(req, res, postId){
     }
 }
 
-async function get_post(req, res){
+async function getPost(req, res){
     /**
      * Description: Gets an author's post from the database 
      * Returns: Status 404 if the post is not found in the database
@@ -332,7 +332,7 @@ async function get_post(req, res){
     return res.json(post);
 }
 
-async function get_posts_paginated(req, res){
+async function getPostsPaginated(req, res){
     /**
      * Description: Pages the posts form the database 
      * Returns: Status 200 if the posts are successfully retrieved and paginated from the database
@@ -376,7 +376,7 @@ async function get_posts_paginated(req, res){
     return res.sendStatus(200);
 }
 
-async function update_post(req, res){
+async function updatePost(req, res){
     /**
      * Description: Updates an author's post in the database 
      * Returns: Status 200 if the author's post is successfully updated in the database
@@ -451,7 +451,7 @@ async function update_post(req, res){
     return res.sendStatus(200);
 }
 
-async function delete_post(req, res){
+async function deletePost(req, res){
     /**
      * Description: Removes an author's post from the database 
      * Returns: Status 200 if the author's post is successfully removed from the database

@@ -160,7 +160,9 @@ async function fetchPublicPosts(req, res) {
     }
 
     if (allPosts){
-        return allPosts;
+        return res.json({
+            publicPosts: allPosts
+          });
     }
 }
 

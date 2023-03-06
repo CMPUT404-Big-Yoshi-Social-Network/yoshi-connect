@@ -23,7 +23,8 @@ async function register_author(req, res){
     }
 
     const checkEmail = await Author.findOne({email: email})
-    if (checkEmail === undefined) { return res.sendStatus(400); }
+
+    if (checkEmail !== undefined) { return res.sendStatus(400); }
 
     var author = new Author({
         username: username,

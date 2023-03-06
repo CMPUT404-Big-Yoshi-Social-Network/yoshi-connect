@@ -19,15 +19,20 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
+
+// Child Component
 import TopNav from '../navs/top/nav.jsx';
 import LeftNavBar from '../navs/left/nav.jsx';
 import RightNavBar from '../navs/right/nav.jsx';
-import React, { useEffect, useState } from "react";
-import axios from 'axios';
 // import Notifications from './notifcation-box.jsx';
 // import CreatePost from '../posts/create.jsx';
 import Posts from '../../posts/posts.jsx';
+
+// Stylings
 import './friendFeed.css';
 
 function FriendFeed() {

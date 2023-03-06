@@ -19,28 +19,19 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality 
+import { Image } from 'react-bootstrap';
 import React from 'react';
+import './400.css';
 
-// User Interface
-import { Image } from 'react-bootstrap'
-
-// Styling
-import './404.css'
-
-function PageNotFound() {
-    /**
-     * Description: Represents a Status 404 which is a page not found 
-     * Returns: N/A
-     */
+function BadRequest() {
     return (
-        <div className="sc404">
-            <h1>404</h1>
-            <h2>Page Not Found</h2>
-            <h3>NOT FOUND</h3>
-            <Image src='/images/status_code_404.png'/>
+        <div className="sc400">
+            <h1>400</h1>
+            <h2>Your request resulted in an error</h2>
+            <h3>BAD REQUEST</h3>
+            <Image src='/images/status_code_400.png'/>
         </div>
     )
 }
 
-export default PageNotFound;
+export default BadRequest;

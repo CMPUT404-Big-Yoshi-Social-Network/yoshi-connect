@@ -19,13 +19,8 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */  
 
-// Database
+// Setting up database
 const mongoose = require('mongoose');
-require('dotenv').config();
-mongoose.set('strictQuery', true);
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
-
-// Parserds
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
@@ -42,8 +37,6 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-
-// Additional Functions
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
@@ -53,27 +46,32 @@ const { fetchFriends, fetchFriendPosts, getFollowers, getFriends } = require('./
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
-// App Uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-
-// App Set
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
+
+// Connect to database
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 // Schemas
 const { Author } = require('./db_schema/authorScheme.js');
 
-if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
+if (process.env.NODE_ENV === "development") {
+  app.use(express.static("./yoshi-react/build"));
+}
 
+const openapiSpecification = swaggerJsdoc(options);
 app.use('/server/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(openapiSpecification)
 );
 
-app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
+app.get('/favicon.ico', (req, res) => {
+  res.sendStatus(404);
+})
 
 /**
  * @openapi
@@ -121,6 +119,7 @@ app.post('/server/login', async (req, res) => {
   await authAuthor(req, res);
 })
 
+// Admin Login page
 app.post('/server/admin', async (req, res) => {
   console.log('Debug: Login as Admin')
   await authAuthor(req, res);

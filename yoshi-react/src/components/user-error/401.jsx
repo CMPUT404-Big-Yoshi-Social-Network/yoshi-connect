@@ -19,20 +19,11 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality 
-import React from 'react';
-
-// User Interface
 import { Image } from 'react-bootstrap'
-
-// Styling
+import React from 'react';
 import './401.css'
 
 function UserUnauthorized() {
-    /**
-     * Description: Represents Status 401 where the author is not authorized to view the page 
-     * Returns: N/A
-     */
     return (
         <div className="sc401">
             <h1>401</h1>

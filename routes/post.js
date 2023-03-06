@@ -480,8 +480,8 @@ async function checkVisibility(req, res){
 async function fetchLikers(req, res) {
     console.log('Debug: Getting the likers for a specific post.');
 
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
+    const authorId = req.body.data.authorId;
+    const postId = req.body.data.postId;
 
     const post = await PostHistory.aggregate([
         {
@@ -495,9 +495,21 @@ async function fetchLikers(req, res) {
         }
     ]);
     if(post.length == 0) { return res.sendStatus(404); }
+    
+    return post[0].posts.likes
+}
 
+async function hasLiked(req, res) {
+    const likers = await fetchLikers(req, res);
+    for (let i = 0; i < likers.length; i++) {
+        if (likers[i].liker === req.body.data.viewerId) {
+            return res.json({
+                status: 'liked'
+            })
+        }
+    }
     return res.json({
-        likers: post.likes
+        status: 'unliked'
     })
 }
 
@@ -514,5 +526,5 @@ module.exports={
     deleteComment,
     editComment,
     checkVisibility,
-    fetchLikers
+    hasLiked
 }

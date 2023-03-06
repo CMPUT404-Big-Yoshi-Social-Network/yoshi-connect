@@ -5,6 +5,7 @@ import Comment from './comment';
 import { useState } from 'react';
 import './post.css';
 import EditPost from "./edit";
+import { useEffect } from "react";
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post}) {
@@ -21,6 +22,37 @@ function Post({viewerId, post}) {
     const [showComment, setShowComment] = useState(false)
 
     const [like, setLike] = useState(false)
+
+    useEffect(() => { 
+        console.log('Debug: Checking if the viewer has already liked the post')
+        const hasLiked = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/server/posts/',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    viewerId: viewerId,
+                    postId: postId,
+                    authorId: authorId,
+                    status: 'Checking if post is already liked'
+                }
+            }
+            axios
+            .post('/server/posts/', config)
+            .then((response) => {
+                if (response.data.status === 'liked') {
+                    setLike(true);
+                } else {
+                    setLike(false);
+                }
+            })
+            .catch(err => { });
+        }
+        hasLiked();
+    }, [authorId, postId, viewerId])
 
     const toggleComments = () => { 
         console.log("Debug: Toggle Comments");
@@ -63,7 +95,6 @@ function Post({viewerId, post}) {
         })
         .catch((error) => { console.log(error); });
         setLike(true);
-        
     }
 
     const removeLike = () => {

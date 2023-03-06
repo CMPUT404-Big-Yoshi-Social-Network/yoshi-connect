@@ -147,7 +147,7 @@ function Post({viewerId, post}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "type/plain" ? <p>{ post.content }</p> : post.contentType === "type/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { post.image === ""? null : <img src={post.image} alt=""/> }
+                    { post.image === ""? null : <a href={post.image}><img src={post.image} alt=""/></a> }
 
                     <p>{post.published}</p>
                     <br></br>

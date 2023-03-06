@@ -139,17 +139,15 @@ async function getCurrentAuthor(req, res){
 }
 
 async function getCurrentAuthorUsername(req, res){
-    await Login.findOne({token: req.cookies.token}, function(err, login) {
-        console.log('Debug: Retrieving current author logged in')
-        if(!login){
-            return res.sendStatus(404);            
-        }
+    const login = await Login.findOne({token: req.cookies.token})
 
-        return res.json({
-            username: login.username
-        })
-        
-    }).clone();
+    if(!login){
+        return res.sendStatus(404);            
+    }
+    
+    return res.json({
+        username: login.username
+    })
 }
 
 async function getCurrentAuthorAccountDetails(req, res) {

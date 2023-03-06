@@ -262,7 +262,7 @@ async function getAuthor(authorId){
     return author;
 }
 
-async function apiUpdateAuthor(token, author){
+async function apiUpdateAuthor(token, author, admin){
     /**
      * Description: Updates an existing author in the database
      * Returns: Status 401 if the there is no valid authentication 

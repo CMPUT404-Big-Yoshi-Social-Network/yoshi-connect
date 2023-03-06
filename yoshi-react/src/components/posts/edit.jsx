@@ -45,6 +45,11 @@ function EditPost({viewerId, post}) {
     })
     
     const modifyPost = () => {
+        /**
+         * Description: Sends a POST request of the updated post conetents 
+         * Request: POST    
+         * Returns: N/A
+         */
         console.log('Debug: Creating a post')
         let config = {
             method: 'post',

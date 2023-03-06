@@ -36,10 +36,22 @@ import RightAdminNavBar from './rightAdminNav.jsx';
 import './admin-dashboard.css';
 
 function AdminDashboard() {
+    /**
+     * Description: Represents the admin page 
+     * Functions:
+     *     - getDashboard(): Sends a GET request to retreive the admin dashboard authorization 
+     *     - LogOut(): Logs the admin out
+     * Returns: N/A
+     */
     const navigate = useNavigate();
     const url = '/server/admin/dashboard';
 
     const getDashboard = () => {
+        /**
+         * Description: Sends a GET request to retreive the admin dashboard authorization
+         * Request: GET
+         * Returns: N/A
+         */
         console.log('Debug: Getting Admin Dashboard.')
         let config = {
             method: 'get',
@@ -72,6 +84,11 @@ function AdminDashboard() {
        getDashboard();
     });
     const LogOut = () => {
+        /**
+         * Description: Sends a POST request to log the admin out
+         * Request: POST
+         * Returns: N/A
+         */
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

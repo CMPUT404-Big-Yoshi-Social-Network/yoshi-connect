@@ -27,9 +27,20 @@ import React, { useEffect, useState } from "react";
 import Author from './author.jsx';
 
 function Authors() {
+    /**
+     * Description: Represents all authors 
+     * Functions:
+     *     - useEffect(): Before render, checks and sends the authors
+     * Returns: N/A
+     */
     const [authors, setAuthors] = useState([]);
     const url = '/server/admin/dashboard';
     useEffect(() => {
+        /**
+         * Description: Before render, checks and sends the authors
+         * Request: POST
+         * Returns: N/A
+         */
         console.log('Debug: Fetching all the authors.')
         let config = {
             method: 'post',

@@ -557,9 +557,9 @@ async function checkVisibility(req, res){
 
 async function fetchLikers(req, res) {
     /**
-     * Description: Gets the authors that liked an author's post from the database 
+     * Description: Finds the authors that liked an author's post from the database 
      * Returns: Status 404 if the author's post is not found in the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     *          The authors who liked the post
      */
     console.log('Debug: Getting the likers for a specific post.');
 
@@ -584,9 +584,9 @@ async function fetchLikers(req, res) {
 
 async function hasLiked(req, res) {
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Shows the like status of the authors who liked a post from the database 
+     * Returns: The status 'liked' if the author has liked the post
+     *          The status 'unliked' if the author has unliked the post
      */
     const likers = await fetchLikers(req, res);
     for (let i = 0; i < likers.length; i++) {

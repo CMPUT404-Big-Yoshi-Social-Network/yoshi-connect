@@ -758,6 +758,7 @@ async function fetchPosts(page, size, authorId) {
 }
 
 async function getComments(authorId, postId) {
+    // TODO: Paginate
     const posts = PostHistory.find(
         {
             $match: {'authorId': authorId}

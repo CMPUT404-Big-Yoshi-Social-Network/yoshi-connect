@@ -826,6 +826,36 @@ async function createComment(authorId, postId, newComment, domain) {
     return comment  
 }
 
+async function apifetchLikes(authorId, postId) {
+    // TODO: Paginate
+    const posts = PostHistory.find(
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            index: { $indexOfArray: ['_id', postId] }
+        },
+        {
+            $unwind: '$index'
+        },
+        {
+            $group: {
+                _id: null,
+                post_array: { $push: "$index" }
+            }
+        }
+    )
+
+    if (posts[0] != undefined) {
+        return posts[0].post_array.likes;
+    } else {
+        return [];
+    }   
+}
+
 module.exports={
     createPostHistory,
     createPost,

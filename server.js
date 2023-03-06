@@ -38,7 +38,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
+const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -94,7 +94,7 @@ app.get('/favicon.ico', (req, res) => {
  */
 app.post('/server/signup', async (req, res) => {
   console.log('Debug: Signing up as an author');
-  await register_author(req, res);
+  await registerAuthor(req, res);
 })
 
 /**
@@ -270,8 +270,7 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
 app.get('/server/users/:username', async (req,res) => {
   if(await checkExpiry(req))
 	return res.sendStatus(401);
-
-  get_profile(req, res);
+  getProfile(req, res);
 })
 
 app.post('/server/users/posts', async (req, res) => {

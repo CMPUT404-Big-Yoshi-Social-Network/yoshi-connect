@@ -136,7 +136,6 @@ async function fetchFriendPosts(req, res) {
     });
 }
 
-
 /**
  * API STUFF
  */

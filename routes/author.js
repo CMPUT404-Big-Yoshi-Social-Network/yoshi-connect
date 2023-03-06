@@ -34,12 +34,12 @@ mongoose.set('strictQuery', true);
 const { Author, Login } = require('../db_schema/authorScheme.js');
 const { PostHistory } = require('../db_schema/postScheme.js');
 const { createFollowers, createFollowings, createFriends } = require('./relations.js');
-const { create_post_history } = require('./post.js');
+const { createPostHistory } = require('./post.js');
 
 // Additional Functions
 const { checkUsername } = require('../auth.js');
 
-async function register_author(req, res){
+async function registerAuthor(req, res){
     /**
      * Description: Registers an author into the database (from Signup). A login document is created to represent the token that 
      *              keeps the author logged into their device. This token expires in 24 hours (curr.getTime() + (1440 * 60 * 1000)).
@@ -94,13 +94,13 @@ async function register_author(req, res){
         });
     })
 
-    await create_post_history(author._id);
+    await createPostHistory(author._id);
     await createFollowers(author.username, author._id);
     await createFriends(author.username, author._id);
     await createFollowings(author.username, author._id);
 }
 
-async function get_profile(req, res) {
+async function getProfile(req, res) {
     /**
      * Description: Gets an author's profile (either their personal or someone else's). 
      * Returns: Status 404 if:
@@ -275,7 +275,6 @@ async function getAuthor(authorId){
     return author;
 }
 
-
 async function apiUpdateAuthor(token, author){
     if(await authLogin(token, author.id, author.displayName) == false){
         return 401;
@@ -302,8 +301,8 @@ async function apiUpdateAuthor(token, author){
     return 200;
 }
 module.exports={
-    register_author,
-    get_profile,
+    registerAuthor,
+    getProfile,
     getCurrentAuthor,
     getCurrentAuthorUsername,
     fetchMyPosts,

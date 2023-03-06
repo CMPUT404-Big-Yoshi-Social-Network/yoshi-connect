@@ -19,8 +19,11 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+
+// Child Component
 import Author from './author.jsx';
 
 function Authors() {

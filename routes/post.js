@@ -197,7 +197,7 @@ async function create_post(req, res, postId){
     if (visibility === 'Public') {
         let publicPost = await PublicPost.find();
         publicPost[0].posts.push({authorId: authorId, post: post});
-        publicPost[0].num_posts = publicPost[0].num_posts++;
+        publicPost[0].num_posts = publicPost[0].num_posts + 1;
         await publicPost[0].save();
     }
 }
@@ -301,13 +301,13 @@ async function update_post(req, res){
             specifics_updated = true;
         } else if (visibility == 'Public' && post.visibility != 'Public') {
             publicPost[0].posts.push({authorId: authorId, post: post});
-            publicPost[0].num_posts = publicPost[0].num_posts++;
+            publicPost[0].num_posts = publicPost[0].num_posts + 1;
             await publicPost[0].save();
         } else if (post.visibility == 'Public' && visibility != 'Public') {
             let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
             if (idx > -1) { 
                 publicPost[0].posts.splice(idx, 1);
-                publicPost[0].num_posts = publicPost[0].num_posts--;
+                publicPost[0].num_posts = publicPost[0].num_posts - 1;
                 await publicPost[0].save();
             }
         }
@@ -355,7 +355,7 @@ async function delete_post(req, res){
         let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
         if (idx > -1) { 
             publicPost[0].posts.splice(idx, 1);
-            publicPost[0].num_posts = publicPost[0].num_posts--;
+            publicPost[0].num_posts = publicPost[0].num_posts - 1;
             await publicPost[0].save();
         }
     }

@@ -19,23 +19,29 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */  
 
-// Setting up database
+// Database
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const multer = require('multer');
-// const upload = multer({dest: 'uploads/'});
-const swaggerUi = require("swagger-ui-express");
-const swaggerJsdoc = require('swagger-jsdoc');
-const {options} = require('./openAPI/options.js');
 require('dotenv').config();
 mongoose.set('strictQuery', true);
 
-// Setting up app
+// Parserds
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+
+// OpenAPI
+const {options} = require('./openAPI/options.js');
+
+// App Setup
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
+
+// Additional Functions
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
 const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');

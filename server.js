@@ -23,6 +23,7 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 require('dotenv').config();
 mongoose.set('strictQuery', true);
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 // Parserds
 const bodyParser = require('body-parser');
@@ -31,6 +32,7 @@ const cookieParser = require('cookie-parser');
 // Swaggerio
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
 
 // OpenAPI
 const {options} = require('./openAPI/options.js');
@@ -51,32 +53,27 @@ const { fetchFriends, fetchFriendPosts, getFollowers } = require('./routes/frien
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
+// App Uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
-// Connect to database
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
+// App Set
+app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Schemas
 const { Author } = require('./db_schema/author_schema.js');
 
-if (process.env.NODE_ENV === "development") {
-  app.use(express.static("./yoshi-react/build"));
-}
+if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 
-const openapiSpecification = swaggerJsdoc(options);
 app.use('/server/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(openapiSpecification)
 );
 
-app.get('/favicon.ico', (req, res) => {
-  res.sendStatus(404);
-})
+app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
 
 /**
  * @openapi
@@ -124,7 +121,6 @@ app.post('/server/login', async (req, res) => {
   await authAuthor(req, res);
 })
 
-// Admin Login page
 app.post('/server/admin', async (req, res) => {
   console.log('Debug: Login as Admin')
   await authAuthor(req, res);

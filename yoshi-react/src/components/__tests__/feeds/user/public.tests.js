@@ -1,10 +1,10 @@
 import { render } from "@testing-library/react";
 import Public from "../../../feeds/public/public.jsx";
 import "@testing-library/jest-dom";
+import { BrowserRouter } from 'react-router-dom';
 
 //test block
 test("test description here", () => {
     // render the component on virtual dom
-    render(<Public />); 
-
+    render(<BrowserRouter><Public/></BrowserRouter>);
 });

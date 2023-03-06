@@ -19,9 +19,7 @@ function Post({viewerId, post}) {
     })
     const [showComment, setShowComment] = useState(false)
 
-    const [like, setLike] = useState({
-        liked: false
-    })
+    const [like, setLike] = useState(false)
 
     const toggleComments = () => { 
         console.log("Debug: Toggle Comments");
@@ -60,6 +58,7 @@ function Post({viewerId, post}) {
         };
         axios.put(url, config).then((response) => {}).catch((error) => { console.log(error); });
         setLike(true);
+        
     }
 
     const removeLike = () => {
@@ -111,8 +110,8 @@ function Post({viewerId, post}) {
 
                     <p>{post.published}</p>
                     <br></br>
-                    {num_likes}
-                    { !like.liked ? <button onClick={addLike}>Like</button> : <button onClick={removeLike}>Unlike</button>} 
+                    
+                    { !like ? <span>{num_likes}<button onClick={addLike}>Like</button></span> : <span>{num_likes + 1}<button onClick={removeLike}>Unlike</button></span>} 
                     <br></br>
                     {num_comments}
                     { showComment ? <button onClick={toggleComments}>Close Comments</button> : <button onClick={toggleComments}>Open Comments</button> }

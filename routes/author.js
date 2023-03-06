@@ -37,7 +37,7 @@ const { createFollowers, createFollowings, createFriends } = require('./relation
 const { create_post_history } = require('./post.js');
 
 // Additional Functions
-const { checkUsername } = require('../auth.js');
+const { checkUsername, authLogin } = require('../auth.js');
 
 async function register_author(req, res){
     /**
@@ -250,16 +250,6 @@ async function updateAuthor(req, res){
  * API STUFF keep seperate from other things for now
 */
 
-async function authLogin(token, authorId, displayName){
-    const login = await Login.findOne({token: token});
-    if(!login)
-        return false;
-
-    if(login.authorId == authorId && login.username == displayName)
-        return true;
-
-    return false;
-}
 async function getAuthor(authorId){
     /**
      * Description: Gets the author from the Author collection 

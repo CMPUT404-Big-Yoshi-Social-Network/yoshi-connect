@@ -150,8 +150,17 @@ async function getFollowers(id){
     return followers.followers;
 }
 
+async function getFriends(id){
+    const friends = await Friend.findOne({authorId: id});
+
+    if(!friends)
+        return 404;
+
+    return friends.friends;
+}
 module.exports={
     fetchFriends,
     fetchFriendPosts,
     getFollowers,
+    getFriends
 }

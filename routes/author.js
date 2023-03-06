@@ -266,6 +266,32 @@ async function getAuthor(authorId){
     return author;
 }
 
+
+async function apiUpdateAuthor(token, author){
+    if(await authLogin(token, author.id, author.displayName) == false){
+        return 401;
+    }
+
+    const authorProfile = await Author.findOne({_id: author.id});
+        
+    const pronouns = author.pronouns;
+    const about = author.about;
+    const github = author.github;
+
+    if(pronouns){
+        authorProfile.pronouns = pronouns;
+    }
+    if(about){
+        authorProfile.about = about;
+    }
+    if(github){
+        authorProfile.github = github;
+    }
+
+    await authorProfile.save();
+
+    return 200;
+}
 module.exports={
     register_author,
     get_profile,

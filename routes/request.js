@@ -146,48 +146,38 @@ async function adding(friend, req, res) {
             console.log('Debug: Add receiver to sender following list')
             if (following) {
                 console.log('Debug: Sender already has a following list, must add to existing list.')
-                following.followings.push({username: req.body.data.receiver, authorId: receiverUUID});
-                await following.save();
+                following.followings.push({username: req.body.data.receiver, authorId: receiverUUID._id});
             } else {
                 console.log('Debug: Sender does not have a following list (has not followed anyone), must make one.')
                 var following = new Following({
                     username: req.body.data.sender,
-                    authorId: senderUUID,
+                    authorId: senderUUID._id,
                     followings: [{
                         username: req.body.data.receiver,
-                        authorId: receiverUUID
+                        authorId: receiverUUID._id
                     }]
                 });
-    
-                following.save(async (err, following, next) => {
-                    if (err) { success = false; }
-                })
             }
+            following.save();
         }).clone()
-
+        
         console.log('Debug: Add sender to follower list.')
         await Follower.findOne({username: req.body.data.receiver}, async function(err, follower){
             if (follower) {
                 console.log('Debug: Receiver already has a follower list, must add to existing list.')
-                follower.followers.push({username: req.body.data.sender, authorId: senderUUID});
-                await follower.save();
+                follower.followers.push({username: req.body.data.sender, authorId: senderUUID._id});
             } else {
                 console.log('Debug: Receiver does not have a follower list (has no followers), must make one.')
                 var follower = new Follower({
                     username: req.body.data.receiver,
-                    authorId: receiverUUID,
+                    authorId: receiverUUID._id,
                     followers: [{
                         username: req.body.data.sender,
-                        authorId: senderUUID
+                        authorId: senderUUID._id
                     }]
                 });
-                follower.save(async (err, follower, next) => {
-                    if(err){
-                        console.log(err);
-                        success = false;
-                    }
-                })
             }
+            follower.save();
         }).clone()
 
         if (success) {
@@ -226,16 +216,16 @@ async function adding(friend, req, res) {
             console.log('Debug: Add sender to receiver friend list.')
             if (friend) {
                 console.log('Debug: Receiver has friend list.')
-                friend.friends.push({username: req.body.data.sender, authorId: senderUUID});
+                friend.friends.push({username: req.body.data.sender, authorId: senderUUID._id});
                 await friend.save();
             } else {
                 console.log('Debug: Receiver does not have a friend list yet.')
                 var newFriend = new Friend({
                     username: req.body.data.receiver,
-                    authorId: receiverUUID,
+                    authorId: receiverUUID._id,
                     friends: [{
                         username: req.body.data.sender,
-                        authorId: senderUUID
+                        authorId: senderUUID._id
                     }]
                 });
     
@@ -251,16 +241,16 @@ async function adding(friend, req, res) {
         await Friend.findOne({username: req.body.data.sender}, async function(err, friend){
             if (friend) {
                 console.log('Debug: Sender has friend list.')
-                friend.friends.push({username: req.body.data.receiver, authorId: receiverUUID});
+                friend.friends.push({username: req.body.data.receiver, authorId: receiverUUID._id});
                 await friend.save();
             } else {
                 console.log('Debug: Sender does not have a friend list yet.')
                 var newFriend = new Friend({
                     username: req.body.data.sender,
-                    authorId: senderUUID,
+                    authorId: senderUUID._id,
                     friends: [{
                         username: req.body.data.receiver,
-                        authorId: receiverUUID
+                        authorId: receiverUUID._id
                     }]
                 });
     

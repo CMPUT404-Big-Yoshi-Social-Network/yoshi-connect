@@ -68,6 +68,7 @@ function Request(props) {
         axios
         .put('/server/requests', config)
         .then((response) => {
+            console.log(response)
         })
         .catch(err => {
             console.error(err);

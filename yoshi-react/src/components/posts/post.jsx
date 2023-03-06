@@ -11,6 +11,8 @@ function Post({viewerId, post}) {
     const postId = post._id;
     const authorId = post.authorId;
     const url = "/server/authors/" + authorId + "/posts/" + postId;
+    const num_likes = post.likes.length;
+    const num_comments = post.comments.length;
 
     const [comment, setComment] = useState({
         newComment: ""
@@ -108,9 +110,11 @@ function Post({viewerId, post}) {
                     { post.image === ""? null : <img src={post.image} alt=""/> }
 
                     <p>{post.published}</p>
-
+                    <br></br>
+                    {num_likes}
                     { !like.liked ? <button onClick={addLike}>Like</button> : <button onClick={removeLike}>Unlike</button>} 
-
+                    <br></br>
+                    {num_comments}
                     { showComment ? <button onClick={toggleComments}>Close Comments</button> : <button onClick={toggleComments}>Open Comments</button> }
 
                     {showComment && 

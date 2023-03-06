@@ -136,7 +136,22 @@ async function fetchFriendPosts(req, res) {
     });
 }
 
+
+/**
+ * API STUFF
+ */
+
+async function getFollowers(id){
+    const followers = await Follower.findOne({authorId: id});
+
+    if(!followers)
+        return 404;
+        
+    return followers.followers;
+}
+
 module.exports={
     fetchFriends,
-    fetchFriendPosts
+    fetchFriendPosts,
+    getFollowers,
 }

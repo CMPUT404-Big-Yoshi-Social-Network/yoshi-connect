@@ -36,6 +36,10 @@ import SettingsNav from '../../settings/nav.jsx';
 import './nav.css';
 
 function LeftNavBar() {
+    /**
+     * Description: Represents the left dynamic navigation bar
+     * Returns: N/A
+     */
     const url = window.location.pathname;
     const { username } = useParams();
     return (

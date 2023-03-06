@@ -31,6 +31,10 @@ import Notifications from '../../notifications/notifcation-box';
 import './nav.css'
 
 function TopNav() {
+    /**
+     * Description: Represents the top navigation bar
+     * Returns: N/A
+     */
     return (
         // TODO: Need to Add Search functionality and Notification Functionality
         // Might need to query notifications and use map (refer to leftNav.jsx

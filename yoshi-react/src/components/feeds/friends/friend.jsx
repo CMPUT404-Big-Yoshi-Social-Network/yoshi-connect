@@ -19,9 +19,16 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React from "react";
 
 function Friend(props) {
+    /**
+     * Description: Represents a friend 
+     * Arguments: 
+     *     - props: Author object representing a friend of current author 
+     * Returns: N/A
+     */
     return (
         <div id='friend'>
             { props.username }

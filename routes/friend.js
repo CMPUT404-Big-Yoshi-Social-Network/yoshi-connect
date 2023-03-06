@@ -26,7 +26,7 @@ mongoose.set('strictQuery', true);
 const { Friend, Login, Follower } = require('../dbSchema/authorScheme.js');
 const { PostHistory } = require('../dbSchema/postScheme.js');
 const { senderAdded } = require('./request.js');
-const {authLogin} = require('../auth.js')
+const {authLogin} = require('./auth.js')
 async function fetchFriends(req, res) {
     /**
      * Desciption: Fetches the friends of a specified author from the database

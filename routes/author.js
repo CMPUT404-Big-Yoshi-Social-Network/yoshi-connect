@@ -37,7 +37,7 @@ const { createFollowers, createFollowings, createFriends } = require('./relation
 const { createPostHistory } = require('./post.js');
 
 // Additional Functions
-const { checkUsername, authLogin } = require('../auth.js');
+const { checkUsername, authLogin } = require('./auth.js');
 
 async function registerAuthor(req, res){
     /**

@@ -61,9 +61,6 @@ async function deleteRequest(req) {
     let sender = null;
     let receiver = null;
 
-    console.log(req)
-    return
-
     if (req.body.sender === undefined) {
         sender = req.body.data.sender;
         receiver = req.body.data.receiver;
@@ -185,8 +182,12 @@ async function adding(friend, req, res) {
             }
         }).clone()
 
-        console.log('Debug: Delete the request since it has been accepted.')
-        await deleteRequest(req, res);
+        if (success) {
+            console.log('Debug: Delete the request since it has been accepted.')
+            await deleteRequest(req, res);
+        } else {
+            return res.json({ status: "Unsuccessful" });
+        }
     } else {
         console.log('Debug: These authors need to be added as friends.')
 

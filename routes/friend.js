@@ -24,7 +24,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Friend, Login } = require('../db_schema/author_schema.js');
+const { Friend, Login, Follower } = require('../db_schema/author_schema.js');
 const { PostHistory } = require('../db_schema/post_schema.js');
 
 async function fetchFriends(req, res) {
@@ -118,7 +118,22 @@ async function fetchFriendPosts(req, res) {
     }
 }
 
+
+/**
+ * API STUFF
+ */
+
+async function getFollowers(id){
+    const followers = await Follower.findOne({authorId: id});
+
+    if(!followers)
+        return 404;
+        
+    return followers.followers;
+}
+
 module.exports={
     fetchFriends,
-    fetchFriendPosts
+    fetchFriendPosts,
+    getFollowers,
 }

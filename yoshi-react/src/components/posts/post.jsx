@@ -172,10 +172,10 @@ function Post({viewerId, post}) {
 
                     <p>{post.published}</p>
                     <br></br>
-                    { !like ? <span>{numLikes}<button onClick={addLike}>Like</button></span> : <span>{numLikes}<button onClick={removeLike}>Unlike</button></span>} 
+                    { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons' onClick={removeLike}>Unlike</button></span>} 
                     <br></br>
                     {numComments}
-                    { showComment ? <button onClick={toggleComments}>Close Comments</button> : <button onClick={toggleComments}>Open Comments</button> }
+                    { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
 
                     {showComment && 
                         <div>
@@ -185,7 +185,7 @@ function Post({viewerId, post}) {
                                 <input type="text" id="newComment" name="newComment" onChange={(e) => {
                                     setComment({...comment, newComment: e.target.value})
                                 }}/>
-                                <button onClick={makeComment}>Add Comment</button>
+                                <button className='post-buttons' onClick={makeComment}>Add Comment</button>
                             </form>
 
                             {
@@ -196,10 +196,10 @@ function Post({viewerId, post}) {
                         </div>}
                         <br></br>
                     {
-                        post.authorId !== viewerId ? null : <Popup trigger={<button>Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
+                        post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
                     }    
                     {
-                        post.authorId !== viewerId ? null : <button onClick={deletePost}>Delete</button>
+                        post.authorId !== viewerId ? null : <button className='post-buttons' onClick={deletePost}>Delete</button>
                     }    
                 </div>}
         </div>

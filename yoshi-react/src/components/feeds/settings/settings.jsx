@@ -35,6 +35,15 @@ import './settings.css';
 
 
 function Settings() {
+    /**
+     * Description: Represents the change password page in settings
+     * Functions:
+     *     - useEffect(): Before rendering, checks if the author is logged in
+     *     - useEffect(): Before render, checks the author's account details
+     *     - LogOut(): Logs the author out
+     *     - modify(): Updates the new author's account details
+     * Returns: N/A
+     */
     const navigate = useNavigate();
     const [newAuthor, setNewAuthor] = useState({
         newUsername: '',
@@ -42,6 +51,11 @@ function Settings() {
         newEmail: ''
     })
     useEffect(() => {
+        /**
+         * Description: Before render, checks if the author is logged in to authorize routing
+         * Request: GET
+         * Returns: N/A
+         */
         const checkExpiry = () => {
             let config = {
                 method: 'get',
@@ -68,6 +82,11 @@ function Settings() {
         checkExpiry();
     })
     useEffect(() => {
+        /**
+         * Description: Before render, checks the author's account details
+         * Request: POST
+         * Returns: N/A
+         */
         const getAuthor = () => {
             let config = {
                 method: 'post',
@@ -93,6 +112,11 @@ function Settings() {
         getAuthor();
     }, [])
     const LogOut = () => {
+        /**
+         * Description: Logs the author out
+         * Request: POST
+         * Returns: N/A
+         */
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -115,6 +139,11 @@ function Settings() {
         });
     }
     const modify = (e) => {
+        /**
+         * Description: Updates the new author's account details
+         * Request: PUT
+         * Returns: N/A
+         */
         e.preventDefault();
         console.log('Debug: Attempting to modify an author.');
         let config = {

@@ -717,7 +717,7 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
     "type": "comments",
     "page": 1,
     "size": 5,
-    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId
+    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
     "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
     "comments": comments
     })

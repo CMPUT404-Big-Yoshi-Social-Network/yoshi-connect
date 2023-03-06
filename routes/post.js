@@ -594,6 +594,27 @@ async function hasLiked(req, res) {
     })
 }
 
+/**
+ * 
+ * API STUFF
+ */
+
+async function apigetPost(authorId, postId){
+    let post = await PostHistory.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {'posts._id' : postId}
+        }
+    ]);
+    if(post.length == 0) return 404;
+    return post   
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -607,5 +628,6 @@ module.exports={
     deleteComment,
     editComment,
     checkVisibility,
-    hasLiked
+    hasLiked,
+    apigetPost
 }

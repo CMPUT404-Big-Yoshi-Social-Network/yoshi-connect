@@ -19,13 +19,14 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { BrowserRouter } from 'react-router-dom';
+
+// Tested Component
 import Settings from "../../feeds/settings/settings.jsx";
 
-//test block
 test("test description here", async () => {
-    // render the component on virtual dom
     render(<BrowserRouter><Settings/></BrowserRouter>);
 });

@@ -19,13 +19,12 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/post_schema.js');
-const { Friend } = require('../db_schema/author_schema.js');
+const { PostHistory, Post, Like, Comment, PublicPost } = require('../dbSchema/postScheme.js');
+const { Friend } = require('../dbSchema/authorScheme.js');
 
 async function create_post_history(author_id){
     /**
@@ -251,7 +250,7 @@ async function create_post(req, res, postId){
 
     if (post_history == null) {
         console.log('Debug: Create a post history');
-        await create_post_history(authorId);
+        await createPostHistory(authorId);
     }
 
     if(postId == undefined){
@@ -603,12 +602,12 @@ async function hasLiked(req, res) {
 }
 
 module.exports={
-    create_post_history,
-    create_post,
-    get_post,
-    get_posts_paginated,
-    update_post,
-    delete_post,
+    createPostHistory,
+    createPost,
+    getPost,
+    getPostsPaginated,
+    updatePost,
+    deletePost,
     addLike,
     addComment,
     deleteLike,

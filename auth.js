@@ -19,19 +19,14 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Password
 const crypto_js = require('crypto-js')
-
-// UUID Identification Generator
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
-
-// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Author, Login } = require('./db_schema/author_schema.js');
+const { Author, Login } = require('./dbSchema/authorScheme.js');
 
 async function checkUsername(req) {
     const author = await Author.findOne({username: req.body.username});
@@ -59,11 +54,7 @@ async function removeLogin(req, res) {
         status: "Expired"
     });
 }
-/*
-Returns:
-    True: If Token is expired
-    False: If Token is not expired
-*/
+
 async function checkExpiry(req) {
     if(req.cookies == undefined){
         return true
@@ -183,11 +174,23 @@ async function authAuthor(req, res) {
     });
 }
 
+async function authLogin(token, authorId, displayName){
+    const login = await Login.findOne({token: token});
+    if(!login)
+        return false;
+
+    if(login.authorId == authorId && login.username == displayName)
+        return true;
+
+    return false;
+}
+
 module.exports = {
     authAuthor,
     removeLogin,
     checkUsername,
     checkExpiry,
     sendCheckExpiry,
-    checkAdmin
+    checkAdmin,
+    authLogin
 }

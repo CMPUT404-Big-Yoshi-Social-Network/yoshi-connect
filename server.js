@@ -24,6 +24,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 // OpenAPI
 const {options} = require('./openAPI/options.js');
@@ -39,6 +40,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 
+// Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
@@ -48,6 +50,7 @@ const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower } 
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
+// App Uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -55,24 +58,17 @@ app.use(cookieParser());
 app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
-// Connect to database
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
-
 // Schemas
 const { Author } = require('./dbSchema/authorScheme.js');
 
-if (process.env.NODE_ENV === "development") {
-  app.use(express.static("./yoshi-react/build"));
-}
+if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 
 app.use('/server/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(openapiSpecification)
 );
 
-app.get('/favicon.ico', (req, res) => {
-  res.sendStatus(404);
-})
+app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
 
 /**
  * @openapi
@@ -120,7 +116,6 @@ app.post('/server/login', async (req, res) => {
   await authAuthor(req, res);
 })
 
-// Admin Login page
 app.post('/server/admin', async (req, res) => {
   console.log('Debug: Login as Admin')
   await authAuthor(req, res);
@@ -236,27 +231,23 @@ app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
 
 app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
    console.log('Debug: Deleting a specific post by a specific author')
-  if ( await checkExpiry(req, res) ) {
-	return res.sendStatus(404);
-  }
+  if ( await checkExpiry(req, res) ) { return res.sendStatus(404); }
   if ( req.body.status == 'Remove like' ) {
-	console.log('Debug: Removing a like from a post!')
-	deleteLike(req, res);
+    console.log('Debug: Removing a like from a post!')
+    deleteLike(req, res);
   } else if ( req.body.status == 'Remove comment' ) {
-	console.log('Debug: Removing a comment from a post!')
-	deleteComment(req, res);
+    console.log('Debug: Removing a comment from a post!')
+    deleteComment(req, res);
   } else if ( req.body.status == 'Remove post') {
-	await deletePost(req, res);
+    await deletePost(req, res);
   }
 })
 
 app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  if ( await checkExpiry(req, res) ) {
-	return res.sendStatus(404);
-  }
+  if ( await checkExpiry(req, res) ) { return res.sendStatus(404); }
   if ( req.body.status == 'Add comment' ) {
-	console.log('Debug: Adding a comment to a post!');
-	addComment(req, res);
+    console.log('Debug: Adding a comment to a post!');
+    addComment(req, res);
   } else if ( req.body.data.status == 'Add like' ) {
     console.log('Debug: Adding a like to a post!');
     addLike(req, res);
@@ -264,13 +255,12 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);
   } else {
-	await createPost(req, res, req.params.post_id);
+	  await createPost(req, res, req.params.post_id);
   }
 })
 
 app.get('/server/users/:username', async (req,res) => {
-  if(await checkExpiry(req))
-	return res.sendStatus(401);
+  if (await checkExpiry(req)) { return res.sendStatus(401); }
   getProfile(req, res);
 })
 
@@ -281,8 +271,8 @@ app.post('/server/users/posts', async (req, res) => {
 
 app.post('/server/requests', async (req, res) => {
   if (req.body.data.status == 'Fetching Requests') {
-	console.log('Debug: Getting friend requests')
-	findAllRequests(req, res);
+    console.log('Debug: Getting friend requests')
+    findAllRequests(req, res);
   } else if ( req.body.data.status == 'Fetching current authorId') { 
 	  console.log('Debug: Getting the current author logged in');
 	  await getCurrentAuthorUsername(req, res);
@@ -291,48 +281,48 @@ app.post('/server/requests', async (req, res) => {
 
 app.put('/server/requests', (req, res) => {
   if (req.body.data.status == 'Sender is added by Receiver') {
-	console.log('Debug: Sender added by Receiver')
-	senderAdded(req, res);
+    console.log('Debug: Sender added by Receiver')
+    senderAdded(req, res);
   } 
 })
 
 app.delete('/server/requests', (req, res) => {
   if (req.body.status == 'Sender is rejected by Receiver') {
-	console.log('Debug: Sender rejected by Receiver')
-	deleteRequest(req, res);
+    console.log('Debug: Sender rejected by Receiver')
+    deleteRequest(req, res);
   }
 })
 
 app.post('/server/users/:username', async (req, res) => {
   if (req.body.data.message == 'Logging Out') {
-	console.log('Debug: Logging out as Author')
-	removeLogin(req, res);
+    console.log('Debug: Logging out as Author')
+    removeLogin(req, res);
   } else if (req.body.data.status == 'Does Request Exist') {
-	console.log('Debug: Checking if Friend Request Exists')
-	findRequest(req, res);
+    console.log('Debug: Checking if Friend Request Exists')
+    findRequest(req, res);
   } else if (req.body.data.status == 'Friends or Follows') {
-	console.log('Debug: Checking if they are friends or follows.')
-	await isFriend(req, res);
+    console.log('Debug: Checking if they are friends or follows.')
+    await isFriend(req, res);
   }
 })
 
 app.put('/server/users/:username', async (req, res) => {
   if (req.body.data.status == 'Save Request') {
-	console.log('Debug: Saving Friend Request')
-	saveRequest(req, res);
+    console.log('Debug: Saving Friend Request')
+    saveRequest(req, res);
   } else if (req.body.data.status == 'Unfriending') {
-	console.log('Debug: Viewer unfriending viewed.')
-	await unfriending(req, res);
+    console.log('Debug: Viewer unfriending viewed.')
+    await unfriending(req, res);
   } else if (req.body.data.status == 'Unfollowing') {
-	console.log('Debug: Viewer unfollowing viewer.')
-	await unfollowing(req, res);
+    console.log('Debug: Viewer unfollowing viewer.')
+    await unfollowing(req, res);
   }
 })
 
 app.delete('/server/users/:username', (req, res) => {
   if (req.body.status == 'Delete Request') {
-	console.log('Debug: Deleting Friend Request')
-	deleteRequest(req, res);
+    console.log('Debug: Deleting Friend Request')
+    deleteRequest(req, res);
   }
 })
 
@@ -368,16 +358,12 @@ app.post('/server/public/posts', async (req, res) => {
 
 app.post('/server/settings', async (req, res) => {
   console.log('Debug: Updating author account details');
-  if (req.body.data.status === 'Get Author') {
-	await getCurrentAuthorAccountDetails(req, res);
-  }
+  if (req.body.data.status === 'Get Author') { await getCurrentAuthorAccountDetails(req, res); }
 })
 
 app.put('/server/settings', async (req, res) => {
   console.log('Debug: Updating author account details');
-  if (req.body.data.status === 'Modify an Author') {
-	await updateAuthor(req, res);
-  }
+  if (req.body.data.status === 'Modify an Author') { await updateAuthor(req, res); }
 })
 
 /*

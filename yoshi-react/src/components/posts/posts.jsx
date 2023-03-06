@@ -19,7 +19,10 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React from "react";
+
+// Child Component
 import Post from './post.jsx';
 
 function Posts({viewerId, posts}) { 

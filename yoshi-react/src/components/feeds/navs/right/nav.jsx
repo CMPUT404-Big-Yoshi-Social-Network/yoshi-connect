@@ -19,15 +19,19 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React, { useEffect, useState } from 'react';
 // import { useParams } from 'react-router-dom';
 import axios from 'axios';
+
+// Child Component
+import CreatePost from '../../../posts/create.jsx';
+
+// User Interface
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import './nav.css';
-import CreatePost from '../../../posts/create.jsx';
-
 
 function RightNavBar() {
     const [username, setUsername] = useState();

@@ -19,19 +19,33 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// User Interface
 import {Button, Container, Image, Card, Form} from 'react-bootstrap';
 import './login.css'
 
 export default function Login() {
+    /**
+     * Description:
+     * Functions: 
+     *     - getUserpass(): Sends a POST request to get the account for routing it to the public feed as well as loggin in the existing author
+     * Returns: N/A
+     */
     const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',
       password: ''
     })
     const getUserpass = (e) => {
+      /**
+       * Description: Sends a POST request to get the author's account for public feed from the database
+       * Request: POST
+       * Returns: N/A
+       */
       e.preventDefault()
 
       let justLogged =  new Date();

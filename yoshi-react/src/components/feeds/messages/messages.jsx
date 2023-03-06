@@ -95,7 +95,7 @@ function Messages() {
         })
         .catch(err => { console.error(err) });
     }
-    
+
     return (
         <div>
             <TopNav/>

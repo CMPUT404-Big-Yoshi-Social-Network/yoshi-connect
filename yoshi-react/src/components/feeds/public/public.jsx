@@ -35,6 +35,9 @@ import './public.css';
 // Child Component 
 import Posts from '../../posts/posts.jsx';
 
+// Styling
+import './public.css';
+
 function PublicFeed() {
     /**
      * Description: Represents the Public Feed that displays the public (PSA) and followings (of the current author) posts  

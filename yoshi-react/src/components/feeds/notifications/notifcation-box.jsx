@@ -19,10 +19,17 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React, { useEffect } from "react";
+
+// Child Component
 import Requests from './requests/requests.jsx';
 
 function Notifications() {
+    /**
+     * Description: Represents a notification 
+     * Returns: N/A
+     */
     useEffect(() => {
      });
     return (

@@ -19,15 +19,20 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Popup from 'reactjs-popup';
+
+// Child Component
 import Authors from './authors.jsx';
 import AddAuthor from "./addForm.jsx";
-import Popup from 'reactjs-popup';
 import TopAdminNav from './topAdminNav.jsx';
 import LeftAdminNavBar from './leftAdminNav.jsx';
 import RightAdminNavBar from './rightAdminNav.jsx';
+
+// Styling
 import './admin-dashboard.css';
 
 function AdminDashboard() {

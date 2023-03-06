@@ -32,12 +32,24 @@ import ModifyAuthor from "./modifyForm.jsx";
 import './author.css';
 
 function Author(props) {
+    /**
+     * Description: Represents the author
+     * Functions:
+     *     - useEffect(): Before rendering, checks the author's properties  
+     *     - deleteAuthor(): Deletes the author
+     * Returns: N/A
+     */
     const [username, setUsername] = useState('');
     const url = '/server/admin/dashboard';
     useEffect(() => {
         setUsername(props.username)
      }, [props]);
     const deleteAuthor = () => {
+        /**
+         * Description: Sends a DELETE request to delete the author
+         * Request: DELETE
+         * Returns: N/A
+         */
         console.log('Debug: Deleting this author.')
         let config = {
             method: 'delete',

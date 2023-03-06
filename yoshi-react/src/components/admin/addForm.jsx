@@ -25,6 +25,12 @@ import axios from 'axios';
 import { useState } from 'react';
 
 function AddAuthor() {
+    /**
+     * Description: Represents a new author 
+     * Functions:
+     *     - addAuthor(): Adds the new author to the database
+     * Returns: N/A
+     */
     const url = '/server/admin/dashboard';
     const [data, setData] = useState({
         username: '',
@@ -33,6 +39,11 @@ function AddAuthor() {
       })
 
     const addAuthor = async (e) => {
+        /**
+         * Description: Adds the new author to the database
+         * Request: PUT
+         * Returns: N/A
+         */
         e.preventDefault();
         console.log('Debug: Attempting to add an author.');
         let config = {

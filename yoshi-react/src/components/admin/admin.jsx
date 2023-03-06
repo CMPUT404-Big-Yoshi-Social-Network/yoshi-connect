@@ -29,6 +29,17 @@ import { Button } from 'react-bootstrap';
 import '../login/login.css';
 
 export default function AdminLogin() { 
+    /**
+     * Description: Represents a post 
+     * Functions:
+     *     - getAdmin(): Checks if the current viewer of a post has already liked the post 
+     *     - toggleComments(): Hides and Unhides the comment section
+     *     - deletePost(): Deletes an author's post (only the post they own)
+     *     - addLike(): Adds a like to a specific post by current viewer
+     *     - removeLike(): Removes a like to a specific post by current viewer
+     *     - makeComment(): Adds a comment to a specific post by current viewer
+     * Returns: N/A
+     */
     const url = '/server/admin';
     const navigate = useNavigate();
     const [data, setData] = useState({

@@ -19,9 +19,12 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-const { Follower, Following, Friend } = require('../db_schema/author_schema.js');
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
+
+// Schemas
+const { Follower, Following, Friend } = require('../db_schema/author_schema.js');
 
 async function createFollowers(username, authorId){
     await Follower({

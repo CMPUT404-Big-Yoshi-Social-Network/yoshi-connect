@@ -46,7 +46,7 @@ const path = require('path');
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, fetchAuthors } = require('./routes/author');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, fetchPosts, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
@@ -680,17 +680,32 @@ app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }  
 })
 
-
-//TODO 
 app.get('/api/authors/:authorId/posts', async (req, res) => {
   const authorId = req.params.authorId;
+  const page = req.query.page;
+  const size = req.query.size;
 
+  const sanitizedPosts = await fetchPosts(page, size, authorId);
+
+  return res.json({
+    "type": "posts",
+    "authorId": authorId,
+    "items": [sanitizedPosts]
+  });
 })
-//TODO 
 
 app.post('/api/authors/:authorId/posts', async (req, res) => {
   const authorId = req.params.authorId;
 
+  const status = await apicreatePost(authorId, undefined, req.body, process.env.DOMAIN_NAME);
+
+  if (status == 200) {
+    return res.sendStatus(status);
+  } else if (status == 404) {
+    return res.sendStatus(404);
+  } else if (status == 500) {
+    return res.sendStatus(500); 
+  }  
 })
 
 //comments
@@ -728,10 +743,12 @@ app.get('/api/authors/:authorId/liked', async (req, res) => {
 app.get('/api/authors/:authorId/inbox', async (req, res) => {
 
 })
+
 //TODO 
 app.post('/api/authors/:authorId/inbox', async (req, res) => {
 
 })
+
 //TODO 
 app.delete('/api/authors/:authorId/inbox', async (req, res) => {
 

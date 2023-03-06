@@ -297,8 +297,8 @@ async function apiUpdateAuthor(token, author, admin){
 async function fetchAuthors(page, size){
     return Author.find(
         {
-            limit: size,
-            skip: page * size 
+            $limit: size,
+            $skip: page * size 
         }
     )
 }

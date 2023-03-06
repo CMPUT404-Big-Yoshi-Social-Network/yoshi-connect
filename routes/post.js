@@ -724,6 +724,39 @@ async function apicreatePost(authorId, postId, newPost, domain) {
     await postHistory.save();  
 }
 
+async function fetchPosts(page, size, authorId) {
+    const posts = PostHistory.find(
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: { dateString: "$posts.published" }
+                }
+            }
+        },
+        {
+            $sort: { "posts.published": -1 }
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: { $push: "$posts" }
+            }
+        }
+    )
+
+    if (posts[0] != undefined) {
+        return posts[0].posts_array;
+    } else {
+        return [];
+    }
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -741,5 +774,6 @@ module.exports={
     apigetPost,
     apiupdatePost,
     apideletePost,
-    apicreatePost
+    apicreatePost,
+    fetchPosts
 }

@@ -757,6 +757,48 @@ async function fetchPosts(page, size, authorId) {
     }
 }
 
+async function getComments(authorId, postId) {
+    const posts = PostHistory.find(
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $match: {'_id': postId}
+        },
+        {
+            index: { $indexOfArray: ['_id', postId] }
+        },
+        {
+            $unwind: '$index'
+        },
+        {
+            $set: {
+                "index.comments.published": {
+                    $dateFromString: { dateString: "$index.comments.published" }
+                }
+            }
+        },
+        {
+            $sort: { "index.comments.published": -1 }
+        },
+        {
+            $group: {
+                _id: null,
+                post_array: { $push: "$index" }
+            }
+        }
+    )
+
+    if (posts[0] != undefined) {
+        return posts[0].post_array.comments;
+    } else {
+        return [];
+    }   
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -775,5 +817,6 @@ module.exports={
     apiupdatePost,
     apideletePost,
     apicreatePost,
-    fetchPosts
+    fetchPosts,
+    getComments
 }

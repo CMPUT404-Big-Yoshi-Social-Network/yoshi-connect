@@ -10,12 +10,7 @@ const { createFollowers, createFollowings, createFriends } = require('./relation
 const { create_post_history } = require('./post.js');
 
 async function register_author(req, res){
-    if(await checkUsername(req) === "In use")
-        //TODO: Make this a 400
-        return res.json({
-            message: "Username already in use.",
-            status: "Unsuccessful"
-        });
+    if(await checkUsername(req) === "In use") return res.sendStatus(400);
         
     console.log("Debug: Author does not exist yet.");
 
@@ -24,12 +19,11 @@ async function register_author(req, res){
     const password = req.body.password;
     if( !username || !email || !password ){
         console.log("Debug: Did not fill in all the cells.");
-        //TODO: Make this a 400
-        return res.json({
-            message: "You are missing username or email or password.",
-            status: "Unsuccessful"
-        });
+        return res.sendStatus(400);
     }
+
+    const checkEmail = await Author.findOne({email: email})
+    if (checkEmail === undefined) { return res.sendStatus(400); }
 
     var author = new Author({
         username: username,
@@ -40,7 +34,7 @@ async function register_author(req, res){
         admin: false
     });
     
-    let saved_author = await author.save();
+    await author.save();
 
     console.log("Debug: " + author.username + " added successfully to database");
         
@@ -72,10 +66,7 @@ async function register_author(req, res){
     await author.save(async (err, author, next) => {
         if(err){
             console.log(err);
-            //TODO Make this a 400
-            return res.json({
-                status: "Unsuccessful"
-            });
+            return res.sendStatus(400);
         }
     });
 

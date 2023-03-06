@@ -64,7 +64,7 @@ app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Schemas
-const { Author } = require('./db_schema/author_schema.js');
+const { Author } = require('./db_schema/authorScheme.js');
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 

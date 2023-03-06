@@ -24,8 +24,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Friend, Login, Follower } = require('../db_schema/author_schema.js');
-const { PostHistory } = require('../db_schema/post_schema.js');
+const { Friend, Login, Follower } = require('../db_schema/authorScheme.js');
+const { PostHistory } = require('../db_schema/postScheme.js');
 
 async function fetchFriends(req, res) {
     /**

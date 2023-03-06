@@ -24,8 +24,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Following, Login } = require('../db_schema/author_schema.js');
-const { PostHistory, PublicPost } = require('../db_schema/post_schema.js');
+const { Following, Login } = require('../db_schema/authorScheme.js');
+const { PostHistory, PublicPost } = require('../db_schema/postScheme.js');
 
 async function fetchFollowing(req, res) {
     const login = await Login.findOne({token: req.cookies.token}).clone();

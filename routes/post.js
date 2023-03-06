@@ -24,8 +24,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/post_schema.js');
-const { Friend } = require('../db_schema/author_schema.js');
+const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/postScheme.js');
+const { Friend } = require('../db_schema/authorScheme.js');
 
 async function create_post_history(author_id){
     console.log('Debug: Creating post history for user')

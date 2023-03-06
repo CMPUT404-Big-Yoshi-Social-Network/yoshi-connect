@@ -1,0 +1,23 @@
+How to import the font to css files
+
+1. Copy paste twhichever font you want to use at the top of the css files
+
+    @font-face {
+        font-family: "Uni Neue";
+        src: url('../../fonts/UniNeue-Trial-Regular.eot');
+        src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
+            url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
+            url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
+            url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+
+    @import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');       
+
+2. To actually use it, do this
+
+    font-family: 'Uni Neue', sans-serif;
+    font-family: 'Signika', sans-serif;
+    font-family: 'DM Sans', sans-serif;
+
+depending on which font you want to use.
+

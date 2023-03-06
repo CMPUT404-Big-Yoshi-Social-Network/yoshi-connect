@@ -1,0 +1,55 @@
+/*
+Copyright 2023 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Furthermore it is derived from the Python documentation examples thus
+some of the code is Copyright © 2001-2013 Python Software
+Foundation; All Rights Reserved
+*/
+
+@font-face {
+    font-family: "Uni Neue";
+    src: url('../../fonts/UniNeue-Trial-Regular.eot');
+    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
+         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
+         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
+         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+}
+
+.welcome{
+    margin-top: 20em;
+    color: white;
+    text-align: center;
+    font-family: "Uni Neue";
+}
+.welcome-hello{
+    font-size: 40px;
+    padding: 1em;
+}
+.welcome-button{
+    color: white;
+    font-size: 18px;
+    margin: 0em 2em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
+    display: inline-block;
+}
+.welcome-button:hover{
+    background-color: #A7E7F8;
+    color: black;
+}

@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,27 +17,36 @@ limitations under the License.
 Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
-*/
+*/  
 
 // Setting up database
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+require('dotenv').config();
+
+// OpenAPI
+const {options} = require('./openAPI/options.js');
+
+// Swaggerio
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require('swagger-jsdoc');
-const {options} = require('./openAPI/options.js');
-require('dotenv').config();
-mongoose.set('strictQuery', true);
+const openapiSpecification = swaggerJsdoc(options);
 
-// Setting up app
+// App Setup
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
-const { authAuthor, checkUsername, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile } = require('./routes/author');
+
+const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
+const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
+const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower } = require('./routes/friend');
+const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
+const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -47,13 +56,15 @@ app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Connect to database
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"});
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
+
+// Schemas
+const { Author } = require('./dbSchema/authorScheme.js');
 
 if (process.env.NODE_ENV === "development") {
   app.use(express.static("./yoshi-react/build"));
 }
 
-const openapiSpecification = swaggerJsdoc(options);
 app.use('/server/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(openapiSpecification)
@@ -83,14 +94,8 @@ app.get('/favicon.ico', (req, res) => {
  *        description: NEEDS TO BE REFACTORED Signup not possible, username, is already taken, field missing, etc.
  */
 app.post('/server/signup', async (req, res) => {
-  console.log(req)
-  if (req.body.status == 'Is username in use') {
-    console.log('Debug: Checking if the username is already taken')
-    await checkUsername(req, res);
-  } else {
-    console.log('Debug: Signing up as an author')
-    await register_author(req, res);
-  }
+  console.log('Debug: Signing up as an author');
+  await registerAuthor(req, res);
 })
 
 /**
@@ -123,27 +128,49 @@ app.post('/server/admin', async (req, res) => {
 
 app.get('/server/admin/dashboard', async (req, res) => {
   console.log('Debug: Checking expiry of token')
-  if(await checkAdmin(req, res) === false){
-    return res.sendStatus(403)
+  if(!(await checkAdmin(req, res))){
+	return res.sendStatus(403)
   }
 
-  if((await checkExpiry(req, res)) == "Expired"){
-    return res.json({
-      status: "Unsuccessful",
-      message: "Token expired"
-    })
+  if((await checkExpiry(req, res))){
+	return res.json({
+	  status: "Unsuccessful",
+	  message: "Token expired"
+	})
   }
 
   return res.json({
-    status: "Successful",
-    message: "Here's the dashboard"
+	status: "Successful",
+	message: "Here's the dashboard"
   })
 })
 
-app.post('/server/admin/dashboard', (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Admin')
-    removeLogin(req, res);
+app.post('/server/admin/dashboard', async (req, res) => {
+  if (req.body.data.status == 'Logging Out') {
+	console.log('Debug: Logging out as Admin')
+	removeLogin(req, res);
+  } else if (req.body.data.status == 'Fetching Authors') {
+	console.log('Debug: Getting all authors.')
+	return res.json({
+	  authors: await Author.find()
+	})
+  }
+})
+
+app.delete('/server/admin/dashboard', (req, res) => {
+  if (req.body.status == 'Delete an Author') {
+	console.log('Debug: Deleting an Author.');
+	deleteAuthor(req, res);
+  }
+})
+
+app.put('/server/admin/dashboard', (req, res) => {
+  if (req.body.data.status == 'Add New Author') {
+	console.log('Debug: Adding a new Author.');
+	addAuthor(req, res);
+  } else if (req.body.data.status == 'Modify an Author') {
+	console.log('Debug: Modifying the Author.')
+	modifyAuthor(req, res);
   }
 })
 
@@ -154,76 +181,492 @@ app.get('/server/feed', (req, res) => {
 
 app.post('/server/feed', (req, res) => {
   if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
-    removeLogin(req, res);
+	console.log('Debug: Logging out as Author')
+	removeLogin(req, res);
+  }
+})
+
+app.post('/server/posts/', async (req, res) => {
+  if ( req.body.data.status == 'Fetching current authorId') { 
+    console.log('Debug: Getting the current author logged in');
+    await getCurrentAuthor(req, res);
+  } else if (req.body.data.status == 'Checking if post is already liked') {
+    await hasLiked(req, res);
+  } else if (req.body.data.status == 'Fetching authorId') {
+    await getAuthorByPost(req, res);
+  } else {
+    console.log('Debug: Paging the posts created by other (not the logged in author)');
+    await getPostsPaginated(req, res);
+  }
+})
+
+app.put('/server/authors/:author_id/posts/', async (req, res) => {
+  console.log('Debug: Creating a post')
+  await createPost(req, res);
+})
+
+app.get('/server/authors/:author_id/posts/', async (req, res) => {
+  console.log('Debug: Paging the posts created by the logged in author');
+	if ( await checkExpiry(req, res) ) {
+	  return res.sendStatus(404);
+	}
+  await getPostsPaginated(req, res);
+})
+
+app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+  console.log('Debug: Viewing a specific post by a specific author');
+  if ( await checkExpiry(req, res) ) {
+	return res.sendStatus(404);
+  }
+  await getPost(req, res);
+})
+
+app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+  console.log('Debug: Updating a specific post by a specific author')
+  if ( await checkExpiry(req, res) ) {
+	return res.sendStatus(404);
+  } else if ( req.body.data.status == 'Checking Visibility') {
+	console.log('Debug: Checking the visibility of a post');
+	checkVisibility(req, res);
+  } else if (req.body.data.status == 'Modify') {
+	console.log('Debug: Updating a post');
+	await updatePost(req, res);
+  }
+})
+
+app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+   console.log('Debug: Deleting a specific post by a specific author')
+  if ( await checkExpiry(req, res) ) {
+	return res.sendStatus(404);
+  }
+  if ( req.body.status == 'Remove like' ) {
+	console.log('Debug: Removing a like from a post!')
+	deleteLike(req, res);
+  } else if ( req.body.status == 'Remove comment' ) {
+	console.log('Debug: Removing a comment from a post!')
+	deleteComment(req, res);
+  } else if ( req.body.status == 'Remove post') {
+	await deletePost(req, res);
+  }
+})
+
+app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
+  if ( await checkExpiry(req, res) ) {
+	return res.sendStatus(404);
+  }
+  if ( req.body.status == 'Add comment' ) {
+	console.log('Debug: Adding a comment to a post!');
+	addComment(req, res);
+  } else if ( req.body.data.status == 'Add like' ) {
+    console.log('Debug: Adding a like to a post!');
+    addLike(req, res);
+  } else if ( req.body.data.status == 'Modify comment' ) {
+    console.log('Debug: Updating a comment on a post!')
+    editComment(req, res);
+  } else {
+	await createPost(req, res, req.params.post_id);
   }
 })
 
 app.get('/server/users/:username', async (req,res) => {
-  let a = await checkExpiry(req);
-  if(a  == "Expired"){
-    return res.sendStatus(401);
-  };
-  get_profile(req, res);
+  if(await checkExpiry(req))
+	return res.sendStatus(401);
+  getProfile(req, res);
 })
 
-app.post('/server/requests', (req, res) => {
+app.post('/server/users/posts', async (req, res) => {
+  console.log('Debug: Getting the author posts');
+  await fetchMyPosts(req, res);
+})
+
+app.post('/server/requests', async (req, res) => {
   if (req.body.data.status == 'Fetching Requests') {
-    console.log('Debug: Getting friend requests')
-    findAllRequests(req, res);
-  }
+	console.log('Debug: Getting friend requests')
+	findAllRequests(req, res);
+  } else if ( req.body.data.status == 'Fetching current authorId') { 
+	  console.log('Debug: Getting the current author logged in');
+	  await getCurrentAuthorUsername(req, res);
+	} 
 })
 
 app.put('/server/requests', (req, res) => {
   if (req.body.data.status == 'Sender is added by Receiver') {
-    console.log('Debug: Sender added by Receiver')
-    senderAdded(req, res);
+	console.log('Debug: Sender added by Receiver')
+	senderAdded(req, res);
   } 
 })
 
 app.delete('/server/requests', (req, res) => {
   if (req.body.status == 'Sender is rejected by Receiver') {
-    console.log('Debug: Sender rejected by Receiver')
-    deleteRequest(req, res);
+	console.log('Debug: Sender rejected by Receiver')
+	deleteRequest(req, res);
   }
 })
 
 app.post('/server/users/:username', async (req, res) => {
   if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
-    removeLogin(req, res);
+	console.log('Debug: Logging out as Author')
+	removeLogin(req, res);
   } else if (req.body.data.status == 'Does Request Exist') {
-    console.log('Debug: Checking if Friend Request Exists')
-    findRequest(req, res);
+	console.log('Debug: Checking if Friend Request Exists')
+	findRequest(req, res);
   } else if (req.body.data.status == 'Friends or Follows') {
-    console.log('Debug: Checking if they are friends or follows.')
-    await isFriend(req, res);
+	console.log('Debug: Checking if they are friends or follows.')
+	await isFriend(req, res);
   }
 })
 
 app.put('/server/users/:username', async (req, res) => {
   if (req.body.data.status == 'Save Request') {
-    console.log('Debug: Saving Friend Request')
-    saveRequest(req, res);
+	console.log('Debug: Saving Friend Request')
+	saveRequest(req, res);
   } else if (req.body.data.status == 'Unfriending') {
-    console.log('Debug: Viewer unfriending viewed.')
-    await unfriending(req, res);
+	console.log('Debug: Viewer unfriending viewed.')
+	await unfriending(req, res);
   } else if (req.body.data.status == 'Unfollowing') {
-    console.log('Debug: Viewer unfollowing viewer.')
-    await unfollowing(req, res);
+	console.log('Debug: Viewer unfollowing viewer.')
+	await unfollowing(req, res);
   }
 })
 
 app.delete('/server/users/:username', (req, res) => {
   if (req.body.status == 'Delete Request') {
-    console.log('Debug: Deleting Friend Request')
-    deleteRequest(req, res);
+	console.log('Debug: Deleting Friend Request')
+	deleteRequest(req, res);
   }
 })
 
+app.get('/server/nav', async (req, res) => {
+  console.log('Debug: Getting the current author logged in');
+  await getCurrentAuthorUsername(req, res);
+})
+
+app.get('/server/friends', (req, res) => {
+  console.log('Debug: Checking expiry of token')
+  sendCheckExpiry(req, res);
+})
+
+app.post('/server/friends', (req, res) => {
+  console.log('Debug: Getting the author friends');
+  fetchFriends(req, res);
+})
+
+app.post('/server/friends/posts', (req, res) => {
+  console.log('Debug: Getting the author friends posts');
+  fetchFriendPosts(req, res);
+})
+
+app.post('/server/following', async (req, res) => {
+  console.log('Debug: Getting the author following');
+  await fetchFollowing(req, res);
+})
+
+app.post('/server/public/posts', async (req, res) => {
+  console.log('Debug: Getting the author following/public posts');
+  await fetchPublicPosts(req, res);
+})
+
+app.post('/server/settings', async (req, res) => {
+  console.log('Debug: Updating author account details');
+  if (req.body.data.status === 'Get Author') {
+	await getCurrentAuthorAccountDetails(req, res);
+  }
+})
+
+app.put('/server/settings', async (req, res) => {
+  console.log('Debug: Updating author account details');
+  if (req.body.data.status === 'Modify an Author') {
+	await updateAuthor(req, res);
+  }
+})
+
+/*
+
+START OF NEW API STUFF VERY IMPORTANT DO NOT DELETE
+
+*/
+
+//Authors 
+app.get('/api/authors', async (req, res) => {
+  //Paginated authors
+})
+
+//Single Author
+app.get('/api/authors/:authorId', async (req, res) => {
+  if(req.params.authorId == undefined)
+    return res.sendStatus(404);
+
+  author = await getAuthor(req.params.authorId);
+
+  if(author === 404)
+    return res.sendStatus(404);
+
+  if(author === 500)
+    return res.sendStatus(500);
+
+  return res.json({
+    "type": "author",
+    "id" : author._id,
+    "host": process.env.DOMAIN_NAME,
+    "displayname": author.username,
+    "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+    "github": "",
+    "profileImage": "",
+    "about": author.about,
+    "pronouns": author.pronouns
+  });
+})
+
+app.post('/api/authors/:authorId', async (req, res) => {
+  if(!req.cookies["token"])
+    return res.sendStatus(401);
+  if(req.body.type !== 'author')
+    return res.sendStatus(400);
+
+  const authorId = req.body.id;
+  const host = req.body.host;
+  const username = req.body.displayName;
+
+  if(!authorId || !host || !username)
+    return res.sendStatus(400);
+
+  return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
+})
+
+//Followers
+app.get('/api/authors/:authorId/followers', async (req, res) => {
+  const authorId = req.params.authorId;
+
+  const followers = await getFollowers(authorId);
+  const friends = await getFriends(authorId);
+
+  if(followers == 404 || friends == 404)
+    return res.send(404);
+
+  santizedFollowers = [];
+  for(let i = 0; i < followers.length; i++){
+    const follower = followers[i];
+
+    const followerProfile = await Author.findOne({_id: follower.authorId}); 
+    if(!followerProfile)
+      continue
+
+    santizedFollower = {
+      "type": "author",
+      "id" : followerProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": followerProfile.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+      "github": "",
+      "profileImage": "",
+      "about": followerProfile.about,
+      "pronouns": followerProfile.pronouns
+    }
+
+    santizedFollowers.push(santizedFollower);
+  }
+
+  for(let i = 0; i < friends.length; i++){
+    const friend = friends[i];
+
+    const friendProfile = await Author.findOne({_id: friend.authorId}); 
+    if(!friendProfile)
+      continue
+    santizedFollower = {
+      "type": "author",
+      "id" : friendProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": friendProfile.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
+      "github": "",
+      "profileImage": "",
+      "about": friendProfile.about,
+      "pronouns": friendProfile.pronouns
+    }
+
+    santizedFollows.push(santizedFollower);
+  }
+
+  return res.json({
+    type: "followers",
+    items: santizedFollowers
+  });
+})
+
+//TODO 
+app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
+
+  const followers = await getFollowers(authorId);
+  const friends = await getFriends(authorId);
+
+  if(followers == 404 || friends == 404)
+    return res.send(404);
+
+  for(let i = 0; i < followers.length; i++){
+    const follower = followers[i];
+    if(follower.authorId == foreignId){
+
+      const followerProfile = await Author.findOne({_id: follower.authorId}); 
+      if(!followerProfile)
+        continue
+
+      return res.json({
+        "type": "author",
+        "id" : followerProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": followerProfile.username,
+        "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+        "github": "",
+        "profileImage": "",
+        "about": followerProfile.about,
+        "pronouns": followerProfile.pronouns
+      });
+    }
+  }
+
+  for(let i = 0; i < friends.length; i++){
+    const friend = friends[i];
+    if(friend.authorId = foreignId){
+
+      const friendProfile = await Author.findOne({_id: friend.authorId}); 
+
+      if(!friendProfile)
+        continue
+
+      return res.json({
+        "type": "author",
+        "id" : friendProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": friendProfile.username,
+        "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
+        "github": "",
+        "profileImage": "",
+        "about": friendProfile.about,
+        "pronouns": friendProfile.pronouns
+      })
+    }
+  }
+
+  return res.sendStatus(404);
+})
+
+
+//TODO 
+app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  if(req.body.type != "follow")
+    return res.sendStatus(400)
+
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
+
+  const follower = await addFollower(authorId, foreignId, req.body, req, res);
+  if(follower == 401)
+    return res.sendStatus(401);
+  else if(follower == 400)
+    return res.sendStatus(400);
+})
+
+
+//TODO 
+app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
+
+  
+})
+
+//Friends and followers request
+//TODO later
+
+
+//Post
+//TODO 
+app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
+
+})
+
+
+//TODO 
+app.get('/api/authors/:authorId/posts', async (req, res) => {
+
+})
+//TODO 
+
+app.post('/api/authors/:authorId/posts', async (req, res) => {
+
+})
+
+//comments
+
+//TODO 
+app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+
+})
+//TODO 
+app.post('', async (req, res) => {
+
+})
+
+//Likes
+
+//TODO 
+app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
+
+})
+//TODO 
+app.get('/api/authors/:authorId/posts/:postId/comments/:commentId', async (req, res) => {
+
+})
+
+//Liked
+
+//TODO 
+app.get('/api/authors/:authorId/liked', async (req, res) => {
+
+})
+
+//Inbox
+
+//TODO 
+app.get('/api/authors/:authorId/inbox', async (req, res) => {
+
+})
+//TODO 
+app.post('/api/authors/:authorId/inbox', async (req, res) => {
+
+})
+//TODO 
+app.delete('/api/authors/:authorId/inbox', async (req, res) => {
+
+})
+/*
+
+END OF NEW API STUFF
+
+*/
 app.get('/',(req, res) => {
   res.render("index");
-});
+}); 
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));

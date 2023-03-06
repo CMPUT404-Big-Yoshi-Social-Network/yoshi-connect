@@ -37,7 +37,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./auth');
-const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor } = require('./routes/author');
+const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor } = require('./routes/author');
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility, fetchLikers, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -393,7 +393,24 @@ app.get('/api/authors', async (req, res) => {
 
 //Single Author
 app.get('/api/authors/:authorId', async (req, res) => {
-  //Get authorId profile
+  author = await getAuthor(req.params.authorId);
+  console.log(author);
+
+  if(author === 404)
+    return res.sendStatus(404);
+
+  if(author === 500)
+    return res.sendStatus(500);
+
+  return res.json({
+    "type": "author",
+    "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+    "host": process.env.DOMAIN_NAME,
+    "displayname": author.username,
+    "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
+    "github": "",
+    "profileImage": ""
+  });
 })
 
 app.post('/api/authors/:authorId', async (req, res) => {
@@ -401,7 +418,9 @@ app.post('/api/authors/:authorId', async (req, res) => {
 })
 
 //Followers
-app.get('/api/authors/:authorId/followers')
+app.get('/api/authors/:authorId/followers', async (req, res) => {
+
+})
 
 //TODO 
 app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {

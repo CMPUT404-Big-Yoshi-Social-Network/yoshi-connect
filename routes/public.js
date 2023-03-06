@@ -169,6 +169,11 @@ async function fetchPublicPosts(req, res) {
         }  
     ]);
 
+    if(publicPosts.length == 0)
+        return res.json({
+            publicPosts: []
+        })
+
     let allPosts = null;
     if (publicPosts[0] != undefined && posts[0] != undefined && posts[0].length != 0) {
         allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);

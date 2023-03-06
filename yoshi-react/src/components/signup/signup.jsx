@@ -19,10 +19,13 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Form, Card, Button, Container, Image } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+
+// User Interface
+import { Form, Card, Button, Container, Image } from 'react-bootstrap';
 import './signup.css';
 
 export default function Signup() {

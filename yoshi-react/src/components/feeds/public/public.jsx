@@ -19,17 +19,22 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import React, { useCallback, useEffect, useState } from "react";
+
+// Child Component
 import TopNav from '../navs/top/nav.jsx';
 import LeftNavBar from '../navs/left/nav.jsx';
 import RightNavBar from '../navs/right/nav.jsx';
-import './public.css';
-import React, { useCallback, useEffect, useState } from "react";
 // import Notifications from './notifcation-box.jsx';
 // import CreatePost from '../posts/create.jsx';
 import Posts from '../../posts/posts.jsx';
 // import Following from './following.jsx';
+
+// Styling
+import './public.css';
 
 function PublicFeed() {
     const navigate = useNavigate();

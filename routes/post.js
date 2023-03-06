@@ -26,7 +26,7 @@ mongoose.set('strictQuery', true);
 const { PostHistory, Post, Like, Comment, PublicPost } = require('../dbSchema/postScheme.js');
 const { Friend } = require('../dbSchema/authorScheme.js');
 
-async function create_post_history(author_id){
+async function createPostHistory(author_id){
     /**
      * Description: Creates and saves the author's post history 
      * Returns: N/A

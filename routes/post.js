@@ -27,6 +27,10 @@ const { PostHistory, Post, Like, Comment, PublicPost } = require('../dbSchema/po
 const { Friend } = require('../dbSchema/authorScheme.js');
 
 async function createPostHistory(author_id){
+    /**
+     * Description: Creates and saves the author's post history 
+     * Returns: N/A
+     */
     console.log('Debug: Creating post history for user')
     let new_post_history = new PostHistory ({
         authorId: author_id,
@@ -40,6 +44,11 @@ async function createPostHistory(author_id){
 }
 
 async function addLike(req, res){
+    /**
+     * Description: Adds a like to the author's post to the database 
+     * Returns: A boolean status if the like is successfully saved into the database
+     *          The number of likes the post has
+     */
     console.log('Debug: Adding a like')
     const postHistory = await PostHistory.findOne({authorId: req.body.data.authorId});
     let publicPost = await PublicPost.find();
@@ -76,6 +85,11 @@ async function addLike(req, res){
 }
 
 async function deleteLike(req, res){
+    /**
+     * Description: Removes a like from the author's post in the database 
+     * Returns: A boolean status if the like is successfully removed from the database
+     *          The number of likes the post has
+     */
     console.log('Debug: Removing a like')
     let success = false;
     let numLikes = 0;
@@ -109,6 +123,11 @@ async function deleteLike(req, res){
 }
 
 async function addComment(req, res){
+    /**
+     * Description: Adds a comment to an author's post to the database 
+     * Returns: A boolean status if the comment is successfully saved into the database
+     *          The number of comments the post has
+     */
     console.log('Debug: Adding a comment')
     const postHistory = await PostHistory.findOne({authorId: req.body.authorId});
     let publicPost = await PublicPost.find();
@@ -141,6 +160,11 @@ async function addComment(req, res){
 }
 
 async function deleteComment(req, res){
+    /**
+     * Description: Removes a comment from an author's post in the database 
+     * Returns: A boolean status if the comment is successfully removed from the database
+     *          The number of comments the post has
+     */
     console.log('Debug: Deleting a comment')
     let success = false;
     let numComments = 0;
@@ -178,6 +202,10 @@ async function deleteComment(req, res){
 }
 
 async function editComment(req, res){
+    /**
+     * Description: Edits a comment from an author's post in the database 
+     * Returns: A boolean status if the comment is successfully edited to the database
+     */
     console.log('Debug: Editing a comment')
     let success = false;
     await PostHistory.findOne({authorId: req.body.data.authorId}, function(err, history){
@@ -198,6 +226,10 @@ async function editComment(req, res){
 }
 
 async function createPost(req, res, postId){
+    /**
+     * Description: Creates an author's post in the database 
+     * Returns: N/A
+     */
     console.log('Debug: Creating a post')
     let authorId = req.params.author_id;
     //Setup the rest of the post
@@ -274,6 +306,11 @@ async function createPost(req, res, postId){
 }
 
 async function getPost(req, res){
+    /**
+     * Description: Gets an author's post from the database 
+     * Returns: Status 404 if the post is not found in the database
+     *          The post from the database
+     */
     console.log("Debug: Getting a post");
 
     const authorId = req.params.author_id;
@@ -296,6 +333,10 @@ async function getPost(req, res){
 }
 
 async function getPostsPaginated(req, res){
+    /**
+     * Description: Pages the posts form the database 
+     * Returns: Status 200 if the posts are successfully retrieved and paginated from the database
+     */
     console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
 
@@ -336,6 +377,10 @@ async function getPostsPaginated(req, res){
 }
 
 async function updatePost(req, res){
+    /**
+     * Description: Updates an author's post in the database 
+     * Returns: Status 200 if the author's post is successfully updated in the database
+     */
     console.log("Debug: Update a post");
 
     const authorId = req.params.author_id;
@@ -407,6 +452,10 @@ async function updatePost(req, res){
 }
 
 async function deletePost(req, res){
+    /**
+     * Description: Removes an author's post from the database 
+     * Returns: Status 200 if the author's post is successfully removed from the database
+     */
     console.log("Debug: Delete a post");
 
     const authorId = req.params.author_id;
@@ -439,6 +488,12 @@ async function deletePost(req, res){
 }
 
 async function checkVisibility(req, res){
+    /**
+     * Description: Checks the visibility level of the author's post for the viewer
+     * Returns: Status 404 if the author's post is not found in the database
+     *          Status 404 if the author's post visibility level is not viewable for the viewer
+     *          The author's post if the visibility level is viewable for the viewer
+     */
     console.log('Debug: Checks the visibility of the post for the viewer');
     const authorId = req.params.author_id;
     const viewerId = req.body.data.viewerId;
@@ -501,6 +556,11 @@ async function checkVisibility(req, res){
 }
 
 async function fetchLikers(req, res) {
+    /**
+     * Description: Finds the authors that liked an author's post from the database 
+     * Returns: Status 404 if the author's post is not found in the database
+     *          The authors who liked the post
+     */
     console.log('Debug: Getting the likers for a specific post.');
 
     const authorId = req.body.data.authorId;
@@ -523,6 +583,11 @@ async function fetchLikers(req, res) {
 }
 
 async function hasLiked(req, res) {
+    /**
+     * Description: Shows the like status of the authors who liked a post from the database 
+     * Returns: The status 'liked' if the author has liked the post
+     *          The status 'unliked' if the author has unliked the post
+     */
     const likers = await fetchLikers(req, res);
     for (let i = 0; i < likers.length; i++) {
         if (likers[i].liker === req.body.data.viewerId) {

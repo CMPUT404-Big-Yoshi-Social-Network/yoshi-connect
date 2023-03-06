@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Setting up database
 const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
@@ -541,13 +542,12 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
 
 //TODO 
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
-  if(req.body.type != "follow")
-    return res.sendStatus(400)
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const follower = await addFollower(authorId, foreignId, req.body, req, res);
+  const follower = await addFollower(req.cookies["token"], authorId, foreignId, req.body, req, res);
+
   if(follower == 401)
     return res.sendStatus(401);
   else if(follower == 400)
@@ -557,10 +557,13 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
 
 //TODO 
 app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  if(req.body.type == undefined || req.body.item == undefined || req.body.type != "follower")
+    return res.sendStatus(400)
+
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  
+  const follower = req.body.item
 })
 
 //Friends and followers request

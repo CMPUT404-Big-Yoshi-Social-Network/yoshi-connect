@@ -41,7 +41,7 @@ const { register_author, get_profile, getCurrentAuthor, getCurrentAuthorUsername
 const { create_post, get_post, get_posts_paginated, update_post, delete_post, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
-const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
+const { fetchFriends, fetchFriendPosts, getFollowers } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
@@ -434,7 +434,35 @@ app.post('/api/authors/:authorId', async (req, res) => {
 
 //Followers
 app.get('/api/authors/:authorId/followers', async (req, res) => {
+  const authorId = req.params.authorId;
 
+  const followers = await getFollowers(authorId);
+
+  santizedFollowers = [];
+  for(let i = 0; i < followers.length; i++){
+    follower = followers[i];
+
+    const followerProfile = await Author.findOne({_id: follower.authorId}); 
+
+    santizedFollower = {
+      "type": "author",
+      "id" : followerProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": followerProfile.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+      "github": "",
+      "profileImage": "",
+      "about": followerProfile.about,
+      "pronouns": followerProfile.pronouns
+    }
+
+    santizedFollowers.push(santizedFollower);
+  }
+
+  return res.json({
+    type: "followers",
+    items: santizedFollowers
+  });
 })
 
 //TODO 

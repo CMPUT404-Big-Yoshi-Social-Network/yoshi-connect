@@ -45,7 +45,7 @@ const path = require('path');
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, getComments, apifetchLikes, fetchPosts, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
-const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest } = require('./routes/request');
+const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest, apideleteRequest } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
@@ -608,7 +608,7 @@ app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const request = await deleteRequest(authorId, foreignId, res);
+  const request = await apideleteRequest(authorId, foreignId, res);
 
   return res.json({
     "type": request.type,

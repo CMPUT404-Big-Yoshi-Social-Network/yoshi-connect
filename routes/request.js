@@ -337,7 +337,7 @@ async function sendRequest(authorId, foreignId, res) {
     }
 }
 
-async function deleteRequest(authorId, foreignId, res) {
+async function apideleteRequest(authorId, foreignId, res) {
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
     let summary = '';
@@ -359,5 +359,6 @@ module.exports={
     findRequest,
     findAllRequests,
     senderAdded,
-    sendRequest
+    sendRequest,
+    apideleteRequest
 }

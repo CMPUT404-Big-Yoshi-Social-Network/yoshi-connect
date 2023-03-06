@@ -25,7 +25,8 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { Friend, Login, Follower } = require('../db_schema/authorScheme.js');
 const { PostHistory } = require('../db_schema/postScheme.js');
-
+const { senderAdded } = require('./request.js');
+const {authLogin} = require('../auth.js')
 async function fetchFriends(req, res) {
     const login = await Login.findOne({token: req.cookies.token}).clone();
     if(!login){
@@ -155,9 +156,33 @@ async function getFriends(id){
 
     return friends.friends;
 }
+
+async function addFollower(token, authorId, foreignId, body, req, res){
+    if(!authLogin(token, authorId))
+        return 401;
+
+    if(body.object == undefined || body.actor == undefined)
+        return 400;
+
+    if(body.object.id != authorId){
+        return 400;
+    }
+    if(body.actor.id != foreignId){
+        return 400;
+    }
+
+    const request = await Request.findOne({senderUUID: foreignId, receiverUUID: authorId});
+    if(!request){
+        return 401;
+    }
+
+    senderAdded(req, res);
+    return;
+}
 module.exports={
     fetchFriends,
     fetchFriendPosts,
     getFollowers,
-    getFriends
+    getFriends,
+    addFollower
 }

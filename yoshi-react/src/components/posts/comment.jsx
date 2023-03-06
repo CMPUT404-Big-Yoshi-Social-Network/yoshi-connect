@@ -63,8 +63,8 @@ function Comment(props) {
 
     return (
         <div id='comment'>
-            <h4>{ props.viewerId }</h4>
-            { props.commenter }
+            <h4>{ props.commenter }</h4>
+            { props.comment }
             { props.commenter !== props.viewerId ? null : 
                 <Popup trigger={<button>Edit</button>}><EditComment {...props}/></Popup> }    
             { props.commenter !== props.viewerId ? null : 

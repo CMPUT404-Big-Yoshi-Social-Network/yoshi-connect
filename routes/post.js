@@ -248,7 +248,7 @@ async function createPost(req, res, postId){
     //Should be refactored to do use an aggregate pipeline in case of large number of posts
     let post_history = await PostHistory.findOne({authorId: authorId});
 
-    if (post_history == null) {
+    if (!post_history) {
         console.log('Debug: Create a post history');
         await createPostHistory(authorId);
     }
@@ -601,6 +601,267 @@ async function hasLiked(req, res) {
     })
 }
 
+/**
+ * API STUFF
+ */
+
+async function apigetPost(authorId, postId){
+    let post = await PostHistory.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {'posts._id' : postId}
+        }
+    ]);
+    if(post.length == 0) return 404;
+    return post   
+}
+
+async function apiupdatePost(authorId, postId, newPost) {
+    const title = newPost.title;
+    const desc = newPost.desc;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    const specifics = newPost.specifics;
+    const image = newPost.image;
+
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+
+    let post = null;
+    let postIdx = postHistory.posts.map(obj => obj._id).indexOf(postId);
+    if (postIdx > -1) { 
+        post = postHistory.posts[postIdx]
+    }
+
+    let specifics_updated = false;
+    post.title = title; 
+    post.description = desc;
+    post.contentType = contentType;
+    post.content = content;
+    if (post.visibility != visibility) {
+        if ( (visibility == 'Friends' || visibility == 'Public') && post.specifics.length != 0) {
+            console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
+            post.specifics = [];
+            specifics_updated = true;
+        } 
+        post.visibility = visibility;
+    }
+    if (!specifics_updated) {
+        if (post.specifics != specifics) { post.specifics = specifics; }
+    }
+    post.categories = categories;
+    post.unlisted = unlisted;
+    post.image = image;
+
+    await postHistory.save()
+
+    return 200;
+}
+
+async function apideletePost(authorId, postId) {
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if (postHistory == undefined) return sendStatus(500);
+
+    const post = postHistory.posts.id(postId);
+
+    if(post == null) return res.sendStatus(404);
+
+    post.remove();
+    postHistory.num_posts = postHistory.num_posts - 1;
+    postHistory.save();
+
+    return res.sendStatus(200); 
+}
+
+async function apicreatePost(authorId, postId, newPost, domain) {
+    const title = newPost.title;
+    const source = newPost.source;
+    const desc = newPost.desc;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const published = new Date().toISOString();
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    const specifics = newPost.specifics;
+    const image = newPost.image;
+
+    let postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if (postHistory == null) {
+        console.log('Debug: Create a post history');
+        await createPostHistory(authorId);
+    }
+
+    if(postId == undefined) {
+        postId = uidgen.generateSync();
+    }
+    var post = new Post({
+        _id: domain + "/authors/" + authorId + "/posts/" + postId,
+        title: title,
+        source: source,
+        origiin, origin,
+        description: desc,
+        contentType: contentType,
+        content: content,
+        authorId: authorId,
+        categories: categories,
+        count: 0,
+        likes: [],
+        comments: [],
+        published: published,
+        visibility: visibility,
+        specifics: specifics,
+        unlisted: unlisted,
+        image: image
+    });
+
+    postHistory = await PostHistory.findOne({authorId: authorId});
+    postHistory.posts.push(post);
+    postHistory.num_posts = postHistory.num_posts + 1;
+    await postHistory.save();  
+}
+
+async function fetchPosts(page, size, authorId) {
+    const posts = PostHistory.find(
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: { dateString: "$posts.published" }
+                }
+            }
+        },
+        {
+            $sort: { "posts.published": -1 }
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: { $push: "$posts" }
+            }
+        }
+    )
+
+    if (posts[0] != undefined) {
+        return posts[0].posts_array;
+    } else {
+        return [];
+    }
+}
+
+async function getComments(authorId, postId) {
+    // TODO: Paginate
+    const posts = PostHistory.find(
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $match: {'_id': postId}
+        },
+        {
+            index: { $indexOfArray: ['_id', postId] }
+        },
+        {
+            $unwind: '$index'
+        },
+        {
+            $set: {
+                "index.comments.published": {
+                    $dateFromString: { dateString: "$index.comments.published" }
+                }
+            }
+        },
+        {
+            $sort: { "index.comments.published": -1 }
+        },
+        {
+            $group: {
+                _id: null,
+                post_array: { $push: "$index" }
+            }
+        }
+    )
+
+    if (posts[0] != undefined) {
+        return posts[0].post_array.comments;
+    } else {
+        return [];
+    }   
+}
+
+async function createComment(authorId, postId, newComment, domain) {
+    console.log('Debug: Adding a comment')
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+    const author = await Author.findOne({authorId: authorId});
+
+    var comment = new Comment({
+        author: author,
+        comment: newComment.content,
+        contentType: newComment.contentType,
+        published: new Date().toISOString(),
+        _id: domain + "authors/" + authorId + "/posts/" + postId + "/comments/" + uidgen.generateSync()
+    });
+
+    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.postId);
+    if (idx > -1) { 
+        postHistory.posts[idx].comments.push(comment);
+        postHistory.posts[idx].count + 1;
+        postHistory.save();
+    }
+    else {
+        console.log('Debug: No such post exists!')
+    }
+
+    return comment  
+}
+
+async function apifetchLikes(authorId, postId) {
+    // TODO: Paginate
+    const posts = PostHistory.find(
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            index: { $indexOfArray: ['_id', postId] }
+        },
+        {
+            $unwind: '$index'
+        },
+        {
+            $group: {
+                _id: null,
+                post_array: { $push: "$index" }
+            }
+        }
+    )
+
+    if (posts[0] != undefined) {
+        return posts[0].post_array.likes;
+    } else {
+        return [];
+    }   
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -614,5 +875,12 @@ module.exports={
     deleteComment,
     editComment,
     checkVisibility,
-    hasLiked
+    hasLiked,
+    apigetPost,
+    apiupdatePost,
+    apideletePost,
+    apicreatePost,
+    fetchPosts,
+    getComments,
+    createComment
 }

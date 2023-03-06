@@ -129,14 +129,12 @@ app.get('/server/admin/dashboard', async (req, res) => {
 
   if((await checkExpiry(req, res))){
 	return res.json({
-	  status: "Unsuccessful",
-	  message: "Token expired"
+	  status: "Unsuccessful"
 	})
   }
 
   return res.json({
-	status: "Successful",
-	message: "Here's the dashboard"
+	status: "Successful"
   })
 })
 
@@ -175,7 +173,7 @@ app.get('/server/feed', (req, res) => {
 })
 
 app.post('/server/feed', (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
+  if (req.body.data.status == 'Logging Out') {
 	console.log('Debug: Logging out as Author')
 	removeLogin(req, res);
   }
@@ -294,7 +292,7 @@ app.delete('/server/requests', (req, res) => {
 })
 
 app.post('/server/users/:username', async (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
+  if (req.body.data.status == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
   } else if (req.body.data.status == 'Does Request Exist') {

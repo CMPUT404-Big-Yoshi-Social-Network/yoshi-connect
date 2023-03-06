@@ -28,8 +28,8 @@ const { Request, Follower, Following, Friend, Login, Author } = require('../dbSc
 async function saveRequest(req, res) {  
     /**
      * Description: Saves the request to the database
-     * Returns: If successful, { status: "Successful"} also returns a message
-     *          If failed, { status: "Unsuccessful" } also returns a message
+     * Returns: If successful, { status: "Successful"} also returns a status
+     *          If failed, { status: "Unsuccessful" } also returns a status
      */
     const senderUUID = await Author.findOne({username: req.body.data.sender});
     const receiverUUID = await Author.findOne({username: req.body.data.receiver});

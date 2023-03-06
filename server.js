@@ -402,12 +402,12 @@ app.get('/api/authors', async (req, res) => {
  * @openapi
  * /api/authors/:authorId:
  *  get:
- *    description: <insert what this request is trying to do>
+ *    description: Fetchs a single Author object from the database and sends it back as a JSON object
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      404:
+ *        description: Returns Status 404 when an Author does not exist 
+ *      500:
+ *        description: Returns Status 500 when the server is unable to retrieve the Author from the database
  */
 app.get('/api/authors/:authorId', async (req, res) => {
   /**

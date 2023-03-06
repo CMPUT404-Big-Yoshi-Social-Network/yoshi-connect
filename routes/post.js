@@ -845,5 +845,6 @@ module.exports={
     apideletePost,
     apicreatePost,
     fetchPosts,
-    getComments
+    getComments,
+    createComment
 }

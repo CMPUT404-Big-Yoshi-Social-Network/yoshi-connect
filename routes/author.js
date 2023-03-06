@@ -274,16 +274,56 @@ async function apiUpdateAuthor(token, author){
 
     const pronouns = author.pronouns;
     const about = author.about;
+    const email = author.email;
     const github = author.github;
+    const password = author.password;
+    const admin = author.admin;
 
     if (pronouns) { authorProfile.pronouns = pronouns; }
+    if (email) { authorProfile.email = email; }
     if (about) { authorProfile.about = about; }
     if (github) { authorProfile.github = github; }
+
+    if (admin) {
+        if (admin) { authorProfile.admin = admin; }
+        if (password) { authorProfile.password = password; }
+    }
 
     await authorProfile.save();
 
     return 200;
 }
+
+async function getAuthors(page, size){
+    
+    const authors = await Author.find(
+        {
+            limit: size,
+            skip: page * size 
+        }
+    ).limit(size);
+    
+    let sanitizedAuthors = [];
+
+    for(let i = 0; i < authors.length; i++){
+        const author = authors[i];
+
+        sanitizedAuthors.push({
+                "type": "author",
+                "id" : author._id,
+                "host": process.env.DOMAIN_NAME,
+                "displayname": author.username,
+                "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+                "github": "",
+                "profileImage": "",
+                "email": author.email, 
+                "about": author.about,
+                "pronouns": author.pronouns
+        })
+    }
+    return sanitizedAuthors;
+}
+
 module.exports={
     registerAuthor,
     getProfile,
@@ -294,4 +334,5 @@ module.exports={
     updateAuthor,
     getAuthor,
     apiUpdateAuthor,
+    getAuthors
 }

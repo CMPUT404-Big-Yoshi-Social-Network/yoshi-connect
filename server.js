@@ -380,411 +380,411 @@ UPDATED API
  *      200:
  *        description: a list of authors
  */
-// app.get('/api/authors', async (req, res) => {
-//   /**
-//    * Description: Gets Author paginated given a query of pages and how big each page is 
-//    */
-//   const page = req.query.page;
-//   const size = req.query.size;
-//   if(page == undefined)
-//     page = 1;
-//   if(size == undefined)
-//     size = 5;
-//   const sanitizedAuthors = await getAuthors(page, size);
+app.get('/api/authors', async (req, res) => {
+  /**
+   * Description: Gets Author paginated given a query of pages and how big each page is 
+   */
+  const page = req.query.page;
+  const size = req.query.size;
+  if(page == undefined)
+    page = 1;
+  if(size == undefined)
+    size = 5;
+  const sanitizedAuthors = await getAuthors(page, size);
 
-//   return res.json({
-//     "type": "authors",
-//     "items": [sanitizedAuthors]
-//   });
-// })
+  return res.json({
+    "type": "authors",
+    "items": [sanitizedAuthors]
+  });
+})
 
-// app.get('/api/authors/:authorId', async (req, res) => {
-//   /**
-//    * Description: GET request for a single Author
-//    */
-//   if(req.params.authorId == undefined)
-//     return res.sendStatus(404);
+app.get('/api/authors/:authorId', async (req, res) => {
+  /**
+   * Description: GET request for a single Author
+   */
+  if(req.params.authorId == undefined)
+    return res.sendStatus(404);
 
-//   let author = await getAuthor(req.params.authorId);
+  let author = await getAuthor(req.params.authorId);
 
-//   if(author === 404)
-//     return res.sendStatus(404);
+  if(author === 404)
+    return res.sendStatus(404);
 
-//   if(author === 500)
-//     return res.sendStatus(500);
+  if(author === 500)
+    return res.sendStatus(500);
 
-//   return res.json({
-//     "type": "author",
-//     "id" : author._id,
-//     "host": process.env.DOMAIN_NAME,
-//     "displayname": author.username,
-//     "url":  process.env.DOMAIN_NAME + "users/" + author._id,
-//     "github": "",
-//     "profileImage": "",
-//     "email": author.email, 
-//     "about": author.about,
-//     "pronouns": author.pronouns
-//   });
-// })
+  return res.json({
+    "type": "author",
+    "id" : author._id,
+    "host": process.env.DOMAIN_NAME,
+    "displayname": author.username,
+    "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+    "github": "",
+    "profileImage": "",
+    "email": author.email, 
+    "about": author.about,
+    "pronouns": author.pronouns
+  });
+})
 
-// app.post('/api/authors/:authorId', async (req, res) => {
-//   if(!req.cookies["token"])
-//     return res.sendStatus(401);
-//   if(req.body.type !== 'author')
-//     return res.sendStatus(400);
+app.post('/api/authors/:authorId', async (req, res) => {
+  if(!req.cookies["token"])
+    return res.sendStatus(401);
+  if(req.body.type !== 'author')
+    return res.sendStatus(400);
 
-//   const authorId = req.body.id;
-//   const host = req.body.host;
-//   const username = req.body.displayName;
+  const authorId = req.body.id;
+  const host = req.body.host;
+  const username = req.body.displayName;
 
-//   if(!authorId || !host || !username)
-//     return res.sendStatus(400);
+  if(!authorId || !host || !username)
+    return res.sendStatus(400);
 
-//   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
-// })
+  return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
+})
 
-// app.get('/api/authors/:authorId/followers', async (req, res) => {
-//   /**
-//    * Description: Getting followers of current author 
-//    *     - Friends are not only friends but also followers
-//    */
-//   const authorId = req.params.authorId;
+app.get('/api/authors/:authorId/followers', async (req, res) => {
+  /**
+   * Description: Getting followers of current author 
+   *     - Friends are not only friends but also followers
+   */
+  const authorId = req.params.authorId;
 
-//   const followers = await getFollowers(authorId);
-//   const friends = await getFriends(authorId);
+  const followers = await getFollowers(authorId);
+  const friends = await getFriends(authorId);
 
-  // if(followers == 404 || friends == 404)
-  //   return res.send(404);
+  if(followers == 404 || friends == 404)
+    return res.send(404);
 
-  // santizedFollowers = [];
-  // for(let i = 0; i < followers.length; i++){
-  //   const follower = followers[i];
+  santizedFollowers = [];
+  for(let i = 0; i < followers.length; i++){
+    const follower = followers[i];
 
-  //   const followerProfile = await Author.findOne({_id: follower.authorId}); 
-  //   if(!followerProfile)
-  //     continue
+    const followerProfile = await Author.findOne({_id: follower.authorId}); 
+    if(!followerProfile)
+      continue
 
-  //   santizedFollower = {
-  //     "type": "author",
-  //     "id" : followerProfile._id,
-  //     "host": process.env.DOMAIN_NAME,
-  //     "displayname": followerProfile.username,
-  //     "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
-  //     "github": "",
-  //     "profileImage": "",
-  //     "email": followerProfile.email,
-  //     "about": followerProfile.about,
-  //     "pronouns": followerProfile.pronouns
-  //   }
+    santizedFollower = {
+      "type": "author",
+      "id" : followerProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": followerProfile.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+      "github": "",
+      "profileImage": "",
+      "email": followerProfile.email,
+      "about": followerProfile.about,
+      "pronouns": followerProfile.pronouns
+    }
 
-  //   santizedFollowers.push(santizedFollower);
-  // }
+    santizedFollowers.push(santizedFollower);
+  }
 
-//   for(let i = 0; i < friends.length; i++){
-//     const friend = friends[i];
+  for(let i = 0; i < friends.length; i++){
+    const friend = friends[i];
 
-//     const friendProfile = await Author.findOne({_id: friend.authorId}); 
-//     if(!friendProfile)
-//       continue
-//     santizedFollower = {
-//       "type": "author",
-//       "id" : friendProfile._id,
-//       "host": process.env.DOMAIN_NAME,
-//       "displayname": friendProfile.username,
-//       "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
-//       "github": "",
-//       "profileImage": "",
-//       "about": friendProfile.about,
-//       "pronouns": friendProfile.pronouns
-//     }
+    const friendProfile = await Author.findOne({_id: friend.authorId}); 
+    if(!friendProfile)
+      continue
+    santizedFollower = {
+      "type": "author",
+      "id" : friendProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": friendProfile.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
+      "github": "",
+      "profileImage": "",
+      "about": friendProfile.about,
+      "pronouns": friendProfile.pronouns
+    }
 
-//     santizedFollowers.push(santizedFollower);
-//   }
+    santizedFollowers.push(santizedFollower);
+  }
 
-//   return res.json({
-//     type: "followers",
-//     items: santizedFollowers
-//   });
-// })
+  return res.json({
+    type: "followers",
+    items: santizedFollowers
+  });
+})
 
-// app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const foreignId = req.params.foreignAuthorId;
+app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
 
-//   const followers = await getFollowers(authorId);
-  // const friends = await getFriends(authorId);
+  const followers = await getFollowers(authorId);
+  const friends = await getFriends(authorId);
 
-  // if(followers == 404 || friends == 404)
-  //   return res.send(404);
+  if(followers == 404 || friends == 404)
+    return res.send(404);
 
-  // for(let i = 0; i < followers.length; i++){
-  //   const follower = followers[i];
-  //   if(follower.authorId == foreignId){
+  for(let i = 0; i < followers.length; i++){
+    const follower = followers[i];
+    if(follower.authorId == foreignId){
 
-  //     const followerProfile = await Author.findOne({_id: follower.authorId}); 
-  //     if(!followerProfile)
-  //       continue
+      const followerProfile = await Author.findOne({_id: follower.authorId}); 
+      if(!followerProfile)
+        continue
 
-  //     return res.json({
-  //       "type": "author",
-  //       "id" : followerProfile._id,
-  //       "host": process.env.DOMAIN_NAME,
-  //       "displayname": followerProfile.username,
-  //       "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
-  //       "github": "",
-  //       "profileImage": "",
-  //       "about": followerProfile.about,
-  //       "pronouns": followerProfile.pronouns
-  //     });
-  //   }
-  // }
+      return res.json({
+        "type": "author",
+        "id" : followerProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": followerProfile.username,
+        "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+        "github": "",
+        "profileImage": "",
+        "about": followerProfile.about,
+        "pronouns": followerProfile.pronouns
+      });
+    }
+  }
 
-//   for(let i = 0; i < friends.length; i++){
-//     const friend = friends[i];
-//     if(friend.authorId = foreignId){
+  for(let i = 0; i < friends.length; i++){
+    const friend = friends[i];
+    if(friend.authorId = foreignId){
 
-//       const friendProfile = await Author.findOne({_id: friend.authorId}); 
+      const friendProfile = await Author.findOne({_id: friend.authorId}); 
 
-//       if(!friendProfile)
-//         continue
+      if(!friendProfile)
+        continue
 
-//       return res.json({
-//         "type": "author",
-//         "id" : friendProfile._id,
-//         "host": process.env.DOMAIN_NAME,
-//         "displayname": friendProfile.username,
-//         "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
-//         "github": "",
-//         "profileImage": "",
-//         "about": friendProfile.about,
-//         "pronouns": friendProfile.pronouns
-//       })
-//     }
-//   }
+      return res.json({
+        "type": "author",
+        "id" : friendProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": friendProfile.username,
+        "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
+        "github": "",
+        "profileImage": "",
+        "about": friendProfile.about,
+        "pronouns": friendProfile.pronouns
+      })
+    }
+  }
 
-//   return res.sendStatus(404);
-// })
+  return res.sendStatus(404);
+})
 
-// app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
 
-//   const authorId = req.params.authorId;
-//   const foreignId = req.params.foreignAuthorId;
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
 
-//   const follower = await addFollower(req.cookies["token"], authorId, foreignId, req.body, req, res);
+  const follower = await addFollower(req.cookies["token"], authorId, foreignId, req.body, req, res);
 
-//   if(follower == 401)
-//     return res.sendStatus(401);
-//   else if(follower == 400)
-//     return res.sendStatus(400);
-// })
+  if(follower == 401)
+    return res.sendStatus(401);
+  else if(follower == 400)
+    return res.sendStatus(400);
+})
 
-// app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
-//   if(req.body.type == undefined || req.body.type != "follower")
-//     return res.sendStatus(400)
+app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+  if(req.body.type == undefined || req.body.type != "follower")
+    return res.sendStatus(400)
 
-//   const authorId = req.params.authorId;
-//   const foreignId = req.params.foreignAuthorId;
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
 
-//   const statusCode = await deleteFollower(req.cookies["token"], authorId, foreignId, req.body);
+  const statusCode = await deleteFollower(req.cookies["token"], authorId, foreignId, req.body);
 
-//   return res.sendStatus(statusCode);
-// })
+  return res.sendStatus(statusCode);
+})
 
-// app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const foreignId = req.params.foreignAuthorId;
+app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
 
-//   const request = await sendRequest(authorId, foreignId, res);
+  const request = await sendRequest(authorId, foreignId, res);
 
-//   return res.json({
-//     "type": request.type,
-//     "summary": request.summary,
-//     "actor": request.actor,
-//     "object": request.object
-//   })
-// })
+  return res.json({
+    "type": request.type,
+    "summary": request.summary,
+    "actor": request.actor,
+    "object": request.object
+  })
+})
 
-// app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const foreignId = req.params.foreignAuthorId;
+app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
 
-//   const request = await deleteRequest(authorId, foreignId, res);
+  const request = await deleteRequest(authorId, foreignId, res);
 
-//   return res.json({
-//     "type": request.type,
-//     "summary": request.summary,
-//     "actor": request.actor,
-//     "object": request.object
-//   })
-// })
+  return res.json({
+    "type": request.type,
+    "summary": request.summary,
+    "actor": request.actor,
+    "object": request.object
+  })
+})
 
-// app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
-//   if(req.params.authorId == undefined) return res.sendStatus(404);
-//   const authorId = req.params.authorId;
-//   const postId = req.params.postId;
+app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
+  if(req.params.authorId == undefined) return res.sendStatus(404);
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
-//   let post = await apigetPost(authorId, postId);
+  let post = await apigetPost(authorId, postId);
 
-//   if(post === 404) return res.sendStatus(404);
-//   if(post === 500) return res.sendStatus(500);
+  if(post === 404) return res.sendStatus(404);
+  if(post === 500) return res.sendStatus(500);
 
-//   return res.json({
-//     "type": "post",
-//     "title" : post.title,
-//     "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
-//     "source": post.source,
-//     "origin": post.origin,
-//     "description": post.description,
-//     "contentType": post.contentType,
-//     "author": post.author, 
-//     "categories": post.categories,
-//     "count": post.count,
-//     "comments": post.comments,
-//     "commentSrc": post.commentSrc,
-//     "published": post.published,
-//     "visibility": post.visibility,
-//     "unlisted": post.unlisted
-//   });
-// })
+  return res.json({
+    "type": "post",
+    "title" : post.title,
+    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+    "source": post.source,
+    "origin": post.origin,
+    "description": post.description,
+    "contentType": post.contentType,
+    "author": post.author, 
+    "categories": post.categories,
+    "count": post.count,
+    "comments": post.comments,
+    "commentSrc": post.commentSrc,
+    "published": post.published,
+    "visibility": post.visibility,
+    "unlisted": post.unlisted
+  });
+})
 
-// app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const postId = req.params.postId;
+app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
-//   const status = await apiupdatePost(authorId, postId, req.body);
+  const status = await apiupdatePost(authorId, postId, req.body);
   
-//   if (status == 200) {
-//     return res.sendStatus(status);
-//   } else {
-//     return res.sendStatus(404);
-//   }
-// })
+  if (status == 200) {
+    return res.sendStatus(status);
+  } else {
+    return res.sendStatus(404);
+  }
+})
 
-// app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const postId = req.params.postId;
+app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
-//   const status = await apideletePost(authorId, postId);
+  const status = await apideletePost(authorId, postId);
 
-//   if (status == 200) {
-//     return res.sendStatus(status);
-//   } else if (status == 404) {
-//     return res.sendStatus(404);
-//   } else if (status == 500) {
-//     return res.sendStatus(500);
-//   }
-// })
+  if (status == 200) {
+    return res.sendStatus(status);
+  } else if (status == 404) {
+    return res.sendStatus(404);
+  } else if (status == 500) {
+    return res.sendStatus(500);
+  }
+})
 
-// app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const postId = req.params.postId;
+app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
-//   const status = await apicreatePost(authorId, postId, req.body, process.env.DOMAIN_NAME);
+  const status = await apicreatePost(authorId, postId, req.body, process.env.DOMAIN_NAME);
 
-//   if (status == 200) {
-//     return res.sendStatus(status);
-//   } else if (status == 404) {
-//     return res.sendStatus(404);
-//   } else if (status == 500) {
-//     return res.sendStatus(500); 
-//   }  
-// })
+  if (status == 200) {
+    return res.sendStatus(status);
+  } else if (status == 404) {
+    return res.sendStatus(404);
+  } else if (status == 500) {
+    return res.sendStatus(500); 
+  }  
+})
 
-// app.get('/api/authors/:authorId/posts', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const page = req.query.page;
-//   const size = req.query.size;
+app.get('/api/authors/:authorId/posts', async (req, res) => {
+  const authorId = req.params.authorId;
+  const page = req.query.page;
+  const size = req.query.size;
 
-//   const sanitizedPosts = await fetchPosts(page, size, authorId);
+  const sanitizedPosts = await fetchPosts(page, size, authorId);
 
-//   return res.json({
-//     "type": "posts",
-//     "authorId": authorId,
-//     "items": [sanitizedPosts]
-//   });
-// })
+  return res.json({
+    "type": "posts",
+    "authorId": authorId,
+    "items": [sanitizedPosts]
+  });
+})
 
-// app.post('/api/authors/:authorId/posts', async (req, res) => {
-//   const authorId = req.params.authorId;
+app.post('/api/authors/:authorId/posts', async (req, res) => {
+  const authorId = req.params.authorId;
 
-//   const status = await apicreatePost(authorId, undefined, req.body, process.env.DOMAIN_NAME);
+  const status = await apicreatePost(authorId, undefined, req.body, process.env.DOMAIN_NAME);
 
-//   if (status == 200) {
-//     return res.sendStatus(status);
-//   } else if (status == 404) {
-//     return res.sendStatus(404);
-//   } else if (status == 500) {
-//     return res.sendStatus(500); 
-//   }  
-// })
+  if (status == 200) {
+    return res.sendStatus(status);
+  } else if (status == 404) {
+    return res.sendStatus(404);
+  } else if (status == 500) {
+    return res.sendStatus(500); 
+  }  
+})
 
-// app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const postId = req.params.postId;
+app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
-//   const comments = getComments(authorId, postId);
+  const comments = getComments(authorId, postId);
 
-//   return res.json({
-//     "type": "comments",
-//     "page": 1,
-//     "size": 5,
-//     "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
-//     "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
-//     "comments": comments
-//     })
-// })
+  return res.json({
+    "type": "comments",
+    "page": 1,
+    "size": 5,
+    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
+    "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
+    "comments": comments
+    })
+})
 
-// app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const postId = req.params.postId;
+app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
-//   const comment = createComment(authorId, postId, req.body, process.env.DOMAIN_NAME);
+  const comment = createComment(authorId, postId, req.body, process.env.DOMAIN_NAME);
 
-//   return res.json({
-//     "type": "comment",
-//     "author": comment.author,
-//     "comment": comment.comment,
-//     "contentType": comment.contentType,
-//     "published": comment.published,
-//     "id": comment._id
-//     }) 
-// })
+  return res.json({
+    "type": "comment",
+    "author": comment.author,
+    "comment": comment.comment,
+    "contentType": comment.contentType,
+    "published": comment.published,
+    "id": comment._id
+    }) 
+})
 
-// app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
-//   const authorId = req.params.authorId;
-//   const postId = req.params.postId;
+app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
   
-//   const likes = apifetchLikes(authorId, postId);
+  const likes = apifetchLikes(authorId, postId);
 
-//   return res.json({
-//     "type": "likes",
-//     "page": 1, 
-//     "size": 5,
-//     "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
-//     "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/likes",
-//     "likes": likes
-//     })
+  return res.json({
+    "type": "likes",
+    "page": 1, 
+    "size": 5,
+    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
+    "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/likes",
+    "likes": likes
+    })
 
-// })
+})
 
 //TODO 
-// app.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => { })
+app.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => { })
 
 //Liked
 
 //TODO 
-// app.get('/api/authors/:authorId/liked', async (req, res) => { })
+app.get('/api/authors/:authorId/liked', async (req, res) => { })
 
 //Inbox
 
 //TODO 
-// app.get('/api/authors/:authorId/inbox', async (req, res) => { })
+app.get('/api/authors/:authorId/inbox', async (req, res) => { })
 
 //TODO 
-// app.post('/api/authors/:authorId/inbox', async (req, res) => { })
+app.post('/api/authors/:authorId/inbox', async (req, res) => { })
 
 //TODO 
-// app.delete('/api/authors/:authorId/inbox', async (req, res) => { })
+app.delete('/api/authors/:authorId/inbox', async (req, res) => { })
 
 /*
 END OF NEW API STUFF

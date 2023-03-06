@@ -19,12 +19,16 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import React, { useEffect } from "react";
+
+// Child Component
 import TopNav from '../navs/top/nav.jsx';
 import LeftNavBar from '../navs/left/nav.jsx';
 import RightNavBar from '../navs/right/nav.jsx';
+
 function Messages() {
     const navigate = useNavigate();
     const checkExpiry = () => {

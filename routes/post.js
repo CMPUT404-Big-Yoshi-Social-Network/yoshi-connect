@@ -28,6 +28,10 @@ const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/p
 const { Friend } = require('../db_schema/author_schema.js');
 
 async function create_post_history(author_id){
+    /**
+     * Description: Creates and saves the author's post history 
+     * Returns: N/A
+     */
     console.log('Debug: Creating post history for user')
     let new_post_history = new PostHistory ({
         authorId: author_id,
@@ -42,9 +46,9 @@ async function create_post_history(author_id){
 
 async function addLike(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Adds a like to the author's post to the database 
+     * Returns: A boolean status if the like is successfully saved into the database
+     *          The number of likes the post has
      */
     console.log('Debug: Adding a like')
     const postHistory = await PostHistory.findOne({authorId: req.body.data.authorId});
@@ -83,9 +87,9 @@ async function addLike(req, res){
 
 async function deleteLike(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Removes a like from the author's post in the database 
+     * Returns: A boolean status if the like is successfully removed from the database
+     *          The number of likes the post has
      */
     console.log('Debug: Removing a like')
     let success = false;
@@ -121,9 +125,9 @@ async function deleteLike(req, res){
 
 async function addComment(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Adds a comment to an author's post to the database 
+     * Returns: A boolean status if the comment is successfully saved into the database
+     *          The number of comments the post has
      */
     console.log('Debug: Adding a comment')
     const postHistory = await PostHistory.findOne({authorId: req.body.authorId});
@@ -158,9 +162,9 @@ async function addComment(req, res){
 
 async function deleteComment(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Removes a comment from an author's post in the database 
+     * Returns: A boolean status if the comment is successfully removed from the database
+     *          The number of comments the post has
      */
     console.log('Debug: Deleting a comment')
     let success = false;
@@ -200,9 +204,8 @@ async function deleteComment(req, res){
 
 async function editComment(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Edits a comment from an author's post in the database 
+     * Returns: A boolean status if the comment is successfully edited to the database
      */
     console.log('Debug: Editing a comment')
     let success = false;
@@ -225,9 +228,8 @@ async function editComment(req, res){
 
 async function create_post(req, res, postId){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Creates an author's post in the database 
+     * Returns: N/A
      */
     console.log('Debug: Creating a post')
     let authorId = req.params.author_id;
@@ -306,9 +308,9 @@ async function create_post(req, res, postId){
 
 async function get_post(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Gets an author's post from the database 
+     * Returns: Status 404 if the post is not found in the database
+     *          The post from the database
      */
     console.log("Debug: Getting a post");
 
@@ -333,9 +335,8 @@ async function get_post(req, res){
 
 async function get_posts_paginated(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Pages the posts form the database 
+     * Returns: Status 200 if the posts are successfully retrieved and paginated from the database
      */
     console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
@@ -378,9 +379,8 @@ async function get_posts_paginated(req, res){
 
 async function update_post(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Updates an author's post in the database 
+     * Returns: Status 200 if the author's post is successfully updated in the database
      */
     console.log("Debug: Update a post");
 
@@ -454,9 +454,8 @@ async function update_post(req, res){
 
 async function delete_post(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Removes an author's post from the database 
+     * Returns: Status 200 if the author's post is successfully removed from the database
      */
     console.log("Debug: Delete a post");
 
@@ -491,9 +490,10 @@ async function delete_post(req, res){
 
 async function checkVisibility(req, res){
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
+     * Description: Checks the visibility level of the author's post for the viewer
+     * Returns: Status 404 if the author's post is not found in the database
+     *          Status 404 if the author's post visibility level is not viewable for the viewer
+     *          The author's post if the visibility level is viewable for the viewer
      */
     console.log('Debug: Checks the visibility of the post for the viewer');
     const authorId = req.params.author_id;
@@ -558,8 +558,8 @@ async function checkVisibility(req, res){
 
 async function fetchLikers(req, res) {
     /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
+     * Description: Gets the authors that liked an author's post from the database 
+     * Returns: Status 404 if the author's post is not found in the database
      *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
      */
     console.log('Debug: Getting the likers for a specific post.');

@@ -720,7 +720,7 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
     "comments": comments
     })
 })
-//TODO 
+
 app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;

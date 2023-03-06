@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import { BrowserRouter } from 'react-router-dom';
 
 //test block
-test("on inital render, the sign up button is there", () => {
+test("on inital render, the sign up button is there", async () => {
     // render the component on virtual dom
     render(<BrowserRouter><Welcome/></BrowserRouter>);
 

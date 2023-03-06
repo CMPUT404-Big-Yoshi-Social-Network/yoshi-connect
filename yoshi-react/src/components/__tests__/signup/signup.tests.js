@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Signup from "../../signup/signup.jsx";
 
 //test block
-test("test description here", () => {
+test("test description here", async () => {
     // render the component on virtual dom
     render(<BrowserRouter><Signup/></BrowserRouter>);
 });

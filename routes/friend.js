@@ -19,6 +19,7 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
@@ -27,6 +28,7 @@ const { Friend, Login, Follower, Request, Following, Author } = require('../dbSc
 const { PostHistory } = require('../dbSchema/postScheme.js');
 const { senderAdded } = require('./request.js');
 const {authLogin} = require('./auth.js')
+
 async function fetchFriends(req, res) {
     /**
      * Desciption: Fetches the friends of a specified author from the database

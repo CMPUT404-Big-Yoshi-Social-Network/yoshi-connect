@@ -22,13 +22,15 @@ Foundation; All Rights Reserved
 // Setting up database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 require('dotenv').config();
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 // OpenAPI
 const {options} = require('./openAPI/options.js');
+
+// Parsers
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 // Swaggerio
 const swaggerUi = require("swagger-ui-express");
@@ -43,7 +45,7 @@ const path = require('path');
 
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
-const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
+const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, fetchAuthors } = require('./routes/author');
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -130,14 +132,12 @@ app.get('/server/admin/dashboard', async (req, res) => {
 
   if((await checkExpiry(req, res))){
 	return res.json({
-	  status: "Unsuccessful",
-	  message: "Token expired"
+	  status: "Unsuccessful"
 	})
   }
 
   return res.json({
-	status: "Successful",
-	message: "Here's the dashboard"
+	status: "Successful"
   })
 })
 
@@ -176,7 +176,7 @@ app.get('/server/feed', (req, res) => {
 })
 
 app.post('/server/feed', (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
+  if (req.body.data.status == 'Logging Out') {
 	console.log('Debug: Logging out as Author')
 	removeLogin(req, res);
   }
@@ -295,7 +295,7 @@ app.delete('/server/requests', (req, res) => {
 })
 
 app.post('/server/users/:username', async (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
+  if (req.body.data.status == 'Logging Out') {
     console.log('Debug: Logging out as Author')
     removeLogin(req, res);
   } else if (req.body.data.status == 'Does Request Exist') {
@@ -373,17 +373,29 @@ START OF NEW API STUFF VERY IMPORTANT DO NOT DELETE
 
 */
 
-//Authors 
 app.get('/api/authors', async (req, res) => {
-  //Paginated authors
+  /**
+   * Description: Gets Author paginated given a query of pages and how big each page is 
+   */
+  const page = req.query.page;
+  const size = req.query.size;
+
+  const sanitizedAuthors = await fetchAuthors(page, size);
+
+  return res.json({
+    "type": "authors",
+    "items": [sanitizedAuthors]
+  });
 })
 
-//Single Author
 app.get('/api/authors/:authorId', async (req, res) => {
+  /**
+   * Description: GET request for a single Author
+   */
   if(req.params.authorId == undefined)
     return res.sendStatus(404);
 
-  author = await getAuthor(req.params.authorId);
+  let author = await getAuthor(req.params.authorId);
 
   if(author === 404)
     return res.sendStatus(404);
@@ -399,6 +411,7 @@ app.get('/api/authors/:authorId', async (req, res) => {
     "url":  process.env.DOMAIN_NAME + "users/" + author._id,
     "github": "",
     "profileImage": "",
+    "email": author.email, 
     "about": author.about,
     "pronouns": author.pronouns
   });
@@ -420,8 +433,11 @@ app.post('/api/authors/:authorId', async (req, res) => {
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
 
-//Followers
 app.get('/api/authors/:authorId/followers', async (req, res) => {
+  /**
+   * Description: Getting followers of current author 
+   *     - Friends are not only friends but also followers
+   */
   const authorId = req.params.authorId;
 
   const followers = await getFollowers(authorId);
@@ -446,6 +462,7 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
       "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
       "github": "",
       "profileImage": "",
+      "email": followerProfile.email,
       "about": followerProfile.about,
       "pronouns": followerProfile.pronouns
     }
@@ -471,7 +488,7 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
       "pronouns": friendProfile.pronouns
     }
 
-    santizedFollows.push(santizedFollower);
+    santizedFollowers.push(santizedFollower);
   }
 
   return res.json({

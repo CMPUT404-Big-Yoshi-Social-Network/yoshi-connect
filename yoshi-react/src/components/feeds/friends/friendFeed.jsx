@@ -136,7 +136,7 @@ function FriendFeed() {
             maxBodyLength: Infinity,
             url: '/server/feed',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: { message: 'Logging Out' }
+            data: { status: 'Logging Out' }
         }
 
         axios

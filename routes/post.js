@@ -19,6 +19,7 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
@@ -352,16 +353,7 @@ async function getPostsPaginated(req, res){
 
     const start_index = (page - 1) * size; 
     const end_index = page * size;
-    /*
-    let posts = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $slice: ["$posts", 1]
-        }
-    ])
-    */
+
     let posts = await PostHistory.aggregate([
         {
             $match: {'authorId': authorId}
@@ -373,6 +365,7 @@ async function getPostsPaginated(req, res){
             $unwind: "$posts"
         }
     ])
+    
     return res.sendStatus(200);
 }
 

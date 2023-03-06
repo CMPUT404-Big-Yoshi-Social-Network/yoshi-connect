@@ -442,12 +442,14 @@ app.get('/api/authors/:authorId', async (req, res) => {
  * @openapi
  * /api/authors/:authorId:
  *  post:
- *    description: <insert what this request is trying to do>
+ *    description: Gets the author's cookies from the database and sends the status
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      404:
+ *        description: Returns Status 404 when the cookies don't exist
+ *      400:
+ *        description: Returns Status 400 when the body type doesn't match the author 
+ *      400:
+ *        description: Returns Status 400 when the author ID, host, nor username are valid 
  */
 app.post('/api/authors/:authorId', async (req, res) => {
   if(!req.cookies["token"])
@@ -469,12 +471,10 @@ app.post('/api/authors/:authorId', async (req, res) => {
  * @openapi
  * /api/authors/:authorId/followers:
  *  get:
- *    description: <insert what this request is trying to do>
+ *    description: Gets the author's followers and friends as objects from the database and sends it back as a JSON object
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      404:
+ *        description: Returns Status 404 when there are no existing followers or friends
  */
 app.get('/api/authors/:authorId/followers', async (req, res) => {
   /**
@@ -546,10 +546,10 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
  *  get:
  *    description: <insert what this request is trying to do>
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      404:
+ *        description: Returns Status 404 when 
+ *      404:
+ *        description: Returns Status 404 when 
  */
 app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;

@@ -303,15 +303,6 @@ async function getAuthors(page, size){
         }
     ).limit(size);
     
-
-    /*
-    const authors = await Author.aggregate(
-        {
-            $limit: size,
-            $skip: page * size 
-        }
-    )
-    */
     let sanitizedAuthors = [];
 
     for(let i = 0; i < authors.length; i++){

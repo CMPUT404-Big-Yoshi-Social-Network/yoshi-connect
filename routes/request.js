@@ -186,7 +186,6 @@ async function adding(friend, req, res) {
                 });
                 follower.save(async (err, follower, next) => {
                     if(err){
-                        console.log(err);
                         success = false;
                     }
                 })
@@ -244,7 +243,6 @@ async function adding(friend, req, res) {
     
                 newFriend.save(async (err, friend, next) => {
                     if(err){
-                        console.log(err);
                         success = false;
                     }
                 })

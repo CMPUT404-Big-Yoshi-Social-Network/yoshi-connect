@@ -282,6 +282,9 @@ app.post('/server/requests', async (req, res) => {
 
 app.put('/server/requests', (req, res) => {
   if (req.body.data.status == 'Sender is added by Receiver') {
+    return res.json({
+      status: "here"
+    })
     console.log('Debug: Sender added by Receiver')
     senderAdded(req, res);
   } 
@@ -755,8 +758,9 @@ app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
     })
 
 })
+
 //TODO 
-app.get('/api/authors/:authorId/posts/:postId/comments/:commentId', async (req, res) => {
+app.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
 
 })
 

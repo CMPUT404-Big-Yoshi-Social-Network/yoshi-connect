@@ -52,7 +52,7 @@ async function saveRequest(req, res) {
     });
 }
 
-async function deleteRequest(req, res) {
+async function deleteRequest(req) {
     /**
      * Description: Deletes the request from the database
      * Returns: If successful, { status: "Successful"}
@@ -60,6 +60,9 @@ async function deleteRequest(req, res) {
      */
     let sender = null;
     let receiver = null;
+
+    console.log(req)
+    return
 
     if (req.body.sender === undefined) {
         sender = req.body.data.sender;
@@ -147,9 +150,10 @@ async function adding(friend, req, res) {
             if (following) {
                 console.log('Debug: Sender already has a following list, must add to existing list.')
                 following.followings.push({username: req.body.data.receiver, authorId: receiverUUID._id});
+                following.save();
             } else {
                 console.log('Debug: Sender does not have a following list (has not followed anyone), must make one.')
-                var following = new Following({
+                let following = new Following({
                     username: req.body.data.sender,
                     authorId: senderUUID._id,
                     followings: [{
@@ -157,8 +161,8 @@ async function adding(friend, req, res) {
                         authorId: receiverUUID._id
                     }]
                 });
+                following.save();
             }
-            following.save();
         }).clone()
         
         console.log('Debug: Add sender to follower list.')
@@ -166,9 +170,10 @@ async function adding(friend, req, res) {
             if (follower) {
                 console.log('Debug: Receiver already has a follower list, must add to existing list.')
                 follower.followers.push({username: req.body.data.sender, authorId: senderUUID._id});
+                follower.save();
             } else {
                 console.log('Debug: Receiver does not have a follower list (has no followers), must make one.')
-                var follower = new Follower({
+                let follower = new Follower({
                     username: req.body.data.receiver,
                     authorId: receiverUUID._id,
                     followers: [{
@@ -176,16 +181,12 @@ async function adding(friend, req, res) {
                         authorId: senderUUID._id
                     }]
                 });
+                follower.save();
             }
-            follower.save();
         }).clone()
 
-        if (success) {
-            console.log('Debug: Delete the request since it has been accepted.')
-            await deleteRequest(req, res);
-        } else {
-            return res.json({ status: "Unsuccessful" });
-        }
+        console.log('Debug: Delete the request since it has been accepted.')
+        await deleteRequest(req, res);
     } else {
         console.log('Debug: These authors need to be added as friends.')
 

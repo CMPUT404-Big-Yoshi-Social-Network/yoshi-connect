@@ -46,7 +46,7 @@ const path = require('path');
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, fetchPosts, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, getComments, fetchPosts, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
@@ -707,15 +707,34 @@ app.post('/api/authors/:authorId/posts', async (req, res) => {
   }  
 })
 
-//comments
-
-//TODO 
 app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
+  const comments = getComments(authorId, postId);
+
+  return res.json({
+    "type": "comments",
+    "authorId": authorId,
+    "postId": postId,
+    "comments": comments
+    })
 })
 //TODO 
-app.post('', async (req, res) => {
+app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
+  const comment = createComment(authorId, postId, req.body);
+
+  return res.json({
+    "type": "comment",
+    "author": comment.author,
+    "comment": comment.comment,
+    "contentType": comment.contentType,
+    "published": comment.published,
+    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id
+    }) 
 })
 
 //Likes

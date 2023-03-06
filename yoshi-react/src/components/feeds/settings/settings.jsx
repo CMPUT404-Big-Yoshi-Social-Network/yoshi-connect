@@ -122,43 +122,43 @@ function Settings() {
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    <h1>Settings</h1>
-                    <div className='profile-heading'>
-                        <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/>
+                    <div className='settingColM'>
+                        <div className='profile-heading'>
+                            <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/>
+                        </div>
+                        <Card.Body>
+                            <Form className='account-details-form'>
+                                <Form.Group className="account-details-a">
+                                    <p>Username</p>
+                                        <Form.Control
+                                            //href={`/users/${username}`}>{username} 
+                                            name="username"
+                                            value={newAuthor.newUsername}
+                                            autoComplete="off"
+                                            onChange={(e) => {setNewAuthor({...newAuthor, newUsername: e.target.value})}}
+                                            type="text" className='account-details-box'/>
+                                </Form.Group>
+                                <Form.Group className="account-details-a">
+                                    <p>Email</p>
+                                    <Form.Control
+                                        name="email"
+                                        value={newAuthor.newEmail}
+                                        onChange={(e) => {setNewAuthor({...newAuthor, newEmail: e.target.value})}}
+                                        type="email" className='account-details-box'/>
+                                </Form.Group>
+                                <Form.Group className="account-details-a">
+                                    <p>Password</p>
+                                    <Form.Control
+                                        name="password"
+                                        onChange={(e) => {setNewAuthor({...newAuthor, newPassword: e.target.value})}}
+                                        type="password" className='account-details-box'/>
+                                </Form.Group>
+                                <br></br>
+                                <Button onClick={modify} variant="warning" type="submit" className='save-setting'>Save</Button>
+                                </Form>
+                            </Card.Body>
+                        </div>
                     </div>
-                    <Card.Body>
-                        <Form className='account-details-form'>
-                        <Form.Group className="account-details-a">
-                            <p>Username</p>
-                                <Form.Control
-                                    //href={`/users/${username}`}>{username} 
-                                    name="username"
-                                    value={newAuthor.newUsername}
-                                    autoComplete="off"
-                                    onChange={(e) => {setNewAuthor({...newAuthor, newUsername: e.target.value})}}
-                                    type="text" className='account-details-box'/>
-                        </Form.Group>
-                        <Form.Group className="account-details-a">
-                            <p>Email</p>
-                                <Form.Control
-                                    name="email"
-                                    value={newAuthor.newEmail}
-                                    onChange={(e) => {setNewAuthor({...newAuthor, newEmail: e.target.value})}}
-                                    type="email" className='account-details-box'/>
-                            </Form.Group>
-                            <Form.Group className="account-details-a">
-                                <p>Password</p>
-                                <Form.Control
-                                    name="password"
-                                    onChange={(e) => {setNewAuthor({...newAuthor, newPassword: e.target.value})}}
-                                    type="password" className='account-details-box'/>
-                            </Form.Group>
-                            <br></br>
-                            <Button href='/' variant="warning" type="submit" className='signup-button'>Back</Button>
-                            <Button onClick={modify} variant="warning" type="submit" className='signup-button'>Next</Button>
-                        </Form>
-                    </Card.Body>
-                </div>
                 <div className='pubColR'>
                     <RightNavBar/>
                 </div>

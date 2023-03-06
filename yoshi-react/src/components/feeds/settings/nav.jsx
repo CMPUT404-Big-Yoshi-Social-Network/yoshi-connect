@@ -31,21 +31,21 @@ function SettingsNav() {
         });
     }
     return (
-        <Navbar className="flex-column">
+        <Navbar className="settings-column">
             <Container>
                 <h1><Navbar.Brand>Settings</Navbar.Brand></h1>
                 <Nav>
                     <div>
-                        <Nav.Link href="/settings">Account Details</Nav.Link>
+                        <Nav.Link className='setting' href="/settings">Account Details</Nav.Link>
                     </div>
                     <div>
-                        <Nav.Link href="/password">Change Password</Nav.Link>
+                        <Nav.Link className='setting' href="/password">Change Password</Nav.Link>
                     </div>
                     <div>
-                        <Nav.Link href="/github">GitHub</Nav.Link>
+                        <Nav.Link className='setting' href="/github">GitHub</Nav.Link>
                     </div>
                     <div>
-                        <Nav.Link onClick={() => LogOut()}>Log Out</Nav.Link>
+                        <Nav.Link className='setting' onClick={() => LogOut()}>Log Out</Nav.Link>
                     </div>
                 </Nav>
             </Container>

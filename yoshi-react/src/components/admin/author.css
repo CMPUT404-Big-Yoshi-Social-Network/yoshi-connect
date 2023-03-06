@@ -1,0 +1,22 @@
+.author-div{
+    text-align: left;
+}
+
+.author-button-div{
+    margin-bottom: 1em;
+}
+
+.author-buttons{
+    margin-right: 1em;
+    color: white;
+    padding: .5em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: .5em;
+    cursor: pointer;
+}
+
+.author-buttons:hover{
+    background-color: #a7e7f8;
+    border: #a7e7f8;
+}

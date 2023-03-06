@@ -27,7 +27,7 @@ function Friends() {
         });
     }, [setFriends]);
     return (
-        <div>
+        <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Friends</h3>
             { (friends === undefined) ? null :
                 <div>

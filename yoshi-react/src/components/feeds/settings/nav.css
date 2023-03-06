@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
+
+.settings-column{
+    padding: 1em;
+    font-family: 'Signika', sans-serif;
+    text-decoration: none;
+
+}
+
+.settings-column div{
+    padding-bottom: 1em;
+}
+
+.setting {
+    text-decoration: none;
+    color: white;
+}
+
+.setting:hover {
+    color: #d2f364;
+}

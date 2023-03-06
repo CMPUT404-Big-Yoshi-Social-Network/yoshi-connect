@@ -254,12 +254,12 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
     return res.sendStatus(404);
   }
 
-  if ( req.body.data.status == 'Add like' ) {
-    console.log('Debug: Adding a like to a post!');
-    addLike(req, res);
-  } else if ( req.body.data.status == 'Add comment' ) {
+  if ( req.body.status == 'Add comment' ) {
     console.log('Debug: Adding a comment to a post!');
     addComment(req, res);
+  } else if ( req.body.data.status == 'Add like' ) {
+    console.log('Debug: Adding a like to a post!');
+    addLike(req, res);
   } else if ( req.body.data.status == 'Edit comment' ) {
     console.log('Debug: Updating a comment on a post!')
     editComment(req, res);

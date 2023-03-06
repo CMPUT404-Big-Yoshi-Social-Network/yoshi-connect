@@ -1,5 +1,5 @@
 const { PostHistory, Post, Like, Comment, PublicPost } = require('../db_schema/post_schema.js');
-const { Friend } = require('../db_schema/author_schema.js');
+const { Friend, Author } = require('../db_schema/author_schema.js');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
@@ -63,29 +63,25 @@ async function deleteLike(req, res){
 
 async function addComment(req, res){
     console.log('Debug: Adding a comment')
-    const postHistory = await PostHistory.findOne({authorId: req.body.data.authorId});
+    const postHistory = await PostHistory.findOne({authorId: req.body.authorId});
+    const author = await Author.findOne({_id: req.body.authorId}).clone();
     let success = false;
 
     var comment = new Comment({
-        commenter: req.body.data.commenter,
-        comment: req.body.data.comment
+        commenter: req.body.commenter,
+        comment: req.body.content
     });
 
-    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
+    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.postId);
     if (idx > -1) { 
         postHistory.posts[idx].comments.push(comment);
         success = true;
     } else {
         console.log('Debug: No such post exists!')
     }
+    postHistory.save();
 
-    return res.json({
-        status: success,
-        commentId: comment._id,
-        commenter: comment.commenter,
-        postId: postHistory.posts[idx]._id,
-        authorId: req.body.data.authorId
-    })
+    return res.json({ status: success, username: author.username })
 }
 
 async function deleteComment(req, res){

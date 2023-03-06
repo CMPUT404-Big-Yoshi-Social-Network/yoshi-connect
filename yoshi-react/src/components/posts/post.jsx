@@ -84,7 +84,7 @@ function Post({viewerId, post}) {
             method: "put",
             maxBodyLength: "Infinity",
             url: url,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/json' },
             data: {
                 commenter: viewerId,
                 authorId: authorId,
@@ -93,7 +93,9 @@ function Post({viewerId, post}) {
                 status: "Add comment"
             } 
         };
-        axios(config).then((response) => {}).catch((error) => { console.log(error); });
+        axios(config)
+        .then((response) => { })
+        .catch((error) => { console.log(error); });
     }
     
     return (

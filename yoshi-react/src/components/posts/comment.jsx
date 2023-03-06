@@ -19,14 +19,31 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality 
 import React from "react";
 import axios from 'axios';
+
+// Child Components
 import EditComment from "./editComment";
+
+// User Interface
 import Popup from 'reactjs-popup';
 
 function Comment(props) {
+    /**
+     * Description: Represents a Comment 
+     * Functions: 
+     *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
+     * Returns: N/A
+     */
     const deleteComment = () => {
+        /**
+         * Description: Deletes a comment related to a post
+         * Request: DELETE
+         * Returns: N/A
+         */
         console.log("Debug: Deleting comment");
+
         let config = {
             method: "delete",
             maxBodyLength: "Infinity",
@@ -40,18 +57,18 @@ function Comment(props) {
                 status: "Remove comment"
             }
         };
+
         axios.delete("/server/authors/" + props.authorId + "/posts/" + props.postId, config).then((response) => {}).catch((error) => { console.log(error); });
     }
+
     return (
         <div id='comment'>
             <h4>{ props.viewerId }</h4>
             { props.comment }
-            {
-                props.commenter !== props.viewerId ? null : <Popup trigger={<button>Edit</button>}><EditComment {...props}/></Popup>
-            }    
-            {
-                props.commenter !== props.viewerId ? null : <button onClick={deleteComment}>Delete</button>
-            }    
+            { props.commenter !== props.viewerId ? null : 
+                <Popup trigger={<button>Edit</button>}><EditComment {...props}/></Popup> }    
+            { props.commenter !== props.viewerId ? null : 
+                <button onClick={deleteComment}>Delete</button> }    
         </div>
     )
 }

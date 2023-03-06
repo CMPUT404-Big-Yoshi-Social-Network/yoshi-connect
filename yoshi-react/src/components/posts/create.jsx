@@ -19,12 +19,26 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+
+// User Interface
 import { Nav } from 'react-bootstrap';
+
+// Styling
 import './create.css';
 
 function CreatePost() {
+    /**
+     * Description: Represents the CreatePost Form 
+     * Functions: 
+     *     - useEffect: Fetches the authorId related to the post 
+     *     - savePost: Saves a post into the database 
+     *     - togglePostMenu: Hides and Unhides the Post Menu
+     *     - uploadImage: Uploades an image into the database related to a post
+     * Returns: N/A
+     */
     const [data, setData] = useState({
         title: "",
         desc: "",
@@ -42,17 +56,17 @@ function CreatePost() {
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
+        /**
+         * Description: Fetches the current authorId through sending a POST request
+         * Request: POST
+         * Returns: N/A
+         */
        let config = {
             method: 'post',
             maxBodyLength: Infinity,
             url: '/server/posts/',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: {
-                sessionId: localStorage.getItem('sessionId'),
-                status: 'Fetching current authorId'
-            }
+            headers: { 'Content-Type': 'application/json' },
+            data: { sessionId: localStorage.getItem('sessionId'), status: 'Fetching current authorId' }
         }
         axios
         .post('/server/posts/', config)
@@ -64,7 +78,13 @@ function CreatePost() {
     }, []);
     
     const savePost = () => {
+        /**
+         * Description: Saves a newly created post by sending a PUT request with accompanying data representing the post
+         * Request: PUT
+         * Returns: N/A
+         */
         console.log('Debug: Creating a post')
+
         togglePostMenu();
 
         let config = {
@@ -93,30 +113,36 @@ function CreatePost() {
         .catch((e) =>{ console.log(e); })
     }
 
-    const togglePostMenu = () => {
-        setIsOpen(!isOpen);
-        console.log("Toggling post menu");
+    const togglePostMenu = () => { 
+        /**
+         * Description: Toggles the Post Menu by changing the isOpen useState
+         * Returns: N/A
+         */
+        setIsOpen(!isOpen); 
     }
 
     async function uploadImage() {
-        // Cloudinary Version
-        const data2 = new FormData();
+        /**
+         * Description: Uses Cloudinary in order to display images 
+         * Request: POST
+         * Returns: N/A
+         */
+        const formData = new FormData();
         const preview = document.querySelector("img");
         const file = document.querySelector("input[type=file]").files[0];
-        data2.append("file", file);
-        data2.append("upload_preset", "biumvy2g");
+
+        formData.append("file", file);
+        formData.append("upload_preset", "biumvy2g");
       
         const res = await fetch(
           `https://api.cloudinary.com/v1_1/di9yhzyxv/image/upload`,
-          {
-            method: "POST",
-            body: data2,
-          }
+          { method: "POST", body: formData }
         );
+
         const img = await res.json();
+
         data.image = img.secure_url;
         preview.src = img.secure_url;
-        
       }
 
     return (

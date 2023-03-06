@@ -19,34 +19,55 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-import React from "react";
+// Functionality 
 import ReactCommonmark from "react-commonmark";
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+
+// Child Component 
 import Comment from './comment';
-import { useState } from 'react';
-import './post.css';
 import EditPost from "./edit";
-import { useEffect } from "react";
+
+// Styling
+import './post.css';
+
+// User Interface
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post}) {
+    /**
+     * Description: Represents a post 
+     * Functions:
+     *     - useEffect(): Checks if the current viewer of a post has already liked the post 
+     *     - toggleComments(): Hides and Unhides the comment section
+     *     - deletePost(): Deletes an author's post (only the post they own)
+     *     - addLike(): Adds a like to a specific post by current viewer
+     *     - removeLike(): Removes a like to a specific post by current viewer
+     *     - makeComment(): Adds a comment to a specific post by current viewer
+     * Returns: N/A
+     */
     const postId = post._id;
     const authorId = post.authorId;
     const url = "/server/authors/" + authorId + "/posts/" + postId;
-
-    const [numLikes, setNumLikes] = useState(post.likes.length)
-    const numComments = post.comments.length
-
-    const [comment, setComment] = useState({
-        newComment: ""
-    })
-    const [showComment, setShowComment] = useState(false)
-
-    const [like, setLike] = useState(false)
+    const [numLikes, setNumLikes] = useState(post.likes.length);
+    const numComments = post.comments.length;
+    const [comment, setComment] = useState({ newComment: "" });
+    const [showComment, setShowComment] = useState(false);
+    const [like, setLike] = useState(false);
 
     useEffect(() => { 
+        /**
+         * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
+         * Request: POST
+         * Returns: N/A
+         */
         console.log('Debug: Checking if the viewer has already liked the post')
         const hasLiked = () => {
+            /**
+             * Description: Sends a POST request to check if the viewerId has already liked the post (by cross-referencing the postId)
+             * Request: POST
+             * Returns: N/A
+             */
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
@@ -64,11 +85,7 @@ function Post({viewerId, post}) {
             axios
             .post('/server/posts/', config)
             .then((response) => {
-                if (response.data.status === 'liked') {
-                    setLike(true);
-                } else {
-                    setLike(false);
-                }
+                if (response.data.status === 'liked') { setLike(true); } else { setLike(false); }
             })
             .catch(err => { });
         }
@@ -76,12 +93,21 @@ function Post({viewerId, post}) {
     }, [authorId, postId, viewerId])
 
     const toggleComments = () => { 
-        console.log("Debug: Toggle Comments");
-        setShowComment(!showComment);
+        /**
+         * Description: Toggles the viewability of comments on a post
+         * Returns: N/A
+         */
+        setShowComment(!showComment); 
     }
 
     const deletePost = () => {
+        /**
+         * Description: Sends a POST request in order to delete a post by cross-referencing the postId and authorId
+         * Request: DELETE
+         * Returns: N/A
+         */
         console.log("Debug: Deleting Post");
+
         let config = {
             method: "delete",
             maxBodyLength: "Infinity",
@@ -93,11 +119,18 @@ function Post({viewerId, post}) {
                 status: "Remove post"
             }
         };
+
         axios.delete(url, config).then((response) => {}).catch((error) => { console.log(error); });
     }
 
     const addLike = () => {
+        /**
+         * Description: Sends a PUT request to notify that the current post has been liked by the viewer  
+         * Request: PUT
+         * Returns: N/A
+         */
         console.log("Debug: Adding Like");
+
         let config = {
             method: "put",
             maxBodyLength: "Infinity",
@@ -110,16 +143,21 @@ function Post({viewerId, post}) {
                 status: "Add like"
             }
         };
+
         axios.put(url, config)
-        .then((response) => {
-            setNumLikes(response.data.numLikes);
-        })
+        .then((response) => { setNumLikes(response.data.numLikes); })
         .catch((error) => { console.log(error); });
         setLike(true);
     }
 
     const removeLike = () => {
+        /**
+         * Description: Sends a DELETE request to remove a like from a specific post  
+         * Request: DELETE
+         * Returns: N/A
+         */
         console.log("Debug: Removing Like");
+
         let config = {
             method: "delete",
             maxBodyLength: "Infinity",
@@ -132,16 +170,21 @@ function Post({viewerId, post}) {
                 status: "Remove like"
             }
         };
+
         axios.delete(url, config)
-        .then((response) => {
-            setNumLikes(response.data.numLikes);
-            setLike(false);
-        })
+        .then((response) => { setNumLikes(response.data.numLikes); })
         .catch((error) => { console.log(error); });
+        setLike(false);
     }
 
     const makeComment = () => {
+        /**
+         * Description: Sends a PUT request to add a comment to a specific post 
+         * Request: PUT
+         * Returns: N/A
+         */
         console.log("Debug: Making Comment");
+
         let config = {
             method: "put",
             maxBodyLength: "Infinity",
@@ -155,9 +198,9 @@ function Post({viewerId, post}) {
                 status: "Add comment"
             } 
         };
+
         axios(config)
-        .then((response) => { 
-        })
+        .then((response) => { })
         .catch((error) => { console.log(error); });
     }
     

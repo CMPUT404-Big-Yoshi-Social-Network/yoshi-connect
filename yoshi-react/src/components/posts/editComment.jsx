@@ -19,16 +19,28 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import axios from 'axios';
 import React, { useState } from "react";
+
+// Styling
 import './create.css';
 
 function EditComment(props) {
-    const [data, setData] = useState({
-        comment: props.comment
-    })
+    /**
+     * Description: Represents the Edit functionality for a comment 
+     * Functions: 
+     *     - modifyComment(): Modfies a comment related to a post 
+     * Returns: N/A
+     */
+    const [data, setData] = useState({ comment: props.comment })
     
     const modifyComment = () => {
+        /**
+         * Description: Modifies an existing post owned by the current viewer
+         * Request: PUT
+         * Returns: N/A
+         */
         console.log('Debug: Modifying a post')
         let config = {
             method: 'put',

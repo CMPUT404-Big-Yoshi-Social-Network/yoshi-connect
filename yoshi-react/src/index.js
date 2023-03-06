@@ -19,8 +19,11 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+
+// App 
 import App from './App.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

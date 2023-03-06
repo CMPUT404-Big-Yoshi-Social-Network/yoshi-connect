@@ -19,8 +19,11 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality 
 import React from 'react';
 import { render } from '@testing-library/react';
+
+// Tested Component 
 import App from './App.js';
 
 test('renders learn react link', () => {

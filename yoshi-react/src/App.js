@@ -19,24 +19,39 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-import './App.css'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+// Styling
+import './App.css';
+
+// Functionality 
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import React from 'react';
+
+// Before Entering YoshiConnect
 import Welcome from "./components/welcome/welcome.jsx";
 import Login from "./components/login/login.jsx";
 import Signup from "./components/signup/signup.jsx";
+
+// Admin 
 import AdminLogin from "./components/admin/admin.jsx";
 import AdminDashboard from "./components/admin/adminDashboard.jsx";
+
+// Feeds
 import PublicFeed from "./components/feeds/public/public.jsx";
 import FriendFeed from "./components/feeds/friends/friendFeed.jsx";
-import Profile from "./components/feeds/profile/profile.jsx";
 import Messages from "./components/feeds/messages/messages.jsx";
-import PageNotFound from "./components/user-error/404.jsx";
-import UserForbidden from "./components/user-error/403.jsx";
-import UserUnauthorized from "./components/user-error/401.jsx";
-import BadRequest from './components/user-error/400.jsx';
+
+// Author Specifics
+import Profile from "./components/feeds/profile/profile.jsx";
 import Settings from './components/feeds/settings/settings.jsx';
+
+// Errors
+import PageNotFound from "./components/user-error/404/404.jsx";
+import UserForbidden from "./components/user-error/403/403.jsx";
+import UserUnauthorized from "./components/user-error/401/401.jsx";
+import BadRequest from './components/user-error/400/400.jsx';
+
+// API Docs
 import ApiDocs from "./components/api-docs/api-docs.jsx";
-import React from 'react';
 
 const router = createBrowserRouter([
   {

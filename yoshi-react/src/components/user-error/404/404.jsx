@@ -19,11 +19,20 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React from 'react';
+
+// User Interface
 import { Image } from 'react-bootstrap'
+
+// Styling
 import './404.css'
 
 function PageNotFound() {
+    /**
+     * Description: Represents a Page Not Found Error (Status 404)
+     * Returns: N/A
+     */
     return (
         <div className="sc404">
             <h1>404</h1>

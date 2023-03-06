@@ -607,12 +607,12 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
  * @openapi
  * /api/authors/:authorId/followers/:foreignAuthorId:
  *  put:
- *    description: <insert what this request is trying to do>
+ *    description: Adds a Follower (Foreign Author) to the Author's Follower List in the database
  *    responses:
  *      401:
- *        description: Returns Status 401 when 
+ *        description: Returns Status 401 when the adding the Follower is not authorized 
  *      400:
- *        description: Returns Status 400 when 
+ *        description: Returns Status 400 when server is unable to process the user's request 
  */
 app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
 
@@ -631,12 +631,12 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
  * @openapi
  * /api/authors/:authorId/followers/:foreignAuthorId:
  *  delete:
- *    description: <insert what this request is trying to do>
+ *    description: Deletes a Follower (Foreign Author) to Author 
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      400:
+ *        description: If the request has no type or if the type is not a follow request
+ *      200:
+ *        description: If the Follower (Foreign Author) was successfully deleted 
  */
 app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
   if(req.body.type == undefined || req.body.type != "follower")
@@ -654,12 +654,10 @@ app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res)
  * @openapi
  * /api/authors/:authorId/requests/:foreignAuthorId:
  *  put:
- *    description: <insert what this request is trying to do>
+ *    description: Saves the Request for the Foreign Author from the Author into the database 
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns the JSON object representing the Request  
  */
 app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -679,12 +677,10 @@ app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => 
  * @openapi
  * /api/authors/:authorId/requests/:foreignAuthorId:
  *  delete:
- *    description: <insert what this request is trying to do>
+ *    description: Deletes a Request made by the Author  to Foreign Author
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *     200:
+ *        description: Returns the JSON object representing the Request 
  */
 app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -704,12 +700,14 @@ app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) 
  * @openapi
  * /api/authors/:authorId/posts/:postId:
  *  get:
- *    description: <insert what this request is trying to do>
+ *    description: Gets the a specific Post from the database made by a specific Author 
  *    responses:
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
- *      <response like 200 or 401>:
- *        description: <insert description of what this response means in this context> 
+ *      200:
+ *        description: Returns the Post as a JSON object
+ *      404:
+ *        description: When the Post or Author is not found 
+ *      500: 
+ *        description: When the server is unable to get the Post
  */
 app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
   if(req.params.authorId == undefined) return res.sendStatus(404);

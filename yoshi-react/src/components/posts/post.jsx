@@ -228,7 +228,7 @@ function Post({viewerId, post}) {
                                 <input type="text" id="newComment" name="newComment" onChange={(e) => {
                                     setComment({...comment, newComment: e.target.value})
                                 }}/>
-                                <button className='post-buttons' onClick={makeComment}>Add Comment</button>
+                                <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
 
                             {

@@ -284,6 +284,7 @@ async function apiUpdateAuthor(token, author){
 
     return 200;
 }
+
 module.exports={
     registerAuthor,
     getProfile,

@@ -19,6 +19,7 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
@@ -33,9 +34,7 @@ async function fetchFollowing(req, res) {
      *          The author's followers
      */
     const login = await Login.findOne({token: req.cookies.token}).clone();
-    if(!login){
-        return res.sendStatus(404);
-    }
+    if (!login) { return res.sendStatus(404); }
 
     console.log('Debug: Retrieving current author logged in')
     const username = login.username
@@ -43,14 +42,9 @@ async function fetchFollowing(req, res) {
     await Following.findOne({username: username}, function(err, following){
         console.log("Debug: Following exists");
         if(following == undefined){
-            return res.json({
-                following: []
-            });
+            return res.json({ following: [] });
         }
-
-        return res.json({
-            following: following.followings
-        })
+        return res.json({ following: following.followings })
     }).clone();
 }
 
@@ -63,9 +57,7 @@ async function fetchPublicPosts(req, res) {
     console.log('Debug: Getting public/following posts');
 
     const login = await Login.findOne({token: req.cookies.token}).clone();
-    if(!login){
-        return res.sendStatus(404);
-    }
+    if (!login) { return res.sendStatus(404); }
 
     console.log('Debug: Retrieving current author logged in')
     const username = login.username
@@ -78,31 +70,25 @@ async function fetchPublicPosts(req, res) {
             $unwind: '$followings'
         },
         {
-            $project: {
-                "followings.authorId": 1
-            }
+            $project: { "followings.authorId": 1 }
         },
         {
             $group: {
                 _id: null,
-                follows: { $addToSet: "$followings.authorId"}
+                follows: { $addToSet: "$followings.authorId" }
             }
         },
     ]);
 
     let followings = [];
-    if(following.length > 0){
-        followings = following[0].follows;
-    }
+    if (following.length > 0) { followings = following[0].follows; }
 
     let posts = [[]];
     if(followings.length != 0){
         posts = await PostHistory.aggregate([
             {
                 $match: {
-                    $expr: {
-                        $in : ["$authorId", followings]
-                    }
+                    $expr: { $in : ["$authorId", followings] }
                 },
             },
             {
@@ -110,32 +96,26 @@ async function fetchPublicPosts(req, res) {
             },
             {
                 $match: {
-                    $expr: {
-                        $ne: ["$unlisted", true]
-                    }
+                    $expr: { $ne: ["$unlisted", true] }
                 }
             },
             {
                 $set: {
                     "posts.published": {
-                        $dateFromString: {
-                            dateString: "$posts.published"
-                        }
+                        $dateFromString: { dateString: "$posts.published" }
                     }
                 }
             },
             {
-                $addFields: {
-                    "posts.authorId": "$authorId"
-                }
+                $addFields: { "posts.authorId": "$authorId" }
             },
             {
-                $sort: {"posts.published": -1}
+                $sort: { "posts.published": -1 }
             },
             {
                 $group: {
                     _id: null,
-                    posts_array: {$push: "$posts"}
+                    posts_array: { $push: "$posts" }
                 }
             },
         ]);
@@ -149,16 +129,14 @@ async function fetchPublicPosts(req, res) {
         {
             $match: {
                 $expr: {
-                    $ne: ["$posts.post.unlisted", true]
+                    $ne: [ "$posts.post.unlisted", true ]
                 }
             }
         },
         {
             $set: {
                 "posts.post.published": {
-                    $dateFromString: {
-                        dateString: "$posts.post.published"
-                    }
+                    $dateFromString: { dateString: "$posts.post.published" }
                 }
             }
         },
@@ -168,7 +146,7 @@ async function fetchPublicPosts(req, res) {
             }
         },
         {
-            $sort: {"posts.post.published": -1}
+            $sort: { "posts.post.published": -1 }
         },
         {
             $group: {
@@ -178,10 +156,7 @@ async function fetchPublicPosts(req, res) {
         }  
     ]);
 
-    if(publicPosts.length == 0)
-        return res.json({
-            publicPosts: []
-        })
+    if(publicPosts.length == 0) { return res.json({ publicPosts: [] }) }
 
     let allPosts = null;
     if (publicPosts[0] != undefined && posts[0] != undefined && posts[0].length != 0) {
@@ -194,11 +169,7 @@ async function fetchPublicPosts(req, res) {
         allPosts = [];
     }
 
-    if (allPosts){
-        return res.json({
-            publicPosts: allPosts
-          });
-    }
+    if (allPosts) { return res.json({ publicPosts: allPosts }); }
 }
 
 module.exports={

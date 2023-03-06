@@ -659,6 +659,22 @@ async function apiupdatePost(authorId, postId, newPost) {
     return 200;
 }
 
+async function apideletePost(authorId, postId) {
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if (postHistory == undefined) return sendStatus(500);
+
+    const post = postHistory.posts.id(postId);
+
+    if(post == null) return res.sendStatus(404);
+
+    post.remove();
+    postHistory.num_posts = postHistory.num_posts - 1;
+    postHistory.save();
+
+    return res.sendStatus(200); 
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -674,5 +690,6 @@ module.exports={
     checkVisibility,
     hasLiked,
     apigetPost,
-    apiupdatePost
+    apiupdatePost,
+    apideletePost
 }

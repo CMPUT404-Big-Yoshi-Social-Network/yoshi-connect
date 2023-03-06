@@ -49,7 +49,7 @@ const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, 
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
-const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower } = require('./routes/friend');
+const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
 
@@ -566,16 +566,19 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
     return res.sendStatus(401);
   else if(follower == 400)
     return res.sendStatus(400);
+  return res.sendStatus(200);
 })
 
 app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
-  if(req.body.type == undefined || req.body.item == undefined || req.body.type != "follower")
+  if(req.body.type == undefined || req.body.type != "follower")
     return res.sendStatus(400)
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const follower = req.body.item
+  const statusCode = await deleteFollower(req.cookies["token"], authorId, foreignId, req.body);
+
+  return res.sendStatus(statusCode);
 })
 
 app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {

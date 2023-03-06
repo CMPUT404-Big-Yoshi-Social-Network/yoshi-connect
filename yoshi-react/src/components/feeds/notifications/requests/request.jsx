@@ -19,6 +19,7 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React from "react";
 import axios from 'axios';
 import { useEffect, useState } from "react";

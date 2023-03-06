@@ -19,11 +19,19 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality 
 import axios from 'axios';
 import React, { useState } from "react";
+
+// Styling
 import './create.css';
 
 function EditPost({viewerId, post}) {
+    /**
+     * Description: Sends a POST request to get the post content and handles the content update of that post 
+     * Request: POST    
+     * Returns: N/A
+     */
     const [data, setData] = useState({
         title: post.title,
         desc: post.description,
@@ -65,6 +73,11 @@ function EditPost({viewerId, post}) {
     }
 
     async function uploadImage() {
+        /**
+         * Description: Sends a GET request to get the retrieve the image date and handles the content upload 
+         * Request: GET    
+         * Returns: N/A
+         */
         // Cloudinary Version
         const data2 = new FormData();
         const preview = document.querySelector("img");

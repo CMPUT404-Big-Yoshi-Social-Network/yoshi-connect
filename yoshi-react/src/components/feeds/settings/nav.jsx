@@ -19,13 +19,16 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
+import { useNavigate } from 'react-router-dom';
+import React from "react";
+import axios from 'axios';
+
+// User Interface
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import './nav.css';
-import { useNavigate } from 'react-router-dom';
-import React from "react";
-import axios from 'axios';
 
 function SettingsNav() {
     const navigate = useNavigate();

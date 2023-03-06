@@ -54,7 +54,7 @@ function Friends() {
         .then((response) => { setFriends(response.data.friends) })
         .catch(err => { console.error(err); });
     }, [setFriends]);
-    
+
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Friends</h3>

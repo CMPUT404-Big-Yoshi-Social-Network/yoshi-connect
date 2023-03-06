@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
 
-// Child Component 
+// Styling
 import Follow from './follow.jsx';
 
 function Following() {
@@ -58,7 +58,7 @@ function Following() {
            console.error(err);
        });
     }, []);
-    
+
     return (
         <div className='following-column' style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Following</h3>

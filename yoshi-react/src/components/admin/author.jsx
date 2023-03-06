@@ -19,11 +19,16 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React, { useEffect } from "react";
 import axios from 'axios';
-import ModifyAuthor from "./modifyForm.jsx";
 import Popup from 'reactjs-popup';
 import { useState } from 'react';
+
+// Child Componet
+import ModifyAuthor from "./modifyForm.jsx";
+
+// Styling
 import './author.css';
 
 function Author(props) {

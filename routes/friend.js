@@ -24,7 +24,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Friend, Login, Follower } = require('../dbSchema/authorScheme.js');
+const { Friend, Login, Follower, Request, Following, Author } = require('../dbSchema/authorScheme.js');
 const { PostHistory } = require('../dbSchema/postScheme.js');
 const { senderAdded } = require('./request.js');
 const {authLogin} = require('./auth.js')
@@ -161,22 +161,18 @@ async function addFollower(token, authorId, foreignId, body, req, res){
     if(!authLogin(token, authorId))
         return 401;
 
+    req.body.data = {};
+    req.body.data.sender = body.actor.displayName;
+    req.body.data.receiver = body.object.displayName;
     if(body.object == undefined || body.actor == undefined)
         return 400;
-
-    if(body.object.id != authorId){
-        return 400;
-    }
-    if(body.actor.id != foreignId){
-        return 400;
-    }
 
     const request = await Request.findOne({senderUUID: foreignId, receiverUUID: authorId});
     if(!request){
         return 401;
     }
 
-    senderAdded(req, res);
+    await senderAdded(req, res);
     return;
 }
 module.exports={

@@ -32,8 +32,8 @@ async function saveRequest(req, res) {
      * Returns: If successful, { status: "Successful"} also returns a status
      *          If failed, { status: "Unsuccessful" } also returns a status
      */
-    const senderUUID = await Author.findOne({username: req.body.data.sender});
-    const receiverUUID = await Author.findOne({username: req.body.data.receiver});
+    const senderUUID = (await Author.findOne({username: req.body.data.sender}))._id;
+    const receiverUUID = (await Author.findOne({username: req.body.data.receiver}))._id;
 
     var request = new Request({
         senderId: req.body.data.sender,

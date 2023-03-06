@@ -417,7 +417,6 @@ app.get('/api/authors/:authorId', async (req, res) => {
   });
 })
 
-// TODO: updateauthor when the person requesting the update is from an admin (can edit password and admin as well)
 app.post('/api/authors/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);

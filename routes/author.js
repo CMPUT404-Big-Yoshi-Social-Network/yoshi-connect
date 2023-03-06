@@ -259,6 +259,16 @@ async function updateAuthor(req, res){
  * API STUFF keep seperate from other things for now
 */
 
+async function authLogin(token, authorId, displayName){
+    const login = await Login.findOne({token: token});
+    if(!login)
+        return false;
+
+    if(login.authorId == authorId && login.username == displayName)
+        return true;
+
+    return false;
+}
 async function getAuthor(authorId){
     
     const author = await Author.findOne({_id: authorId}, function (err, author) {
@@ -277,6 +287,32 @@ async function getAuthor(authorId){
     return author;
 }
 
+
+async function apiUpdateAuthor(token, author){
+    if(await authLogin(token, author.id, author.displayName) == false){
+        return 401;
+    }
+
+    const authorProfile = await Author.findOne({_id: author.id});
+        
+    const pronouns = author.pronouns;
+    const about = author.about;
+    const github = author.github;
+
+    if(pronouns){
+        authorProfile.pronouns = pronouns;
+    }
+    if(about){
+        authorProfile.about = about;
+    }
+    if(github){
+        authorProfile.github = github;
+    }
+
+    await authorProfile.save();
+
+    return 200;
+}
 module.exports={
     register_author,
     get_profile,
@@ -285,5 +321,6 @@ module.exports={
     fetchMyPosts,
     getCurrentAuthorAccountDetails,
     updateAuthor,
-    getAuthor
+    getAuthor,
+    apiUpdateAuthor,
 }

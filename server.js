@@ -45,7 +45,7 @@ const path = require('path');
 
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
-const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor } = require('./routes/author');
+const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, fetchAuthors } = require('./routes/author');
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
@@ -373,17 +373,29 @@ START OF NEW API STUFF VERY IMPORTANT DO NOT DELETE
 
 */
 
-//Authors 
 app.get('/api/authors', async (req, res) => {
-  //Paginated authors
+  /**
+   * Description: Gets Author paginated given a query of pages and how big each page is 
+   */
+  const page = req.query.page;
+  const size = req.query.size;
+
+  const sanitizedAuthors = await fetchAuthors(page, size);
+
+  return res.json({
+    "type": "authors",
+    "items": [sanitizedAuthors]
+  });
 })
 
-//Single Author
 app.get('/api/authors/:authorId', async (req, res) => {
+  /**
+   * Description: GET request for a single Author
+   */
   if(req.params.authorId == undefined)
     return res.sendStatus(404);
 
-  author = await getAuthor(req.params.authorId);
+  let author = await getAuthor(req.params.authorId);
 
   if(author === 404)
     return res.sendStatus(404);
@@ -399,11 +411,13 @@ app.get('/api/authors/:authorId', async (req, res) => {
     "url":  process.env.DOMAIN_NAME + "users/" + author._id,
     "github": "",
     "profileImage": "",
+    "email": author.email, 
     "about": author.about,
     "pronouns": author.pronouns
   });
 })
 
+// TODO: updateauthor when the person requesting the update is from an admin (can edit password and admin as well)
 app.post('/api/authors/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);
@@ -417,11 +431,14 @@ app.post('/api/authors/:authorId', async (req, res) => {
   if(!authorId || !host || !username)
     return res.sendStatus(400);
 
-  return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
+  return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body, req.body.admin));
 })
 
-//Followers
 app.get('/api/authors/:authorId/followers', async (req, res) => {
+  /**
+   * Description: Getting followers of current author 
+   *     - Friends are not only friends but also followers
+   */
   const authorId = req.params.authorId;
 
   const followers = await getFollowers(authorId);
@@ -446,6 +463,7 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
       "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
       "github": "",
       "profileImage": "",
+      "email": followerProfile.email,
       "about": followerProfile.about,
       "pronouns": followerProfile.pronouns
     }
@@ -471,7 +489,7 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
       "pronouns": friendProfile.pronouns
     }
 
-    santizedFollows.push(santizedFollower);
+    santizedFollowers.push(santizedFollower);
   }
 
   return res.json({

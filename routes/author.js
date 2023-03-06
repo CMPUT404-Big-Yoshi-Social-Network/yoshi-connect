@@ -262,7 +262,7 @@ async function getAuthor(authorId){
     return author;
 }
 
-async function apiUpdateAuthor(token, author){
+async function apiUpdateAuthor(token, author, admin){
     /**
      * Description: Updates an existing author in the database
      * Returns: Status 401 if the there is no valid authentication 
@@ -274,15 +274,33 @@ async function apiUpdateAuthor(token, author){
 
     const pronouns = author.pronouns;
     const about = author.about;
+    const email = author.email;
     const github = author.github;
+    const password = author.password;
+    const admin = author.admin;
 
     if (pronouns) { authorProfile.pronouns = pronouns; }
+    if (email) { authorProfile.email = email; }
     if (about) { authorProfile.about = about; }
     if (github) { authorProfile.github = github; }
+
+    if (admin) {
+        if (admin) { authorProfile.admin = admin; }
+        if (password) { authorProfile.password = password; }
+    }
 
     await authorProfile.save();
 
     return 200;
+}
+
+async function fetchAuthors(page, size){
+    return Author.find(
+        {
+            limit: size,
+            skip: page * size 
+        }
+    )
 }
 
 module.exports={
@@ -295,4 +313,5 @@ module.exports={
     updateAuthor,
     getAuthor,
     apiUpdateAuthor,
+    fetchAuthors
 }

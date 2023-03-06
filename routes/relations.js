@@ -19,17 +19,18 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
 const { Follower, Following, Friend } = require('../dbSchema/authorScheme.js');
 
-/**
+async function createFollowers(username, authorId){
+    /**
      * Description: Creates a new entry in the database follower collection.
      * Returns: N/A
      */
-async function createFollowers(username, authorId){
     await Follower({
         username: username,
         authorId: authorId,
@@ -37,11 +38,11 @@ async function createFollowers(username, authorId){
     }).save();
 }
 
-/**
+async function createFollowings(username, authorId){
+    /**
      * Description: Creates a new entry in the database following collection.
      * Returns: N/A
      */
-async function createFollowings(username, authorId){
     await Following({
         username: username,
         authorId: authorId,
@@ -49,11 +50,11 @@ async function createFollowings(username, authorId){
     }).save();
 }
 
-/**
+async function createFriends(username, authorId){
+    /**
      * Description: Creates a new entry in the database friends collection.
      * Returns: N/A
      */
-async function createFriends(username, authorId){
     await Friend({
         username: username,
         authorId: authorId,
@@ -61,11 +62,11 @@ async function createFriends(username, authorId){
     }).save();
 }
 
-/**
+async function isFriend(req, res) {
+    /**
      * Description: Checks if the selected author is a friend or follower
      * Returns: { status: "Friend" | "Follower" } 
      */
-async function isFriend(req, res) {
     console.log('Debug: Checking if the author is a friend or follow.');
     checkFriend = false;
     let status = '';
@@ -103,11 +104,11 @@ async function isFriend(req, res) {
     });
 }
 
-/**
+async function unfriending(req, res) {
+    /**
      * Description: Unfriends the selected author
      * Returns: if success { status: true } else { status: false }
      */
-async function unfriending(req, res) {
     console.log('Debug: Viewer is unfriending the viewed.')
     let success = true;
 
@@ -204,11 +205,11 @@ async function unfriending(req, res) {
     });
 }
 
-/**
+async function unfollowing(req, res) {
+    /**
      * Description: Unfollows the selected author
      * Returns: if success { status: true } else { status: false }
      */
-async function unfollowing(req, res) {
     console.log('Debug: Viewer is unfollowing the viewed.')
     let new_following = [];
     let success = true;

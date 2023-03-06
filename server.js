@@ -29,13 +29,13 @@ mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
+// OpenAPI
+const {options} = require('./openAPI/options.js');
+
 // Swaggerio
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require('swagger-jsdoc');
 const openapiSpecification = swaggerJsdoc(options);
-
-// OpenAPI
-const {options} = require('./openAPI/options.js');
 
 // App Setup
 const express = require('express');

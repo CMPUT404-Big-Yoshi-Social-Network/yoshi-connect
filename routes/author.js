@@ -234,6 +234,28 @@ async function updateAuthor(req, res){
     author.save();
 }
 
+/** 
+ * API STUFF keep seperate from other things for now
+*/
+
+async function getAuthor(authorId){
+    
+    const author = await Author.findOne({_id: authorId}, function (err, author) {
+        if(err)
+            return "server failure";
+        
+        return err, author;
+    }).clone();
+
+    if(author == "server failure")
+        return 500;    
+
+    if(!author || author.admin == true) 
+        return 404;
+
+    return author;
+}
+
 module.exports={
     register_author,
     get_profile,
@@ -241,5 +263,6 @@ module.exports={
     getCurrentAuthorUsername,
     fetchMyPosts,
     getCurrentAuthorAccountDetails,
-    updateAuthor
+    updateAuthor,
+    getAuthor
 }

@@ -177,7 +177,7 @@ async function deleteComment(req, res){
                 console.log('Debug: Found comment')
                 let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.commentId);
                 history.posts[post_idx].comments.splice(com_idx, 1);
-                history.posts[idx].count - 1;
+                history.posts[post_idx].count - 1;
                 numComments = history.posts[idx].count;
                 success = true;
                 await history.save();

@@ -397,7 +397,7 @@ app.get('/api/authors', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId:
+ * /api/authors/{authorId}:
  *  get:
  *    description: Fetchs a single Author object from the database and sends it back as a JSON object
  *    responses:
@@ -434,7 +434,7 @@ app.get('/api/authors/:authorId', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId:
+ * /api/authors/{authorId}:
  *  post:
  *    description: Gets the author's cookies from the database and sends the status
  *    responses:
@@ -463,7 +463,7 @@ app.post('/api/authors/:authorId', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/followers:
+ * /api/authors/{authorId}/followers:
  *  get:
  *    description: Gets the author's followers and friends as objects from the database and sends it back as a JSON object
  *    responses:
@@ -471,10 +471,6 @@ app.post('/api/authors/:authorId', async (req, res) => {
  *        description: Returns Status 404 when there are no existing followers or friends
  */
 app.get('/api/authors/:authorId/followers', async (req, res) => {
-  /**
-   * Description: Getting followers of current author 
-   *     - Friends are not only friends but also followers
-   */
   const authorId = req.params.authorId;
 
   const followers = await getFollowers(authorId);
@@ -536,7 +532,7 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/followers/:foreignAuthorId:
+ * /api/authors/{authorId}/followers/{foreignAuthorId}:
  *  get:
  *    description: Gets the author's followers' and friends' profiles as objects from the database and sends it back as a JSON object
  *    responses:
@@ -605,7 +601,7 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
 
 /**
  * @openapi
- * /api/authors/:authorId/followers/:foreignAuthorId:
+ * /api/authors/{authorId}/followers/{foreignAuthorId}:
  *  put:
  *    description: Adds a Follower (Foreign Author) to the Author's Follower List in the database
  *    responses:
@@ -629,7 +625,7 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
 
 /**
  * @openapi
- * /api/authors/:authorId/followers/:foreignAuthorId:
+ * /api/authors/{authorId}/followers/{foreignAuthorId}:
  *  delete:
  *    description: Deletes a Follower (Foreign Author) to Author 
  *    responses:
@@ -652,7 +648,7 @@ app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res)
 
 /**
  * @openapi
- * /api/authors/:authorId/requests/:foreignAuthorId:
+ * /api/authors/{authorId}/requests/{foreignAuthorId}:
  *  put:
  *    description: Saves the Request for the Foreign Author from the Author into the database 
  *    responses:
@@ -675,7 +671,7 @@ app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => 
 
 /**
  * @openapi
- * /api/authors/:authorId/requests/:foreignAuthorId:
+ * /api/authors/{authorId}/requests/{foreignAuthorId}:
  *  delete:
  *    description: Deletes a Request made by the Author  to Foreign Author
  *    responses:
@@ -698,7 +694,7 @@ app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) 
 
 /**
  * @openapi
- * /api/authors/:authorId/posts/:postId:
+ * /api/authors/{authorId}/posts/{postId}:
  *  get:
  *    description: Gets the a specific Post from the database made by a specific Author 
  *    responses:
@@ -740,7 +736,7 @@ app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/posts/:postId:
+ * /api/authors/{authorId}/posts/{postId}:
  *  post:
  *    description: Updates an existing Post made by a specific Author 
  *    responses:
@@ -764,7 +760,7 @@ app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/posts/:postId:
+ * /api/authors/{authorId}/posts/{postId}:
  *  delete:
  *    description: Deletes a specific Post made by a specific Author
  *    responses:
@@ -792,7 +788,7 @@ app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/posts/:postId:
+ * /api/authors/{authorId}/posts/{postId}:
  *  put:
  *    description: Creates a Post object made by a specific Author 
  *    responses:
@@ -820,7 +816,7 @@ app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/posts:
+ * /api/authors/{authorId}/posts:
  *  get:
  *    description: Fetches the posts of a specific Author 
  *    responses:
@@ -843,7 +839,7 @@ app.get('/api/authors/:authorId/posts', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/posts:
+ * /api/authors/{authorId}/posts:
  *  post:
  *    description: Creates a Post given no PostId (i.e., needs to be generated)
  *    responses:
@@ -870,7 +866,7 @@ app.post('/api/authors/:authorId/posts', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/posts/:postId/comments:
+ * /api/authors/{authorId}/posts/{postId}/comments:
  *  get:
  *    description: Gets the comments related to a specific Post made by a specific Author (paginated)
  *    responses:
@@ -895,7 +891,7 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/posts/:postId/comments:
+ * /api/authors/{authorId}/posts/{postId}/comments:
  *  post:
  *    description: Creates a comment for a specific Post made by a specific Author
  *    responses:
@@ -921,7 +917,7 @@ app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
 
 /**
  * @openapi
- * /api/authors/:authorId/posts/:postId/likes:
+ * /api/authors/{authorId}/posts/{postId}/likes:
  *  get:
  *    description: Fetches the likes related to a specific Post made by a specific Author (paginated)
  *    responses:

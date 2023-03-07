@@ -178,16 +178,16 @@ async function deleteComment(req, res){
                 let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.commentId);
                 history.posts[post_idx].comments.splice(com_idx, 1);
                 history.posts[post_idx].count - 1;
-                numComments = history.posts[idx].count;
+                numComments = history.posts[post_idx].count;
                 success = true;
                 await history.save();
 
                 for (let i = 0; i < publicPost[0].posts.length; i++) {
-                    if (publicPost[0].posts[i].post._id === req.body.data.postId) {
-                        let com_idx = publicPost[0].posts[i].comments.map(obj => obj._id).indexOf(req.body.commentId);
-                        publicPost[0].posts[i].comments.splice(com_idx, 1);
-                        publicPost[0].posts[i].count - 1;
-                        numComments = publicPost[0].posts[i].count;
+                    if (publicPost[0].posts[i].post._id === req.body.postId) {
+                        let com_idx = publicPost[0].posts[i].post.comments.map(obj => obj._id).indexOf(req.body.commentId);
+                        publicPost[0].posts[i].post.comments.splice(com_idx, 1);
+                        publicPost[0].posts[i].post.count - 1;
+                        numComments = publicPost[0].posts[i].post.count;
                         await publicPost[0].save();
                     }
                 }

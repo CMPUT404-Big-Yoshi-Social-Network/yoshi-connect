@@ -208,7 +208,8 @@ async function editComment(req, res){
      */
     console.log('Debug: Editing a comment')
     let success = false;
-    await PostHistory.findOne({authorId: req.body.data.authorId}, function(err, history){
+    let publicPost = await PublicPost.find();
+    await PostHistory.findOne({authorId: req.body.data.authorId}, async function(err, history){
         console.log('Debug: Find the post with the comment.')
         if (history) {
             let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
@@ -218,6 +219,16 @@ async function editComment(req, res){
                 history.posts[post_idx].comments[com_idx].comment = req.body.data.comment;
                 history.save();
                 success = true;
+            }
+
+            for (let i = 0; i < publicPost[0].posts.length; i++) {
+                if (publicPost[0].posts[i].post._id === req.body.data.postId) {
+                    let com_idx = publicPost[0].posts[i].post.comments.map(obj => obj._id).indexOf(req.body.data.commentId);
+                    publicPost[0].posts[i].post.comments[com_idx].comment = req.body.data.comment;
+                    publicPost[0].posts[i].post.count - 1;
+                    numComments = publicPost[0].posts[i].post.count;
+                    await publicPost[0].save();
+                }
             }
         }
     }).clone()

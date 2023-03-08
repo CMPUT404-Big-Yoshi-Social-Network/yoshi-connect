@@ -44,7 +44,7 @@ const path = require('path');
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
 const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, getComments, apifetchLikes, fetchPosts, deleteLike, apiFetchCommentLikes, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, getAuthorLikes, getComments, apifetchLikes, fetchPosts, deleteLike, apiFetchCommentLikes, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
 const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest, apideleteRequest } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
@@ -881,8 +881,8 @@ app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
 
   return res.json({
     "type": "comments",
-    "page": 1,
-    "size": 5,
+    "page": req.query.page,
+    "size": req.query.size,
     "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
     "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
     "comments": comments
@@ -963,7 +963,16 @@ app.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async 
 //Liked
 
 //TODO 
-app.get('/api/authors/:authorId/liked', async (req, res) => { })
+app.get('/api/authors/:authorId/liked', async (req, res) => {
+  const authorId = req.params.authorId;
+
+  const liked = getAuthorLikes(authorId);
+
+  return res.json({
+      "type":"liked",
+      "items": liked
+  })
+})
 
 //Inbox
 

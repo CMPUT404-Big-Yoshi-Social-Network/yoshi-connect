@@ -23,8 +23,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, Post, Like, Comment, PublicPost } = require('../dbSchema/postScheme.js');
-const { Friend } = require('../dbSchema/authorScheme.js');
+const { PostHistory, Post, Like, Comment, PublicPost, Liked } = require('../dbSchema/postScheme.js');
+const { Friend, Author } = require('../dbSchema/authorScheme.js');
 
 async function createPostHistory(author_id){
     /**
@@ -885,6 +885,10 @@ async function apiFetchCommentLikes(authorId, postId, commentId) {
     return comment.likes;
 }
 
+async function getAuthorLikes(authorId) {
+    return await Liked.findOne({authorId: authorId});
+}
+
 module.exports={
     createPostHistory,
     createPost,
@@ -907,5 +911,6 @@ module.exports={
     getComments,
     createComment,
     apifetchLikes,
-    apiFetchCommentLikes
+    apiFetchCommentLikes,
+    getAuthorLikes
 }

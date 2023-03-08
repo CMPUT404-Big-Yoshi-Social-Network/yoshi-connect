@@ -1,0 +1,113 @@
+/*
+Copyright 2023 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Furthermore it is derived from the Python documentation examples thus
+some of the code is Copyright © 2001-2013 Python Software
+Foundation; All Rights Reserved
+*/
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+  
+  .postMenuPage {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .postMenuBox{
+    position: relative;
+    width: 80%;
+    height: 90%;
+    background-color: #24292f;
+    border-radius: 10px;
+    margin: 2em 10%;
+    padding: 10px;
+    overflow: auto;
+  }
+  
+  .postMenuCloseButton {
+    cursor: pointer;
+    border: none;
+    font-size: larger;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    border-radius: 100%;
+    background-color: #4a5460;
+  }
+  
+  .postMenuDropDown {
+    border-radius:10px;
+    display:inline-block;
+    border: 1px solid white;
+    background-color: #24292f;
+    padding: 5px;
+    color: chartreuse;
+  }
+  
+  .postMenuInput {
+    background-color: #4a5460;
+    border: none;
+    width: 100%;
+  }
+  
+  .postMenuImageInput {
+    background-color: #4a5460;
+    border: none;
+    width: 100%;
+  }
+  
+  .createPostHeader {
+    color: white;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .createPostButton {
+    right: 15px;
+    color: black;
+    background-color: chartreuse;
+    border: none;
+    border-radius:10px;
+    padding: 5px;
+  }
+  
+  .tempBackground {
+    background-color: #24292f;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .editBackground {
+    background-color: #24292f;
+    width: 50vw;
+    height: 50vh;
+  }

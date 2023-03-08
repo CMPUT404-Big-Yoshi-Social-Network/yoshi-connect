@@ -28,9 +28,6 @@ const database = mongoose.connection;
 const { Request } = require('./relations.js');
 const { Like, Comment } = require('./relations.js');
 
-// Password
-const crypto = require('crypto');
-
 const postScheme = new Schema({
     _id: String,
     title: String,

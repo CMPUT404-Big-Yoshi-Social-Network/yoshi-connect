@@ -24,9 +24,6 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
-// Password
-const crypto = require('crypto');
-
 const commentScheme = new Schema({
     _id: String,
     commenter: String,

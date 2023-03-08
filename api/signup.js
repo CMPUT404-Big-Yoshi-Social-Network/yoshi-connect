@@ -20,8 +20,13 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { authAuthor } = require('./routes/auth');
-const { registerAuthor } = require('./routes/author');
+const { registerAuthor } = require('../routes/author');
+
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router();
 
 /**
  * @openapi
@@ -40,31 +45,18 @@ const { registerAuthor } = require('./routes/author');
  *              description: This token identifies you as being logged in and allows you to perform other api calls
  *              example: token=QV1hAYUZU5Qu2dkrP4peLN
  *      400:
- *        description: NEEDS TO BE REFACTORED Signup not possible, username, is already taken, field missing, etc.
+ *        description: Unsuccessful if: 
+ *          - User does not provide a username, email, or password
+ *          - The email or username provide is not already taken by another account 
+ *      500: 
+ *        description: Unsuccessful if: 
+ *          - Server is unable to register the Author by saving it into the database 
+ *          - Server is unable to save a token for the Author even though their account was saved into the database
+ *          - Server is unable to create and save a Followers, Following, Friends, and/or PostHistory for the new Author 
  */
-app.post('/api/signup', async (req, res) => {
+router.post('/', async (req, res) => {
   console.log('Debug: Signing up as an author');
   await registerAuthor(req, res);
 })
 
-/**
- * @openapi
- * /api/login:
- *  post:
- *    description: Login url, so you can authenticate locally with the server
- *    responses:
- *      200:
- *        description: Successfully created an account
- *        headers:
- *         Set-Cookie:
- *            schema:
- *              type: string
- *              description: This token identifies you as being logged in and allows you to perform other api calls
- *              example: token=QV1hAYUZU5Qu2dkrP4peLN
- *      400:
- *        description: NEEDS TO BE REFACTORED Login not possible. Failed due to incorrect username or password. 
- */
-app.post('/api/login', async (req, res) => {
-  console.log('Debug: Login as Author')
-  await authAuthor(req, res);
-})
+module.exports = router;

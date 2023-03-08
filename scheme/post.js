@@ -24,10 +24,6 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
-// Schemas
-const { Request } = require('./relations.js');
-const { Like, Comment } = require('./relations.js');
-
 // Password
 const crypto = require('crypto');
 
@@ -39,8 +35,8 @@ const postScheme = new Schema({
     content: String,
     categories: [String],
     count: Number,
-    likes: [likeScheme],
-    comments: [commentScheme],
+    likes: [{ type: String, default: crypto.randomUUID, ref: 'Like' }],
+    comments: [{ type: String, default: crypto.randomUUID, ref: 'Comment' }],
     published: String,
     visibility: String,
     specifics: [String],
@@ -72,9 +68,9 @@ const inboxScheme = new Schema({
     authorId: String,
     username: String,
     posts: [postScheme],
-    likes: [Like],
-    comments: [Comment],
-    requests: [Request]},
+    likes: [{ type: String, default: crypto.randomUUID, ref: 'Like' }],
+    comments: [{ type: String, default: crypto.randomUUID, ref: 'Comment' }],
+    requests: [{ type: String, default: crypto.randomUUID, ref: 'Request' }]},
     {versionKey: false
 })
 

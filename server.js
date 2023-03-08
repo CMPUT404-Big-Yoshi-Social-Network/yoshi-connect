@@ -41,16 +41,18 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 
+// Middleware
+const signup = require('./api/signup');
+
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
-const { registerAuthor, getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor, getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, getAuthorLikes, getComments, apifetchLikes, fetchPosts, deleteLike, apiFetchCommentLikes, apicreatePost, hasLiked, apiupdatePost, apideletePost, deleteComment, editComment, checkVisibility, getAuthorByPost, apigetPost } = require('./routes/post');
-const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded, sendRequest, apideleteRequest } = require('./routes/request');
+const { getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor } = require('./routes/author');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
+const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
 const { isFriend, unfriending, unfollowing } = require('./routes/relations');
-const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
+const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
-const { getInbox, postInbox, deleteInbox} = require('./routes/inbox')
 
 // App Uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
@@ -59,6 +61,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
+
+// Routing
+app.use("/api/signup", signup);
 
 // Schemas
 const { Author } = require('./scheme/author.js');
@@ -71,30 +76,6 @@ app.use('/server/api-docs',
 );
 
 app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
-
-/**
- * @openapi
- * /server/signup:
- *  post:
- *    security:
- *      - loginToken: []
- *    description: Signup url. Allows creation of an account and automatically logins to this new account. 
- *    responses:
- *      200:
- *        description: Successfully created an account
- *        headers:
- *         Set-Cookie:
- *            schema:
- *              type: string
- *              description: This token identifies you as being logged in and allows you to perform other api calls
- *              example: token=QV1hAYUZU5Qu2dkrP4peLN
- *      400:
- *        description: NEEDS TO BE REFACTORED Signup not possible, username, is already taken, field missing, etc.
- */
-app.post('/server/signup', async (req, res) => {
-  console.log('Debug: Signing up as an author');
-  await registerAuthor(req, res);
-})
 
 /**
  * @openapi

@@ -53,16 +53,25 @@ async function registerAuthor(req, res){
      *             - The email the author wanted to use is already taken 
      *          Status 500 if the login (token) or author could not be saved into the database 
      */
-    if(await checkUsername(req) === "In use") return res.sendStatus(400);   
+    if(await checkUsername(req) === "In use") { 
+        console.log('Debug: Username in use.')
+        return res.sendStatus(400); 
+    }
     console.log("Debug: Author does not exist yet.");
 
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
+    const username = req.body.data.username;
+    const email = req.body.data.email;
+    const password = req.body.data.password;
     const checkEmail = await Author.findOne({email: email})
 
-    if ( !username || !email || !password ) { return res.sendStatus(400); }
-    if (checkEmail !== undefined && checkEmail !== null) { return res.sendStatus(400); }
+    if ( !username || !email || !password ) { 
+        console.log('Debug: Not all cells are filled.')
+        return res.sendStatus(400); 
+    }
+    if (checkEmail !== undefined && checkEmail !== null) { 
+        console.log('Debug: The email is taken.')
+        return res.sendStatus(400); 
+    }
 
     var author = new Author({
         username: username,
@@ -70,14 +79,17 @@ async function registerAuthor(req, res){
         email: email,
         about: "",
         pronouns: "",
+        github: "",
+        profileImage: "",
         admin: false
     });
+
     author.save(async (err, author, next) => { if (err) { return res.sendStatus(500); } });
     console.log("Debug: " + author.username + " added successfully to database");
         
     let curr = new Date();
     let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
-    let token = uidgen.generateSync();
+    let token = req.cookies.token;
 
     let login = new Login({
         authorId: author._id,
@@ -91,7 +103,7 @@ async function registerAuthor(req, res){
         if (err) { res.sendStatus(500); }
         console.log("Debug: Login cached.")
         res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
-        return res.json({ sessionId: token, status: "Successful" });
+        return res.json({ sessionId: token });
     })
 
     await createPostHistory(author._id);

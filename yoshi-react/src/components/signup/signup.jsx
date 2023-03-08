@@ -37,6 +37,7 @@ export default function Signup() {
    */
   const navigate = useNavigate();
   const [data, setData] = useState({ username: '', email: '', password: '' })
+  const url = '/api/signup';
 
   const getAccount = async (e) => {
     /**
@@ -49,7 +50,7 @@ export default function Signup() {
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: '/server/signup',
+      url: url,
       headers: {
         'Content-Type': 'application/json',
         'Last-Modified': new Date(),
@@ -57,15 +58,11 @@ export default function Signup() {
       data: data
     }
 
-    axios(config)
+    axios
+    .post(url, config)
     .then((response) => {
-      console.log("Debug: Token received.");
-      if ( response.data.status === 'Successful' ) {
-        console.log("Debug: SessionId saved locally.");
-        window.localStorage.setItem('sessionId', response.data.sessionId);
-        console.log("Debug: Going to public feed.");
-        navigate('/feed');
-      }
+      console.log("Debug: Going to public feed.");
+      navigate('/feed');
     })
     .catch(err => { console.error(err); });
   }

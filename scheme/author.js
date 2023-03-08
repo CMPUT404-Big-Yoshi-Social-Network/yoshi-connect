@@ -34,7 +34,9 @@ const authorScheme = new Schema({
     email: String,
     about: String,
     pronouns: String,
-    admin: Boolean,},
+    github: String,
+    profileImage: String,
+    admin: false},
     {versionKey: false
 });
 

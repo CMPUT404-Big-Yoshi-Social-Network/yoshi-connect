@@ -24,6 +24,10 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
+// Schemas
+const { Request } = require('./relations.js');
+const { Like, Comment } = require('./relations.js');
+
 // Password
 const crypto = require('crypto');
 
@@ -63,12 +67,25 @@ const publicScheme = new Schema({
     {versionKey: false
 })
 
+const inboxScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    authorId: String,
+    username: String,
+    posts: [postScheme],
+    likes: [Like],
+    comments: [Comment],
+    requests: [Request]},
+    {versionKey: false
+})
+
 const PostHistory = database.model('Posts', postHistoryScheme);
 const Post = database.model('Post', postScheme);
 const PublicPost = database.model('PublicPost', publicScheme);
+const Inbox = database.model('Inbox', inboxScheme);    
 
 module.exports = {
     PostHistory,
     Post,
-    PublicPost
+    PublicPost,
+    Inbox
 }

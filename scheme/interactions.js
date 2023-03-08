@@ -24,19 +24,22 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
+// Password
+const crypto = require('crypto');
+
 const commentScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     commenter: String,
     comment: String
 })
 
 const likeScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     liker: String
 })
 
 const likedScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     liked: [likeScheme],
     num_posts: Number},

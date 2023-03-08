@@ -28,8 +28,11 @@ const database = mongoose.connection;
 const { Request } = require('./relations.js');
 const { Like, Comment } = require('./relations.js');
 
+// Password
+const crypto = require('crypto');
+
 const postScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     title: String,
     description: String,
     contentType: String,
@@ -47,7 +50,7 @@ const postScheme = new Schema({
 });
 
 const postHistoryScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     num_posts: Number,
     posts: [postScheme]},
@@ -55,7 +58,7 @@ const postHistoryScheme = new Schema({
 })
 
 const publicScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     posts: [{
         authorId: String,
         post: postScheme,
@@ -65,7 +68,7 @@ const publicScheme = new Schema({
 })
 
 const inboxScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     username: String,
     posts: [postScheme],

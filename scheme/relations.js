@@ -24,8 +24,11 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
+// Password
+const crypto = require('crypto');
+
 const followerScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     username: String,
     authorId: String,
     followers: [{
@@ -36,7 +39,7 @@ const followerScheme = new Schema({
 });
 
 const followingScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     username: String,
     authorId: String,
     followings: [{

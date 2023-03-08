@@ -25,7 +25,7 @@ const { registerAuthor } = require('./routes/author');
 
 /**
  * @openapi
- * /server/signup:
+ * /api/signup:
  *  post:
  *    security:
  *      - loginToken: []
@@ -49,7 +49,7 @@ app.post('/api/signup', async (req, res) => {
 
 /**
  * @openapi
- * /server/login:
+ * /api/login:
  *  post:
  *    description: Login url, so you can authenticate locally with the server
  *    responses:

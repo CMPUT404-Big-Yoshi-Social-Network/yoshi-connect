@@ -79,28 +79,6 @@ app.use('/server/api-docs',
 
 app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
 
-/**
- * @openapi
- * /server/login:
- *  post:
- *    description: Login url, so you can authenticate locally with the server
- *    responses:
- *      200:
- *        description: Successfully created an account
- *        headers:
- *         Set-Cookie:
- *            schema:
- *              type: string
- *              description: This token identifies you as being logged in and allows you to perform other api calls
- *              example: token=QV1hAYUZU5Qu2dkrP4peLN
- *      400:
- *        description: NEEDS TO BE REFACTORED Login not possible. Failed due to incorrect username or password. 
- */
-app.post('/server/login', async (req, res) => {
-  console.log('Debug: Login as Author')
-  await authAuthor(req, res);
-})
-
 app.post('/server/admin', async (req, res) => {
   console.log('Debug: Login as Admin')
   await authAuthor(req, res);

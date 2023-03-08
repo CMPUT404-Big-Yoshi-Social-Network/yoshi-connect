@@ -32,7 +32,7 @@ const { Like, Comment } = require('./relations.js');
 const crypto = require('crypto');
 
 const postScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     title: String,
     description: String,
     contentType: String,
@@ -50,7 +50,7 @@ const postScheme = new Schema({
 });
 
 const postHistoryScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     authorId: String,
     num_posts: Number,
     posts: [postScheme]},
@@ -58,7 +58,7 @@ const postHistoryScheme = new Schema({
 })
 
 const publicScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     posts: [{
         authorId: String,
         post: postScheme,
@@ -68,7 +68,7 @@ const publicScheme = new Schema({
 })
 
 const inboxScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     authorId: String,
     username: String,
     posts: [postScheme],

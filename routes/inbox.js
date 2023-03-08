@@ -1,8 +1,10 @@
-const { PostHistory, Post, Like, Comment, Inbox } = require('../db_schema/post_schema.js');
-const { Friend, Request } = require('../db_schema/author_schema.js');
+// Database
 const mongoose = require('mongoose');
-const { response } = require('express');
 mongoose.set('strictQuery', true);
+
+// Schemes
+const { Post, Like, Comment, Inbox } = require('../scheme/post.js');
+const { Request } = require('../scheme/relations.js');
 
 async function createInbox(username, authorId){
     await Inbox({

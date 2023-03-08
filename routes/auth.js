@@ -31,7 +31,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Author, Login } = require('../dbSchema/authorScheme.js');
+const { Author, Login } = require('../scheme/author.js');
 
 async function checkUsername(req) {
     /**

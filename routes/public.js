@@ -23,8 +23,9 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Following, Login } = require('../dbSchema/authorScheme.js');
-const { PostHistory, PublicPost } = require('../dbSchema/postScheme.js');
+const { Login } = require('../scheme/author.js');
+const { Following } = require('../scheme/relations.js');
+const { PostHistory, PublicPost } = require('../scheme/post.js');
 
 async function fetchFollowing(req, res) {
     /**

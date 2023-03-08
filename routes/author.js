@@ -31,8 +31,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Author, Login } = require('../dbSchema/authorScheme.js');
-const { PostHistory } = require('../dbSchema/postScheme.js');
+const { Author, Login } = require('../scheme/author.js');
+const { PostHistory } = require('../scheme/post.js');
 const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 const { createPostHistory } = require('./post.js');
 const { createInbox } = require('./inbox.js')

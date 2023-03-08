@@ -50,6 +50,7 @@ const { isFriend, unfriending, unfollowing } = require('./routes/relations');
 const { fetchFriends, fetchFriendPosts, getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
 const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
+const { getInbox, postInbox, deleteInbox} = require('./routes/inbox')
 
 // App Uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
@@ -244,6 +245,20 @@ app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   }
 })
 
+app.get('/server/authors/:author_id/inbox', async (req, res) => {
+  console.log('Debug: Getting an authors inbox');
+  await getInbox(req, res);
+})
+
+app.post('/server/authors/:author_id/inbox', async (req, res) => {
+  await postInbox(req, res);
+})
+
+app.delete('/server/authors/:author_id/inbox', async (req, res) => {
+  console.log("delete inbox")
+  await deleteInbox(req, res);
+})
+
 app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   if ( await checkExpiry(req, res) ) { return res.sendStatus(404); }
   if ( req.body.status == 'Add comment' ) {
@@ -333,7 +348,7 @@ app.get('/server/nav', async (req, res) => {
 })
 
 app.get('/server/friends', (req, res) => {
-  console.log('Debug: Checking expiry of token')
+  console.log('Debug: Checking expiry of token');
   sendCheckExpiry(req, res);
 })
 
@@ -988,6 +1003,7 @@ app.delete('/api/authors/:authorId/inbox', async (req, res) => { })
 /*
 END OF NEW API STUFF
 */
+
 
 app.get('/',(req, res) => {
   res.render("index");

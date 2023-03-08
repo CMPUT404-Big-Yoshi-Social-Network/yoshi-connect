@@ -306,6 +306,17 @@ async function createPost(req, res, postId){
     post_history = await PostHistory.findOne({authorId: authorId});
     post_history.posts.push(post);
     post_history.num_posts = post_history.num_posts + 1;
+
+    if(visibility == "FRIENDS") {
+        
+    }
+    else if(visibility == "PRIVATE") {
+
+    }
+    else if(visibility == "PUBLIC") {
+
+    }
+
     await post_history.save();
 
     if (visibility === 'Public') {
@@ -351,28 +362,14 @@ async function getPostsPaginated(req, res){
     console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
 
-    console.log(req.query.page);
-    console.log(req.query.size);
-
     let page = 1;
     let size = 5;
-    if(req.query.page != undefined)
-        page = req.query.page;
-    if(req.query.size != undefined)
-        size = req.query.size;
+    if(req.query.page != undefined) { page = req.query.page; }
+    if(req.query.size != undefined) { size = req.query.size; }
 
     const start_index = (page - 1) * size; 
     const end_index = page * size;
-    /*
-    let posts = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $slice: ["$posts", 1]
-        }
-    ])
-    */
+
     let posts = await PostHistory.aggregate([
         {
             $match: {'authorId': authorId}

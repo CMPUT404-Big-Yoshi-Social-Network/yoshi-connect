@@ -829,6 +829,11 @@ app.get('/api/authors/:authorId/posts', async (req, res) => {
   const page = req.query.page;
   const size = req.query.size;
 
+  if(page == undefined)
+  page = 1;
+  if(size == undefined)
+    size = 5;
+
   const sanitizedPosts = await fetchPosts(page, size, authorId);
 
   return res.json({
@@ -877,13 +882,20 @@ app.post('/api/authors/:authorId/posts', async (req, res) => {
 app.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
+  let page = req.query.page;
+  let size = req.query.size;
+
+  if(page == undefined)
+  page = 1;
+  if(size == undefined)
+    size = 5;
 
   const comments = getComments(authorId, postId);
 
   return res.json({
     "type": "comments",
-    "page": req.query.page,
-    "size": req.query.size,
+    "page": page,
+    "size": size,
     "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
     "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
     "comments": comments
@@ -928,13 +940,20 @@ app.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
 app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
+  let page = req.query.page;
+  let size = req.query.size;
+
+  if(page == undefined)
+  page = 1;
+  if(size == undefined)
+    size = 5;
   
   const likes = apifetchLikes(authorId, postId);
 
   return res.json({
     "type": "likes",
-    "page": 1, 
-    "size": 5,
+    "page": page, 
+    "size": size,
     "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
     "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/likes",
     "likes": likes
@@ -942,18 +961,33 @@ app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
 
 })
 
-//TODO 
+/**
+ * @openapi
+ * /api/authors/:authorId/posts/:postId/comments/:commentId/likes:
+ *  get:
+ *    description: Fetches the likes on a specific comment on a specific post by a specific author
+ *    responses:
+ *      200:
+ *        description: Returns 200 if server retrieves the likes for the comment on a post 
+ */
 app.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
   const commentId = req.params.commentId
+  let page = req.query.page;
+  let size = req.query.size;
+
+  if(page == undefined)
+  page = 1;
+  if(size == undefined)
+    size = 5;
 
   const likes = apiFetchCommentLikes(authorId, postId, commentId); 
 
   return res.json({
     "type": "likes",
-    "page": req.query.page,
-    "size": req.query.size,
+    "page": page,
+    "size": size,
     "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
     "comment": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments/" + commentId,
     "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments" + commentId + "/likes",
@@ -961,9 +995,15 @@ app.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async 
     })
  })
 
-//Liked
-
-//TODO 
+/**
+ * @openapi
+ * /api/authors/:authorId/liked:
+ *  get:
+ *    description: Fetches all the likes the author has made 
+ *    responses:
+ *      200:
+ *        description: Returns 200 with the list of likes the author has made
+ */
 app.get('/api/authors/:authorId/liked', async (req, res) => {
   const authorId = req.params.authorId;
 
@@ -975,17 +1015,42 @@ app.get('/api/authors/:authorId/liked', async (req, res) => {
   })
 })
 
-//Inbox
-
+/**
+ * @openapi
+ * /server/authors/:author_id/inbox:
+ *  get:
+ *    description: Gets the Author's Inbox
+ *    responses:
+ *      200:
+ *        description: If the server finds an Inbox for the specified Author
+ */
 app.get('/server/authors/:author_id/inbox', async (req, res) => {
   console.log('Debug: Getting an authors inbox');
   await getInbox(req, res);
 })
 
+/**
+ * @openapi
+ * /server/authors/:author_id/inbox:
+ *  get:
+ *    description: Adds a Post, Follow, Comment, or Like to the Inbox of an Author
+ *    responses:
+ *      200:
+ *        description: If the server successfully adds either a Post, Follow, Comment, or Like to the Author's Inbox
+ */
 app.post('/server/authors/:author_id/inbox', async (req, res) => {
   await postInbox(req, res);
 })
 
+/**
+ * @openapi
+ * /server/authors/:author_id/inbox:
+ *  get:
+ *    description: Deletes the Inbox
+ *    responses:
+ *      200:
+ *        description: If the server finds an Inbox for the specified Author
+ */
 app.delete('/server/authors/:author_id/inbox', async (req, res) => {
   console.log("delete inbox")
   await deleteInbox(req, res);

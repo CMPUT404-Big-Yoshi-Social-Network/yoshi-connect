@@ -48,61 +48,10 @@ const loginScheme = new Schema({
     {versionKey: false
 });
 
-const followerScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    username: String,
-    authorId: String,
-    followers: [{
-        username: String,
-        authorId: String
-    }]},
-    {versionKey: false
-});
-
-const followingScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    username: String,
-    authorId: String,
-    followings: [{
-        username: String,
-        authorId: String
-    }]},
-    {versionKey: false
-});
-
-const friendScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    username: String,
-    authorId: String,
-    friends: [{
-        username: String,
-        authorId: String
-    }]},
-    {versionKey: false
-});
-
-const requestScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    senderId: String,
-    senderUUID: String,
-    receiverId: String,
-    receiverUUID: String,
-    status: String},
-    {versionKey: false
-});
-
-const Friend = database.model('Friend', friendScheme);
-const Following = database.model('Following', followingScheme);
 const Login = database.model('Login', loginScheme);
 const Author = database.model('Author', authorScheme);
-const Request = database.model('Request', requestScheme);
-const Follower = database.model('Follower', followerScheme);
 
 module.exports = {
-    Friend,
-    Following,
     Login,
-    Author,
-    Request,
-    Follower
+    Author
 }

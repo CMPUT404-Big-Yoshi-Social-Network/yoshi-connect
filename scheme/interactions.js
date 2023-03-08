@@ -27,48 +27,31 @@ const database = mongoose.connection;
 // Password
 const crypto = require('crypto');
 
-const postScheme = new Schema({
+const commentScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
-    title: String,
-    description: String,
-    contentType: String,
-    content: String,
-    categories: [String],
-    count: Number,
-    likes: [likeScheme],
-    comments: [commentScheme],
-    published: String,
-    visibility: String,
-    specifics: [String],
-    unlisted: Boolean,
-    image: String},
-    {versionKey: false
-});
-
-const postHistoryScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    authorId: String,
-    num_posts: Number,
-    posts: [postScheme]},
-    {versionKey: false
+    commenter: String,
+    comment: String
 })
 
-const publicScheme = new Schema({
+const likeScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
-    posts: [{
-        authorId: String,
-        post: postScheme,
-    }],
+    liker: String
+})
+
+const likedScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    authorId: String,
+    liked: [likeScheme],
     num_posts: Number},
     {versionKey: false
 })
 
-const PostHistory = database.model('Posts', postHistoryScheme);
-const Post = database.model('Post', postScheme);
-const PublicPost = database.model('PublicPost', publicScheme);
+const Like = database.model('Like', likeScheme);
+const Comment = database.model('Comment', commentScheme);
+const Liked = database.model('Liked', likedScheme);
 
 module.exports = {
-    PostHistory,
-    Post,
-    PublicPost
+    Like,
+    Comment,
+    Liked
 }

@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemes
-const { Post, Like, Comment, Inbox } = require('../scheme/post.js');
+const { Post, Inbox } = require('../scheme/post.js');
+const { Like, Comment } = require('../scheme/interactions.js');
 const { Request } = require('../scheme/relations.js');
 
 async function createInbox(username, authorId){

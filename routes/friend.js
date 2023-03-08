@@ -23,9 +23,11 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Friend, Login } = require('../scheme/author.js');
-const { Follower } = require('../scheme/relations.js');
+const { Login } = require('../scheme/author.js');
+const { Follower, Friend } = require('../scheme/relations.js');
 const { PostHistory } = require('../scheme/post.js');
+
+// Additional Functions
 const { senderAdded } = require('./request.js');
 
 // Additional Functions

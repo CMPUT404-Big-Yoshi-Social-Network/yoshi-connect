@@ -23,8 +23,10 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, Post, Like, Comment, PublicPost } = require('../dbSchema/postScheme.js');
-const { Friend } = require('../dbSchema/authorScheme.js');
+const { PostHistory, Post, PublicPost } = require('../scheme/post.js');
+const { Like, Comment, Liked } = require('../scheme/interactions.js');
+const { Author } = require('../scheme/author.js');
+const { Friend } = require('../scheme/relations.js');
 
 async function createPostHistory(author_id){
     /**
@@ -306,6 +308,17 @@ async function createPost(req, res, postId){
     post_history = await PostHistory.findOne({authorId: authorId});
     post_history.posts.push(post);
     post_history.num_posts = post_history.num_posts + 1;
+
+    if(visibility == "FRIENDS") {
+        
+    }
+    else if(visibility == "PRIVATE") {
+
+    }
+    else if(visibility == "PUBLIC") {
+
+    }
+
     await post_history.save();
 
     if (visibility === 'Public') {
@@ -351,28 +364,14 @@ async function getPostsPaginated(req, res){
     console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
 
-    console.log(req.query.page);
-    console.log(req.query.size);
-
     let page = 1;
     let size = 5;
-    if(req.query.page != undefined)
-        page = req.query.page;
-    if(req.query.size != undefined)
-        size = req.query.size;
+    if(req.query.page != undefined) { page = req.query.page; }
+    if(req.query.size != undefined) { size = req.query.size; }
 
     const start_index = (page - 1) * size; 
     const end_index = page * size;
-    /*
-    let posts = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $slice: ["$posts", 1]
-        }
-    ])
-    */
+
     let posts = await PostHistory.aggregate([
         {
             $match: {'authorId': authorId}
@@ -856,9 +855,6 @@ async function apifetchLikes(authorId, postId) {
             index: { $indexOfArray: ['_id', postId] }
         },
         {
-            $unwind: '$index'
-        },
-        {
             $group: {
                 _id: null,
                 post_array: { $push: "$index" }
@@ -871,6 +867,25 @@ async function apifetchLikes(authorId, postId) {
     } else {
         return [];
     }   
+}
+
+async function apiFetchCommentLikes(authorId, postId, commentId) {
+    // TODO Paging
+    const comments = apigetPost(authorId, postId).comments; 
+    let comment = null;
+
+    for (let i = 0; i < comments.length; i++) {
+        if (comments[i]._id === commentId) {
+            comment = comments[i];
+            break;
+        }
+    }
+
+    return comment.likes;
+}
+
+async function getAuthorLikes(authorId) {
+    return await Liked.findOne({authorId: authorId});
 }
 
 module.exports={
@@ -893,5 +908,8 @@ module.exports={
     apicreatePost,
     fetchPosts,
     getComments,
-    createComment
+    createComment,
+    apifetchLikes,
+    apiFetchCommentLikes,
+    getAuthorLikes
 }

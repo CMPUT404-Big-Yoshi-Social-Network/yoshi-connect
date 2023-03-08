@@ -27,7 +27,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Login, Author } = require('../dbSchema/authorScheme.js');
+const { Login, Author } = require('../scheme/author.js');
 
 async function addAuthor(req, res){
     /**

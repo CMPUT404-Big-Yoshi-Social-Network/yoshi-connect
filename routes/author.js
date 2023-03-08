@@ -31,10 +31,13 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Author, Login } = require('../dbSchema/authorScheme.js');
-const { PostHistory } = require('../dbSchema/postScheme.js');
+const { Author, Login } = require('../scheme/author.js');
+const { PostHistory } = require('../scheme/post.js');
+
+// Additional Functions
 const { createFollowers, createFollowings, createFriends } = require('./relations.js');
 const { createPostHistory } = require('./post.js');
+const { createInbox } = require('./inbox.js')
 
 // Additional Functions
 const { checkUsername, authLogin } = require('./auth.js');
@@ -95,6 +98,7 @@ async function registerAuthor(req, res){
     await createFollowers(author.username, author._id);
     await createFriends(author.username, author._id);
     await createFollowings(author.username, author._id);
+    await createInbox(author.username, author._id);
 }
 
 async function getProfile(req, res) {

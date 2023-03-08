@@ -27,27 +27,6 @@ const database = mongoose.connection;
 // Password
 const crypto = require('crypto');
 
-const authorScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    username: String,
-    password: String,
-    email: String,
-    about: String,
-    pronouns: String,
-    admin: Boolean,},
-    {versionKey: false
-});
-
-const loginScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    authorId: String,
-    username: String,
-    token: String,
-    admin: Boolean,
-    expires: String,},
-    {versionKey: false
-});
-
 const followerScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     username: String,
@@ -93,16 +72,12 @@ const requestScheme = new Schema({
 
 const Friend = database.model('Friend', friendScheme);
 const Following = database.model('Following', followingScheme);
-const Login = database.model('Login', loginScheme);
-const Author = database.model('Author', authorScheme);
 const Request = database.model('Request', requestScheme);
 const Follower = database.model('Follower', followerScheme);
 
 module.exports = {
     Friend,
     Following,
-    Login,
-    Author,
     Request,
     Follower
 }

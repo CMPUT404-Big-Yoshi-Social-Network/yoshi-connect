@@ -19,11 +19,13 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Request, Follower, Following, Friend, Login, Author } = require('../dbSchema/authorScheme.js');
+const { Login, Author } = require('../scheme/author.js');
+const { Request, Follower, Following, Friend } = require('../scheme/relations.js');
 
 async function saveRequest(req, res) {  
     /**

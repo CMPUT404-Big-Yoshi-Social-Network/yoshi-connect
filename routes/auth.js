@@ -135,23 +135,23 @@ async function authAuthor(req, res) {
 
     if(!username || !password){
         console.log("Debug: Username or Password not given, Authentication failed");
-        return res.json({ status: "Unsuccessful" });
+        return res.sendStatus(400);
     }
 
     const author = await Author.findOne({username: req.body.username});
 
     if(!author){
         console.log("Debug: Author does not exist, Authentication failed");
-        return res.json({ status: false });
+        return res.sendStatus(400);
     }
     req.author = author;
 
     const p_hashed_password = req.author.password;
     if(p_hashed_password == crypto_js.SHA256(password)){
         console.log("Debug: Authentication successful");
-        if(req.cookies["token"] != null){
-            await Login.deleteOne({token: req.cookies["token"]}, function(err, login) {
-                if (err) throw err;
+        if(req.cookies.token != null){
+            await Login.deleteOne({token: req.cookies.token}, function(err, login) {
+                if (err) { res.sendStatus(500); }
                 console.log("Debug: Login token deleted");
             }).clone()
         }
@@ -171,7 +171,7 @@ async function authAuthor(req, res) {
         if (req.route.path == '/admin') {
             if (!req.author.admin) {
                 console.log("Debug: You are not an admin. Your login will not be cached.")
-                return res.json({ status: false }); 
+                return res.sendStatus(403)
             }
         }
 
@@ -179,11 +179,11 @@ async function authAuthor(req, res) {
         if(login == login_saved){
             console.log("Debug: Login Cached.")
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
-            return res.json({ status: true });
+            return res.sendStatus(200)
         }
-        return res.json({ status: false });
+        return res.sendStatus(500)
     }
-    return res.json({ status: false });
+    return res.sendStatus(500)
 }
 
 async function authLogin(token, authorId, displayName){

@@ -43,9 +43,18 @@ const router = express.Router();
  *              description: This token identifies you as being logged in and allows you to perform other api calls
  *              example: token=QV1hAYUZU5Qu2dkrP4peLN
  *      400:
- *        description: NEEDS TO BE REFACTORED Login not possible. Failed due to incorrect username or password. 
+ *        description: Unsuccessful if: 
+ *          - User does not fill in both the password and username 
+ *          - Account the user inputted does not exist 
+ *      403:
+ *        description: Unsuccessful if the user tries to login as an Admin in the Admin Login Webpage
+ *      500: 
+ *        description: Unsuccessful if:
+ *          - Server is unable to delete existing token (i.e., refresh the token)
+ *          - Server is unable to save the new token 
+ *          - Hashed Password and the Password provided by the user is not equal 
  */
-router.post('/api/login', async (req, res) => {
+router.post('/', async (req, res) => {
   console.log('Debug: Login as Author')
   await authAuthor(req, res);
 })

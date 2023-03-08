@@ -89,7 +89,7 @@ async function registerAuthor(req, res){
         
     let curr = new Date();
     let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
-    let token = req.cookies.token;
+    let token = uidgen.generateSync();
 
     let login = new Login({
         authorId: author._id,
@@ -102,8 +102,7 @@ async function registerAuthor(req, res){
     login.save((err, login) => {
         if (err) { res.sendStatus(500); }
         console.log("Debug: Login cached.")
-        res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
-        return res.json({ sessionId: token });
+        
     })
 
     await createPostHistory(author._id);
@@ -111,6 +110,9 @@ async function registerAuthor(req, res){
     await createFriends(author.username, author._id);
     await createFollowings(author.username, author._id);
     await createInbox(author.username, author._id);
+
+    res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
+    return res.json({ sessionId: token });
 }
 
 async function getProfile(req, res) {

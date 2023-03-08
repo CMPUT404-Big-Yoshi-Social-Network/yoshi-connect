@@ -856,9 +856,6 @@ async function apifetchLikes(authorId, postId) {
             index: { $indexOfArray: ['_id', postId] }
         },
         {
-            $unwind: '$index'
-        },
-        {
             $group: {
                 _id: null,
                 post_array: { $push: "$index" }
@@ -871,6 +868,21 @@ async function apifetchLikes(authorId, postId) {
     } else {
         return [];
     }   
+}
+
+async function apiFetchCommentLikes(authorId, postId, commentId) {
+    // TODO Paging
+    const comments = apigetPost(authorId, postId).comments; 
+    let comment = null;
+
+    for (let i = 0; i < comments.length; i++) {
+        if (comments[i]._id === commentId) {
+            comment = comments[i];
+            break;
+        }
+    }
+
+    return comment.likes;
 }
 
 module.exports={
@@ -893,5 +905,7 @@ module.exports={
     apicreatePost,
     fetchPosts,
     getComments,
-    createComment
+    createComment,
+    apifetchLikes,
+    apiFetchCommentLikes
 }

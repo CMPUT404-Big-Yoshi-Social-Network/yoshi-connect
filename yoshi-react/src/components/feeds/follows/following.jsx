@@ -43,10 +43,12 @@ function Following() {
          */
        console.log('Debug: Fetching all followings for this author')
        axios
-       .post('/api/authors/:authorId/followers')
-       .then((response) => { setFollowings(response.data.following.items) })
+       .post('/api/authors/' + props.authorId + '/followings')
+       .then((response) => { setFollowings(response.data.items) })
        .catch(err => {
-           console.error(err);
+        if (err.response.status === 404) {
+            navigate('/notfound')
+          }
        });
     }, []);
 

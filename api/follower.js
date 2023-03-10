@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFollowers, getFriends, addFollower, deleteFollower } = require('./routes/friend');
+const { getFollowers, getFriends, addFollower, deleteFollower, getFollowings } = require('../routes/friend');
 
 /**
  * @openapi
@@ -35,12 +35,10 @@ app.get('/', async (req, res) => {
   const authorId = req.params.authorId;
 
   const followers = await getFollowers(authorId);
-  const friends = await getFriends(authorId);
 
-  if(followers == 404 || friends == 404)
-    return res.send(404);
+  if(followers == 404 || followings == 404) return res.send(404);
 
-  santizedFollowers = [];
+  sanitizedObjects = [];
   for(let i = 0; i < followers.length; i++){
     const follower = followers[i];
 
@@ -48,7 +46,7 @@ app.get('/', async (req, res) => {
     if(!followerProfile)
       continue
 
-    santizedFollower = {
+      sanitizedObject = {
       "type": "author",
       "id" : followerProfile._id,
       "host": process.env.DOMAIN_NAME,
@@ -61,33 +59,12 @@ app.get('/', async (req, res) => {
       "pronouns": followerProfile.pronouns
     }
 
-    santizedFollowers.push(santizedFollower);
-  }
-
-  for(let i = 0; i < friends.length; i++){
-    const friend = friends[i];
-
-    const friendProfile = await Author.findOne({_id: friend.authorId}); 
-    if(!friendProfile)
-      continue
-    santizedFollower = {
-      "type": "author",
-      "id" : friendProfile._id,
-      "host": process.env.DOMAIN_NAME,
-      "displayname": friendProfile.username,
-      "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
-      "github": "",
-      "profileImage": "",
-      "about": friendProfile.about,
-      "pronouns": friendProfile.pronouns
-    }
-
-    santizedFollowers.push(santizedFollower);
+    sanitizedObjects.push(sanitizedObject);
   }
 
   return res.json({
     type: "followers",
-    items: santizedFollowers
+    items: sanitizedObjects
   });
 })
 

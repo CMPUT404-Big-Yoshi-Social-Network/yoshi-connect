@@ -313,7 +313,7 @@ function Profile() {
             <TopNav/>
             <div className='profRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
                     <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>

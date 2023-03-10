@@ -73,7 +73,6 @@ async function checkExpiry(req) {
      *          If there is any cookies, token, or login document, or expiry date has not passed then it is not expired and will 
      *          return false 
      */
-    console.log(req)
     if (req.cookies == undefined) { return true }
 
     if (req.cookies.token != undefined) {

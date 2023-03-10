@@ -20,12 +20,12 @@ Foundation; All Rights Reserved
 */ 
 
 // Routing Functions 
-const { authAuthor, removeLogin, checkExpiry, checkAdmin } = require('./routes/auth');
-const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
+const { authAuthor, removeLogin, checkExpiry, checkAdmin } = require('../routes/auth');
+const { addAuthor, modifyAuthor, deleteAuthor } = require('../routes/admin');
 
 // Schemas
 // Schemas
-const { Author } = require('./scheme/author.js');
+const { Author } = require('../scheme/author.js');
 
 // Router Setup
 const express = require('express'); 
@@ -47,7 +47,9 @@ router.post('/dashboard', async (req, res) => {
   } else if (req.body.data.status == 'Fetching') {
     const authors = await Author.find()
     if (!authors) { return res.sendStatus(404) }
-    return authors
+    return res.json({
+      authors: authors
+    })
   }
 })
 

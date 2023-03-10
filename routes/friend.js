@@ -292,6 +292,10 @@ async function deleteFollower(token, authorId, foreignId, body){
     return 200;
 }
 
+async function isFriend(authorId, foreignId) {
+    //TODO CHECK IF FRIEND
+}
+
 module.exports={
     fetchFriends,
     fetchFriendPosts,
@@ -299,5 +303,6 @@ module.exports={
     getFollowings,
     addFollower,
     deleteFollower,
-    getFriends
+    getFriends,
+    isFriend
 }

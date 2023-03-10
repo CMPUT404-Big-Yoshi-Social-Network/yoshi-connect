@@ -55,7 +55,7 @@ function Requests(props) {
         axios
         .post('/api/authors/' + props.authorId + 'requests', config)
         .then((response) => {
-            setRequests(response.data.requests)
+            setRequests(response.data.items)
         })
         .catch(err => {
             console.error(err);

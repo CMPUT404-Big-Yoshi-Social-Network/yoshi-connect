@@ -74,6 +74,7 @@ function FriendFeed() {
              * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
+             * Refactro: TODO WHEN AUTHORS IS DONE
              */
             let config = {
                 method: 'post',

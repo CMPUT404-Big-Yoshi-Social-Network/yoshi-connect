@@ -64,6 +64,7 @@ function PublicFeed() {
              * Description: Sends a POST request to get the author's id 
              * Request: POST
              * Returns: N/A
+             * REFACTOR: TODO
              */
             let config = {
                 method: 'post',
@@ -91,6 +92,7 @@ function PublicFeed() {
              * Description: Sends a POST request to get the current author's followings posts and public (PSA) posts  
              * Request: POST
              * Returns: N/A
+             * Refactor: TODO
              */
             let config = {
                 method: 'post',

@@ -41,6 +41,7 @@ function RightNavBar() {
     const [username, setUsername] = useState();
 
     const getUsername = () => {
+        //TODO: REFACTOR 
         axios
         .get('/server/nav')
         .then((response) => {

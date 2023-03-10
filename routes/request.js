@@ -364,6 +364,15 @@ async function getRequests(authorId) {
     }).clone()
 }
 
+async function getRequest(authorId, foreignId) {
+    await Request.findOne({actor: authorId, object: foreignId}, function(err, request){
+        if (!request) { console.log('Debug: Does not exist') }
+        return res.json({
+            request: request
+        })
+    }).clone()
+}
+
 module.exports={
     saveRequest,
     deleteRequest,
@@ -372,5 +381,6 @@ module.exports={
     senderAdded,
     sendRequest,
     apideleteRequest,
-    getRequests
+    getRequests,
+    getRequest
 }

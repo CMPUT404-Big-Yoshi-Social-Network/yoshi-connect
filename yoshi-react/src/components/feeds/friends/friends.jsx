@@ -49,7 +49,7 @@ function Friends(props) {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
         axios
-        .post('/server/friends', config)
+        .post('/api/authors/' + props.authorId + '/friends', config)
         .then((response) => { setFriends(response.data.items) })
         .catch(err => { console.error(err); });
     }, [setFriends]);

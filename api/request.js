@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { sendRequest, apideleteRequest, getRequests } = require('./routes/request');
+const { sendRequest, apideleteRequest, getRequests, getRequest } = require('./routes/request');
 
 /**
  * @openapi
@@ -40,6 +40,22 @@ app.get('/', async (req, res) => {
     type: "requests",
     items: requests
   });
+})
+
+/**
+ * @openapi
+ * /api/authors/{authorId}/requests/{foreignAuthorId}:
+ *  put:
+ *    description: Saves the Request for the Foreign Author from the Author into the database 
+ *    responses:
+ *      200:
+ *        description: Returns the JSON object representing the Request  
+ */
+app.get('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
+
+  await getRequest(authorId, foreignId);
 })
 
 /**

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFriends } = require('../routes/friend');
+const { getFriends, isFriend } = require('../routes/friend');
 
 /**
  * @openapi
@@ -66,4 +66,20 @@ if(friends == 404) return res.send(404);
     type: "friends",
     items: sanitizedObjects
   });
+})
+
+/**
+ * @openapi
+ * /api/authors/{authorId}/friends/{foreignId}:
+ *  get:
+ *    description: Gets the author's followers and friends as objects from the database and sends it back as a JSON object
+ *    responses:
+ *      404:
+ *        description: Returns Status 404 when there are no existing followers or friends
+ */
+app.post('/', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignId;
+
+  await isFriend(authorId, foreignId);
 })

@@ -148,26 +148,15 @@ function Profile() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Does Request Exist'
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .post('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
             .then((response) => {
-                if (response.data.status === 'Successful') {
-                    console.log('Debug: Friend Request Exists.')
-                    exists.current = true;
-                } else {
-                    console.log('Debug: Friend Request does not exist.')
-                    exists.current = false;
-                }
+                exists.current = true;
             })
             .catch(err => {
               console.error(err);
@@ -179,24 +168,20 @@ function Profile() {
          * Description: Checks if the author is a follower or a friend
          * Request: POST
          * Returns: N/A
+         * REFACTOR: CHECK 
          */
         if (!exists.current && !personal.person) {
             console.log('See if they are followers or friends.');
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
                 headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    viewed: personal.viewed,
-                    viewer: personal.viewer,
-                    status: 'Friends or Follows'
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .post('/api/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status === 'Friends') {
                     console.log('Debug: They are friends.')
@@ -262,23 +247,18 @@ function Profile() {
         } else if (requestButton === 'Unfriend') {
             console.log('Debug: We want to unfriend.')
             let config = {
-                method: 'put',
+                method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Unfriending'
                 }
             }
             axios
-            .put('/server/users/' + username, config)
+            .delete('/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status) {
-                    console.log('Debug: Friend is unfriended.')
+                    console.log('Debug: Follow is unfriended.')
                     setRequestButton('Add');
                 }
             })

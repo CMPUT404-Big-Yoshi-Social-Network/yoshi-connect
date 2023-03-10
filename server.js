@@ -69,9 +69,6 @@ app.use("/api/signup", signup);
 app.use("/api/login", login);
 app.use("/api/admin", admin);
 
-// Schemas
-const { Author } = require('./scheme/author.js');
-
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 
 app.use('/server/api-docs',

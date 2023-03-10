@@ -44,7 +44,8 @@ const path = require('path');
 // Middleware
 const signup = require('./api/signup');
 const login = require('./api/login');
-const admin = require('./api/admin')
+const admin = require('./api/admin');
+const followers = require('./api/follow');
 
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
@@ -68,6 +69,7 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 app.use("/api/signup", signup);
 app.use("/api/login", login);
 app.use("/api/admin", admin);
+app.use("/api/authors/:authorId/followers", followers);
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 

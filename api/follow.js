@@ -31,7 +31,7 @@ const { getFollowers, getFriends, addFollower, deleteFollower } = require('./rou
  *      404:
  *        description: Returns Status 404 when there are no existing followers or friends
  */
-app.get('/api/authors/:authorId/followers', async (req, res) => {
+app.get('/', async (req, res) => {
   const authorId = req.params.authorId;
 
   const followers = await getFollowers(authorId);
@@ -102,7 +102,7 @@ app.get('/api/authors/:authorId/followers', async (req, res) => {
  *      404:
  *        description: Returns Status 404 when the profile doesn't exist
  */
-app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+app.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
@@ -171,7 +171,7 @@ app.get('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
  *      400:
  *        description: Returns Status 400 when server is unable to process the user's request 
  */
-app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+app.put('/:foreignAuthorId', async (req, res) => {
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -195,7 +195,7 @@ app.put('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) =>
  *      200:
  *        description: If the Follower (Foreign Author) was successfully deleted 
  */
-app.delete('/api/authors/:authorId/followers/:foreignAuthorId', async (req, res) => {
+app.delete('/:foreignAuthorId', async (req, res) => {
   if(req.body.type == undefined || req.body.type != "follower")
     return res.sendStatus(400)
 

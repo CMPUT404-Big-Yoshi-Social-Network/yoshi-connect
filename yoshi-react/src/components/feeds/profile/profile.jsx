@@ -61,37 +61,6 @@ function Profile() {
     let exists = useRef(null);
     useEffect(() => {
         /**
-         * Description: Before render, checks if the author is logged in to redirect to the main feed
-         * Request: GET
-         * Returns: N/A
-         */
-        const checkExpiry = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                if (response.data.status === "Expired") {
-                    console.log("Debug: Your token is expired.")
-                    LogOut();
-                    navigate('/');
-                }
-                else{console.log('Debug: Your token is not expired.')}
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); // 401 Not Found
-                }
-            });
-        }
-        checkExpiry();
-    })
-    useEffect(() => {
-        /**
          * Description: Get the account details of the author
          * Request: GET
          * Returns: N/A
@@ -99,6 +68,8 @@ function Profile() {
         let person = '';
         let viewer = '';
         let viewed = '';
+        let viewedId = '';
+        let viewerId = '';
         console.log('Debug: Getting account details')
         const isRealProfile = () => {
             /**
@@ -107,15 +78,19 @@ function Profile() {
              * Returns: N/A
              */
             axios
-            .get('/server/users/' + username)
+            .get('/api/profile')
             .then((response) => {
                 console.log('Debug: Profile Exists.')
                 person = response.data.personal
                 viewer = response.data.viewer
                 viewed = response.data.viewed
+                viewedId = response.data.viewedId
+                viewerId = response.data.viewerId
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
                 setPersonal(prevViewer => ({...prevViewer, viewer}))
-                setPersonal(prevViewing => ({...prevViewing, viewed}))
+                setPersonal(prevViewed => ({...prevViewed, viewed}))
+                setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
+                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
                 getPosts(person, viewer, viewed);
             })
             .catch(err => {
@@ -130,39 +105,13 @@ function Profile() {
             });
         }
         isRealProfile();
-        const getId = () => {
-            /**
-             * Description: Gets the author's ID and sets their viewer ID for posts
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/server/posts/',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    sessionId: localStorage.getItem('sessionId'),
-                    status: 'Fetching current authorId'
-                }
-            }
-            axios
-            .post('/server/posts/', config)
-            .then((response) => {
-                let viewerId = response.data.authorId;
-                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
-            })
-            .catch(err => { });
-        }
-        getId();
         console.log('Debug: Getting posts')
         const getPosts = (person, viewer, viewed) => {
             /**
              * Description: Checks if the author account exists
              * Request: GET
              * Returns: N/A
+             * Refactor: NEEDED UPDATE WAITING ON POST UPDATE
              */
             let config = {
                 method: 'post',
@@ -342,20 +291,15 @@ function Profile() {
         } else if (requestButton === "Unfollow") {
             console.log('Debug: We want to unfollow.')
             let config = {
-                method: 'put',
+                method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Unfollowing'
                 }
             }
             axios
-            .put('/server/users/' + username, config)
+            .delete('/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')
@@ -366,33 +310,6 @@ function Profile() {
               console.error(err);
             });
         }
-    }
-    const LogOut = () => {
-        /**
-         * Description: Logs the author out 
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                message: 'Logging Out'
-            }
-        }
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => {
-          console.error(err);
-        });
     }
     return (
         <div>
@@ -413,12 +330,6 @@ function Profile() {
                 </div>
             </div>
         </div>
-            /* <h1>{username}'s Profile</h1>
-            { personal.person ? null : 
-                <button type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
-            <h2>Posts</h2>
-            <Posts viewerId={personal.viewerId} posts={posts}/>   
-        </div>  */
     )
 }
 

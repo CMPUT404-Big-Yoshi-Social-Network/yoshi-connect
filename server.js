@@ -46,6 +46,7 @@ const signup = require('./api/signup');
 const login = require('./api/login');
 const admin = require('./api/admin');
 const followers = require('./api/follow');
+const profile = require('./api/profile');
 
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
@@ -70,6 +71,7 @@ app.use("/api/signup", signup);
 app.use("/api/login", login);
 app.use("/api/admin", admin);
 app.use("/api/authors/:authorId/followers", followers);
+app.use("/api/profile", profile);
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 
@@ -168,11 +170,6 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   } else {
 	  await createPost(req, res, req.params.post_id);
   }
-})
-
-app.get('/server/users/:username', async (req,res) => {
-  if (await checkExpiry(req)) { return res.sendStatus(401); }
-  getProfile(req, res);
 })
 
 app.post('/server/users/posts', async (req, res) => {

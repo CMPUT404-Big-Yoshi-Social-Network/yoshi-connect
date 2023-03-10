@@ -51,8 +51,10 @@ async function addAuthor(req, res){
         username: username,
         password: crypto_js.SHA256(password),
         email: email,
-        about: '',
-        pronouns: '',
+        about: "",
+        pronouns: "",
+        github: "",
+        profileImage: "",
         admin: false,
     });
 

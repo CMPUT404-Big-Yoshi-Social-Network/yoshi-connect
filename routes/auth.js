@@ -58,11 +58,12 @@ async function removeLogin(req, res) {
     if (req.cookies.token != undefined) {
         console.log('Debug: Getting the token in the login database.');
         Login.deleteOne({token: req.cookies.token}, function(err, login) {
-            if (err) throw err;
+            if (err) throw res.sendStatus(500);
             console.log("Debug: Login token deleted");
+            return res.sendStatus(200)
         })
     }
-    return res.json({ status: "Expired" });
+    return res.sendStatus(401)
 }
 
 async function checkExpiry(req) {

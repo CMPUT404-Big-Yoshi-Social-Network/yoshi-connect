@@ -36,9 +36,11 @@ function ModifyAuthor(props) {
         newEmail: props.email,
         newAbout: props.about,
         newPronouns: props.pronouns,
-        newAdmin: props.admin
+        newAdmin: props.admin,
+        newProfileImage: props.profileImage,
+        newGitHub: props.github
     })
-    const url = '/server/admin/dashboard';
+    const url = '/api/admin/dashboard';
 
     const modify = (e) => {
         /**
@@ -56,7 +58,7 @@ function ModifyAuthor(props) {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: {
-                status: 'Modify an Author',
+                status: 'Modify',
                 newUsername: data.newUsername,
                 newPassword: data.newPassword,
                 newEmail: data.newEmail,
@@ -72,7 +74,13 @@ function ModifyAuthor(props) {
         .then((response) => {
         })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 404) {
+                navigate('/notfound');
+            } else if (err.response.status === 500) {
+                console.log('NEED A 500 STATUS PAGE')
+            }
         });
     }
 
@@ -135,6 +143,26 @@ function ModifyAuthor(props) {
                         setData({
                         ...data,
                         newAdmin: e.target.value
+                        })
+                    }}/>
+                </label>
+                <br></br>
+                <label>
+                    GitHub:
+                    <input type="admin" name="admin" value={data.newGitHub} onChange={(e) => {
+                        setData({
+                        ...data,
+                        newGitHub: e.target.value
+                        })
+                    }}/>
+                </label>
+                <br></br>
+                <label>
+                    ProfileImage:
+                    <input type="admin" name="admin" value={data.newProfileImage} onChange={(e) => {
+                        setData({
+                        ...data,
+                        newProfileImage: e.target.value
                         })
                     }}/>
                 </label>

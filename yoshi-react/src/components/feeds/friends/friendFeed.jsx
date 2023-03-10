@@ -102,6 +102,7 @@ function FriendFeed() {
              * Description: Sends a POST request in order to get the posts of the current author's friends 
              * Request: POST
              * Returns: N/A
+             * Refactor: TODO
              */
             let config = {
                 method: 'post',
@@ -130,6 +131,7 @@ function FriendFeed() {
          * Description: Sends a POST request to log out the current author then navigates the author to the Welcome component 
          * Request: POST
          * Returns: N/A
+         * Refactor: TODO
          */
         let config = {
             method: 'post',
@@ -151,6 +153,7 @@ function FriendFeed() {
          *              sends them to the Welcome component and deletes their token from the localStorage 
          * Request: GET
          * Returns: N/A
+         * Refactor: TODO
          */
         let config = {
             method: 'get',
@@ -181,7 +184,7 @@ function FriendFeed() {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
                     <Posts viewerId={viewer.viewerId} posts={friendPosts}/>

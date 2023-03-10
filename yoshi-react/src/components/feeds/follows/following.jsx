@@ -26,7 +26,7 @@ import React, { useEffect, useState } from "react";
 // Styling
 import Follow from './follow.jsx';
 
-function Following() {
+function Following(props) {
     /**
      * Description: Represents the list of Followings for an author 
      * Functions: 

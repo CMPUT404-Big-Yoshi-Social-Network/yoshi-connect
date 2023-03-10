@@ -156,6 +156,10 @@ async function getFollowings(id){
     return following.followings;
 }
 
+async function getFriends(id){
+    // TODO: Write this query
+}
+
 async function addFollower(token, authorId, foreignId, body, req, res){
     if(!authLogin(token, authorId))
         return 401;
@@ -294,5 +298,6 @@ module.exports={
     getFollowers,
     getFollowings,
     addFollower,
-    deleteFollower
+    deleteFollower,
+    getFriends
 }

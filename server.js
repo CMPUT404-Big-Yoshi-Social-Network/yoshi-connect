@@ -48,6 +48,7 @@ const admin = require('./api/admin');
 const followers = require('./api/follow');
 const followings = require('./api/following');
 const profile = require('./api/profile');
+const friends = require('./api/friend');
 
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
@@ -74,6 +75,7 @@ app.use("/api/admin", admin);
 app.use("/api/authors/:authorId/followers", followers);
 app.use("/api/authors/:authorId/followings", followings)
 app.use("/api/profile", profile);
+app.use("/api/authors/:authorId/friends", friends)
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 

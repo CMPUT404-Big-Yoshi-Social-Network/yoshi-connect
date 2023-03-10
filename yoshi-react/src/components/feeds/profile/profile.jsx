@@ -310,7 +310,7 @@ function Profile() {
     }
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={personal.viewerId}/>
             <div className='profRow'>
                 <div className='pubColL'>
                     <LeftNavBar authorId={personal.viewerId}/>

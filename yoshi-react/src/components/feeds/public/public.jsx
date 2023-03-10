@@ -112,7 +112,7 @@ function PublicFeed() {
 
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={viewer.viewerId}/>
             <div className='pubRow'>
                 <div className='pubColL'>
                     <LeftNavBar/>

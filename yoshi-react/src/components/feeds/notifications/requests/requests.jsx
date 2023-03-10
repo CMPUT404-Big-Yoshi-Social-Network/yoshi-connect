@@ -26,7 +26,7 @@ import React, { useEffect, useState } from "react";
 // Child Component
 import Request from './request.jsx';
 
-function Requests() {
+function Requests(props) {
     /**
      * Description: Represents all the requests
      * Functions:
@@ -44,7 +44,7 @@ function Requests() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/requests',
+            url: '/api/authors/' + props.authorId + 'requests',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -53,7 +53,7 @@ function Requests() {
             }
         }
         axios
-        .post('/server/requests', config)
+        .post('/api/authors/' + props.authorId + 'requests', config)
         .then((response) => {
             setRequests(response.data.requests)
         })

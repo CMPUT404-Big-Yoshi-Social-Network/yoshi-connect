@@ -357,6 +357,13 @@ async function apideleteRequest(authorId, foreignId, res) {
     }
 }
 
+async function getRequests(authorId) {
+    await Request.find({object: authorId}, function(err, requests){
+        console.log("Debug: Requests exists");
+        return requests
+    }).clone()
+}
+
 module.exports={
     saveRequest,
     deleteRequest,
@@ -364,5 +371,6 @@ module.exports={
     findAllRequests,
     senderAdded,
     sendRequest,
-    apideleteRequest
+    apideleteRequest,
+    getRequests
 }

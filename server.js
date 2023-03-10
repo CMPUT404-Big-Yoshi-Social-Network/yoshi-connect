@@ -381,8 +381,8 @@ UPDATED API
  *        description: A list of authors
  */
 app.get('/api/authors', async (req, res) => {
-  const page = req.query.page;
-  const size = req.query.size;
+  let page = req.query.page;
+  let size = req.query.size;
   if(page == undefined)
     page = 1;
   if(size == undefined)

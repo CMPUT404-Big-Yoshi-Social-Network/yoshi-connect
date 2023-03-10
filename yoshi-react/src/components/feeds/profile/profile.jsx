@@ -53,6 +53,7 @@ function Profile() {
         person: null,
         viewer: null,
         viewed: null,
+        viewedId: null,
         viewerId: null
     })
     const [requestButton, setRequestButton] = useState('Add');
@@ -221,46 +222,42 @@ function Profile() {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Save Request'
                 }
             }
             axios
-            .put('/server/users/' + username, config)
-            .then((response) => {
-                console.log('Debug: Friend request sent!')
-            })
+            .put('/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId, config)
+            .then((response) => { })
             .catch(err => {
-              console.error(err);
+              if (err.response.status === 401) {
+                navigate('/unauthorized')
+              } else if (err.response.status === 400) {
+                navigate('/badrequest');
+              }
             });
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
             let config = {
                 method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/json'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Delete Request'
                 }
             }
             axios
-            .delete('/server/users/' + username, config)
-            .then((response) => {
-                console.log('Debug: Friend request deleted!')
-            })
+            .delete('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .then((response) => { })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                  } else if (err.response.status === 400) {
+                    navigate('/badrequest');
+                  } else if (err.response.status === 500) {
+                    console.log('NEED 500 PAGE')
+                  }
             });
         } else if (requestButton === 'Unfriend') {
             console.log('Debug: We want to unfriend.')

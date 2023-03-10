@@ -342,9 +342,11 @@ async function sendRequest(authorId, foreignId, res) {
 async function apideleteRequest(authorId, foreignId, res) {
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
+    if (!actor && !object) { return 500 }
     let summary = '';
 
     const request = await Request.findOneAndDelete({senderId: actor._id, receiverId: object._id}); 
+    if (!request) { return 500 }
     summary = actor.username + " wants to undo " + request.type + " request to " + object.username;  
 
     return {

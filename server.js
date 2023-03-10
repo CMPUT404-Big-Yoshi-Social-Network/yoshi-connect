@@ -49,6 +49,7 @@ const followers = require('./api/follow');
 const followings = require('./api/following');
 const profile = require('./api/profile');
 const friends = require('./api/friend');
+const requests = require('./api/request');
 
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
@@ -76,6 +77,7 @@ app.use("/api/authors/:authorId/followers", followers);
 app.use("/api/authors/:authorId/followings", followings)
 app.use("/api/profile", profile);
 app.use("/api/authors/:authorId/friends", friends)
+app.use("/api/authors/:authorId/requests", requests)
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 
@@ -181,86 +183,14 @@ app.post('/server/users/posts', async (req, res) => {
   await fetchMyPosts(req, res);
 })
 
-app.post('/server/requests', async (req, res) => {
-  if (req.body.data.status == 'Fetching Requests') {
-    console.log('Debug: Getting friend requests')
-    findAllRequests(req, res);
-  } else if ( req.body.data.status == 'Fetching current authorId') { 
-	  console.log('Debug: Getting the current author logged in');
-	  await getCurrentAuthorUsername(req, res);
-	} 
-})
-
-app.put('/server/requests', (req, res) => {
-  if (req.body.data.status == 'Sender is added by Receiver') {
-    console.log('Debug: Sender added by Receiver')
-    senderAdded(req, res);
-  } 
-})
-
-app.delete('/server/requests', (req, res) => {
-  if (req.body.status == 'Sender is rejected by Receiver') {
-    console.log('Debug: Sender rejected by Receiver')
-    deleteRequest(req, res);
-  }
-})
-
-app.post('/server/users/:username', async (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
-    console.log('Debug: Logging out as Author')
-    removeLogin(req, res);
-  } else if (req.body.data.status == 'Does Request Exist') {
-    console.log('Debug: Checking if Friend Request Exists')
-    findRequest(req, res);
-  } else if (req.body.data.status == 'Friends or Follows') {
-    console.log('Debug: Checking if they are friends or follows.')
-    await isFriend(req, res);
-  }
-})
-
-app.put('/server/users/:username', async (req, res) => {
-  if (req.body.data.status == 'Save Request') {
-    console.log('Debug: Saving Friend Request')
-    saveRequest(req, res);
-  } else if (req.body.data.status == 'Unfriending') {
-    console.log('Debug: Viewer unfriending viewed.')
-    await unfriending(req, res);
-  } else if (req.body.data.status == 'Unfollowing') {
-    console.log('Debug: Viewer unfollowing viewer.')
-    await unfollowing(req, res);
-  }
-})
-
-app.delete('/server/users/:username', (req, res) => {
-  if (req.body.status == 'Delete Request') {
-    console.log('Debug: Deleting Friend Request')
-    deleteRequest(req, res);
-  }
-})
-
 app.get('/server/nav', async (req, res) => {
   console.log('Debug: Getting the current author logged in');
   await getCurrentAuthorUsername(req, res);
 })
 
-app.get('/server/friends', (req, res) => {
-  console.log('Debug: Checking expiry of token');
-  sendCheckExpiry(req, res);
-})
-
-app.post('/server/friends', (req, res) => {
-  console.log('Debug: Getting the author friends');
-  fetchFriends(req, res);
-})
-
 app.post('/server/friends/posts', (req, res) => {
   console.log('Debug: Getting the author friends posts');
   fetchFriendPosts(req, res);
-})
-
-app.post('/server/following', async (req, res) => {
-  console.log('Debug: Getting the author following');
-  await fetchFollowing(req, res);
 })
 
 app.post('/server/public/posts', async (req, res) => {

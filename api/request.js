@@ -51,7 +51,7 @@ app.get('/', async (req, res) => {
  *      200:
  *        description: Returns the JSON object representing the Request  
  */
-app.get('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+app.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
@@ -67,7 +67,7 @@ app.get('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => 
  *      200:
  *        description: Returns the JSON object representing the Request  
  */
-app.put('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+app.put('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 

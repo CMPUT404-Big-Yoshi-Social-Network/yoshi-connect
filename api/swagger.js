@@ -33,7 +33,7 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-router.use('/api/api-docs',
+router.use('/',
   swaggerUi.serve,
   swaggerUi.setup(openapiSpecification)
 );

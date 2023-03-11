@@ -74,14 +74,12 @@ const inboxScheme = new Schema({
     {versionKey: false
 })
 
-const PostHistory = database.model('Posts', postHistoryScheme);
-const Post = database.model('Post', postScheme);
+const PostHistory = database.model('Post', postHistoryScheme);
 const PublicPost = database.model('PublicPost', publicScheme);
 const Inbox = database.model('Inbox', inboxScheme);    
 
 module.exports = {
     PostHistory,
-    Post,
     PublicPost,
     Inbox
 }

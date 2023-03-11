@@ -67,10 +67,10 @@ app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Routing
-app.use("", author);
-app.use("", comment);
-app.use("", friend);
-app.use("", inbox);
+app.use("/api/authors", author);
+app.use("/api/authors/:authorId/posts/:postId/comments", comment);
+app.use("/api/authors/:authorId/friends", friend);
+app.use("/api/authors/:author_id/inbox", inbox);
 app.use("/api/authors/:authorId/posts/:postId/likes", like);
 app.use("/api/authors/:authorId/posts", post);
 app.use("/api/settings", setting);

@@ -29,7 +29,7 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-router.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
   let page = req.query.page;
@@ -52,7 +52,7 @@ router.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => 
     })
 })
 
-router.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
+router.get('/:commentId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
   const commentId = req.params.commentId
@@ -77,7 +77,7 @@ router.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', asy
     })
  })
 
-router.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
+router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 

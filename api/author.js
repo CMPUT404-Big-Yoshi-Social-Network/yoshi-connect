@@ -30,7 +30,7 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-router.get('/api/authors', async (req, res) => {
+router.get('/', async (req, res) => {
   if((await checkExpiry(req, res))){ return res.sendStatus(401) }
   if (req.body.data.status === 'Fetching authorId') { await getCurrentAuthor(req); }
 
@@ -48,7 +48,7 @@ router.get('/api/authors', async (req, res) => {
   });
 })
 
-router.get('/api/authors/:authorId', async (req, res) => {
+router.get('/:authorId', async (req, res) => {
   if(req.params.authorId == undefined)
     return res.sendStatus(404);
 
@@ -74,7 +74,7 @@ router.get('/api/authors/:authorId', async (req, res) => {
   });
 })
 
-router.post('/api/authors/:authorId', async (req, res) => {
+router.post('/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);
   if(req.body.type !== 'author')
@@ -90,7 +90,7 @@ router.post('/api/authors/:authorId', async (req, res) => {
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
 
-router.get('/api/authors/:authorId/liked', async (req, res) => {
+router.get('/:authorId/liked', async (req, res) => {
   const authorId = req.params.authorId;
 
   const liked = getAuthorLikes(authorId);

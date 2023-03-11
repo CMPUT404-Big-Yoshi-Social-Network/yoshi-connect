@@ -28,16 +28,16 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-router.get('/server/authors/:author_id/inbox', async (req, res) => {
+router.get('/', async (req, res) => {
   console.log('Debug: Getting an authors inbox');
   await getInbox(req, res);
 })
 
-router.post('/server/authors/:author_id/inbox', async (req, res) => {
+router.post('/', async (req, res) => {
   await postInbox(req, res);
 })
 
-router.delete('/server/authors/:author_id/inbox', async (req, res) => {
+router.delete('/', async (req, res) => {
   console.log("delete inbox")
   await deleteInbox(req, res);
 })

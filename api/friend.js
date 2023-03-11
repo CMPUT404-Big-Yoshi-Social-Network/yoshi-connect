@@ -79,4 +79,10 @@ router.post('/posts', async (req, res) => {
   fetchFriendPosts(req, res);
 })
 
+router.get('/:foreignId', async (req, res) => {
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignId;
+  isFriend(authorId, foreignId);
+})
+
 module.exports = router;

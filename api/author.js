@@ -68,11 +68,6 @@ router.get('/:authorId', async (req, res) => {
   return res.json(author);
 })
 
-router.post('/:authorId/posts', async (req, res) => {
-  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
-  await fetchMyPosts(req.params.authorId, req, res);
-})
-
 router.post('/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);
@@ -81,12 +76,18 @@ router.post('/:authorId', async (req, res) => {
 
   const authorId = req.body.id;
   const host = req.body.host;
-  const username = req.body.displayName;
+  const username = req.body.url;
+  const url = req.body.url;
 
-  if(!authorId || !host || !username)
+  if(!authorId || !host || !username || !url)
     return res.sendStatus(400);
 
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
+})
+
+router.post('/:authorId/posts', async (req, res) => {
+  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
+  await fetchMyPosts(req.params.authorId, req, res);
 })
 
 router.get('/:authorId/liked', async (req, res) => {

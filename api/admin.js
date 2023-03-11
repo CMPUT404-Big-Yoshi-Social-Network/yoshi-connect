@@ -27,7 +27,7 @@ const { addAuthor, modifyAuthor, deleteAuthor } = require('../routes/admin');
 const express = require('express'); 
 
 // Router
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 

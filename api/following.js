@@ -30,7 +30,7 @@ const express = require('express');
 const { Author } = require('../scheme/author');
 
 // Router
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }

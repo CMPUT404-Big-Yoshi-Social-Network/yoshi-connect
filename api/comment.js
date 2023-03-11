@@ -27,7 +27,7 @@ const { apiFetchCommentLikes } = require('../routes/post');
 const express = require('express'); 
 
 // Router
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;

@@ -28,7 +28,7 @@ const { checkExpiry } = require('../routes/auth');
 const express = require('express'); 
 
 // Router
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
   //if (await checkExpiry(req, res)) { return res.sendStatus(401) }

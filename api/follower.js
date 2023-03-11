@@ -20,7 +20,8 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFollowers, getFriends, addFollower, deleteFollower } = require('../routes/friend');
+const { getFollowers, addFollower, deleteFollower } = require('../routes/friend');
+const { checkExpiry } = require('../routes/auth');
 
 app.get('/', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
@@ -107,18 +108,8 @@ app.put('/:foreignAuthorId', async (req, res) => {
     return res.sendStatus(400);
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/followers/{foreignAuthorId}:
- *  delete:
- *    description: Deletes a Follower (Foreign Author) to Author 
- *    responses:
- *      400:
- *        description: If the request has no type or if the type is not a follow request
- *      200:
- *        description: If the Follower (Foreign Author) was successfully deleted 
- */
 app.delete('/:foreignAuthorId', async (req, res) => {
+  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   if(req.body.type == undefined || req.body.type != "follower")
     return res.sendStatus(400)
 

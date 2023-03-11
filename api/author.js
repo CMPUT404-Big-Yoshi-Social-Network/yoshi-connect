@@ -65,18 +65,7 @@ router.get('/:authorId', async (req, res) => {
     return res.sendStatus(status);
   }
 
-  return res.json({
-    "type": "author",
-    "id" : author._id,
-    "host": process.env.DOMAIN_NAME,
-    "displayname": author.username,
-    "url":  process.env.DOMAIN_NAME + "users/" + author._id,
-    "github": "",
-    "profileImage": "",
-    "email": author.email, 
-    "about": author.about,
-    "pronouns": author.pronouns,
-  });
+  return res.json(author);
 })
 
 router.post('/:authorId/posts', async (req, res) => {

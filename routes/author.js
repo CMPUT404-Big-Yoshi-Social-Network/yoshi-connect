@@ -276,7 +276,20 @@ async function getAuthor(authorId){
     else if(!author || author.admin == true) {
         return [{}, 404];
     }
-    return [author, 200];
+
+    const sanitizedAuthor = {
+        "type": "author",
+        "id" : author._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": author.username,
+        "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+        "github": "",
+        "profileImage": "",
+        "email": author.email, 
+        "about": author.about,
+        "pronouns": author.pronouns,
+    }
+    return [sanitizedAuthor, 200];
 }
 
 async function apiUpdateAuthor(token, author){

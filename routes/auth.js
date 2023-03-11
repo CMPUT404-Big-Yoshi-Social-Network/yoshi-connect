@@ -159,7 +159,7 @@ async function authAuthor(req, res) {
             expires: expiresAt
         });
 
-        if (req.route.path == '/api/admin') {
+        if (req.baseUrl == '/api/admin') {
             if (!req.author.admin) { return res.sendStatus(403) }
         }
 

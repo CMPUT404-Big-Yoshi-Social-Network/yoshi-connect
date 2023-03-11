@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
 
   return res.json({
     "type": "authors",
-    "items": [sanitizedAuthors]
+    "items": sanitizedAuthors
   });
 })
 

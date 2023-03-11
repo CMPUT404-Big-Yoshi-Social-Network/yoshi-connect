@@ -42,7 +42,7 @@ function Authors() {
         }
 
         axios
-        .post(url, config)
+        .get(url, config)
         .then((response) => { 
             setAuthors(response.data.items) })
         .catch(err => {

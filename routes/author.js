@@ -316,7 +316,6 @@ async function getAuthors(page, size){
     else{
         return [[], 400];
     }
-    console.log(authors);
 
     if (!authors) {
         return [[], 500];

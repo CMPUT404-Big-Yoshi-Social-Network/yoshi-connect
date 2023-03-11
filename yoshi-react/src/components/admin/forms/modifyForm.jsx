@@ -23,8 +23,10 @@ Foundation; All Rights Reserved
 import React from "react";
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function ModifyAuthor(props) {
+    const navigate = useNavigate();
     const [data, setData] = useState({
         newUsername: props.username,
         newPassword: props.password,

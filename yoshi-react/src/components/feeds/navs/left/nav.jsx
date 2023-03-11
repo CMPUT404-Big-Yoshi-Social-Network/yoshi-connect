@@ -30,16 +30,9 @@ import Friends from '../../friends/friends.jsx';
 import SettingsNav from '../../settings/nav.jsx';
 
 // User Interface
-// import Container from 'react-bootstrap/Container';
-// import Nav from 'react-bootstrap/Nav';
-// import Navbar from 'react-bootstrap/Navbar';
 import './nav.css';
 
-function LeftNavBar() {
-    /**
-     * Description: Represents the left dynamic navigation bar
-     * Returns: N/A
-     */
+function LeftNavBar(props) {
     const url = window.location.pathname;
     const { username } = useParams();
     return (

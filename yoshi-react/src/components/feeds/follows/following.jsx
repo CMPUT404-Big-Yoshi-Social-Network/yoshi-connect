@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 // Styling
 import Follow from './follow.jsx';
@@ -34,6 +35,7 @@ function Following(props) {
      * Returns: N/A
      */
     const [followings, setFollowings] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         /**
@@ -50,7 +52,7 @@ function Following(props) {
             navigate('/notfound')
           }
        });
-    }, []);
+    }, [navigate, props]);
 
     return (
         <div className='following-column' style={{fontFamily: 'Signika', paddingLeft:'1em'}}>

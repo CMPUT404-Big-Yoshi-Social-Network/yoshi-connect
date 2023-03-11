@@ -22,7 +22,6 @@ Foundation; All Rights Reserved
 // Functionality
 import React from "react";
 import axios from 'axios';
-import { useEffect, useState } from "react";
 
 function Request(props) {
     /**
@@ -43,13 +42,13 @@ function Request(props) {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + props.actor + '/followers/' + props.object,
+            url: '/api/authors/' + props.actor._id + '/followers/' + props.object._id,
             headers: {
                 'Content-Type': 'application/json'
             }
         }
         axios
-        .put('/api/authors/' + props.actor + '/followers/' + props.object, config)
+        .put('/api/authors/' + props.actor._id + '/followers/' + props.object._id, config)
         .then((response) => {
         })
         .catch(err => {
@@ -80,7 +79,7 @@ function Request(props) {
     }
     return (
         <div id='request'>
-            { senderId }
+            { props.actor.displayName }
             <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
             <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
         </div>

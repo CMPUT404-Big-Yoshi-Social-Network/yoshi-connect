@@ -52,7 +52,7 @@ function Friends(props) {
         .post('/api/authors/' + props.authorId + '/friends', config)
         .then((response) => { setFriends(response.data.items) })
         .catch(err => { console.error(err); });
-    }, [setFriends]);
+    }, [setFriends, props]);
 
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>

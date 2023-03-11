@@ -23,10 +23,12 @@ Foundation; All Rights Reserved
 import React from "react";
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AddAuthor() {
     const url = '/api/admin/dashboard';
     const [data, setData] = useState({ username: '', password: '', email: '' })
+    const navigate = useNavigate();
 
     const addAuthor = async (e) => {
         /**

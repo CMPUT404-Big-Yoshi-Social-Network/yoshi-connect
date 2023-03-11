@@ -20,7 +20,6 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 
@@ -49,7 +48,6 @@ function FriendFeed() {
      *     - getPosts(): Gets the current logged in author's friends' posts 
      * Returns: N/A
      */
-    const navigate = useNavigate();
     const [friendPosts, setFriendPosts] = useState([]);
     const [viewer, setViewerId] = useState({ viewerId: '' })
 
@@ -114,7 +112,7 @@ function FriendFeed() {
 
         getId();
         getPosts();
-    }, []);
+    }, [viewer]);
 
     return (
         <div>

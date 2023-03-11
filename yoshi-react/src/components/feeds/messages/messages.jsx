@@ -20,7 +20,6 @@ Foundation; All Rights Reserved
 */
 
 // Functionality 
-import axios from 'axios';
 import React from "react";
 
 // User Interface 

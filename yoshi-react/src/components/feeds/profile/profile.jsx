@@ -71,7 +71,7 @@ function Profile() {
         let viewed = '';
         let viewedId = '';
         let viewerId = '';
-        console.log('Debug: Getting account details')
+
         const isRealProfile = () => {
             /**
              * Description: Checks if the author account exists
@@ -106,7 +106,7 @@ function Profile() {
             });
         }
         isRealProfile();
-        console.log('Debug: Getting posts')
+
         const getPosts = (person, viewer, viewed) => {
             /**
              * Description: Checks if the author account exists
@@ -117,7 +117,7 @@ function Profile() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' = personal.viewedId + '/posts',
+                url: '/api/authors/' + personal.viewedId + '/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -128,7 +128,7 @@ function Profile() {
                 }
             }
             axios
-            .post('/api/authors/' = personal.viewedId + '/posts', config)
+            .post('/api/authors/' + personal.viewedId + '/posts', config)
             .then((response) => {
                 setPosts(response.data.posts)
             })
@@ -136,7 +136,7 @@ function Profile() {
                 console.error(err);
             });
         }
-    }, [navigate, username])
+    }, [navigate, username, personal])
     useEffect(() => {
         /**
          * Description: Checks if the viewer has already sent a friend request
@@ -197,11 +197,6 @@ function Profile() {
         }
     }, [username, personal, exists, setRequestButton, requestButton])
     const SendRequest = () => {
-        /**
-         * Description: Handles sending and deleting a friend request, unfriending, and unfollowing
-         * Request: PUT, DELETE
-         * Returns: N/A
-         */
         if (requestButton === "Add") {
             setRequestButton('Sent');
             let config = {

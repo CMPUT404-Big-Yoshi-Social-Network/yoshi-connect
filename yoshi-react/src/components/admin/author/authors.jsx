@@ -25,7 +25,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 // Child Component
-import Author from './author/author.jsx';
+import Author from './author.jsx';
 
 function Authors() {
     const [authors, setAuthors] = useState([]);

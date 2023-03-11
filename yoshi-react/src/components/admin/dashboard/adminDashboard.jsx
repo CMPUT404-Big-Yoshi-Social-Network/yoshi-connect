@@ -33,7 +33,7 @@ import LeftAdminNavBar from '../nav/left/left.jsx';
 import RightAdminNavBar from '../nav/right/right.jsx';
 
 // Styling
-import './admin-dashboard.css';
+import './adminDashboard.css';
 
 function AdminDashboard() {
     /**

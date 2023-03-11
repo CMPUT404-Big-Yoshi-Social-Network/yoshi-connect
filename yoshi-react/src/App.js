@@ -33,7 +33,7 @@ import Signup from "./components/signup/signup.jsx";
 
 // Admin 
 import AdminLogin from "./components/admin/admin.jsx";
-import AdminDashboard from "./components/admin/adminDashboard.jsx";
+import AdminDashboard from "./components/admin/dashboard/adminDashboard.jsx";
 
 // Feeds
 import PublicFeed from "./components/feeds/public/public.jsx";

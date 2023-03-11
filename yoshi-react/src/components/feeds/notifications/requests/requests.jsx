@@ -60,7 +60,7 @@ function Requests(props) {
         .catch(err => {
             console.error(err);
         });
-    }, [setRequests]);
+    }, [setRequests, props]);
     return (
         <div>
             <h4>Friend Requests</h4>

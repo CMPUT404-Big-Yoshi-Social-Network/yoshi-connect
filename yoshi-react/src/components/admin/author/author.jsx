@@ -23,6 +23,7 @@ Foundation; All Rights Reserved
 import React from "react";
 import axios from 'axios';
 import Popup from 'reactjs-popup';
+import { useNavigate } from 'react-router-dom';
 
 // Child Componet
 import ModifyAuthor from "../forms/modifyForm.jsx";
@@ -32,6 +33,7 @@ import './author.css';
 
 function Author(props) {
     const url = '/api/admin/dashboard';
+    const navigate = useNavigate();
 
     const deleteAuthor = () => {
         let config = {

@@ -51,10 +51,6 @@ async function checkUsername(req) {
 }
 
 async function removeLogin(req, res) {
-    /**
-     * Description: Removes the login document related to the token stored in the cookies 
-     * Returns: If the token exists and is deleted, then a JSON is returned with the status: "Expired"
-     */
     if (req.cookies.token != undefined) {
         console.log('Debug: Getting the token in the login database.');
         Login.deleteOne({token: req.cookies.token}, function(err, login) {
@@ -62,8 +58,9 @@ async function removeLogin(req, res) {
             console.log("Debug: Login token deleted");
             return res.sendStatus(200)
         })
+    } else {
+        return res.sendStatus(401)
     }
-    return res.sendStatus(401)
 }
 
 async function checkExpiry(req) {

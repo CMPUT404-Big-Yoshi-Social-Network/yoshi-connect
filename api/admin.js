@@ -23,9 +23,6 @@ Foundation; All Rights Reserved
 const { authAuthor, removeLogin, checkExpiry, checkAdmin } = require('../routes/auth');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('../routes/admin');
 
-// Schemas
-const { Author } = require('../scheme/author.js');
-
 // Router Setup
 const express = require('express'); 
 
@@ -41,9 +38,7 @@ router.get('/dashboard', async (req, res) => {
 })
 
 router.post('/dashboard', async (req, res) => {
-  if (req.body.data.status == 'Logging Out') {
-    removeLogin(req, res);
-  }
+  removeLogin(req, res);
 })
 
 router.delete('/dashboard', (req, res) => {

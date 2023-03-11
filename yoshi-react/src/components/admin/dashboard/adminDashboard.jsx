@@ -73,6 +73,7 @@ function AdminDashboard() {
     useEffect(() => {
        getDashboard();
     });
+
     const LogOut = () => {
         /**
          * Description: Sends a POST request to log the admin out
@@ -85,18 +86,17 @@ function AdminDashboard() {
             url: url,
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                status: 'Logging Out'
             }
         }
         axios
         .post(url, config)
-        .then((response) => {
-            navigate("/");
-        })
+        .then((response) => { navigate("/"); })
         .catch(err => {
-          console.error(err);
+          if (err.response.status === 500) {
+            console.log('500 PAGE');
+          } else if (err.response.status === 401) {
+            navigate('/unauthorized')
+          }
         });
     }
     return (

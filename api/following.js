@@ -69,3 +69,15 @@ app.get('/', async (req, res) => {
     items: sanitizedObjects
   });
 })
+
+app.delete('/:foreignAuthorId', async (req, res) => {
+  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
+  if(req.body.type == undefined || req.body.type != "follower") return res.sendStatus(400)
+
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
+
+  const statusCode = await deleteFollower(req.cookies["token"], authorId, foreignId, req.body);
+
+  return res.sendStatus(statusCode);
+})

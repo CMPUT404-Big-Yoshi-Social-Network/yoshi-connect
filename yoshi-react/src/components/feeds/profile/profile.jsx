@@ -207,13 +207,13 @@ function Profile() {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId,
+                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .put('/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId, config)
+            .put('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
             .then((response) => { })
             .catch(err => {
               if (err.response.status === 401) {
@@ -249,13 +249,13 @@ function Profile() {
             let config = {
                 method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId,
+                url: '/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .delete('/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId, config)
+            .delete('/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfriended.')
@@ -270,13 +270,13 @@ function Profile() {
             let config = {
                 method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId,
+                url: '/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .delete('/api/authors/' + personal.viewerId + '/followers/' + personal.viewedId, config)
+            .delete('/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')

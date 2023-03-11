@@ -83,6 +83,7 @@ router.get('/:foreignId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
   isFriend(authorId, foreignId);
+  return res.sendStatus(200);
 })
 
 module.exports = router;

@@ -21,13 +21,14 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getFollowers, addFollower, deleteFollower } = require('../routes/friend');
+const { Author} = require('../scheme/author');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
 const express = require('express'); 
 
 // Router
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }

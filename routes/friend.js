@@ -54,6 +54,7 @@ async function getFollowings(id){
 
 async function getFriends(id){
     // TODO: Write this query
+    
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
@@ -190,14 +191,22 @@ async function deleteFollower(token, authorId, foreignId, body){
 
 async function isFriend(authorId, foreignId) {
     //TODO CHECK IF FRIEND
+    //get followers for authorId
+    //get following for authorId
+    //check if both are real
+    follower = await Follower.findOne({authorId: authorId}, {followers: {$elemMatch: {authorId : {$eq: foreignId}}}});
+    console.log(follower);
+    following = await Following.findOne({authorId: authorId}, {following: {$elemMatch: {authorId : {$eq: foreignId}}}});
+    console.log(following);
+    return 200;
 }
 
 async function fetchFriendPosts(req, res) {
     //TODO GET FRIEND POSTS
+
 }
 
 module.exports={
-    fetchFriends,
     fetchFriendPosts,
     getFollowers,
     getFollowings,

@@ -55,14 +55,6 @@ function FriendFeed() {
 
     useEffect(() => {
         /**
-         * Description: Calls checkExpiry() to see if the author has an expired token 
-         * Returns: N/A
-         */
-        checkExpiry();
-    })
-
-    useEffect(() => {
-        /**
          * Description: 
          *     - Sends a POST request through getId() to get the authorId
          *     - Sends a POST request through getPosts to get the author's friends' posts 
@@ -78,20 +70,19 @@ function FriendFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/posts/',
+                url: '/api/authors/',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 data: {
-                    sessionId: localStorage.getItem('sessionId'),
-                    status: 'Fetching current authorId'
+                    status: 'Fetching authorId'
                 }
             }
 
             axios
-            .post('/server/posts/', config)
+            .post('/api/authors/', config)
             .then((response) => {
-                let viewerId = response.data.authorId;
+                let viewerId = response.data.author._id;
                 setViewerId({ viewerId: viewerId })
             })
             .catch(err => { });
@@ -106,7 +97,7 @@ function FriendFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/friends/posts',
+                url: '/api/authors/' + viewer.viewerId + '/friends/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -116,7 +107,7 @@ function FriendFeed() {
             }
 
             axios
-            .post('/server/friends/posts', config)
+            .post('/api/authors/' + viewer.viewerId + '/friends/posts', config)
             .then((response) => { setFriendPosts(response.data.friendPosts) })
             .catch(err => { console.error(err); });
         }
@@ -125,63 +116,12 @@ function FriendFeed() {
         getPosts();
     }, []);
 
-    const logOut = () => {
-        /**
-         * Description: Sends a POST request to log out the current author then navigates the author to the Welcome component 
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: { message: 'Logging Out' }
-        }
-
-        axios
-        .post('/server/feed', config)
-        .then((response) => { localStorage['sessionId'] = ""; navigate("/"); })
-        .catch(err => { });
-    }
-
-    const checkExpiry = () => {
-        /**
-         * Description: Sends a GET request to check if the token for the current author has expired; if so, it logs the author out and 
-         *              sends them to the Welcome component and deletes their token from the localStorage 
-         * Request: GET
-         * Returns: N/A
-         */
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: '/feed',
-        }
-
-        axios
-        .get('/server/feed', config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
-                logOut();
-                navigate('/');
-            }
-            else{console.log('Debug: Your token is not expired.')}
-        })
-        .catch(err => {
-            if (err.response.status === 401) {
-                console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); 
-            }
-        });
-    }
-
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={viewer.viewerId}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
                     <Posts viewerId={viewer.viewerId} posts={friendPosts}/>

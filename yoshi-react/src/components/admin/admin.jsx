@@ -35,12 +35,9 @@ export default function AdminLogin() {
      *     - getAdmin(): Varifies admin and redirects to the admin dashboard
      * Returns: N/A
      */
-    const url = '/server/admin';
+    const url = '/api/admin';
     const navigate = useNavigate();
-    const [data, setData] = useState({
-      username: '',
-      password: ''
-    })
+    const [data, setData] = useState({ username: '', password: '' })
 
     const getAdmin = (e) => {
       /**
@@ -65,10 +62,8 @@ export default function AdminLogin() {
 
       axios(config)
       .then((response) => {
-        if ( response.data.status === true) {
-          console.log("Debug: Token saved and going to dashboard.")
-          return navigate('/admin/dashboard/');
-        } 
+        console.log("Debug: Token saved and going to dashboard.")
+        return navigate('/admin/dashboard/');
       })
     }
     return(

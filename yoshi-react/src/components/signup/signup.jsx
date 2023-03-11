@@ -60,10 +60,7 @@ export default function Signup() {
 
     axios
     .post(url, config)
-    .then((response) => {
-      console.log("Debug: Going to public feed.");
-      navigate('/feed');
-    })
+    .then((response) => { navigate('/feed'); })
     .catch(err => { console.error(err); });
   }
 

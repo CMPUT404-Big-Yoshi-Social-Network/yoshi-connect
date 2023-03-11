@@ -25,7 +25,7 @@ import React, { useEffect } from "react";
 // Child Component
 import Requests from './requests/requests.jsx';
 
-function Notifications() {
+function Notifications(props) {
     /**
      * Description: Represents a notification 
      * Returns: N/A
@@ -35,7 +35,7 @@ function Notifications() {
     return (
         <div>
             <h3>Notifications</h3>
-            <div><Requests/></div>
+            <div><Requests authorId={props.authorId}/></div>
             {/* Friend Requests: accepted notification
             Likes received from own posts from other users
             Comments received from own posts from other users */}

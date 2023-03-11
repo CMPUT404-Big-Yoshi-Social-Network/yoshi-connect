@@ -53,43 +53,13 @@ function Profile() {
         person: null,
         viewer: null,
         viewed: null,
+        viewedId: null,
         viewerId: null
     })
     const [requestButton, setRequestButton] = useState('Add');
     const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
     let exists = useRef(null);
-    useEffect(() => {
-        /**
-         * Description: Before render, checks if the author is logged in to redirect to the main feed
-         * Request: GET
-         * Returns: N/A
-         */
-        const checkExpiry = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                if (response.data.status === "Expired") {
-                    console.log("Debug: Your token is expired.")
-                    LogOut();
-                    navigate('/');
-                }
-                else{console.log('Debug: Your token is not expired.')}
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); // 401 Not Found
-                }
-            });
-        }
-        checkExpiry();
-    })
     useEffect(() => {
         /**
          * Description: Get the account details of the author
@@ -99,6 +69,8 @@ function Profile() {
         let person = '';
         let viewer = '';
         let viewed = '';
+        let viewedId = '';
+        let viewerId = '';
         console.log('Debug: Getting account details')
         const isRealProfile = () => {
             /**
@@ -107,15 +79,19 @@ function Profile() {
              * Returns: N/A
              */
             axios
-            .get('/server/users/' + username)
+            .get('/api/profile')
             .then((response) => {
                 console.log('Debug: Profile Exists.')
                 person = response.data.personal
                 viewer = response.data.viewer
                 viewed = response.data.viewed
+                viewedId = response.data.viewedId
+                viewerId = response.data.viewerId
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
                 setPersonal(prevViewer => ({...prevViewer, viewer}))
-                setPersonal(prevViewing => ({...prevViewing, viewed}))
+                setPersonal(prevViewed => ({...prevViewed, viewed}))
+                setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
+                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
                 getPosts(person, viewer, viewed);
             })
             .catch(err => {
@@ -130,44 +106,18 @@ function Profile() {
             });
         }
         isRealProfile();
-        const getId = () => {
-            /**
-             * Description: Gets the author's ID and sets their viewer ID for posts
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/server/posts/',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    sessionId: localStorage.getItem('sessionId'),
-                    status: 'Fetching current authorId'
-                }
-            }
-            axios
-            .post('/server/posts/', config)
-            .then((response) => {
-                let viewerId = response.data.authorId;
-                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
-            })
-            .catch(err => { });
-        }
-        getId();
         console.log('Debug: Getting posts')
         const getPosts = (person, viewer, viewed) => {
             /**
              * Description: Checks if the author account exists
              * Request: GET
              * Returns: N/A
+             * Refactor: NEEDED UPDATE WAITING ON POST UPDATE
              */
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/posts',
+                url: '/api/authors/' = personal.viewedId + '/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -178,7 +128,7 @@ function Profile() {
                 }
             }
             axios
-            .post('/server/users/posts', config)
+            .post('/api/authors/' = personal.viewedId + '/posts', config)
             .then((response) => {
                 setPosts(response.data.posts)
             })
@@ -198,26 +148,15 @@ function Profile() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Does Request Exist'
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .post('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
             .then((response) => {
-                if (response.data.status === 'Successful') {
-                    console.log('Debug: Friend Request Exists.')
-                    exists.current = true;
-                } else {
-                    console.log('Debug: Friend Request does not exist.')
-                    exists.current = false;
-                }
+                exists.current = true;
             })
             .catch(err => {
               console.error(err);
@@ -229,24 +168,20 @@ function Profile() {
          * Description: Checks if the author is a follower or a friend
          * Request: POST
          * Returns: N/A
+         * REFACTOR: CHECK 
          */
         if (!exists.current && !personal.person) {
             console.log('See if they are followers or friends.');
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
                 headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    viewed: personal.viewed,
-                    viewer: personal.viewer,
-                    status: 'Friends or Follows'
                 }
             }
             axios
-            .post('/server/users/' + username, config)
+            .post('/api/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status === 'Friends') {
                     console.log('Debug: They are friends.')
@@ -272,67 +207,58 @@ function Profile() {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Save Request'
                 }
             }
             axios
-            .put('/server/users/' + username, config)
-            .then((response) => {
-                console.log('Debug: Friend request sent!')
-            })
+            .put('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .then((response) => { })
             .catch(err => {
-              console.error(err);
+              if (err.response.status === 401) {
+                navigate('/unauthorized')
+              } else if (err.response.status === 400) {
+                navigate('/badrequest');
+              }
             });
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
             let config = {
                 method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/json'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Delete Request'
                 }
             }
             axios
-            .delete('/server/users/' + username, config)
-            .then((response) => {
-                console.log('Debug: Friend request deleted!')
-            })
+            .delete('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .then((response) => { })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                  } else if (err.response.status === 400) {
+                    navigate('/badrequest');
+                  } else if (err.response.status === 500) {
+                    console.log('NEED 500 PAGE')
+                  }
             });
         } else if (requestButton === 'Unfriend') {
             console.log('Debug: We want to unfriend.')
             let config = {
-                method: 'put',
+                method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Unfriending'
                 }
             }
             axios
-            .put('/server/users/' + username, config)
+            .delete('/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status) {
-                    console.log('Debug: Friend is unfriended.')
+                    console.log('Debug: Follow is unfriended.')
                     setRequestButton('Add');
                 }
             })
@@ -342,20 +268,15 @@ function Profile() {
         } else if (requestButton === "Unfollow") {
             console.log('Debug: We want to unfollow.')
             let config = {
-                method: 'put',
+                method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Unfollowing'
                 }
             }
             axios
-            .put('/server/users/' + username, config)
+            .delete('/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')
@@ -367,39 +288,12 @@ function Profile() {
             });
         }
     }
-    const LogOut = () => {
-        /**
-         * Description: Logs the author out 
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                message: 'Logging Out'
-            }
-        }
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={personal.viewerId}/>
             <div className='profRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
                     <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>
@@ -413,12 +307,6 @@ function Profile() {
                 </div>
             </div>
         </div>
-            /* <h1>{username}'s Profile</h1>
-            { personal.person ? null : 
-                <button type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
-            <h2>Posts</h2>
-            <Posts viewerId={personal.viewerId} posts={posts}/>   
-        </div>  */
     )
 }
 

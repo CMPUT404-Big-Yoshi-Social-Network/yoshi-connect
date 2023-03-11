@@ -30,7 +30,7 @@ import { Form } from 'react-bootstrap';
 import Notifications from '../../notifications/notifcation-box';
 import './nav.css'
 
-function TopNav() {
+function TopNav(props) {
     /**
      * Description: Represents the top navigation bar
      * Returns: N/A
@@ -48,7 +48,7 @@ function TopNav() {
             </Nav>
             <Nav className='topNavNotif'>
                 <Popup  className='notifPopup' trigger={<img className='notifBell' src='/images/public/icon_notif_bell.png' alt='Notifications' width={30}/>}>
-                    <Notifications/>
+                    <Notifications authorId={props.authorId}/>
                 </Popup>
             </Nav>
         </Navbar>

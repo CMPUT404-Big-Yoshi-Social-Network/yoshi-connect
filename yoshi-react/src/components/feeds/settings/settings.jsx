@@ -20,7 +20,6 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 
@@ -44,42 +43,10 @@ function Settings() {
      *     - modify(): Updates the new author's account details
      * Returns: N/A
      */
-    const navigate = useNavigate();
     const [newAuthor, setNewAuthor] = useState({
         newUsername: '',
         newPassword: '',
         newEmail: ''
-    })
-    useEffect(() => {
-        /**
-         * Description: Before render, checks if the author is logged in to authorize routing
-         * Request: GET
-         * Returns: N/A
-         */
-        const checkExpiry = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                if (response.data.status === "Expired") {
-                    console.log("Debug: Your token is expired.")
-                    LogOut();
-                    navigate('/');
-                }
-                else{console.log('Debug: Your token is not expired.')}
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); // 401 Not Found
-                }
-            });
-        }
-        checkExpiry();
     })
     useEffect(() => {
         /**
@@ -91,7 +58,7 @@ function Settings() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/settings/',
+                url: '/api/settings/',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -100,44 +67,17 @@ function Settings() {
                 }
             }
             axios
-            .post('/server/settings/', config)
+            .post('/api/settings/', config)
             .then((response) => {
                 setNewAuthor({
-                    newUsername: response.data.username,
-                    newEmail: response.data.email
+                    newUsername: response.data.author.username,
+                    newEmail: response.data.author.email
                 })
             })
             .catch(err => { });
         }
         getAuthor();
     }, [])
-    const LogOut = () => {
-        /**
-         * Description: Logs the author out
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                message: 'Logging Out'
-            }
-        }
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }
     const modify = (e) => {
         /**
          * Description: Updates the new author's account details

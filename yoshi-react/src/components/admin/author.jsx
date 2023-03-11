@@ -40,7 +40,7 @@ function Author(props) {
      * Returns: N/A
      */
     const [username, setUsername] = useState('');
-    const url = '/server/admin/dashboard';
+    const url = '/api/admin/dashboard';
     useEffect(() => {
         setUsername(props.username)
      }, [props]);
@@ -60,15 +60,16 @@ function Author(props) {
             },
             data: {
                 username: username,
-                status: 'Delete an Author'
+                status: 'Delete'
             }
         }
         axios
         .delete(url, config)
-        .then((response) => {
-        })
+        .then((response) => { })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 404) {
+                navigate('/notfound');
+            }
         });
     }
     return (

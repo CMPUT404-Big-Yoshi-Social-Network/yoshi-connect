@@ -20,22 +20,15 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('./routes/post');
+const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('../routes/post');
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}:
- *  get:
- *    description: Gets the a specific Post from the database made by a specific Author 
- *    responses:
- *      200:
- *        description: Returns the Post as a JSON object
- *      404:
- *        description: When the Post or Author is not found 
- *      500: 
- *        description: When the server is unable to get the Post
- */
-app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router();
+
+router.get('/:postId', async (req, res) => {
   if(req.params.authorId == undefined) return res.sendStatus(404);
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -64,18 +57,7 @@ app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}:
- *  post:
- *    description: Updates an existing Post made by a specific Author 
- *    responses:
- *      200:
- *        description: Returns Status 200 when the server successfully updated the Post
- *      404:
- *        description: Returns Status 404 when the server was unable to find any Post related to the given URL
- */
-app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
+router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
@@ -88,20 +70,7 @@ app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}:
- *  delete:
- *    description: Deletes a specific Post made by a specific Author
- *    responses:
- *      200:
- *        description: Returns Status 200 if the server successfully deleted the Post
- *      404:
- *        description: Returns Status 404 if the server was unable to find either the Author or the Author's Post
- *      500:
- *        description: Returns Status 500 if the server was unable to delete the Post
- */
-app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
+router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
@@ -116,20 +85,7 @@ app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}:
- *  put:
- *    description: Creates a Post object made by a specific Author 
- *    responses:
- *      200:
- *        description: Returns Status 200 if the Post was able to be stored into the database 
- *      404:
- *        description: Returns Status 404 if the Author or Post does not exist 
- *      500: 
- *        description: Returns Status 500 if the server was unable to create and save the Post
- */
-app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
+router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
@@ -144,16 +100,7 @@ app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }  
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts:
- *  get:
- *    description: Fetches the posts of a specific Author 
- *    responses:
- *      200:
- *        description: Returns a list of Posts by a specific Author
- */
-app.get('/api/authors/:authorId/posts', async (req, res) => {
+router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const page = req.query.page;
   const size = req.query.size;
@@ -172,20 +119,7 @@ app.get('/api/authors/:authorId/posts', async (req, res) => {
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts:
- *  post:
- *    description: Creates a Post given no PostId (i.e., needs to be generated)
- *    responses:
- *      200:
- *        description: Returns Status 200 if the Post was successfully created and saved into the database
- *      404:
- *        description: Returns Status 404 if the Author does not exist 
- *      500 
- *        description: Returns Status 500 if the server was unable to store or create the Post 
- */
-app.post('/api/authors/:authorId/posts', async (req, res) => {
+router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
   const status = await apicreatePost(authorId, undefined, req.body, process.env.DOMAIN_NAME);
@@ -198,3 +132,5 @@ app.post('/api/authors/:authorId/posts', async (req, res) => {
     return res.sendStatus(500); 
   }  
 })
+
+module.exports = router;

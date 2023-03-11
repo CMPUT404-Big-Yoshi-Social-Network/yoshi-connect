@@ -51,8 +51,10 @@ async function addAuthor(req, res){
         username: username,
         password: crypto_js.SHA256(password),
         email: email,
-        about: '',
-        pronouns: '',
+        about: "",
+        pronouns: "",
+        github: "",
+        profileImage: "",
         admin: false,
     });
 
@@ -119,7 +121,7 @@ async function deleteAuthor(req, res){
     console.log('Debug: Attempt to delete an author.')
     await Author.deleteOne({username: req.body.username}, function(err, obj){
         console.log('Debug: Delete count for deleting an author ' + obj)
-        if (obj.deletedCount == 0) { return res.sendStatus(404); }
+        if (!obj.acknowledged) { return res.sendStatus(404); }
 
         Login.deleteMany({username: req.body.username}, function(err, obj) { return res.sendStatus(200) }).clone();
     }).clone();

@@ -26,7 +26,7 @@ import React, { useEffect, useState } from "react";
 // Styling
 import Follow from './follow.jsx';
 
-function Following() {
+function Following(props) {
     /**
      * Description: Represents the list of Followings for an author 
      * Functions: 
@@ -42,20 +42,13 @@ function Following() {
          * Returns: N/A
          */
        console.log('Debug: Fetching all followings for this author')
-
-       let config = {
-           method: 'post',
-           maxBodyLength: Infinity,
-           url: '/server/following',
-           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-           data: { sessionId: localStorage.getItem('sessionId') }
-       }
-
        axios
-       .post('/server/following', config)
-       .then((response) => { setFollowings(response.data.following) })
+       .post('/api/authors/' + props.authorId + '/followings')
+       .then((response) => { setFollowings(response.data.items) })
        .catch(err => {
-           console.error(err);
+        if (err.response.status === 404) {
+            navigate('/notfound')
+          }
        });
     }, []);
 

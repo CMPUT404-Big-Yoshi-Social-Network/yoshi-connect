@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 // Child Component
 import Author from './author.jsx';
@@ -34,7 +35,8 @@ function Authors() {
      * Returns: N/A
      */
     const [authors, setAuthors] = useState([]);
-    const url = '/server/admin/dashboard';
+    const url = '/api/admin/dashboard';
+    const navigate = useNavigate();
     useEffect(() => {
         /**
          * Description: Before render, checks and sends the authors
@@ -50,7 +52,7 @@ function Authors() {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
-                status: 'Fetching Authors'
+                status: 'Fetching'
             }
         }
         axios
@@ -59,9 +61,11 @@ function Authors() {
             setAuthors(response.data.authors)
         })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 404) {
+                navigate('/notfound');
+            }
         });
-    }, [setAuthors, url]);
+    }, [setAuthors, url, navigate]);
     return (
         <div>
             <h3>Authors</h3>

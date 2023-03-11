@@ -58,11 +58,12 @@ async function removeLogin(req, res) {
     if (req.cookies.token != undefined) {
         console.log('Debug: Getting the token in the login database.');
         Login.deleteOne({token: req.cookies.token}, function(err, login) {
-            if (err) throw err;
+            if (err) throw res.sendStatus(500);
             console.log("Debug: Login token deleted");
+            return res.sendStatus(200)
         })
     }
-    return res.json({ status: "Expired" });
+    return res.sendStatus(401)
 }
 
 async function checkExpiry(req) {
@@ -72,7 +73,6 @@ async function checkExpiry(req) {
      *          If there is any cookies, token, or login document, or expiry date has not passed then it is not expired and will 
      *          return false 
      */
-    console.log(req)
     if (req.cookies == undefined) { return true }
 
     if (req.cookies.token != undefined) {

@@ -59,13 +59,12 @@ const requestScheme = new Schema({
     {versionKey: false
 });
 
-const Friend = database.model('Friend', friendScheme);
+//const Friend = database.model('Friend', friendScheme);
 const Following = database.model('Following', followingScheme);
 const Request = database.model('Request', requestScheme);
 const Follower = database.model('Follower', followerScheme);
 
 module.exports = {
-    Friend,
     Following,
     Request,
     Follower

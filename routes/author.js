@@ -324,6 +324,10 @@ async function getAuthors(page, size){
             skip: page * size 
         }
     ).limit(size);
+
+    if (!authors) {
+        return res.sendStatus(500);
+    }
     
     let sanitizedAuthors = [];
 

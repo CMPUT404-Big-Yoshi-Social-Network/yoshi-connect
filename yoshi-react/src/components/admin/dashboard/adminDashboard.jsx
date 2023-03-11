@@ -26,11 +26,11 @@ import axios from 'axios';
 import Popup from 'reactjs-popup';
 
 // Child Component
-import Authors from './authors.jsx';
-import AddAuthor from "./addForm.jsx";
-import TopAdminNav from './topAdminNav.jsx';
-import LeftAdminNavBar from './leftAdminNav.jsx';
-import RightAdminNavBar from './rightAdminNav.jsx';
+import Authors from '../author/authors.jsx';
+import AddAuthor from "../forms/addForm.jsx";
+import TopAdminNav from '../nav/top/top.jsx';
+import LeftAdminNavBar from '../nav/left/left.jsx';
+import RightAdminNavBar from '../nav/right/right.jsx';
 
 // Styling
 import './admin-dashboard.css';
@@ -63,12 +63,10 @@ function AdminDashboard() {
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 403) {
-                console.log("Debug: Forbidden.");
                 navigate('/forbidden'); 
             } else if (err.response.status === 401) {
-                console.log("Debug: Your token is expired.");
                 LogOut();
-                navigate('/welcome');
+                navigate('/');
             }
         });
     }

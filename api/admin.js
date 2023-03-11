@@ -43,12 +43,6 @@ router.get('/dashboard', async (req, res) => {
 router.post('/dashboard', async (req, res) => {
   if (req.body.data.status == 'Logging Out') {
     removeLogin(req, res);
-  } else if (req.body.data.status == 'Fetching') {
-    const authors = await Author.find()
-    if (!authors) { return res.sendStatus(404) }
-    return res.json({
-      authors: authors
-    })
   }
 })
 
@@ -59,7 +53,7 @@ router.delete('/dashboard', (req, res) => {
 })
 
 router.put('/dashboard', (req, res) => {
-  if (req.body.data.status == 'Add New Author') {
+  if (req.body.data.status == 'Add') {
     addAuthor(req, res);
   } else if (req.body.data.status == 'Modify') {
     modifyAuthor(req, res);

@@ -133,17 +133,11 @@ async function authAuthor(req, res) {
     const username = req.body.username;
     const password = req.body.password;
 
-    if(!username || !password){
-        console.log("Debug: Username or Password not given, Authentication failed");
-        return res.sendStatus(400);
-    }
+    if(!username || !password){ return res.sendStatus(400); }
 
     const author = await Author.findOne({username: req.body.username});
 
-    if(!author){
-        console.log("Debug: Author does not exist, Authentication failed");
-        return res.sendStatus(400);
-    }
+    if (!author) { return res.sendStatus(400); }
     req.author = author;
 
     const p_hashed_password = req.author.password;
@@ -168,11 +162,8 @@ async function authAuthor(req, res) {
             expires: expiresAt
         });
 
-        if (req.route.path == '/admin') {
-            if (!req.author.admin) {
-                console.log("Debug: You are not an admin. Your login will not be cached.")
-                return res.sendStatus(403)
-            }
+        if (req.route.path == '/api/admin') {
+            if (!req.author.admin) { return res.sendStatus(403) }
         }
 
         login_saved = await login.save();

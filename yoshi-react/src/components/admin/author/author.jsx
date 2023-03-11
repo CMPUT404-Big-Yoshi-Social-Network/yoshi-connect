@@ -20,46 +20,27 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React, { useEffect } from "react";
+import React from "react";
 import axios from 'axios';
 import Popup from 'reactjs-popup';
-import { useState } from 'react';
 
 // Child Componet
-import ModifyAuthor from "./modifyForm.jsx";
+import ModifyAuthor from "../forms/modifyForm.jsx";
 
 // Styling
 import './author.css';
 
 function Author(props) {
-    /**
-     * Description: Represents the author
-     * Functions:
-     *     - useEffect(): Before rendering, checks the author's properties  
-     *     - deleteAuthor(): Deletes the author
-     * Returns: N/A
-     */
-    const [username, setUsername] = useState('');
     const url = '/api/admin/dashboard';
-    useEffect(() => {
-        setUsername(props.username)
-     }, [props]);
+
     const deleteAuthor = () => {
-        /**
-         * Description: Sends a DELETE request to delete the author
-         * Request: DELETE
-         * Returns: N/A
-         */
-        console.log('Debug: Deleting this author.')
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
             url: url,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             data: {
-                username: username,
+                author: props,
                 status: 'Delete'
             }
         }
@@ -69,9 +50,12 @@ function Author(props) {
         .catch(err => {
             if (err.response.status === 404) {
                 navigate('/notfound');
+            } else if (err.response.status === 500) {
+                console.log('STATUS 500 PAGE')
             }
         });
     }
+    
     return (
         <div className='author-div' id='author'>
             { props.username }

@@ -32,20 +32,23 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   if((await checkExpiry(req, res))){ return res.sendStatus(401) }
-  if (req.body.data.status === 'Fetching authorId') { await getCurrentAuthor(req); }
 
-  const page = req.query.page;
-  const size = req.query.size;
-  if(page == undefined)
-    page = 1;
-  if(size == undefined)
-    size = 5;
-  const sanitizedAuthors = await getAuthors(page, size);
-
-  return res.json({
-    "type": "authors",
-    "items": [sanitizedAuthors]
-  });
+  if (req.body.data.status === 'Fetching authorId') { 
+    await getCurrentAuthor(req); 
+  } else {
+    const page = req.query.page;
+    const size = req.query.size;
+  
+    if (page == undefined) page = 1;
+    if (size == undefined) size = 5;
+  
+    const sanitizedAuthors = await getAuthors(page, size);
+  
+    return res.json({
+      "type": "authors",
+      "items": [sanitizedAuthors]
+    });
+  }
 })
 
 router.get('/:authorId', async (req, res) => {

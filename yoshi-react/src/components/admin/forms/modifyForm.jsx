@@ -19,17 +19,12 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React from "react";
 import { useState } from 'react';
 import axios from 'axios';
 
 function ModifyAuthor(props) {
-    /**
-     * Description: Represents an aupdated author 
-     * Functions:
-     *     - modify(): Updates the author in the database
-     * Returns: N/A
-     */
     const [data, setData] = useState({
         newUsername: props.username,
         newPassword: props.password,
@@ -49,14 +44,12 @@ function ModifyAuthor(props) {
          * Returns: N/A
          */
         e.preventDefault();
-        console.log('Debug: Attempting to modify an author.');
+
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
             url: url,
-            headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             data: {
                 status: 'Modify',
                 newUsername: data.newUsername,
@@ -71,8 +64,7 @@ function ModifyAuthor(props) {
 
         axios
         .put(url, config)
-        .then((response) => {
-        })
+        .then((response) => { })
         .catch(err => {
             if (err.response.status === 400) {
                 navigate('/badrequest');

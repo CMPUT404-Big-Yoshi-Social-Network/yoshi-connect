@@ -25,47 +25,36 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 // Child Component
-import Author from './author.jsx';
+import Author from './author/author.jsx';
 
 function Authors() {
-    /**
-     * Description: Represents all authors 
-     * Functions:
-     *     - useEffect(): Before render, checks and sends the authors
-     * Returns: N/A
-     */
     const [authors, setAuthors] = useState([]);
-    const url = '/api/admin/dashboard';
+    const url = '/api/authors';
     const navigate = useNavigate();
+
     useEffect(() => {
-        /**
-         * Description: Before render, checks and sends the authors
-         * Request: POST
-         * Returns: N/A
-         */
         console.log('Debug: Fetching all the authors.')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
             url: url,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                status: 'Fetching'
-            }
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
+
         axios
         .post(url, config)
-        .then((response) => {
-            setAuthors(response.data.authors)
-        })
+        .then((response) => { setAuthors(response.data.items) })
         .catch(err => {
             if (err.response.status === 404) {
                 navigate('/notfound');
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('/NEED 500 PAGE')
             }
         });
     }, [setAuthors, url, navigate]);
+
     return (
         <div>
             <h3>Authors</h3>

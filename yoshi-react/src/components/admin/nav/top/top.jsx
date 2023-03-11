@@ -19,22 +19,30 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-@font-face {
-    font-family: "Uni Neue";
-    src: url('../../fonts/UniNeue-Trial-Regular.eot');
-    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
-         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
-         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
-         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+// Functionality
+import React from 'react';
+
+// User Interface
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import './top.css'
+
+function TopAdminNav() {
+    /**
+     * Description: Represents the top navigation bar
+     * Returns: N/A
+     */
+    return (
+        <Navbar className='topAdminNav'>
+            <Container>
+                <Navbar.Brand className='topAdminNavBrand' href='/feed'>
+                    <img className='topAdminLogo' src='/images/yoshi_connect_logo2.png' width={40} height={40} alt='logo'/>
+                    <h1>Yoshi Connect</h1>
+                </Navbar.Brand>
+            </Container>
+        </Navbar>
+    )
 }
 
-.left-admin-column{
-    left: 0;
-    top: 5em;
-    position: fixed;
-    width: 15%;
-    height: 100%;
-    background-color: #0A0F10;
-    border: #24292F 0.1em solid;
-    font-family: 'Uni Neue', sans-serif;
-}
+export default TopAdminNav;
+

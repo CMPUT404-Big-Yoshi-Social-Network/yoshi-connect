@@ -47,6 +47,8 @@ async function addAuthor(req, res){
     const email = req.body.data.email;
     const password = req.body.data.password;
 
+    if (!username && !email && !password) { return res.sendStatus(400); }
+
     let author = new Author({
         username: username,
         password: crypto_js.SHA256(password),
@@ -119,11 +121,13 @@ async function deleteAuthor(req, res){
      *          Status 200 after the login (token) for the author is deleted along with their author account 
      */
     console.log('Debug: Attempt to delete an author.')
-    await Author.deleteOne({username: req.body.username}, function(err, obj){
-        console.log('Debug: Delete count for deleting an author ' + obj)
+    await Author.deleteOne({_id: req.body.author._id}, function(err, obj){
         if (!obj.acknowledged) { return res.sendStatus(404); }
 
-        Login.deleteMany({username: req.body.username}, function(err, obj) { return res.sendStatus(200) }).clone();
+        Login.deleteMany({username: req.body.username}, function(err, obj) { 
+            if (err) throw res.sendStatus(500);
+            return res.sendStatus(200)
+        }).clone();
     }).clone();
 }
 

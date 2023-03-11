@@ -43,14 +43,15 @@ function Authors() {
 
         axios
         .post(url, config)
-        .then((response) => { setAuthors(response.data.items) })
+        .then((response) => { 
+            setAuthors(response.data.items) })
         .catch(err => {
             if (err.response.status === 404) {
-                navigate('/notfound');
+                setAuthors([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                navigate('/NEED 500 PAGE')
+                navigate('500 PAGE')
             }
         });
     }, [setAuthors, url, navigate]);
@@ -58,9 +59,16 @@ function Authors() {
     return (
         <div>
             <h3>Authors</h3>
-            {Object.keys(authors).map((author, idx) => (
-                <Author key={idx} {...authors[author]}/>
-            ))}
+            { authors === undefined || authors.length === 0 ? 
+                <div>
+                    <h4>No authors to show.</h4>
+                </div> :
+                <div>
+                    {Object.keys(authors).map((author, idx) => (
+                        <Author key={idx} {...authors[author]}/>
+                    ))}
+                </div>
+            }
         </div>
     )
 }

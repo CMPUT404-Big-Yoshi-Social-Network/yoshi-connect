@@ -28,6 +28,8 @@ const { Like, Comment, Liked } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 const { Friend } = require('../scheme/relations.js');
 
+
+
 async function createPostHistory(author_id){
     /**
      * Description: Creates and saves the author's post history 
@@ -740,37 +742,103 @@ async function apicreatePost(authorId, postId, newPost, domain) {
     await postHistory.save();  
 }
 
-async function fetchPosts(page, size, authorId) {
-    const posts = PostHistory.find(
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: '$posts'
-        },
-        {
-            $set: {
-                "posts.published": {
-                    $dateFromString: { dateString: "$posts.published" }
+async function getPosts(page, size, authorId) {
+    let posts = undefined
+    if(page > 1){
+        posts = await PostHistory.aggregate([
+            {
+                $match: {'authorId': authorId}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: { dateString: "$posts.published" }
+                    }
                 }
+            },
+            {
+                $sort: { "posts.published": -1 }
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
             }
-        },
-        {
-            $sort: { "posts.published": -1 }
-        },
-        {
-            $group: {
-                _id: null,
-                posts_array: { $push: "$posts" }
-            }
-        }
-    )
-
-    if (posts[0] != undefined) {
-        return posts[0].posts_array;
-    } else {
-        return [];
+        ]);
     }
+    else if (page == 1) {
+        posts = await PostHistory.aggregate([
+            {
+                $match: {'authorId': authorId}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: { dateString: "$posts.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "posts.published": -1 }
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            },
+            {
+                $limit: size
+            }
+        ]);
+    }
+    else{
+        return [[], 400];
+    }
+
+    if(!posts || !posts[0] || !posts[0].posts_array){
+        return [[], 500];
+    }
+
+    posts = posts[0].posts_array;
+
+    for(let i = 0; i < posts.length; i++){
+        const post = posts[i];
+        let sanitized_posts = {
+            "type": "post",
+            "tite'": post.title,
+            "id": post._id,
+            "source": "",
+            "origin": "",
+            "description": post.description,
+            "contentType": post.contentType,
+            "content": post.content,
+            "author": author,
+            "categories": post.categories,
+            "count": post.comments.length,
+            "comments": "",
+            "likeCount": post.likes.length,
+            "likes": "",
+            "published": post.published,
+            "visibility": post.visibility,
+            "unlisted": post.unlisted,
+        }
+        posts[i] = sanitized_posts;
+    }
+    return [posts, 200];
 }
 
 async function getComments(authorId, postId) {
@@ -906,7 +974,7 @@ module.exports={
     apiupdatePost,
     apideletePost,
     apicreatePost,
-    fetchPosts,
+    getPosts,
     getComments,
     createComment,
     apifetchLikes,

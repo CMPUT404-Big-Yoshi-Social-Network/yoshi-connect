@@ -32,12 +32,9 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { Author, Login } = require('../scheme/author.js');
-const { PostHistory } = require('../scheme/post.js');
-
+const { Follower, Following } = require('../scheme/relations.js');
 // Additional Functions
-const { createFollowers, createFollowings, createFriends } = require('./relations.js');
-const { createPostHistory } = require('./post.js');
-const { createInbox } = require('./inbox.js')
+const { createInbox } = require('./inbox.js');
 
 // Additional Functions
 const { checkUsername, authLogin, checkExpiry } = require('./auth.js');
@@ -105,10 +102,15 @@ async function registerAuthor(req, res){
         
     })
 
-    await createPostHistory(author._id);
-    await createFollowers(author.username, author._id);
-    await createFriends(author.username, author._id);
-    await createFollowings(author.username, author._id);
+    new_post_history = new PostHistory ({
+        authorId: author_id,
+        num_posts: 0,
+        posts: []
+    }).save
+
+    await new_post_history.save()
+    await Follower({ username: username, authorId: authorId, followers: [] }).save();
+    await Following({ username: username, authorId: authorId, followings: [] }).save();
     await createInbox(author.username, author._id);
 
     res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
@@ -176,7 +178,7 @@ async function getCurrentAuthorAccountDetails(req, res) {
     return res.json({ username: author.username, email: author.email })
 }
 
-async function fetchMyPosts(authorId, req, res) {
+//async function fetchMyPosts(authorId, req, res) {
     /**
      * Description: Fetches all the posts made by a specific author to display on their profile.
      *              We aggregate PostHistory collection to find the author we want posts of ($match) using their authorId then
@@ -186,6 +188,7 @@ async function fetchMyPosts(authorId, req, res) {
      * Returns: Status 404 if the author does not exist or the aggregate returns no posts 
      *          If successful, it sends to the client the author's posts 
      */
+/*
     let author = null
     if (req.body.data.personal) {
         author = await Author.findOne({username: req.body.data.viewer}).clone();
@@ -224,7 +227,7 @@ async function fetchMyPosts(authorId, req, res) {
 
     return res.json({ posts: posts[0].posts_array });
 }
-
+*/
 async function updateAuthor(req, res){
     /**
      * Description: Provides the author the ability to update their profile (i.e., username, password, email)
@@ -282,7 +285,7 @@ async function getAuthor(authorId){
         "id" : author._id,
         "host": process.env.DOMAIN_NAME,
         "displayname": author.username,
-        "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+        "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
         "github": "",
         "profileImage": "",
         "email": author.email, 
@@ -387,7 +390,6 @@ module.exports={
     getProfile,
     getCurrentAuthor,
     getCurrentAuthorUsername,
-    fetchMyPosts,
     getCurrentAuthorAccountDetails,
     updateAuthor,
     getAuthor,

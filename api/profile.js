@@ -20,8 +20,8 @@ Foundation; All Rights Reserved
 */ 
 
 // Routing Functions 
-const { authAuthor, removeLogin, checkExpiry, checkAdmin } = require('../routes/auth');
-const { addAuthor, modifyAuthor, deleteAuthor } = require('../routes/admin');
+const { checkExpiry } = require('../routes/auth');
+const { getProfile } = require('../routes/author');
 
 // Schemas
 // Schemas

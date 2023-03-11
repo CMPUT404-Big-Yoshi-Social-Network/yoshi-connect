@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getFriends, isFriend } = require('../routes/friend');
+const { checkExpiry } = require('../routes/auth');
 
 /**
  * @openapi
@@ -78,6 +79,7 @@ if(friends == 404) return res.send(404);
  *        description: Returns Status 404 when there are no existing followers or friends
  */
 app.post('/', async (req, res) => {
+  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
 

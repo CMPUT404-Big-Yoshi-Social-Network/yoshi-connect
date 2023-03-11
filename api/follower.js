@@ -20,18 +20,10 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFollowers, getFriends, addFollower, deleteFollower, getFollowings } = require('../routes/friend');
+const { getFollowers, getFriends, addFollower, deleteFollower } = require('../routes/friend');
 
-/**
- * @openapi
- * /api/authors/{authorId}/followers:
- *  get:
- *    description: Gets the author's followers and friends as objects from the database and sends it back as a JSON object
- *    responses:
- *      404:
- *        description: Returns Status 404 when there are no existing followers or friends
- */
 app.get('/', async (req, res) => {
+  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
 
   const followers = await getFollowers(authorId);
@@ -68,23 +60,11 @@ app.get('/', async (req, res) => {
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/followers/{foreignAuthorId}:
- *  get:
- *    description: Gets the author's followers' and friends' profiles as objects from the database and sends it back as a JSON object
- *    responses:
- *      404:
- *        description: Returns Status 404 when the follower or friend object is not found
- *      404:
- *        description: Returns Status 404 when the profile doesn't exist
- */
 app.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
   const followers = await getFollowers(authorId);
-  const friends = await getFriends(authorId);
 
   if(followers == 404 || friends == 404)
     return res.send(404);
@@ -111,45 +91,11 @@ app.get('/:foreignAuthorId', async (req, res) => {
     }
   }
 
-  for(let i = 0; i < friends.length; i++){
-    const friend = friends[i];
-    if(friend.authorId = foreignId){
-
-      const friendProfile = await Author.findOne({_id: friend.authorId}); 
-
-      if(!friendProfile)
-        continue
-
-      return res.json({
-        "type": "author",
-        "id" : friendProfile._id,
-        "host": process.env.DOMAIN_NAME,
-        "displayname": friendProfile.username,
-        "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
-        "github": "",
-        "profileImage": "",
-        "about": friendProfile.about,
-        "pronouns": friendProfile.pronouns
-      })
-    }
-  }
-
   return res.sendStatus(404);
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/followers/{foreignAuthorId}:
- *  put:
- *    description: Adds a Follower (Foreign Author) to the Author's Follower List in the database
- *    responses:
- *      401:
- *        description: Returns Status 401 when the adding the Follower is not authorized 
- *      400:
- *        description: Returns Status 400 when server is unable to process the user's request 
- */
 app.put('/:foreignAuthorId', async (req, res) => {
-
+  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 

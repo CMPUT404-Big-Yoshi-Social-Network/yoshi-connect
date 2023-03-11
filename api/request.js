@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { sendRequest, apideleteRequest, getRequests, getRequest } = require('./routes/request');
+const { checkExpiry } = require('../routes/auth');
 
 /**
  * @openapi
@@ -32,6 +33,7 @@ const { sendRequest, apideleteRequest, getRequests, getRequest } = require('./ro
  *        description: Returns the JSON object representing the Request  
  */
 app.get('/', async (req, res) => {
+  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
 
   const requests = await getRequests(authorId);

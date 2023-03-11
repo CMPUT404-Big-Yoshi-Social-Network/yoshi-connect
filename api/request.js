@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { sendRequest, apideleteRequest, getRequests, getRequest } = require('./routes/request');
+const { sendRequest, apideleteRequest, getRequests, getRequest } = require('../routes/request');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup

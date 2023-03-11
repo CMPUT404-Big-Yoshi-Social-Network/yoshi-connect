@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('./routes/post');
+const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('../routes/post');
 
 // Router Setup
 const express = require('express'); 

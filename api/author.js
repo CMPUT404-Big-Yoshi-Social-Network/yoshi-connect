@@ -20,8 +20,8 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor } = require('./routes/author');
-const { getAuthorLikes } = require('./routes/post');
+const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor } = require('../routes/author');
+const { getAuthorLikes } = require('../routes/post');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup

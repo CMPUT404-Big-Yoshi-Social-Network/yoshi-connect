@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInbox, deleteInbox} = require('./routes/inbox')
+const { getInbox, postInbox, deleteInbox} = require('../routes/inbox')
 
 // Router Setup
 const express = require('express'); 

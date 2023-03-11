@@ -20,8 +20,8 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getComments, createComment } = require('./routes/post');
-const { apiFetchCommentLikes } = require('./routes/post');
+const { getComments, createComment } = require('../routes/post');
+const { apiFetchCommentLikes } = require('../routes/post');
 
 // Router Setup
 const express = require('express'); 

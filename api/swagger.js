@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // OpenAPI
-const {options} = require('./openAPI/options.js');
+const {options} = require('../openAPI/options.js');
 
 // Swaggerio
 const swaggerUi = require("swagger-ui-express");

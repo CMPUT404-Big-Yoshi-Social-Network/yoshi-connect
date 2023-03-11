@@ -20,8 +20,8 @@ Foundation; All Rights Reserved
 */
 
 // Routing Functions 
-const { apifetchLikes } = require('./routes/post');
-const { hasLiked } = require('./routes/post'); 
+const { apifetchLikes } = require('../routes/post');
+const { hasLiked } = require('../routes/post'); 
 
 // Router Setup
 const express = require('express'); 

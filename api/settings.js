@@ -1,5 +1,5 @@
 // Routing
-const { getCurrentAuthor } = require('./routes/author');
+const { getCurrentAuthor } = require('../routes/author');
 
 // Router Setup
 const express = require('express'); 

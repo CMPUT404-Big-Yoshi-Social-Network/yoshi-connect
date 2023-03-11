@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFriends, isFriend } = require('../routes/friend');
+const { getFriends, isFriend, fetchFriendPosts } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
@@ -72,6 +72,11 @@ router.post('/', async (req, res) => {
   const foreignId = req.params.foreignId;
 
   await isFriend(authorId, foreignId);
+})
+
+router.post('/posts', async (req, res) => {
+  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
+  fetchFriendPosts(req, res);
 })
 
 module.exports = router;

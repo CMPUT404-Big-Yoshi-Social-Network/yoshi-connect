@@ -117,7 +117,7 @@ function Profile() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/posts',
+                url: '/api/authors/' = personal.viewedId + '/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -128,7 +128,7 @@ function Profile() {
                 }
             }
             axios
-            .post('/server/users/posts', config)
+            .post('/api/authors/' = personal.viewedId + '/posts', config)
             .then((response) => {
                 setPosts(response.data.posts)
             })

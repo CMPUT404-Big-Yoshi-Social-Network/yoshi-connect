@@ -23,117 +23,13 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Login } = require('../scheme/author.js');
 const { Follower, Friend, Following } = require('../scheme/relations.js');
-const { PostHistory } = require('../scheme/post.js');
 
 // Additional Functions
 const { senderAdded } = require('./request.js');
 
 // Additional Functions
 const {authLogin} = require('./auth.js')
-
-async function fetchFriends(req, res) {
-    /**
-     * Desciption: Fetches the friends of a specified author from the database
-     * Returns: Status 404 if there is no associated token with a login document 
-     *          Either returns the list of friends or an empty list of friends if the author has no friends
-     */
-    const login = await Login.findOne({token: req.cookies.token}).clone();
-    if (!login) { return res.sendStatus(404); }
-
-    const username = login.username;
-    await Friend.findOne({username: username}, function(err, friends){
-        console.log("Debug: Friends exists");
-        if (friends == undefined) { return res.json({ friends: [] }); }
-        return res.json({ friends: friends.friends })
-    }).clone();
-}
-
-async function fetchFriendPosts(req, res) {
-    /**
-     * Description: Fetches the posts of friends of the author 
-     *              Aggregates with $match, $unwind, $project, and $group in order to collect all friends 
-     *              Aggregates with $match (by authorId), $unwind, $match (to get only listed posts), $set, 
-     *              $addFields (couples post to authorId), $sort (by publishing date), and $group in order 
-     *              to collect all the friends' posts
-     * Returns: Status 404 if there is no associated token in the login collection
-     *          If the author has no friends, it will return an empty array 
-     *          If successful, it will return the posts 
-     */
-    const login = await Login.findOne({token: req.cookies.token}).clone();
-    if (!login) { return res.sendStatus(404); }
-
-    console.log('Debug: Retrieving current author logged in')
-    const username = login.username
-    const friend = await Friend.aggregate([
-        {
-            $match: {'username': username} 
-        },
-        {
-            $unwind: '$friends'
-        },
-        {
-            $project: { "friends.authorId": 1 }
-        },
-        {
-            $group: {
-                _id: null,
-                friends: { $addToSet: "$friends.authorId"}
-            }
-        },
-    ]);
-
-    let friends = [];
-    if (friend.length > 0) { 
-        friends = friend[0].friends; 
-    } else { 
-        return res.json({ friendPosts: [] }); 
-    }
-
-    const posts = await PostHistory.aggregate([
-        {
-            $match: {
-                $expr: {
-                    $in : ["$authorId", friends]
-                }
-            },
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {
-                $expr: {
-                    $ne: ["$unlisted", true]
-                }
-            }
-        },
-        {
-            $set: {
-                "posts.published": {
-                    $dateFromString: {
-                        dateString: "$posts.published"
-                    }
-                }
-            }
-        },
-        {
-            $addFields: { "posts.authorId": "$authorId" }
-        },
-        {
-            $sort: {"posts.published": -1}
-        },
-        {
-            $group: {
-                _id: null,
-                posts_array: {$push: "$posts"}
-            }
-        },
-    ]);
-
-    return res.json({ friendPosts: posts[0].posts_array });
-}
 
 /**
  * API STUFF
@@ -294,6 +190,10 @@ async function deleteFollower(token, authorId, foreignId, body){
 
 async function isFriend(authorId, foreignId) {
     //TODO CHECK IF FRIEND
+}
+
+async function fetchFriendPosts(req, res) {
+    //TODO GET FRIEND POSTS
 }
 
 module.exports={

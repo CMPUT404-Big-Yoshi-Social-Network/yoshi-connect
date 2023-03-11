@@ -265,12 +265,18 @@ async function getAuthor(authorId){
      *          Status 404 if the author does not exist or admin=true
      */
     const author = await Author.findOne({_id: authorId}, function (err, author) {
-        if (err) { return "server failure"; }
-        return err, author;
+        if (err) {
+            return "server failure";
+        }
+        return author;
     }).clone();
-    if(author == "server failure") { return 500; }
-    if(!author || author.admin == true) { return 404; }
-    return author;
+    if(author == "server failure") {
+        return [{}, 500];
+    }
+    else if(!author || author.admin == true) {
+        return [{}, 404];
+    }
+    return [author, 200];
 }
 
 async function apiUpdateAuthor(token, author){

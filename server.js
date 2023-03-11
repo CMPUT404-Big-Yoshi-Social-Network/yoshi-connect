@@ -52,14 +52,11 @@ const friends = require('./api/friend');
 const requests = require('./api/request');
 
 // Routing Functions 
-const { authAuthor, removeLogin, checkExpiry, sendCheckExpiry, checkAdmin } = require('./routes/auth');
-const { getProfile, getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor } = require('./routes/author');
+const { removeLogin, checkExpiry, sendCheckExpiry } = require('./routes/auth');
+const { getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor } = require('./routes/author');
 const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
-const { saveRequest, deleteRequest, findRequest, findAllRequests, senderAdded } = require('./routes/request');
-const { isFriend, unfriending, unfollowing } = require('./routes/relations');
-const { fetchFriends, fetchFriendPosts } = require('./routes/friend');
-const { fetchFollowing, fetchPublicPosts } = require('./routes/public');
-const { addAuthor, modifyAuthor, deleteAuthor } = require('./routes/admin');
+const { fetchFriendPosts } = require('./routes/friend');
+const { fetchPublicPosts } = require('./routes/public');
 
 // App Uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 

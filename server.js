@@ -82,18 +82,6 @@ if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-re
 
 app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
 
-app.get('/server/feed', (req, res) => {
-  console.log('Debug: Checking expiry of token')
-  sendCheckExpiry(req, res);
-})
-
-app.post('/server/feed', (req, res) => {
-  if (req.body.data.message == 'Logging Out') {
-	console.log('Debug: Logging out as Author')
-	removeLogin(req, res);
-  }
-})
-
 app.post('/server/posts/', async (req, res) => {
   if ( req.body.data.status == 'Fetching current authorId') { 
     console.log('Debug: Getting the current author logged in');

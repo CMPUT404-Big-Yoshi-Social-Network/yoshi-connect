@@ -306,23 +306,27 @@ async function apiUpdateAuthor(token, author){
 }
 
 async function getAuthors(page, size){
-    
-    const authors = await Author.find(
-        {
-            limit: size,
-            skip: page * size 
-        }
-    ).limit(size);
+    let authors = undefined;
+    if(page > 1){
+        authors = await Author.find().skip((page-1) * size).limit(size);
+    }
+    else if (page == 1){
+        authors = await Author.find().limit(size);
+    }
+    else{
+        return [[], 400];
+    }
+    console.log(authors);
 
     if (!authors) {
-        return res.sendStatus(500);
+        return [[], 500];
     }
     
     let sanitizedAuthors = [];
 
     for(let i = 0; i < authors.length; i++){
         const author = authors[i];
-
+        //TODO ADD github and prfile image
         sanitizedAuthors.push({
                 "type": "author",
                 "id" : author._id,
@@ -336,7 +340,7 @@ async function getAuthors(page, size){
                 "pronouns": author.pronouns
         })
     }
-    return sanitizedAuthors;
+    return [sanitizedAuthors, 200];
 }
 
 async function getCurrentAuthor(req, res){

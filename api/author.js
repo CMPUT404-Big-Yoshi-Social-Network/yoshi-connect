@@ -31,15 +31,22 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  if (await checkExpiry(req, res)) { return res.sendStatus(401) }
+  //if (await checkExpiry(req, res)) { return res.sendStatus(401) }
 
-  const page = req.query.page;
-  const size = req.query.size;
+  let page = req.query.page;
+  let size = req.query.size;
 
   if (page == undefined) page = 1;
   if (size == undefined) size = 5;
 
-  const sanitizedAuthors = await getAuthors(page, size);
+  const [sanitizedAuthors, status] = await getAuthors(page, size);
+
+  if(status == 500){
+    return res.sendStatus(500);
+  }
+  if(status == 400){
+    return res.sendStatus(400);
+  }
 
   return res.json({
     "type": "authors",

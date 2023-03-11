@@ -38,5 +38,5 @@ export default function ApiDocs() {
     width:'100%',
     border:'0',
   }
-  return(<iframe src="http://localhost:8080/server/api-docs" style={style} title="docs"></iframe>);
+  return(<iframe src="http://localhost:8080/api/api-docs" style={style} title="docs"></iframe>);
 }

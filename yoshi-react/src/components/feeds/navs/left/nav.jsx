@@ -44,8 +44,8 @@ function LeftNavBar() {
     const { username } = useParams();
     return (
         <div className='left-column'>
-            { url === '/feed' || url === '/' + {username} ? <Following/> :
-                url === '/friends' ? <Friends/> : 
+            { url === '/feed' || url === '/' + {username} ? <Following authorId={props.authorId}/> :
+                url === '/friends' ? <Friends authorId={props.authorId}/> : 
                 url === '/settings' ? <SettingsNav/> : 
                 url === '/messages' ? <h2 style={{paddingLeft: '1em'}}>Messages</h2> : null
             }

@@ -61,27 +61,27 @@ function PublicFeed() {
          */
         const getId = () => {
             /**
-             * Description: Sends a POST request to get the author's id 
+             * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/posts/',
+                url: '/api/authors/',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: { status: 'Fetching current authorId' }
+                data: {
+                    status: 'Fetching authorId'
+                }
             }
 
             axios
-            .post('/server/posts/', config)
+            .post('/api/authors/', config)
             .then((response) => {
-                let viewerId = response.data.authorId;
-                setViewerId({
-                    viewerId: viewerId
-                  })
+                let viewerId = response.data.author._id;
+                setViewerId({ viewerId: viewerId })
             })
             .catch(err => { });
         }
@@ -91,6 +91,7 @@ function PublicFeed() {
              * Description: Sends a POST request to get the current author's followings posts and public (PSA) posts  
              * Request: POST
              * Returns: N/A
+             * Refactor: TODO
              */
             let config = {
                 method: 'post',
@@ -112,7 +113,7 @@ function PublicFeed() {
 
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={viewer.viewerId}/>
             <div className='pubRow'>
                 <div className='pubColL'>
                     <LeftNavBar/>

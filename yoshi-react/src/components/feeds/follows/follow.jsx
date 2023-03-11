@@ -29,7 +29,7 @@ function Follow(props) {
      */
     return (
         <div id='follow'>
-            { props.username }
+            { props.displayName }
         </div>
     )
 }

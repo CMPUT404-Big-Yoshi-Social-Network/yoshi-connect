@@ -71,7 +71,7 @@ function Post({viewerId, post}) {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/posts/',
+                url: '/api/authors/' + authorId + '/posts/' + postId + '/likes',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -79,11 +79,10 @@ function Post({viewerId, post}) {
                     viewerId: viewerId,
                     postId: postId,
                     authorId: authorId,
-                    status: 'Checking if post is already liked'
                 }
             }
             axios
-            .post('/server/posts/', config)
+            .post('/api/authors/' + authorId + '/posts/' + postId + '/likes', config)
             .then((response) => {
                 if (response.data.status === 'liked') { setLike(true); } else { setLike(false); }
             })

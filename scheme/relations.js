@@ -49,17 +49,6 @@ const followingScheme = new Schema({
     {versionKey: false
 });
 
-const friendScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    username: String,
-    authorId: String,
-    friends: [{
-        username: String,
-        authorId: String
-    }]},
-    {versionKey: false
-});
-
 const requestScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     senderId: String,

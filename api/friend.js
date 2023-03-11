@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { sendRequest, apideleteRequest, getRequests, getRequest } = require('./routes/request');
+const { getFriends, isFriend } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
@@ -30,50 +30,48 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
 
-  const requests = await getRequests(authorId);
+  const friends = await getFriends(authorId);
+
+if(friends == 404) return res.send(404);
+
+  sanitizedObjects = [];
+  for(let i = 0; i < friends.length; i++){
+    const friend = friends[i];
+
+    const friendProfile = await Author.findOne({_id: friend.authorId}); 
+    if(!friendProfile)
+      continue
+
+      sanitizedObject = {
+      "type": "author",
+      "id" : friendProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": friendProfile.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
+      "github": "",
+      "profileImage": "",
+      "email": friendProfile.email,
+      "about": friendProfile.about,
+      "pronouns": friendProfile.pronouns
+    }
+
+    sanitizedObjects.push(sanitizedObject);
+  }
 
   return res.json({
-    type: "requests",
-    items: requests
+    type: "friends",
+    items: sanitizedObjects
   });
 })
 
-router.get('/:foreignAuthorId', async (req, res) => {
+router.post('/', async (req, res) => {
+  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
-  const foreignId = req.params.foreignAuthorId;
+  const foreignId = req.params.foreignId;
 
-  await getRequest(authorId, foreignId);
-})
-
-router.put('/:foreignAuthorId', async (req, res) => {
-  const authorId = req.params.authorId;
-  const foreignId = req.params.foreignAuthorId;
-
-  const request = await sendRequest(authorId, foreignId, res);
-
-  return res.json({
-    "type": request.type,
-    "summary": request.summary,
-    "actor": request.actor,
-    "object": request.object
-  })
-})
-
-router.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
-  const authorId = req.params.authorId;
-  const foreignId = req.params.foreignAuthorId;
-
-  const request = await apideleteRequest(authorId, foreignId, res);
-
-  return res.json({
-    "type": request.type,
-    "summary": request.summary,
-    "actor": request.actor,
-    "object": request.object
-  })
+  await isFriend(authorId, foreignId);
 })
 
 module.exports = router;

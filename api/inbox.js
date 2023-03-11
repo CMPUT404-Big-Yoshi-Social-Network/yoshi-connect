@@ -22,43 +22,24 @@ Foundation; All Rights Reserved
 // Routing Functions 
 const { getInbox, postInbox, deleteInbox} = require('./routes/inbox')
 
-/**
- * @openapi
- * /server/authors/:author_id/inbox:
- *  get:
- *    description: Gets the Author's Inbox
- *    responses:
- *      200:
- *        description: If the server finds an Inbox for the specified Author
- */
-app.get('/server/authors/:author_id/inbox', async (req, res) => {
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router();
+
+router.get('/', async (req, res) => {
   console.log('Debug: Getting an authors inbox');
   await getInbox(req, res);
 })
 
-/**
- * @openapi
- * /server/authors/:author_id/inbox:
- *  get:
- *    description: Adds a Post, Follow, Comment, or Like to the Inbox of an Author
- *    responses:
- *      200:
- *        description: If the server successfully adds either a Post, Follow, Comment, or Like to the Author's Inbox
- */
-app.post('/server/authors/:author_id/inbox', async (req, res) => {
+router.post('/', async (req, res) => {
   await postInbox(req, res);
 })
 
-/**
- * @openapi
- * /server/authors/:author_id/inbox:
- *  get:
- *    description: Deletes the Inbox
- *    responses:
- *      200:
- *        description: If the server finds an Inbox for the specified Author
- */
-app.delete('/server/authors/:author_id/inbox', async (req, res) => {
+router.delete('/', async (req, res) => {
   console.log("delete inbox")
   await deleteInbox(req, res);
 })
+
+module.exports = router;

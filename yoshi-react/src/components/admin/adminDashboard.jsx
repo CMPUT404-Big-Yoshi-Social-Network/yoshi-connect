@@ -44,7 +44,7 @@ function AdminDashboard() {
      * Returns: N/A
      */
     const navigate = useNavigate();
-    const url = '/server/admin/dashboard';
+    const url = '/api/admin/dashboard';
 
     const getDashboard = () => {
         /**
@@ -60,23 +60,15 @@ function AdminDashboard() {
         }
         axios
         .get(url, config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.");
-                LogOut();
-                navigate('/login');
-            } else if(response.data.status === "NonAdmin"){
-                console.log("Debug: You're not an admin.")
-                navigate('/forbidden');
-            } else {
-                console.log("Successfully logged in.");
-            }
-            console.log('Debug: Your token is not expired.')
-        })
+        .then((response) => { })
         .catch(err => {
             if (err.response.status === 403) {
                 console.log("Debug: Forbidden.");
                 navigate('/forbidden'); 
+            } else if (err.response.status === 401) {
+                console.log("Debug: Your token is expired.");
+                LogOut();
+                navigate('/welcome');
             }
         });
     }

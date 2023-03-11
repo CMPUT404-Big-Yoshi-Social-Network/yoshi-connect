@@ -33,36 +33,6 @@ function Request(props) {
      *     - rejectRequest(): Deletes a request if it is rejected by the author 
      * Returns: N/A
      */
-    const { senderId } = props;
-    const [username, setUsername] = useState({
-        username: ''
-    })
-    useEffect(() => {
-        /**
-         * Description: Before render, checks the author ID and sends the username
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-             method: 'post',
-             maxBodyLength: Infinity,
-             url: '/server/requests/',
-             headers: {
-                 'Content-Type': 'application/json'
-             },
-             data: {
-                 sessionId: localStorage.getItem('sessionId'),
-                 status: 'Fetching current authorId'
-             }
-         }
-         axios
-         .post('/server/requests/', config)
-         .then((response) => {
-             let username = response.data.username;
-             setUsername(prevUsername => ({...prevUsername, username}))
-         })
-         .catch(err => { });
-     }, []);
     const addRequest = () => {
         /**
          * Description: Adds the authour if the request is accpeted
@@ -73,18 +43,13 @@ function Request(props) {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/server/requests',
+            url: '/api/authors/' + props.actor + '/followers/' + props.object,
             headers: {
                 'Content-Type': 'application/json'
-            },
-            data: {
-                sender: senderId,
-                receiver: username.username,
-                status: 'Sender is added by Receiver'
             }
         }
         axios
-        .put('/server/requests', config)
+        .put('/api/authors/' + props.actor + '/followers/' + props.object, config)
         .then((response) => {
         })
         .catch(err => {
@@ -101,20 +66,14 @@ function Request(props) {
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
-            url: '/server/requests',
+            url: '/api/authors/' + props.actor + '/requests/' + props.object,
             headers: {
                 'Content-Type': 'application/json'
-            },
-            data: {
-                sender: senderId,
-                receiver: username,
-                status: 'Sender is rejected by Receiver'
             }
         }
         axios
         .delete('/server/requests', config)
-        .then((response) => {
-        })
+        .then((response) => { })
         .catch(err => {
             console.error(err);
         });

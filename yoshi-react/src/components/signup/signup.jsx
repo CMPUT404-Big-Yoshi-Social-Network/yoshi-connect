@@ -61,7 +61,13 @@ export default function Signup() {
     axios
     .post(url, config)
     .then((response) => { navigate('/feed'); })
-    .catch(err => { console.error(err); });
+    .catch(err => {
+      if (err.response.status === 400) {
+        navigate('/badrequest'); 
+      } else if (err.response.status === 500) {
+        console.log('NEED 500 PAGE!')
+      }
+    });
   }
 
   return(

@@ -62,9 +62,14 @@ export default function Login() {
       }
 
       axios(config)
-      .then((response) => {
-          navigate('/feed');
-      })
+      .then((response) => { navigate('/feed'); })
+      .catch(err => {
+        if (err.response.status === 400) {
+          navigate('/badrequest'); 
+        } else if (err.response.status === 500) {
+          console.log('NEED 500 PAGE!')
+        }
+      });
     }
     return(
       <div className='login'>

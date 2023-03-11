@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
+const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor } = require('./routes/author');
 const { checkExpiry } = require('../routes/auth');
 
 /**

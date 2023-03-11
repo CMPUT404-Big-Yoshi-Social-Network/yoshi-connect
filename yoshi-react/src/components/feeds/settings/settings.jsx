@@ -20,7 +20,6 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 
@@ -44,7 +43,6 @@ function Settings() {
      *     - modify(): Updates the new author's account details
      * Returns: N/A
      */
-    const navigate = useNavigate();
     const [newAuthor, setNewAuthor] = useState({
         newUsername: '',
         newPassword: '',
@@ -60,7 +58,7 @@ function Settings() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/settings/',
+                url: '/api/settings/',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -69,11 +67,11 @@ function Settings() {
                 }
             }
             axios
-            .post('/server/settings/', config)
+            .post('/api/settings/', config)
             .then((response) => {
                 setNewAuthor({
-                    newUsername: response.data.username,
-                    newEmail: response.data.email
+                    newUsername: response.data.author.username,
+                    newEmail: response.data.author.email
                 })
             })
             .catch(err => { });

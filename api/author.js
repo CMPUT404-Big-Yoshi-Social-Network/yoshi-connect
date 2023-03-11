@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor } = require('./routes/author');
+const { getAuthorLikes } = require('./routes/post');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
@@ -87,6 +88,17 @@ router.post('/api/authors/:authorId', async (req, res) => {
     return res.sendStatus(400);
 
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
+})
+
+router.get('/api/authors/:authorId/liked', async (req, res) => {
+  const authorId = req.params.authorId;
+
+  const liked = getAuthorLikes(authorId);
+
+  return res.json({
+      "type":"liked",
+      "items": liked
+  })
 })
 
 module.exports = router;

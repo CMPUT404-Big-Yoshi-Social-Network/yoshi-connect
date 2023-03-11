@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getComments, createComment } = require('./routes/post');
+const { apiFetchCommentLikes } = require('./routes/post');
 
 // Router Setup
 const express = require('express'); 
@@ -50,6 +51,31 @@ router.get('/api/authors/:authorId/posts/:postId/comments', async (req, res) => 
     "comments": comments
     })
 })
+
+router.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+  const commentId = req.params.commentId
+  let page = req.query.page;
+  let size = req.query.size;
+
+  if(page == undefined)
+  page = 1;
+  if(size == undefined)
+    size = 5;
+
+  const likes = apiFetchCommentLikes(authorId, postId, commentId); 
+
+  return res.json({
+    "type": "likes",
+    "page": page,
+    "size": size,
+    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
+    "comment": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments/" + commentId,
+    "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments" + commentId + "/likes",
+    "likes": likes
+    })
+ })
 
 router.post('/api/authors/:authorId/posts/:postId/comments', async (req, res) => {
   const authorId = req.params.authorId;

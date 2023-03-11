@@ -37,12 +37,19 @@ const path = require('path');
 const signup = require('./api/signup');
 const login = require('./api/login');
 const admin = require('./api/admin');
-const followers = require('./api/follow');
+const followers = require('./api/follower');
 const followings = require('./api/following');
 const profile = require('./api/profile');
 const friends = require('./api/friend');
 const requests = require('./api/request');
 const apiDocs = require('./api/swagger');
+const author = require('./api/author');
+const comment = require('./api/comment');
+const friend = require('./api/friend');
+const inbox = require('./api/inbox');
+const like = require('./api/like');
+const post = require('./api/post');
+const setting = require('./api/settings');
 
 // Routing Functions 
 const { checkExpiry } = require('./routes/auth');
@@ -60,6 +67,13 @@ app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Routing
+app.use("", author);
+app.use("", comment);
+app.use("", friend);
+app.use("", inbox);
+app.use("/api/authors/:authorId/posts/:postId/likes", like);
+app.use("/api/authors/:authorId/posts", post);
+app.use("/api/settings", setting);
 app.use("/api/signup", signup);
 app.use("/api/login", login);
 app.use("/api/admin", admin);

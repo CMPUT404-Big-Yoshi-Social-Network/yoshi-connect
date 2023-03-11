@@ -21,7 +21,6 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('./routes/post');
-const { hasLiked } = require('./routes/post'); // temporary
 
 // Router Setup
 const express = require('express'); 
@@ -29,13 +28,7 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-router.post('/api/posts/', async (req, res) => {
-  if (req.body.data.status == 'Checking if post is already liked') {
-    await hasLiked(req, res);
-  }
-})
-
-router.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
+router.get('/:postId', async (req, res) => {
   if(req.params.authorId == undefined) return res.sendStatus(404);
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -64,7 +57,7 @@ router.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
   });
 })
 
-router.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
+router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
@@ -77,7 +70,7 @@ router.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
-router.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
+router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
@@ -92,7 +85,7 @@ router.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
-router.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
+router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
@@ -107,7 +100,7 @@ router.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }  
 })
 
-router.get('/api/authors/:authorId/posts', async (req, res) => {
+router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const page = req.query.page;
   const size = req.query.size;
@@ -126,7 +119,7 @@ router.get('/api/authors/:authorId/posts', async (req, res) => {
   });
 })
 
-router.post('/api/authors/:authorId/posts', async (req, res) => {
+router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
   const status = await apicreatePost(authorId, undefined, req.body, process.env.DOMAIN_NAME);

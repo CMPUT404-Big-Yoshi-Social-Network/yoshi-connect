@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('../routes/post');
+const { getPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost, getPostsPaginated } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 
 // Router Setup
@@ -108,15 +108,16 @@ router.put('/:postId', async (req, res) => {
 
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
-  const page = req.query.page;
-  const size = req.query.size;
+  let page = req.query.page;
+  let size = req.query.size;
 
-  if(page == undefined)
-  page = 1;
-  if(size == undefined)
+  if(page == undefined){
+    page = 1;
+  }
+  if(size == undefined){
     size = 5;
-
-  const sanitizedPosts = await fetchPosts(page, size, authorId);
+  }
+  const sanitizedPosts = await getPosts(page, size, authorId);
 
   return res.json({
     "type": "posts",

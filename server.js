@@ -165,11 +165,6 @@ app.post('/server/users/posts', async (req, res) => {
   await fetchMyPosts(req, res);
 })
 
-app.get('/server/nav', async (req, res) => {
-  console.log('Debug: Getting the current author logged in');
-  await getCurrentAuthorUsername(req, res);
-})
-
 app.post('/server/friends/posts', (req, res) => {
   console.log('Debug: Getting the author friends posts');
   fetchFriendPosts(req, res);

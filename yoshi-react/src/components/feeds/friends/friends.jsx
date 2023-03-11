@@ -26,7 +26,7 @@ import React, { useEffect, useState } from "react";
 // Child Component 
 import Friend from './friend.jsx';
 
-function Friends() {
+function Friends(props) {
     /**
      * Description: Represents the friends list of the current author 
      * Functions: 
@@ -45,13 +45,12 @@ function Friends() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/friends',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: { sessionId: localStorage.getItem('sessionId'), }
+            url: '/api/authors/' + props.authorId + '/friends',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
         axios
-        .post('/server/friends', config)
-        .then((response) => { setFriends(response.data.friends) })
+        .post('/api/authors/' + props.authorId + '/friends', config)
+        .then((response) => { setFriends(response.data.items) })
         .catch(err => { console.error(err); });
     }, [setFriends]);
 

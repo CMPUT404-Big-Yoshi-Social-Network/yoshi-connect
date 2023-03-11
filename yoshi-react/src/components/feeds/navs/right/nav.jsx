@@ -41,10 +41,22 @@ function RightNavBar() {
     const [username, setUsername] = useState();
 
     const getUsername = () => {
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/api/authors/',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                status: 'Fetching authorId'
+            }
+        }
+
         axios
-        .get('/server/nav')
+        .get('/api/authors', config)
         .then((response) => {
-            setUsername(response.data.username)            //console.log('Username:', username);
+            setUsername(response.data.author.username)
         })
         .catch(err => {
             setUsername('');

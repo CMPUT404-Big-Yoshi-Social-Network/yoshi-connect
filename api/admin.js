@@ -24,7 +24,6 @@ const { authAuthor, removeLogin, checkExpiry, checkAdmin } = require('../routes/
 const { addAuthor, modifyAuthor, deleteAuthor } = require('../routes/admin');
 
 // Schemas
-// Schemas
 const { Author } = require('../scheme/author.js');
 
 // Router Setup
@@ -55,17 +54,14 @@ router.post('/dashboard', async (req, res) => {
 
 router.delete('/dashboard', (req, res) => {
   if (req.body.status == 'Delete') {
-    console.log('Debug: Deleting an Author.');
     deleteAuthor(req, res);
   }
 })
 
 router.put('/dashboard', (req, res) => {
   if (req.body.data.status == 'Add New Author') {
-    console.log('Debug: Adding a new Author.');
     addAuthor(req, res);
   } else if (req.body.data.status == 'Modify') {
-    console.log('Debug: Modifying the Author.')
     modifyAuthor(req, res);
   }
 })

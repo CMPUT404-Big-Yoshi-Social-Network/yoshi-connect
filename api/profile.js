@@ -17,10 +17,11 @@ limitations under the License.
 Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
-*/  
+*/ 
 
 // Routing Functions 
-const { registerAuthor } = require('../routes/author');
+const { checkExpiry } = require('../routes/auth');
+const { getProfile } = require('../routes/author');
 
 // Router Setup
 const express = require('express'); 
@@ -28,9 +29,9 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-  console.log('Debug: Signing up as an author');
-  await registerAuthor(req, res);
+router.get('/', async (req,res) => {
+    if (await checkExpiry(req)) { return res.sendStatus(401); }
+    getProfile(req, res);
 })
 
 module.exports = router;

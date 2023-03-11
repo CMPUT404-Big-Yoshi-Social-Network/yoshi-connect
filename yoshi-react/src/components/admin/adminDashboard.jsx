@@ -68,7 +68,7 @@ function AdminDashboard() {
             } else if (err.response.status === 401) {
                 console.log("Debug: Your token is expired.");
                 LogOut();
-                navigate('/login');
+                navigate('/welcome');
             }
         });
     }

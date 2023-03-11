@@ -136,14 +136,18 @@ async function getProfile(req, res) {
         console.log("Debug: This is your personal account.")
         return res.json({
             viewed: author.username,
+            viewedId: author._id,
             viewer: login.username,
+            viewerId: login.authorId,
             personal: true
         });
     } else if(author.username != login.username) {
         console.log("Debug: This is not your personal account.")
         return res.json({
             viewed: author.username,
+            viewedId: author._id,
             viewer: login.username,
+            viewerId: login.authorId,
             personal: false
         });
     }
@@ -340,6 +344,19 @@ async function getAuthors(page, size){
         })
     }
     return sanitizedAuthors;
+}
+
+async function getCurrentAuthor(req, res){
+    /**
+     * Description: Retrieves the current author's authorId 
+     * Returns: Status 404 if there is no login document for the token stored in cookies 
+     *          If successful, the authorId is sent to client 
+     */
+    const login = await Login.findOne({token: req.cookies.token})
+    if (!login) { return res.sendStatus(404); }
+    const author = await Author.findOne({_id: login.authorId })
+    if (!author) { return res.sendStatus(404); }
+    return res.json({ author: author })
 }
 
 module.exports={

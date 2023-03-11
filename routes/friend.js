@@ -24,7 +24,7 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { Login } = require('../scheme/author.js');
-const { Follower, Friend } = require('../scheme/relations.js');
+const { Follower, Friend, Following } = require('../scheme/relations.js');
 const { PostHistory } = require('../scheme/post.js');
 
 // Additional Functions
@@ -150,15 +150,14 @@ async function getFollowers(id){
     return followers.followers;
 }
 
+async function getFollowings(id){
+    const following = await Following.findOne({authorId: id});
+    if (!following) { return 404; }
+    return following.followings;
+}
+
 async function getFriends(id){
-    /**
-     * Description: Gets all the friends of an author
-     * Returns: Status 404 if there are no existing friends
-     *          If successful, returns a list of friends
-     */
-    const friends = await Friend.findOne({authorId: id});
-    if (!friends) { return 404; }
-    return friends.friends;
+    // TODO: Write this query
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
@@ -293,10 +292,17 @@ async function deleteFollower(token, authorId, foreignId, body){
     return 200;
 }
 
+async function isFriend(authorId, foreignId) {
+    //TODO CHECK IF FRIEND
+}
+
 module.exports={
     fetchFriends,
     fetchFriendPosts,
     getFollowers,
+    getFollowings,
+    addFollower,
+    deleteFollower,
     getFriends,
-    addFollower
+    isFriend
 }

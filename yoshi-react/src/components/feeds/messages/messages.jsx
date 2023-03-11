@@ -20,9 +20,8 @@ Foundation; All Rights Reserved
 */
 
 // Functionality 
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import React, { useEffect } from "react";
+import React from "react";
 
 // User Interface 
 import TopNav from '../navs/top/nav.jsx';
@@ -38,63 +37,6 @@ function Messages() {
      *     - logOut(): Logs out an author and sends them to the Welcome component 
      * Returns: N/A
      */
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        /**
-         * Description: Calls checkExpiry() to check if the token is expired before render 
-         * Returns: N/A
-         */
-        checkExpiry();
-     });
-
-    const checkExpiry = () => {
-        /**
-         * Description: Sends a GET request in order to check if the current author's token is expired 
-         * Request: GET
-         * Returns: N/A
-         */
-        let config = { method: 'get', maxBodyLength: Infinity, url: '/feed' }
-
-        axios
-        .get('/server/feed', config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
-                logOut();
-                navigate('/');
-            }
-            else{console.log('Debug: Your token is not expired.')}
-        })
-        .catch(err => {
-            if (err.response.status === 401) { console.log("Debug: Not authorized."); navigate('/unauthorized'); }
-        });
-    }
-
-    const logOut = () => {
-        /**
-         * Description: Sends a POST request in order to log out the current author and redirect them to the Welcome component 
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: { message: 'Logging Out' }
-        }
-
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => { console.error(err) });
-    }
 
     return (
         <div>

@@ -93,12 +93,11 @@ function FriendFeed() {
              * Description: Sends a POST request in order to get the posts of the current author's friends 
              * Request: POST
              * Returns: N/A
-             * Refactor: TODO
              */
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/friends/posts',
+                url: '/api/authors/' + viewer.viewerId + '/friends/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -108,7 +107,7 @@ function FriendFeed() {
             }
 
             axios
-            .post('/server/friends/posts', config)
+            .post('/api/authors/' + viewer.viewerId + '/friends/posts', config)
             .then((response) => { setFriendPosts(response.data.friendPosts) })
             .catch(err => { console.error(err); });
         }

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor } = require('../routes/author');
+const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor, fetchMyPosts } = require('../routes/author');
 const { getAuthorLikes } = require('../routes/post');
 const { checkExpiry } = require('../routes/auth');
 
@@ -48,8 +48,8 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:authorId', async (req, res) => {
-  if (req.params.authorId == null) { 
-    await getCurrentAuthor(req); 
+  if (req.params.authorId == "null") { 
+    await getCurrentAuthor(req, res); 
   } else {
     if (req.params.authorId == undefined) return res.sendStatus(404);
 
@@ -76,7 +76,7 @@ router.get('/:authorId', async (req, res) => {
 
 router.post('/:authorId/posts', async (req, res) => {
   if((await checkExpiry(req, res))){ return res.sendStatus(401) }
-  await fetchMyPosts(req, res);
+  await fetchMyPosts(req.params.authorId, req, res);
 })
 
 router.post('/:authorId', async (req, res) => {

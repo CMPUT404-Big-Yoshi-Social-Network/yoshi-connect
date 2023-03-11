@@ -95,14 +95,14 @@ function PublicFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + viewer.viewerId + '/posts/posts',
+                url: '/api/authors/' + viewer.viewerId + '/posts/public',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
 
             axios
-            .post('/api/authors/' + viewer.viewerId + '/posts/posts', config)
+            .post('/api/authors/' + viewer.viewerId + '/posts/public', config)
             .then((response) => { setPublicPosts(response.data.publicPosts) })
             .catch(err => { 
                 if (err.response.status === 404) { 

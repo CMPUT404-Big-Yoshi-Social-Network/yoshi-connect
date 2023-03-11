@@ -176,7 +176,7 @@ async function getCurrentAuthorAccountDetails(req, res) {
     return res.json({ username: author.username, email: author.email })
 }
 
-async function fetchMyPosts(req, res) {
+async function fetchMyPosts(authorId, req, res) {
     /**
      * Description: Fetches all the posts made by a specific author to display on their profile.
      *              We aggregate PostHistory collection to find the author we want posts of ($match) using their authorId then

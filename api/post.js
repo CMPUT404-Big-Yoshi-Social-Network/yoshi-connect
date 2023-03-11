@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('./routes/post');
+const { hasLiked } = require('./routes/post'); // temporary
 
 app.post('/api/posts/', async (req, res) => {
   if (req.body.data.status == 'Checking if post is already liked') {

@@ -53,9 +53,9 @@ const requests = require('./api/request');
 const apiDocs = require('./api/swagger');
 
 // Routing Functions 
-const { removeLogin, checkExpiry, sendCheckExpiry } = require('./routes/auth');
-const { getCurrentAuthor, getCurrentAuthorUsername, fetchMyPosts, getCurrentAuthorAccountDetails, updateAuthor } = require('./routes/author');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, hasLiked, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
+const { checkExpiry } = require('./routes/auth');
+const { fetchMyPosts } = require('./routes/author');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
 const { fetchFriendPosts } = require('./routes/friend');
 const { fetchPublicPosts } = require('./routes/public');
 

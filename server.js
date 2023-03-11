@@ -53,10 +53,8 @@ const setting = require('./api/settings');
 
 // Routing Functions 
 const { checkExpiry } = require('./routes/auth');
-const { fetchMyPosts } = require('./routes/author');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, addComment, deleteLike, deleteComment, editComment, checkVisibility, getAuthorByPost } = require('./routes/post');
-const { fetchFriendPosts } = require('./routes/friend');
-const { fetchPublicPosts } = require('./routes/public');
+const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, 
+  addComment, deleteLike, deleteComment, editComment, checkVisibility } = require('./routes/post');
 
 // App Uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 

@@ -180,18 +180,6 @@ app.post('/server/public/posts', async (req, res) => {
   await fetchPublicPosts(req, res);
 })
 
-app.post('/server/settings', async (req, res) => {
-  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
-  console.log('Debug: Updating author account details');
-  if (req.body.data.status === 'Get Author') { await getCurrentAuthorAccountDetails(req, res); }
-})
-
-app.put('/server/settings', async (req, res) => {
-  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
-  console.log('Debug: Updating author account details');
-  if (req.body.data.status === 'Modify an Author') { await updateAuthor(req, res); }
-})
-
 app.get('/',(req, res) => {
   res.render("index");
 }); 
@@ -199,6 +187,5 @@ app.get('/',(req, res) => {
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'yoshi-react/build', 'index.html'));
 });
-
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

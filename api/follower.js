@@ -23,7 +23,13 @@ Foundation; All Rights Reserved
 const { getFollowers, addFollower, deleteFollower } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
-app.get('/', async (req, res) => {
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router();
+
+router.get('/', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
 
@@ -61,7 +67,7 @@ app.get('/', async (req, res) => {
   });
 })
 
-app.get('/:foreignAuthorId', async (req, res) => {
+router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
@@ -95,7 +101,7 @@ app.get('/:foreignAuthorId', async (req, res) => {
   return res.sendStatus(404);
 })
 
-app.put('/:foreignAuthorId', async (req, res) => {
+router.put('/:foreignAuthorId', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -108,7 +114,7 @@ app.put('/:foreignAuthorId', async (req, res) => {
     return res.sendStatus(400);
 })
 
-app.delete('/:foreignAuthorId', async (req, res) => {
+router.delete('/:foreignAuthorId', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   if(req.body.type == undefined || req.body.type != "follower")
     return res.sendStatus(400)
@@ -120,3 +126,5 @@ app.delete('/:foreignAuthorId', async (req, res) => {
 
   return res.sendStatus(statusCode);
 })
+
+module.exports = router;

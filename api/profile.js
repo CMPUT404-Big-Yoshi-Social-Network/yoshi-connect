@@ -23,17 +23,13 @@ Foundation; All Rights Reserved
 const { checkExpiry } = require('../routes/auth');
 const { getProfile } = require('../routes/author');
 
-// Schemas
-// Schemas
-const { Author } = require('../scheme/author.js');
-
 // Router Setup
 const express = require('express'); 
 
 // Router
 const router = express.Router();
 
-app.get('/', async (req,res) => {
+router.get('/', async (req,res) => {
     if (await checkExpiry(req)) { return res.sendStatus(401); }
     getProfile(req, res);
 })

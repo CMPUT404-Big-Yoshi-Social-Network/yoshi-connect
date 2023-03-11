@@ -23,16 +23,13 @@ Foundation; All Rights Reserved
 const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor } = require('./routes/author');
 const { checkExpiry } = require('../routes/auth');
 
-/**
- * @openapi
- * /api/authors:
- *  get:
- *    description: Get a list of authors, paginated. by default it's page 1 with size 1. Currently pages are broken
- *    responses:
- *      200:
- *        description: A list of authors
- */
-app.get('/api/authors', async (req, res) => {
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router();
+
+router.get('/api/authors', async (req, res) => {
   if((await checkExpiry(req, res))){ return res.sendStatus(401) }
   if (req.body.data.status === 'Fetching authorId') { await getCurrentAuthor(req); }
 
@@ -50,18 +47,7 @@ app.get('/api/authors', async (req, res) => {
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}:
- *  get:
- *    description: Fetchs a single Author object from the database and sends it back as a JSON object
- *    responses:
- *      404:
- *        description: Returns Status 404 when an Author does not exist 
- *      500:
- *        description: Returns Status 500 when the server is unable to retrieve the Author from the database
- */
-app.get('/api/authors/:authorId', async (req, res) => {
+router.get('/api/authors/:authorId', async (req, res) => {
   if(req.params.authorId == undefined)
     return res.sendStatus(404);
 
@@ -87,20 +73,7 @@ app.get('/api/authors/:authorId', async (req, res) => {
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}:
- *  post:
- *    description: Updates the Author objects attributes
- *    responses:
- *      404:
- *        description: Returns Status 404 when the cookies don't exist
- *      400:
- *        description: Returns Status 400 when the body type doesn't match the author 
- *      400:
- *        description: Returns Status 400 when the author ID, host, nor username are valid 
- */
-app.post('/api/authors/:authorId', async (req, res) => {
+router.post('/api/authors/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);
   if(req.body.type !== 'author')
@@ -115,3 +88,5 @@ app.post('/api/authors/:authorId', async (req, res) => {
 
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
+
+module.exports = router;

@@ -23,16 +23,13 @@ Foundation; All Rights Reserved
 const { sendRequest, apideleteRequest, getRequests, getRequest } = require('./routes/request');
 const { checkExpiry } = require('../routes/auth');
 
-/**
- * @openapi
- * /api/authors/{authorId}/requests:
- *  put:
- *    description: Saves the Request for the Foreign Author from the Author into the database 
- *    responses:
- *      200:
- *        description: Returns the JSON object representing the Request  
- */
-app.get('/', async (req, res) => {
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router();
+
+router.get('/', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
 
@@ -44,32 +41,14 @@ app.get('/', async (req, res) => {
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/requests/{foreignAuthorId}:
- *  put:
- *    description: Saves the Request for the Foreign Author from the Author into the database 
- *    responses:
- *      200:
- *        description: Returns the JSON object representing the Request  
- */
-app.get('/:foreignAuthorId', async (req, res) => {
+router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
   await getRequest(authorId, foreignId);
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/requests/{foreignAuthorId}:
- *  put:
- *    description: Saves the Request for the Foreign Author from the Author into the database 
- *    responses:
- *      200:
- *        description: Returns the JSON object representing the Request  
- */
-app.put('/:foreignAuthorId', async (req, res) => {
+router.put('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
@@ -83,16 +62,7 @@ app.put('/:foreignAuthorId', async (req, res) => {
   })
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/requests/{foreignAuthorId}:
- *  delete:
- *    description: Deletes a Request made by the Author  to Foreign Author
- *    responses:
- *     200:
- *        description: Returns the JSON object representing the Request 
- */
-app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+router.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
@@ -105,3 +75,5 @@ app.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) 
     "object": request.object
   })
 })
+
+module.exports = router;

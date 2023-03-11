@@ -23,16 +23,13 @@ Foundation; All Rights Reserved
 const { getFriends, isFriend } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
-/**
- * @openapi
- * /api/authors/{authorId}/friends:
- *  get:
- *    description: Gets the author's followers and friends as objects from the database and sends it back as a JSON object
- *    responses:
- *      404:
- *        description: Returns Status 404 when there are no existing followers or friends
- */
-app.get('/', async (req, res) => {
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router();
+
+router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
 
   const friends = await getFriends(authorId);
@@ -69,19 +66,12 @@ if(friends == 404) return res.send(404);
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/friends/{foreignId}:
- *  get:
- *    description: Gets the author's followers and friends as objects from the database and sends it back as a JSON object
- *    responses:
- *      404:
- *        description: Returns Status 404 when there are no existing followers or friends
- */
-app.post('/', async (req, res) => {
+router.post('/', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
 
   await isFriend(authorId, foreignId);
 })
+
+module.exports = router;

@@ -24,7 +24,6 @@ const { authAuthor, removeLogin, checkExpiry, checkAdmin } = require('../routes/
 const { addAuthor, modifyAuthor, deleteAuthor } = require('../routes/admin');
 
 // Schemas
-// Schemas
 const { Author } = require('../scheme/author.js');
 
 // Router Setup

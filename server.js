@@ -27,14 +27,6 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
-// OpenAPI
-const {options} = require('./openAPI/options.js');
-
-// Swaggerio
-const swaggerUi = require("swagger-ui-express");
-const swaggerJsdoc = require('swagger-jsdoc');
-const openapiSpecification = swaggerJsdoc(options);
-
 // App Setup
 const express = require('express');
 const app = express();

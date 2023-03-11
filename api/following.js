@@ -23,16 +23,13 @@ Foundation; All Rights Reserved
 const { getFollowings } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
-/**
- * @openapi
- * /api/authors/{authorId}/followings:
- *  get:
- *    description: Gets the author's followers and friends as objects from the database and sends it back as a JSON object
- *    responses:
- *      404:
- *        description: Returns Status 404 when there are no existing followers or friends
- */
-app.get('/', async (req, res) => {
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router();
+
+router.get('/', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
 
@@ -70,7 +67,7 @@ app.get('/', async (req, res) => {
   });
 })
 
-app.delete('/:foreignAuthorId', async (req, res) => {
+router.delete('/:foreignAuthorId', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   if(req.body.type == undefined || req.body.type != "follower") return res.sendStatus(400)
 
@@ -81,3 +78,5 @@ app.delete('/:foreignAuthorId', async (req, res) => {
 
   return res.sendStatus(statusCode);
 })
+
+module.exports = router;

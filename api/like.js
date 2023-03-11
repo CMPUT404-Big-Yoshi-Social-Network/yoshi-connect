@@ -22,17 +22,13 @@ Foundation; All Rights Reserved
 // Routing Functions 
 const { getAuthorLikes, apifetchLikes, apiFetchCommentLikes } = require('./routes/post');
 
+// Router Setup
+const express = require('express'); 
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}/likes:
- *  get:
- *    description: Fetches the likes related to a specific Post made by a specific Author (paginated)
- *    responses:
- *      200:
- *        description: Returns 200 if the likes were successfully fetched (i.e., return the likes )
- */
-app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
+// Router
+const router = express.Router();
+
+router.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
   let page = req.query.page;
@@ -56,16 +52,7 @@ app.get('/api/authors/:authorId/posts/:postId/likes', async (req, res) => {
 
 })
 
-/**
- * @openapi
- * /api/authors/:authorId/posts/:postId/comments/:commentId/likes:
- *  get:
- *    description: Fetches the likes on a specific comment on a specific post by a specific author
- *    responses:
- *      200:
- *        description: Returns 200 if server retrieves the likes for the comment on a post 
- */
-app.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
+router.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
   const commentId = req.params.commentId
@@ -90,16 +77,7 @@ app.get('/api/authors/:authorId/posts/:postId/comments/:commentId/likes', async 
     })
  })
 
-/**
- * @openapi
- * /api/authors/:authorId/liked:
- *  get:
- *    description: Fetches all the likes the author has made 
- *    responses:
- *      200:
- *        description: Returns 200 with the list of likes the author has made
- */
-app.get('/api/authors/:authorId/liked', async (req, res) => {
+router.get('/api/authors/:authorId/liked', async (req, res) => {
   const authorId = req.params.authorId;
 
   const liked = getAuthorLikes(authorId);
@@ -109,3 +87,5 @@ app.get('/api/authors/:authorId/liked', async (req, res) => {
       "items": liked
   })
 })
+
+module.exports = router;

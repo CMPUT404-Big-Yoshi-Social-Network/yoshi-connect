@@ -71,7 +71,7 @@ function Post({viewerId, post}) {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/posts/',
+                url: '/api/posts/',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -83,7 +83,7 @@ function Post({viewerId, post}) {
                 }
             }
             axios
-            .post('/server/posts/', config)
+            .post('/api/posts/', config)
             .then((response) => {
                 if (response.data.status === 'liked') { setLike(true); } else { setLike(false); }
             })

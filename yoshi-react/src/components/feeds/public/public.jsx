@@ -61,28 +61,27 @@ function PublicFeed() {
          */
         const getId = () => {
             /**
-             * Description: Sends a POST request to get the author's id 
+             * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
-             * REFACTOR: TODO
              */
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/posts/',
+                url: '/api/authors/',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: { status: 'Fetching current authorId' }
+                data: {
+                    status: 'Fetching authorId'
+                }
             }
 
             axios
-            .post('/server/posts/', config)
+            .post('/api/authors/', config)
             .then((response) => {
-                let viewerId = response.data.authorId;
-                setViewerId({
-                    viewerId: viewerId
-                  })
+                let viewerId = response.data.author._id;
+                setViewerId({ viewerId: viewerId })
             })
             .catch(err => { });
         }

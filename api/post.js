@@ -22,6 +22,12 @@ Foundation; All Rights Reserved
 // Routing Functions 
 const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('./routes/post');
 
+app.post('/api/posts/', async (req, res) => {
+  if (req.body.data.status == 'Checking if post is already liked') {
+    await hasLiked(req, res);
+  }
+})
+
 /**
  * @openapi
  * /api/authors/{authorId}/posts/{postId}:

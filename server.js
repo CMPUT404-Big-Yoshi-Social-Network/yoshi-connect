@@ -82,20 +82,6 @@ if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-re
 
 app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
 
-app.post('/server/posts/', async (req, res) => {
-  if ( req.body.data.status == 'Fetching current authorId') { 
-    console.log('Debug: Getting the current author logged in');
-    await getCurrentAuthor(req, res);
-  } else if (req.body.data.status == 'Checking if post is already liked') {
-    await hasLiked(req, res);
-  } else if (req.body.data.status == 'Fetching authorId') {
-    await getAuthorByPost(req, res);
-  } else {
-    console.log('Debug: Paging the posts created by other (not the logged in author)');
-    await getPostsPaginated(req, res);
-  }
-})
-
 app.put('/server/authors/:author_id/posts/', async (req, res) => {
   console.log('Debug: Creating a post')
   await createPost(req, res);

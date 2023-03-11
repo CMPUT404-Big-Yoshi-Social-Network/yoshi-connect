@@ -61,20 +61,33 @@ function CreatePost() {
          * Request: POST
          * Returns: N/A
          */
-       let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/posts/',
-            headers: { 'Content-Type': 'application/json' },
-            data: { sessionId: localStorage.getItem('sessionId'), status: 'Fetching current authorId' }
+        const getId = () => {
+            /**
+             * Description: Sends a POST request to get the current author's id 
+             * Request: POST
+             * Returns: N/A
+             */
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/api/authors/',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    status: 'Fetching authorId'
+                }
+            }
+
+            axios
+            .post('/api/authors/', config)
+            .then((response) => {
+                let authorId = response.data.author._id;
+                setData(prevAuthorId => ({...prevAuthorId, authorId}))
+            })
+            .catch(err => { });
         }
-        axios
-        .post('/server/posts/', config)
-        .then((response) => {
-            let authorId = response.data.authorId;
-            setData(prevAuthorId => ({...prevAuthorId, authorId}))
-        })
-        .catch(err => { });
+        getId();
     }, []);
     
     const savePost = () => {

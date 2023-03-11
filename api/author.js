@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
+const { checkExpiry } = require('../routes/auth');
 
 /**
  * @openapi
@@ -32,6 +33,9 @@ const { getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
  *        description: A list of authors
  */
 app.get('/api/authors', async (req, res) => {
+  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
+  if (req.body.data.status === 'Fetching authorId') { await getCurrentAuthor(req); }
+
   const page = req.query.page;
   const size = req.query.size;
   if(page == undefined)

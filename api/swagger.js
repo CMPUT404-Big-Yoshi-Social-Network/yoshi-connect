@@ -27,7 +27,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require('swagger-jsdoc');
 const openapiSpecification = swaggerJsdoc(options);
 
-app.use('/server/api-docs',
+app.use('/api/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(openapiSpecification)
 );

@@ -52,37 +52,6 @@ function Settings() {
     })
     useEffect(() => {
         /**
-         * Description: Before render, checks if the author is logged in to authorize routing
-         * Request: GET
-         * Returns: N/A
-         */
-        const checkExpiry = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                if (response.data.status === "Expired") {
-                    console.log("Debug: Your token is expired.")
-                    LogOut();
-                    navigate('/');
-                }
-                else{console.log('Debug: Your token is not expired.')}
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); // 401 Not Found
-                }
-            });
-        }
-        checkExpiry();
-    })
-    useEffect(() => {
-        /**
          * Description: Before render, checks the author's account details
          * Request: POST
          * Returns: N/A
@@ -111,33 +80,6 @@ function Settings() {
         }
         getAuthor();
     }, [])
-    const LogOut = () => {
-        /**
-         * Description: Logs the author out
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                message: 'Logging Out'
-            }
-        }
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }
     const modify = (e) => {
         /**
          * Description: Updates the new author's account details

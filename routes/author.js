@@ -346,6 +346,19 @@ async function getAuthors(page, size){
     return sanitizedAuthors;
 }
 
+async function getCurrentAuthor(req, res){
+    /**
+     * Description: Retrieves the current author's authorId 
+     * Returns: Status 404 if there is no login document for the token stored in cookies 
+     *          If successful, the authorId is sent to client 
+     */
+    const login = await Login.findOne({token: req.cookies.token})
+    if (!login) { return res.sendStatus(404); }
+    const author = await Author.findOne({_id: login.authorId })
+    if (!author) { return res.sendStatus(404); }
+    return res.json({ author: author })
+}
+
 module.exports={
     registerAuthor,
     getProfile,

@@ -50,6 +50,7 @@ const followings = require('./api/following');
 const profile = require('./api/profile');
 const friends = require('./api/friend');
 const requests = require('./api/request');
+const apiDocs = require('./api/swagger');
 
 // Routing Functions 
 const { removeLogin, checkExpiry, sendCheckExpiry } = require('./routes/auth');
@@ -71,17 +72,13 @@ app.use("/api/signup", signup);
 app.use("/api/login", login);
 app.use("/api/admin", admin);
 app.use("/api/authors/:authorId/followers", followers);
-app.use("/api/authors/:authorId/followings", followings)
+app.use("/api/authors/:authorId/followings", followings);
 app.use("/api/profile", profile);
-app.use("/api/authors/:authorId/friends", friends)
-app.use("/api/authors/:authorId/requests", requests)
+app.use("/api/authors/:authorId/friends", friends);
+app.use("/api/authors/:authorId/requests", requests);
+app.use("/api/api-docs", apiDocs);
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
-
-app.use('/server/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(openapiSpecification)
-);
 
 app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
 
@@ -196,11 +193,13 @@ app.post('/server/public/posts', async (req, res) => {
 })
 
 app.post('/server/settings', async (req, res) => {
+  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
   console.log('Debug: Updating author account details');
   if (req.body.data.status === 'Get Author') { await getCurrentAuthorAccountDetails(req, res); }
 })
 
 app.put('/server/settings', async (req, res) => {
+  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
   console.log('Debug: Updating author account details');
   if (req.body.data.status === 'Modify an Author') { await updateAuthor(req, res); }
 })

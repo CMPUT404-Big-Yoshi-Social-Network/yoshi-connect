@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
 
   const followers = await getFollowers(authorId);
 
-  if(followers == 404 || followings == 404) return res.send(404);
+  if(followers == 404) return res.send(404);
 
   sanitizedObjects = [];
   for(let i = 0; i < followers.length; i++){
@@ -73,8 +73,8 @@ router.get('/:foreignAuthorId', async (req, res) => {
 
   const followers = await getFollowers(authorId);
 
-  if(followers == 404 || friends == 404)
-    return res.send(404);
+  if(followers == 404)
+    return res.sendStatus(404);
 
   for(let i = 0; i < followers.length; i++){
     const follower = followers[i];

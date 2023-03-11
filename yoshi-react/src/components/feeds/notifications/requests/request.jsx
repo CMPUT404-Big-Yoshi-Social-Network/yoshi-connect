@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import React from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Request(props) {
     /**
@@ -32,6 +33,8 @@ function Request(props) {
      *     - rejectRequest(): Deletes a request if it is rejected by the author 
      * Returns: N/A
      */
+    const navigate = useNavigate();
+
     const addRequest = () => {
         /**
          * Description: Adds the authour if the request is accpeted
@@ -49,10 +52,15 @@ function Request(props) {
         }
         axios
         .put('/api/authors/' + props.actor._id + '/followers/' + props.object._id, config)
-        .then((response) => {
-        })
+        .then((response) => { })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE');
+            }
         });
     }
     const rejectRequest = () => {
@@ -74,7 +82,13 @@ function Request(props) {
         .delete('/server/requests', config)
         .then((response) => { })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE');
+            }
         });
     }
     return (

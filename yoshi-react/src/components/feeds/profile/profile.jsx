@@ -133,7 +133,7 @@ function Profile() {
                 setPosts(response.data.posts)
             })
             .catch(err => {
-                console.error(err);
+                if (err.response.status === 404) { setPosts([]); }
             });
         }
     }, [navigate, username, personal])
@@ -155,11 +155,9 @@ function Profile() {
             }
             axios
             .post('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
-            .then((response) => {
-                exists.current = true;
-            })
+            .then((response) => { exists.current = true; })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 404) { exists.current = false; }
             });
         }
     }, [username, exists, personal]);
@@ -176,26 +174,25 @@ function Profile() {
                 method: 'post',
                 maxBodyLength: Infinity,
                 url: '/api/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
-                headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             }
             axios
             .post('/api/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status === 'Friends') {
-                    console.log('Debug: They are friends.')
                     setRequestButton('Unfriend');
                 } else if (response.data.status === 'Follows') {
-                    console.log('Debug: They are follows.')
                     setRequestButton('Unfollow');
+                } else if (response.data.status === 'Strangers') {
+                    setRequestButton('Add');
                 }
             })
             .catch(err => {
-            console.error(err);
+                if (err.response.status === 500) { console.log('500 PAGE') }
             });
         }
     }, [username, personal, exists, setRequestButton, requestButton])
+
     const SendRequest = () => {
         if (requestButton === "Add") {
             setRequestButton('Sent');
@@ -236,7 +233,7 @@ function Profile() {
                   } else if (err.response.status === 400) {
                     navigate('/badrequest');
                   } else if (err.response.status === 500) {
-                    console.log('NEED 500 PAGE')
+                    console.log('500 PAGE')
                   }
             });
         } else if (requestButton === 'Unfriend') {
@@ -258,7 +255,13 @@ function Profile() {
                 }
             })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                  } else if (err.response.status === 400) {
+                    navigate('/badrequest');
+                  } else if (err.response.status === 500) {
+                    console.log('500 PAGE')
+                  }
             });
         } else if (requestButton === "Unfollow") {
             console.log('Debug: We want to unfollow.')
@@ -279,7 +282,13 @@ function Profile() {
                 }
             })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                  } else if (err.response.status === 400) {
+                    navigate('/badrequest');
+                  } else if (err.response.status === 500) {
+                    console.log('500 PAGE')
+                  }
             });
         }
     }

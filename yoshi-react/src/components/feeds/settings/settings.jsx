@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // Child Component
 import TopNav from '../navs/top/nav.jsx';
@@ -43,6 +44,7 @@ function Settings() {
      *     - modify(): Updates the new author's account details
      * Returns: N/A
      */
+    const navigate = useNavigate();
     const [newAuthor, setNewAuthor] = useState({
         newUsername: '',
         newPassword: '',
@@ -58,26 +60,30 @@ function Settings() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/settings/',
+                url: '/api/authors/' + null,
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                data: {
-                    status: 'Get Author'
                 }
             }
+
             axios
-            .post('/api/settings/', config)
+            .post('/api/authors/' + null, config)
             .then((response) => {
-                setNewAuthor({
-                    newUsername: response.data.author.username,
-                    newEmail: response.data.author.email
-                })
+                let username = response.data.author.username;
+                let email = response.data.author.email;
+                setNewAuthor({ newUsername: username })
+                setNewAuthor({ newEmail: email })
             })
-            .catch(err => { });
+            .catch(err => { 
+                if (err.response.status === 404) { 
+                    navigate('/notfound'); 
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                }
+            });
         }
         getAuthor();
-    }, [])
+    }, [navigate])
     const modify = (e) => {
         /**
          * Description: Updates the new author's account details
@@ -89,7 +95,7 @@ function Settings() {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/server/settings',
+            url: '/api/settings',
             headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -102,12 +108,18 @@ function Settings() {
         }
 
         axios
-        .put('/server/settings', config)
-        .then((response) => {
-            console.log('Debug: Author has been updated!')
-        })
+        .put('/api/settings', config)
+        .then((response) => { })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 404) {
+                alert('No Author to update.');
+            } else if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 500) {
+                console.log('500 PAGE')
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized')
+            }
         });
     }
     return (

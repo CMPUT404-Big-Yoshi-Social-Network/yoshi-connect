@@ -26,10 +26,6 @@ import React, { useEffect } from "react";
 import Requests from './requests/requests.jsx';
 
 function Notifications(props) {
-    /**
-     * Description: Represents a notification 
-     * Returns: N/A
-     */
     useEffect(() => {
      });
     return (

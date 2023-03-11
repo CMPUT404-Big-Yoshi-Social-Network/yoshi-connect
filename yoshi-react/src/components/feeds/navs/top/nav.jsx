@@ -31,13 +31,7 @@ import Notifications from '../../notifications/notifcation-box';
 import './nav.css'
 
 function TopNav(props) {
-    /**
-     * Description: Represents the top navigation bar
-     * Returns: N/A
-     */
     return (
-        // TODO: Need to Add Search functionality and Notification Functionality
-        // Might need to query notifications and use map (refer to leftNav.jsx
         <Navbar className='topNav'>
             <Navbar.Brand className='topNavBrand' href='/feed'>
                 <img className='topLogo' src='/images/yoshi_connect_logo2.png' width={40} height={40} alt='logo'/>

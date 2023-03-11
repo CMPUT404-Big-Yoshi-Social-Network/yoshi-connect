@@ -37,7 +37,7 @@ import AdminDashboard from "./components/admin/dashboard/adminDashboard.jsx";
 
 // Feeds
 import PublicFeed from "./components/feeds/public/public.jsx";
-import FriendFeed from "./components/feeds/friends/friendFeed.jsx";
+import FriendFeed from "./components/feeds/friends/feed.jsx";
 import Messages from "./components/feeds/messages/messages.jsx";
 
 // Author Specifics

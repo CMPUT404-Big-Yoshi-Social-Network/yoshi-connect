@@ -23,13 +23,6 @@ Foundation; All Rights Reserved
 import React from "react";
 
 export default function ApiDocs() {
-  //let html_docs = "";
-  //const get_docs = async () => {
-    //return await axios.get("/server/api-docs");
-  //}
-  //useEffect( () => {
-    //html_docs = get_docs();
-  //});
   const style = {
     position:'absolute',
     top:'0',

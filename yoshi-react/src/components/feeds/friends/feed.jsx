@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import TopNav from '../navs/top/nav.jsx';
@@ -32,7 +33,7 @@ import RightNavBar from '../navs/right/nav.jsx';
 import Posts from '../../posts/posts.jsx';
 
 // Styling
-import './friendFeed.css';
+import './feed.css';
 
 function FriendFeed() {
     /**
@@ -50,6 +51,7 @@ function FriendFeed() {
      */
     const [friendPosts, setFriendPosts] = useState([]);
     const [viewer, setViewerId] = useState({ viewerId: '' })
+    const navigate = useNavigate();
 
     useEffect(() => {
         /**
@@ -68,22 +70,19 @@ function FriendFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/authors/',
+                url: '/api/authors/' + null,
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                data: {
-                    status: 'Fetching authorId'
                 }
             }
 
             axios
-            .post('/api/authors/', config)
+            .post('/api/authors/' + null, config)
             .then((response) => {
                 let viewerId = response.data.author._id;
                 setViewerId({ viewerId: viewerId })
             })
-            .catch(err => { });
+            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
         }
 
         const getPosts = () => {
@@ -96,23 +95,24 @@ function FriendFeed() {
                 method: 'post',
                 maxBodyLength: Infinity,
                 url: '/api/authors/' + viewer.viewerId + '/friends/posts',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    sessionId: localStorage.getItem('sessionId'),
-                }
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             }
 
             axios
             .post('/api/authors/' + viewer.viewerId + '/friends/posts', config)
             .then((response) => { setFriendPosts(response.data.friendPosts) })
-            .catch(err => { console.error(err); });
+            .catch(err => {
+                if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 404) {
+                    setFriendPosts([]);
+                }
+             });
         }
 
         getId();
         getPosts();
-    }, [viewer]);
+    }, [viewer, navigate]);
 
     return (
         <div>
@@ -122,7 +122,14 @@ function FriendFeed() {
                     <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
+                    { friendPosts === undefined || friendPosts.length === 0 ? 
+                        <div>
+                            <h4>No posts to show.</h4>
+                        </div> : 
+                        <div>
+                            <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
+                        </div>
+                    }
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

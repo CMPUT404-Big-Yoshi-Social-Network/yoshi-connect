@@ -194,15 +194,32 @@ async function isFriend(authorId, foreignId) {
     //get followers for authorId
     //get following for authorId
     //check if both are real
+    let actorFollows = false;
+    let objectFollows = false;
     follower = await Follower.findOne({authorId: authorId}, {followers: {$elemMatch: {authorId : {$eq: foreignId}}}});
-    console.log(follower);
+    if (follower) { objectFollows = true; }
     following = await Following.findOne({authorId: authorId}, {following: {$elemMatch: {authorId : {$eq: foreignId}}}});
-    console.log(following);
-    return 200;
+    if (following) { actorFollows = true; }
+    if (actorFollows && objectFollows) {
+        return res.json({
+            status: 'Friends'
+        }) 
+    } else {
+        if (actorFollows && !objectFollows) {
+            return res.json({
+                status: 'Follows'
+            })  
+        } else if (!actorFollows) {
+            return res.json({
+                status: 'Strangers'
+            })  
+        }
+    }
 }
 
 async function fetchFriendPosts(req, res) {
     //TODO GET FRIEND POSTS
+    return res.sendStatus(404); // TEMPORARY
 
 }
 

@@ -366,7 +366,7 @@ async function getRequests(authorId) {
 
 async function getRequest(authorId, foreignId) {
     await Request.findOne({actor: authorId, object: foreignId}, function(err, request){
-        if (!request) { console.log('Debug: Does not exist') }
+        if (!request) { return res.sendStatus(404); }
         return res.json({
             request: request
         })

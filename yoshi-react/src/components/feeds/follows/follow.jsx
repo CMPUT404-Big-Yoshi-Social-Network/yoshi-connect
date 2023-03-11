@@ -23,10 +23,6 @@ Foundation; All Rights Reserved
 import React from "react";
 
 function Follow(props) {
-    /**
-     * Description: Represents the author as a follower 
-     * Returns: N/A
-     */
     return (
         <div id='follow'>
             { props.displayName }

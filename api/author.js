@@ -31,50 +31,47 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
+  if (await checkExpiry(req, res)) { return res.sendStatus(401) }
 
-  if (req.body.data.status === 'Fetching authorId') { 
-    await getCurrentAuthor(req); 
-  } else {
-    const page = req.query.page;
-    const size = req.query.size;
-  
-    if (page == undefined) page = 1;
-    if (size == undefined) size = 5;
-  
-    const sanitizedAuthors = await getAuthors(page, size);
-  
-    return res.json({
-      "type": "authors",
-      "items": [sanitizedAuthors]
-    });
-  }
+  const page = req.query.page;
+  const size = req.query.size;
+
+  if (page == undefined) page = 1;
+  if (size == undefined) size = 5;
+
+  const sanitizedAuthors = await getAuthors(page, size);
+
+  return res.json({
+    "type": "authors",
+    "items": [sanitizedAuthors]
+  });
 })
 
 router.get('/:authorId', async (req, res) => {
-  if(req.params.authorId == undefined)
-    return res.sendStatus(404);
+  if (req.params.authorId == null) { 
+    await getCurrentAuthor(req); 
+  } else {
+    if (req.params.authorId == undefined) return res.sendStatus(404);
 
-  let author = await getAuthor(req.params.authorId);
-
-  if(author === 404)
-    return res.sendStatus(404);
-
-  if(author === 500)
-    return res.sendStatus(500);
-
-  return res.json({
-    "type": "author",
-    "id" : author._id,
-    "host": process.env.DOMAIN_NAME,
-    "displayname": author.username,
-    "url":  process.env.DOMAIN_NAME + "users/" + author._id,
-    "github": "",
-    "profileImage": "",
-    "email": author.email, 
-    "about": author.about,
-    "pronouns": author.pronouns
-  });
+    let author = await getAuthor(req.params.authorId);
+  
+    if (author === 404) return res.sendStatus(404);
+  
+    if (author === 500) return res.sendStatus(500);
+  
+    return res.json({
+      "type": "author",
+      "id" : author._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": author.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+      "github": "",
+      "profileImage": "",
+      "email": author.email, 
+      "about": author.about,
+      "pronouns": author.pronouns
+    });
+  }
 })
 
 router.post('/:authorId/posts', async (req, res) => {

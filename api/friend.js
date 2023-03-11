@@ -26,6 +26,9 @@ const { checkExpiry } = require('../routes/auth');
 // Router Setup
 const express = require('express'); 
 
+// Schemas
+const { Author } = require('../scheme/author');
+
 // Router
 const router = express.Router();
 
@@ -34,7 +37,7 @@ router.get('/', async (req, res) => {
 
   const friends = await getFriends(authorId);
 
-if(friends == 404) return res.send(404);
+  if (friends == 404) return res.sendStatus(404);
 
   sanitizedObjects = [];
   for(let i = 0; i < friends.length; i++){
@@ -66,7 +69,7 @@ if(friends == 404) return res.send(404);
   });
 })
 
-router.post('/', async (req, res) => {
+router.post('/:foreignId', async (req, res) => {
   if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;

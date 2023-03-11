@@ -26,6 +26,9 @@ const { checkExpiry } = require('../routes/auth');
 // Router Setup
 const express = require('express'); 
 
+// Schemas
+const { Author } = require('../scheme/author');
+
 // Router
 const router = express.Router();
 
@@ -42,8 +45,7 @@ router.get('/', async (req, res) => {
     const following = followings[i];
 
     const followingProfile = await Author.findOne({_id: following.authorId}); 
-    if(!followingProfile)
-      continue
+    if(!followingProfile) continue
 
       sanitizedObject = {
       "type": "author",

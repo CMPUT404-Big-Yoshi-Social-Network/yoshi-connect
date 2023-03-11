@@ -153,17 +153,6 @@ async function getProfile(req, res) {
     }
 }
 
-async function getCurrentAuthor(req, res){
-    /**
-     * Description: Retrieves the current author's authorId 
-     * Returns: Status 404 if there is no login document for the token stored in cookies 
-     *          If successful, the authorId is sent to client 
-     */
-    const login = await Login.findOne({token: req.cookies.token})
-    if (!login) { return res.sendStatus(404); }
-    return res.json({ authorId: login.authorId })
-}
-
 async function getCurrentAuthorUsername(req, res){
         /**
      * Description: Retrieves the current author's displayName 

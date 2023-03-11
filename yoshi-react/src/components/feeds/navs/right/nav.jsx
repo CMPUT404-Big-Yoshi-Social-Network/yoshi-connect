@@ -21,7 +21,7 @@ Foundation; All Rights Reserved
 
 // Functionality
 import React, { useEffect, useState } from 'react';
-// import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // Child Component
@@ -39,33 +39,31 @@ function RightNavBar() {
      * Returns: N/A
      */
     const [username, setUsername] = useState();
-
-    const getUsername = () => {
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/api/authors/',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: {
-                status: 'Fetching authorId'
-            }
-        }
-
-        axios
-        .get('/api/authors', config)
-        .then((response) => {
-            setUsername(response.data.author.username)
-        })
-        .catch(err => {
-            setUsername('');
-        });
-    }
+    const navigate = useNavigate();
     
     useEffect(() => {
+        const getUsername = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/api/authors/' + null,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: {
+                    status: 'Fetching authorId'
+                }
+            }
+    
+            axios
+            .get('/api/authors/' + null, config)
+            .then((response) => {
+                setUsername(response.data.author.username)
+            })
+            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
+        }
         getUsername();
-    }, [username])
+    }, [username, navigate])
 
     return (
         <Navbar className="right-column">

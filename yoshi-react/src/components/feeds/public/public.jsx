@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality 
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import TopNav from '../navs/top/nav.jsx';
@@ -53,6 +54,7 @@ function PublicFeed() {
      */
     const [publicPosts, setPublicPosts] = useState([]);
     const [viewer, setViewerId] = useState({ viewerId: '' })
+    const navigate = useNavigate();
 
     useEffect(() => {
         /**
@@ -68,22 +70,19 @@ function PublicFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/authors/',
+                url: '/api/authors/' + null,
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                data: {
-                    status: 'Fetching authorId'
                 }
             }
 
             axios
-            .post('/api/authors/', config)
+            .post('/api/authors/' + null, config)
             .then((response) => {
                 let viewerId = response.data.author._id;
                 setViewerId({ viewerId: viewerId })
             })
-            .catch(err => { });
+            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
         }
 
         const getPosts = () => {
@@ -96,20 +95,26 @@ function PublicFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/public/posts',
+                url: '/api/authors/' + viewer.viewerId + '/posts/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
 
             axios
-            .post('/server/public/posts', config)
+            .post('/api/authors/' + viewer.viewerId + '/posts/posts', config)
             .then((response) => { setPublicPosts(response.data.publicPosts) })
-            .catch(err => { console.error(err); });
+            .catch(err => { 
+                if (err.response.status === 404) { 
+                    setPublicPosts([]);
+                } else if (err.response.status === 500) {
+                    console.log('500 PAGE')
+                }
+            });
         }
         getId();
         getPosts();
-    }, []);
+    }, [navigate, viewer]);
 
     return (
         <div>
@@ -119,7 +124,14 @@ function PublicFeed() {
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
+                    { publicPosts === undefined || publicPosts.length === 0 ? 
+                            <div>
+                                <h4>No posts to show.</h4>
+                            </div> : 
+                            <div>
+                                <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
+                            </div>   
+                    }                 
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

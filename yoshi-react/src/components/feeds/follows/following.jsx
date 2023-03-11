@@ -43,25 +43,35 @@ function Following(props) {
          * Request: POST 
          * Returns: N/A
          */
-       console.log('Debug: Fetching all followings for this author')
        axios
        .post('/api/authors/' + props.authorId + '/followings')
        .then((response) => { setFollowings(response.data.items) })
        .catch(err => {
-        if (err.response.status === 404) {
-            navigate('/notfound')
-          }
+            if (err.response.status === 404) {
+                navigate('/notfound')
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized')
+            } else if (err.response.status === 404) {
+                setFollowings([]);
+            }
        });
     }, [navigate, props]);
 
     return (
         <div className='following-column' style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Following</h3>
-            {(followings === undefined) ? null :
+            { followings === undefined || followings.length === 0 ? 
                 <div>
-                    {Object.keys(followings).map((following, idx) => (
-                        <Follow className='following' key={idx} {...followings[following]}/>
-                    ))}
+                    <h4>You are not following anyone.</h4>
+                </div> :
+                <div>
+                    {(followings === undefined) ? null :
+                        <div>
+                            {Object.keys(followings).map((following, idx) => (
+                                <Follow className='following' key={idx} {...followings[following]}/>
+                            ))}
+                        </div>
+                    }
                 </div>
             }
         </div>

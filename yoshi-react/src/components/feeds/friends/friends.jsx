@@ -36,12 +36,6 @@ function Friends(props) {
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
-        /**
-         * Description: Fetches all the Author objects that are friends with the current author 
-         * Request: POST
-         * Returns: N/A 
-         */
-        console.log('Debug: Fetching all the friends for this author')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -51,13 +45,15 @@ function Friends(props) {
         axios
         .post('/api/authors/' + props.authorId + '/friends', config)
         .then((response) => { setFriends(response.data.items) })
-        .catch(err => { console.error(err); });
+        .catch(err => { 
+            if (err.response.status === 404) { setFriends([]); }
+         });
     }, [setFriends, props]);
 
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Friends</h3>
-            { (friends === undefined) ? null :
+            { friends === undefined || friends.length === 0 ? null :
                 <div>
                     {Object.keys(friends).map((friend, idx) => (
                         <Friend key={idx} {...friends[friend]}/>

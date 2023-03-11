@@ -21,12 +21,18 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('../routes/post');
+const { fetchPublicPosts } = require('../routes/public');
 
 // Router Setup
 const express = require('express'); 
 
 // Router
 const router = express.Router();
+
+app.post('/public', async (req, res) => {
+  console.log('Debug: Getting the author following/public posts');
+  await fetchPublicPosts(req, res);
+})
 
 router.get('/:postId', async (req, res) => {
   if(req.params.authorId == undefined) return res.sendStatus(404);

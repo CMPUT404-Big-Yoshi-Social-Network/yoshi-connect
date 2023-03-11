@@ -46,7 +46,7 @@ function Messages() {
                 </div>
                 <div className='pubColM'>
                     <div style={{paddingLeft: '1em'}}>
-                        Viewing your messages with X user.
+                        IN CONSTRUCTION
                     </div>
                 </div>
                 <div className='pubColR'>

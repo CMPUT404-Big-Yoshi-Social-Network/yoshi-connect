@@ -76,7 +76,7 @@ router.post('/:authorId', async (req, res) => {
 
   const authorId = req.body.id;
   const host = req.body.host;
-  const username = req.body.url;
+  const username = req.body.displayName;
   const url = req.body.url;
 
   if(!authorId || !host || !username || !url)

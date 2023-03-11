@@ -29,7 +29,7 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-app.post('/public', async (req, res) => {
+router.post('/public', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
   await fetchPublicPosts(req, res);
 })

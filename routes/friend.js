@@ -298,5 +298,6 @@ module.exports={
     fetchFriendPosts,
     getFollowers,
     getFriends,
-    addFollower
+    addFollower,
+    deleteFollower
 }

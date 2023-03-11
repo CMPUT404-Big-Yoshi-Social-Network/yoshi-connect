@@ -45,13 +45,13 @@ import Profile from "./components/feeds/profile/profile.jsx";
 import Settings from './components/feeds/settings/settings.jsx';
 
 // Errors
-import PageNotFound from "./components/user-error/404/404.jsx";
-import UserForbidden from "./components/user-error/403/403.jsx";
-import UserUnauthorized from "./components/user-error/401/401.jsx";
-import BadRequest from './components/user-error/400/400.jsx';
+import PageNotFound from "./components/userError/404/404.jsx";
+import UserForbidden from "./components/userError/403/403.jsx";
+import UserUnauthorized from "./components/userError/401/401.jsx";
+import BadRequest from './components/userError/400/400.jsx';
 
 // API Docs
-import ApiDocs from "./components/api-docs/apiDocs.jsx";
+import ApiDocs from "./components/apiDocs/apiDocs.jsx";
 
 const router = createBrowserRouter([
   {

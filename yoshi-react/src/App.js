@@ -51,7 +51,7 @@ import UserUnauthorized from "./components/user-error/401/401.jsx";
 import BadRequest from './components/user-error/400/400.jsx';
 
 // API Docs
-import ApiDocs from "./components/api-docs/api-docs.jsx";
+import ApiDocs from "./components/api-docs/apiDocs.jsx";
 
 const router = createBrowserRouter([
   {

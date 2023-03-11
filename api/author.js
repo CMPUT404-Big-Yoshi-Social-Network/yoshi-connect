@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor, fetchMyPosts } = require('../routes/author');
+const { getAuthor, apiUpdateAuthor, getAuthors, fetchMyPosts } = require('../routes/author');
 const { getAuthorLikes } = require('../routes/post');
 const { checkExpiry } = require('../routes/auth');
 

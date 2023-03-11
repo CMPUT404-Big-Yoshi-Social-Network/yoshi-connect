@@ -20,7 +20,6 @@ Foundation; All Rights Reserved
 */ 
 
 // Routing Functions 
-const { getProfile } = require('../routes/author');
 const { getUserInfo } = require('../routes/userinfo');
 
 // Router Setup

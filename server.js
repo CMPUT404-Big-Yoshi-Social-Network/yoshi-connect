@@ -152,11 +152,6 @@ app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   }
 })
 
-app.post('/server/users/posts', async (req, res) => {
-  console.log('Debug: Getting the author posts');
-  await fetchMyPosts(req, res);
-})
-
 app.post('/server/public/posts', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
   await fetchPublicPosts(req, res);

@@ -74,6 +74,11 @@ router.get('/:authorId', async (req, res) => {
   });
 })
 
+router.post('/:authorId/posts', async (req, res) => {
+  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
+  await fetchMyPosts(req, res);
+})
+
 router.post('/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);

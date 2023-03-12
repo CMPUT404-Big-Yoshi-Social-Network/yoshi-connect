@@ -251,7 +251,7 @@ async function apiUpdateAuthor(token, author){
      * Returns: Status 401 if the there is no valid authentication 
      *          Status 200 if the author was successfully updated
      */
-    if (await authLogin(token, author.id, author.displayName) == false) {
+    if (await authLogin(token, author.id) == false) {
         return 401; 
     }
 

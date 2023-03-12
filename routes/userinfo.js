@@ -20,22 +20,15 @@ Foundation; All Rights Reserved
 */
 
 const { Login } = require('../scheme/author.js');
+const { checkExpiry } = require('./auth.js');
 const { getAuthor } = require('./author.js')
 
 async function getUserInfo(token){
+    if(await checkExpiry(token)){
+        return [{}, 401];
+    }
+    
     const login = await Login.findOne({token: token}); 
-
-    if(login == undefined){
-        return [{}, 404];
-    }
-
-    //TODO refactor checkExpiry function and replace this with checkExpiry
-    let expiresAt = new Date(login.expires);
-    let current = new Date();
-
-    if (expiresAt.getTime() < current.getTime()) {
-        return [{}, 404];
-    }
 
     const authorId = login.authorId;
 

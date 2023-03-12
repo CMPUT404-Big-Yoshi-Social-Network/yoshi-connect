@@ -29,7 +29,6 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
-  //if (await checkExpiry(req, res)) { return res.sendStatus(401) }
 
   let page = req.query.page;
   let size = req.query.size;

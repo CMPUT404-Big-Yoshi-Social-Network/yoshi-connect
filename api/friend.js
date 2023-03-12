@@ -70,7 +70,7 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/:foreignId', async (req, res) => {
-  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
 
@@ -78,7 +78,7 @@ router.post('/:foreignId', async (req, res) => {
 })
 
 router.post('/posts', async (req, res) => {
-  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
   fetchFriendPosts(req, res);
 })
 

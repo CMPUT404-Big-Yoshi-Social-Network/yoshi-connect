@@ -30,7 +30,7 @@ const { Friend } = require('../scheme/relations.js');
 
 //UUID
 const crypto = require('crypto');
-const { checkExpiry } = require('./auth.js');
+const { authLogin } = require('./auth.js');
 
 async function createPostHistory(author_id){
     /**
@@ -89,18 +89,9 @@ async function getPost(authorId, postId){
 }
 
 async function createPost(token, authorId, postId, newPost) {
-    //TODO Refactor checkExpiry and then replace this code with it
 
-    const login = await Login.findOne({token: token}).clone();
-        
-    if (!login) {
-        return [[], 401]; 
-    }
-    let expiresAt = new Date(login.expires);
-    let current = new Date();
-
-    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
-        return [[], 401]
+    if((await authLogin(token, authorId)) == false){
+        return [[], 401];
     }
 
     const title = newPost.title;
@@ -163,18 +154,8 @@ async function createPost(token, authorId, postId, newPost) {
 }
 
 async function updatePost(token, authorId, postId, newPost) {
-    //TODO Refactor check expiry and then remove this code
-
-    const login = await Login.findOne({token: token}).clone();
-        
-    if (!login) {
-        return [[], 401]; 
-    }
-    let expiresAt = new Date(login.expires);
-    let current = new Date();
-
-    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
-        return [[], 401];
+    if(!authLogin(token, authorId)){
+        return [{}, 401];
     }
 
     const title = newPost.title;
@@ -224,18 +205,8 @@ async function updatePost(token, authorId, postId, newPost) {
 }
 
 async function deletePost(token, authorId, postId) {
-    //TODO Refactor check expiry and then remove this code
-
-    const login = await Login.findOne({token: token}).clone();
-        
-    if (!login) {
-        return [[], 401]; 
-    }
-    let expiresAt = new Date(login.expires);
-    let current = new Date();
-
-    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
-        return [[], 401];
+    if(!authLogin(token, authorId)){
+        return [{}, 401];
     }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
@@ -684,16 +655,6 @@ async function hasLiked(req, res) {
 /**
  * API STUFF
  */
-
-
-
-
-
-
-
-
-
-
 
 async function getComments(authorId, postId) {
     // TODO: Paginate

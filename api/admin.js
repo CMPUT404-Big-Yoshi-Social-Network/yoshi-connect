@@ -33,7 +33,7 @@ router.post('/', async (req, res) => { await authAuthor(req, res); })
 
 router.get('/dashboard', async (req, res) => {
   if(!(await checkAdmin(req, res))){ return res.sendStatus(403) }
-  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
+  if(!req.cookies || await checkExpiry(req.cookies["token"])){ return res.sendStatus(401) }
   return res.sendStatus(200)
 })
 

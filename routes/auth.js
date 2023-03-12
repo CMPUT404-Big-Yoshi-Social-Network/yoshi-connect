@@ -63,44 +63,26 @@ async function removeLogin(req, res) {
     }
 }
 
-async function checkExpiry(req) {
+async function checkExpiry(token) {
     /**
      * Description: Checks if a token is expired by checking the Login collection for its expiry and its existence 
      * Returns: If there is no cookies, token, or login document, or the expiry date has passed then it is expired and will return true 
      *          If there is any cookies, token, or login document, or expiry date has not passed then it is not expired and will 
      *          return false 
      */
-    if (req.cookies == undefined) { return true }
+    if (token == undefined) { return true }
 
-    if (req.cookies.token != undefined) {
-        console.log('Debug: Checking the Expiry Date of Token')
-        const login = await Login.findOne({token: req.cookies.token}).clone();
+    const login = await Login.findOne({token: token}).clone();
         
-        if (login == null) { return true; }
+    if (login == null) { return true; }
 
-        let expiresAt = new Date(login.expires);
-        let current = new Date();
+    let expiresAt = new Date(login.expires);
+    let current = new Date();
 
-        if (expiresAt.getTime() < current.getTime()) {
-            return true
-        } else {
-            return false
-        }
+    if (expiresAt.getTime() < current.getTime()) {
+        return true
     }
-
-    return true
-}
-
-async function sendCheckExpiry(req, res){
-    /**
-     * Description: Calls checkExpiry() to check the expiry of a token then sends the appropriate response 
-     * Returns: If the checkExpiry() returns false, then the token is not expired, else a Status 401 is sent 
-     */
-    if (!(await checkExpiry(req))) { 
-        return res.json({ status: "Not Expired" }); 
-    } else {
-        return res.sendStatus(401);
-    }
+    return false
 }
 
 async function checkAdmin(req){
@@ -174,29 +156,18 @@ async function authAuthor(req, res) {
     return res.sendStatus(500)
 }
 
-async function authLogin(token, authorId, displayName){
+async function authLogin(token, authorId){
     /**
      * Description: Authenticates the Login document 
      * Returns: Returns false if the Login document does not exist/is expired or the authorId and username does not match the Login document
      */
 
-    const login = await Login.findOne({token: token}); 
-
-    if(login == undefined){
-        return false;
+    if(await checkExpiry(token)){
+        return false
     }
+    const login = await Login.findOne({token: token});  
 
-    //TODO refactor checkExpiry function and replace this with checkExpiry
-    let expiresAt = new Date(login.expires);
-    let current = new Date();
-
-    if (expiresAt.getTime() < current.getTime()) {
-        return false;
-    }
-
-    const loginAuthorId = login.authorId;
-
-    if (!login || login.authorId != loginAuthorId || login.username != displayName) { 
+    if (!login || login.authorId != authorId) { 
         return false; 
     }
     return true;
@@ -207,7 +178,6 @@ module.exports = {
     removeLogin,
     checkUsername,
     checkExpiry,
-    sendCheckExpiry,
     checkAdmin,
     authLogin
 }

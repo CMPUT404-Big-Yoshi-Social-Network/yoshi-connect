@@ -126,7 +126,7 @@ function Posts(props) {
             }
         });
        } 
-    }, [url, navigate, page, size, posts]);
+    }, [url, navigate, page, size]);
 
     const getMore = () => {
         if (!seeMore) {

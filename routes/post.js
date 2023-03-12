@@ -744,6 +744,7 @@ async function apicreatePost(authorId, postId, newPost, domain) {
 
 async function getPosts(page, size, authorId) {
     let posts = undefined
+    //TODO WHEN FRIENDS IS DONE FILTER POSTS FOR FRIENDS AND FOR PUBLIC 
     if(page > 1){
         posts = await PostHistory.aggregate([
             {
@@ -755,6 +756,11 @@ async function getPosts(page, size, authorId) {
             {
                 $match: {
                     'posts.unlisted': false
+                }
+            },
+            {
+                $match: {
+                    'posts.visibility': {$in : ["Public"]}
                 }
             },
             {
@@ -791,7 +797,13 @@ async function getPosts(page, size, authorId) {
             },
             {
                 $match: {
-                    'posts.unlisted': false
+                    'posts.unlisted': false,
+                    
+                }
+            },
+            {
+                $match: {
+                    'posts.visibility': {$in : ["Public"]}
                 }
             },
             {

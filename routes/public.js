@@ -188,7 +188,7 @@ async function fetchPublicPosts(req, res) {
 
     if (allPosts){
         return res.json({
-            publicPosts: allPosts
+            items: allPosts
           });
     }
 }

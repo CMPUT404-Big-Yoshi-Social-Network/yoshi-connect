@@ -62,30 +62,18 @@ function FriendFeed() {
          * Returns: N/A
          */
         const getId = () => {
-            /**
-             * Description: Sends a POST request to get the current author's id 
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + null,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
-
             axios
-            .post('/api/authors/' + null, config)
+            .get('/api/userinfo/')
             .then((response) => {
                 let viewerId = response.data.author._id;
                 setViewerId({ viewerId: viewerId })
             })
             .catch(err => { if (err.response.status === 404) { 
-                setViewerId({ viewerId: '' })
-            } });
+                setViewerId('')
+            } 
+            });
         }
+        getId();
 
         const getPosts = () => {
             /**
@@ -111,8 +99,6 @@ function FriendFeed() {
                 }
              });
         }
-
-        getId();
         getPosts();
     }, [viewer, navigate]);
 

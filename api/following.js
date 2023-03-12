@@ -37,8 +37,7 @@ router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
 
   const followings = await getFollowings(authorId);
-
-  if(followings == 404 || followings == 404) return res.send(404);
+  if(followings == 404 || followings == 404) return res.sendStatus(404);
 
   sanitizedObjects = [];
   for(let i = 0; i < followings.length; i++){

@@ -62,30 +62,18 @@ function CreatePost() {
          * Returns: N/A
          */
         const getId = () => {
-            /**
-             * Description: Sends a POST request to get the current author's id 
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    status: 'Fetching authorId'
-                }
-            }
-
             axios
-            .post('/api/authors/', config)
+            .get('/api/userinfo/')
             .then((response) => {
-                let authorId = response.data.author._id;
+                let authorId = response.data.id;
                 setData(prevAuthorId => ({...prevAuthorId, authorId}))
             })
-            .catch(err => { });
+            .catch(err => { 
+                if (err.response.status === 404) { 
+                 let authorId = ''
+                 setData(prevAuthorId => ({...prevAuthorId, authorId}))
+                } 
+            });
         }
         getId();
     }, []);

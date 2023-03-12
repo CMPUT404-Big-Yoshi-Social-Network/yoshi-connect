@@ -29,13 +29,14 @@ import axios from 'axios';
 // Child Component
 import Post from './post.jsx';
 
-function Posts(type) { 
+function Posts(props) { 
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 5;
     const navigate = useNavigate();
     const [url, setUrl] = useState('');
+    const [viewerId, setViewerId] = useState('');
 
     useEffect(() => {
         /**
@@ -53,17 +54,18 @@ function Posts(type) {
             .get('/api/userinfo/')
             .then((response) => {
                 let viewerId = response.data.id;
-                setUrl('/api/authors/' + viewerId + '/posts/' + type)
+                setViewerId(viewerId);
+                setUrl('/api/authors/' + viewerId + '/posts/' + props.type)
             })
             .catch(err => { 
                 console.log(err)
             });
         }
         getId();
-    }, [navigate, type]);
+    }, [navigate, props]);
 
     useEffect(() => {
-        console.log('Debug: Fetching all public posts.')
+       if (url) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -79,8 +81,10 @@ function Posts(type) {
         .get(url, config)
         .then((response) => { 
             let posts = []
-            for (let i = 0; i < size; i++) {
-                posts.push(response.data.items[i]);
+            if (response.data.items.length !== 0) {
+                for (let i = 0; i < size; i++) {
+                    posts.push(response.data.items[i]);
+                }
             }
             setPosts(posts);
         })
@@ -121,7 +125,8 @@ function Posts(type) {
                 navigate('/unauthorized');
             }
         });
-    }, [setPosts, url, navigate, page, size, posts, viewerId]);
+       } 
+    }, [url, navigate, page, size, posts]);
 
     const getMore = () => {
         if (!seeMore) {

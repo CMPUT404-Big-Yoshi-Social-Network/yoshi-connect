@@ -64,7 +64,8 @@ function Posts({viewerId, url}) {
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                console.log('500 PAGE')
+                //TEMPORARY
+                setPosts([]);
             }
         });
 

@@ -29,7 +29,9 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-router.post('/', async (req, res) => { await authAuthor(req, res); })
+router.post('/', async (req, res) => {  
+  await authAuthor(req, res); 
+})
 
 router.get('/dashboard', async (req, res) => {
   if(!(await checkAdmin(req, res))){ return res.sendStatus(403) }

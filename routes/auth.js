@@ -140,11 +140,15 @@ async function authAuthor(req, res) {
     const p_hashed_password = req.author.password;
     if(p_hashed_password == crypto_js.SHA256(password)){
         console.log("Debug: Authentication successful");
-        if(req.cookies.token != null){
+        if(req.cookies.token != null && req.cookies.token != undefined){
             await Login.deleteOne({token: req.cookies.token}, function(err, login) {
                 if (err) { res.sendStatus(500); }
                 console.log("Debug: Login token deleted");
             }).clone()
+        }
+
+        if (req.baseUrl == '/api/admin') {
+            if (!req.author.admin) { return res.sendStatus(403) }
         }
 
         let curr = new Date();
@@ -158,10 +162,6 @@ async function authAuthor(req, res) {
             admin: req.author.admin,
             expires: expiresAt
         });
-
-        if (req.baseUrl == '/api/admin') {
-            if (!req.author.admin) { return res.sendStatus(403) }
-        }
 
         login_saved = await login.save();
         if(login == login_saved){

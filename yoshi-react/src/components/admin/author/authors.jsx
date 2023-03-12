@@ -71,6 +71,7 @@ function Authors() {
     }, [setAuthors, url, navigate, page, size]);
 
     const getMore = () => {
+        let isCheck = false;
         if (!next) {
             let updated = page + 1;
             setPage(updated);
@@ -96,6 +97,39 @@ function Authors() {
                 setPrev(false);
                 if (response.data.items.length < size) {
                     setNext(true);
+                } else if (response.data.items.length === size) {
+                    isCheck = true;
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setAuthors([]);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    navigate('500 PAGE')
+                }
+            });
+        }
+
+        if (isCheck) {
+            let updated = page + 1;
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: url,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
+            }
+
+            axios
+            .get(url, config)
+            .then((response) => { 
+                if (response.data.items.length < size) {
+                    setNext(true);
                 }
             })
             .catch(err => {
@@ -111,38 +145,43 @@ function Authors() {
     }
 
     const goBack = () => {
-        let updated = page + 1;
-        setPage(updated);
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: url,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            params: {
-                page: updated,
-                size: size
+        if (!prev && prev !== 1) {
+            let updated = page - 1;
+            setPage(updated);
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: url,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
             }
+    
+            axios
+            .get(url, config)
+            .then((response) => { 
+                let more = []
+                for (let i = 0; i < size; i++) {
+                    more.push(response.data.items[i]);
+                }
+                setAuthors(more) 
+                setNext(false)
+                if (updated === 1) {
+                    setPrev(true)
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setAuthors([]);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    navigate('500 PAGE')
+                }
+            });
         }
-
-        axios
-        .get(url, config)
-        .then((response) => { 
-            console.log(response.items)
-            let more = []
-            for (let i = 0; i < size; i++) {
-                more.push(response.data.items[i]);
-            }
-            setAuthors(more) 
-        })
-        .catch(err => {
-            if (err.response.status === 404) {
-                setAuthors([]);
-            } else if (err.response.status === 401) {
-                navigate('/unauthorized');
-            } else if (err.response.status === 500) {
-                navigate('500 PAGE')
-            }
-        });
     }
 
     return (

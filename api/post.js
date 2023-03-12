@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { apicreatePost, apiupdatePost, apideletePost, apigetPost, getPosts } = require('../routes/post');
+const { apicreatePost, apiupdatePost, deletePost, apigetPost, getPosts } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 
 const { getAuthor } = require('../routes/author.js');
@@ -75,7 +75,7 @@ router.delete('/:postId', async (req, res) => {
     return res.sendStatus(401);
   }
 
-  const [post, status] = await apideletePost(req.cookies["token"], authorId, postId);
+  const [post, status] = await deletePost(req.cookies["token"], authorId, postId);
 
   if (status == 200) {
     return res.json(post);

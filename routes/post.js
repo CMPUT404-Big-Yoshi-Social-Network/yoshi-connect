@@ -687,7 +687,7 @@ async function apiupdatePost(authorId, postId, newPost) {
     return 200;
 }
 
-async function apideletePost(token, authorId, postId) {
+async function deletePost(token, authorId, postId) {
     //TODO Refactor check expiry and then remove this code
 
     const login = await Login.findOne({token: token}).clone();
@@ -704,11 +704,11 @@ async function apideletePost(token, authorId, postId) {
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
 
-    if (!postHistory) return sendStatus(500);
+    if (!postHistory) return [[], 500];
 
     const post = postHistory.posts.id(postId);
 
-    if(!post) return sendStatus(404);
+    if(!post) return [[], 404];
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
@@ -1042,7 +1042,7 @@ module.exports={
     hasLiked,
     apigetPost,
     apiupdatePost,
-    apideletePost,
+    deletePost,
     apicreatePost,
     getPosts,
     getComments,

@@ -52,7 +52,7 @@ function PublicFeed() {
      *          - Calls getPosts() to get the posts of the current author's following list and also public posts 
      * Returns: N/A
      */
-    const [viewer, setViewerId] = useState({ viewerId: '' })
+    const [viewer, setViewerId] = useState('')
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -71,24 +71,24 @@ function PublicFeed() {
             .get('/api/userinfo/')
             .then((response) => {
                 let viewerId = response.data.id;
-                setViewerId({ viewerId: viewerId })
+                setViewerId(viewerId)
             })
             .catch(err => { if (err.response.status === 404) { 
-                setViewerId({viewerId: ''})
+                setViewerId('')
             } });
         }
         getId();
-    }, [navigate, viewer]);
+    }, [navigate]);
 
     return (
         <div>
-            <TopNav authorId={viewer.viewerId}/>
+            <TopNav authorId={viewer}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={viewer.viewerId}/>
+                    <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts viewerId={viewer.viewerId} url={'/api/authors/' + viewer.viewerId + '/posts/public'}/>               
+                    <Posts viewerId={viewer} url={'/api/authors/' + viewer + '/posts/public'}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

@@ -30,15 +30,13 @@ const router = express.Router({mergeParams: true});
 
 router.get('/', async (req,res) => {
     //TODO FIll this out to give back author of the token used for authentication.
-    if(!req.cookies["token"]){
+    if(!req.cookies.token){
         return res.sendStatus(401);
     }
 
-    const [userinfo, status] = await getUserInfo(req.cookies["token"]);
+    const [userinfo, status] = await getUserInfo(req.cookies.token);
 
-    if(status == 404){
-        return res.sendStatus(404);
-    }
+    if (status == 404) { return res.sendStatus(404); }
 
     return res.json(userinfo);
 })

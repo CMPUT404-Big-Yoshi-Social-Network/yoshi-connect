@@ -48,11 +48,9 @@ function Following(props) {
        .then((response) => { setFollowings(response.data.items) })
        .catch(err => {
             if (err.response.status === 404) {
-                navigate('/notfound')
+                setFollowings([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized')
-            } else if (err.response.status === 404) {
-                setFollowings([]);
             }
        });
     }, [navigate, props]);
@@ -65,13 +63,11 @@ function Following(props) {
                     <h4>You are not following anyone.</h4>
                 </div> :
                 <div>
-                    {(followings === undefined) ? null :
-                        <div>
-                            {Object.keys(followings).map((following, idx) => (
-                                <Follow className='following' key={idx} {...followings[following]}/>
-                            ))}
-                        </div>
-                    }
+                    <div>
+                        {Object.keys(followings).map((following, idx) => (
+                            <Follow className='following' key={idx} {...followings[following]}/>
+                        ))}
+                    </div>
                 </div>
             }
         </div>

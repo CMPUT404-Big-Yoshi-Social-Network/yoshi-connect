@@ -82,7 +82,9 @@ function FriendFeed() {
                 let viewerId = response.data.author._id;
                 setViewerId({ viewerId: viewerId })
             })
-            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
+            .catch(err => { if (err.response.status === 404) { 
+                setViewerId({ viewerId: '' })
+            } });
         }
 
         const getPosts = () => {

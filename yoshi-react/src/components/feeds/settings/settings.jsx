@@ -80,7 +80,9 @@ function Settings() {
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
-                    navigate('/notfound'); 
+                    setNewAuthor({ newUsername: '' })
+                    setNewAuthor({ newEmail: '' })
+                    setViewer({ viewerId: '' })
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized')
                 }

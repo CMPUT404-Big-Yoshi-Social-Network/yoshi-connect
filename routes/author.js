@@ -216,7 +216,7 @@ async function getAuthor(authorId){
     /**
      * Description: Gets the author from the Author collection 
      * Returns: Status 500 if the server fails to get an author from the collection 
-     *          Status 404 if the author does not exist or admin=true
+     *          Status 404 if the author does not exist
      */
     const author = await Author.findOne({_id: authorId}, function (err, author) {
         if (err) {
@@ -226,8 +226,7 @@ async function getAuthor(authorId){
     }).clone();
     if(author == "server failure") {
         return [{}, 500];
-    }
-    else if(!author || author.admin == true) {
+    } else if (!author) {
         return [{}, 404];
     }
 

@@ -94,7 +94,6 @@ function Profile() {
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    console.log("Debug: Profile does not exist.");
                     navigate('/notfound'); 
                 }
                 else if (err.response.status === 401) {

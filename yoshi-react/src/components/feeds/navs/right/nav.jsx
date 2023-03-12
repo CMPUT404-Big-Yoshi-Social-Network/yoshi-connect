@@ -38,7 +38,7 @@ function RightNavBar() {
      * Description: Represents the right navigation bar
      * Returns: N/A
      */
-    const [username, setUsername] = useState();
+    const [username, setUsername] = useState('');
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -47,9 +47,12 @@ function RightNavBar() {
             .get('/api/userinfo/')
             .then((response) => {
                 let username = response.data.displayname;
-                setUsername({ username: username })
+                setUsername(username)
             })
-            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
+            .catch(err => { if (err.response.status === 404) { 
+                setUsername('')
+            } 
+            });
         }
         getId();
     }, [username, navigate])

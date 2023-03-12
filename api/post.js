@@ -32,9 +32,9 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 //TODO Change this to get request
-router.post('/public', async (req, res) => {
+router.get('/public', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
-  await fetchPublicPosts(req, res);
+  return res.json([])
 })
 
 //GET [local, remote] get the public post whose id is POST_ID

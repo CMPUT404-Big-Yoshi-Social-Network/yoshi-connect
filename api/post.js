@@ -36,6 +36,7 @@ router.post('/public', async (req, res) => {
   await fetchPublicPosts(req, res);
 })
 
+//GET [local, remote] get the public post whose id is POST_ID
 router.get('/:postId', async (req, res) => {
   if(req.params.authorId == undefined) return res.sendStatus(404);
   const authorId = req.params.authorId;
@@ -65,6 +66,7 @@ router.get('/:postId', async (req, res) => {
   });
 })
 
+//POST [local] update the post whose id is POST_ID (must be authenticated)
 router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -78,6 +80,7 @@ router.post('/:postId', async (req, res) => {
   }
 })
 
+//DELETE [local] remove the post whose id is POST_ID
 router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -93,6 +96,7 @@ router.delete('/:postId', async (req, res) => {
   }
 })
 
+//PUT [local] create a post where its id is POST_ID
 router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -108,6 +112,7 @@ router.put('/:postId', async (req, res) => {
   }  
 })
 
+//GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   
@@ -134,6 +139,7 @@ router.get('/', async (req, res) => {
   });
 })
 
+//POST [local] create a new post but generate a new id
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 

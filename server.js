@@ -47,7 +47,6 @@ const author = require('./api/author');
 const comment = require('./api/comment');
 const friend = require('./api/friend');
 const inbox = require('./api/inbox');
-const like = require('./api/like');
 const post = require('./api/post');
 const setting = require('./api/settings');
 const userinfo = require('./api/userinfo');

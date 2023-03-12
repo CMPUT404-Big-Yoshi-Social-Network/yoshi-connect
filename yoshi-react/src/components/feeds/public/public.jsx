@@ -90,7 +90,7 @@ function PublicFeed() {
                     <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts viewerId={viewer} url={'/api/authors/' + viewer + '/posts/public'}/>               
+                    <Posts viewerId={viewer} type={''}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

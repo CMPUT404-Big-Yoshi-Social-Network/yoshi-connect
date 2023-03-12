@@ -29,7 +29,7 @@ import axios from 'axios';
 // Child Component
 import Post from './post.jsx';
 
-function Posts({viewerId, url}) { 
+function Posts({viewerId, type}) { 
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
@@ -41,7 +41,7 @@ function Posts({viewerId, url}) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: '/api/authors/' + viewerId + '/inbox/' + type,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: page,
@@ -50,7 +50,7 @@ function Posts({viewerId, url}) {
         }
 
         axios
-        .get(url, config)
+        .get('/api/authors/' + viewerId + '/inbox/' + type, config)
         .then((response) => { 
             let posts = []
             for (let i = 0; i < size; i++) {
@@ -73,7 +73,7 @@ function Posts({viewerId, url}) {
         config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: '/api/authors/' + viewerId + '/inbox/' + type,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -82,12 +82,12 @@ function Posts({viewerId, url}) {
         }
 
         axios
-        .get(url, config)
+        .get('/api/authors/' + viewerId + '/inbox/' + type, config)
         .then((response) => { 
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
         .catch(err => {
-            if (!err.response || err.response.status === 500) {
+            if (err.response.status === 500) {
                 setPosts([]);
             } else if (err.response.status === 404) {
                 setSeeMore(true);
@@ -95,16 +95,16 @@ function Posts({viewerId, url}) {
                 navigate('/unauthorized');
             }
         });
-    }, [setPosts, url, navigate, page, size, posts, viewerId]);
+    }, [setPosts, type, navigate, page, size, posts, viewerId]);
 
     const getMore = () => {
         if (!seeMore) {
             let updated = page + 1;
             setPage(updated);
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + viewerId + '/posts/public',
+                url: '/api/authors/' + viewerId + '/inbox/' + type,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -113,7 +113,7 @@ function Posts({viewerId, url}) {
             }
 
             axios
-            .get('/api/authors/' + viewerId + '/posts/public', config)
+            .get('/api/authors/' + viewerId + '/inbox/' + type, config)
             .then((response) => { 
                 let more = []
                 for (let i = 0; i < size; i++) {
@@ -130,15 +130,16 @@ function Posts({viewerId, url}) {
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
-                    navigate('500 PAGE')
+                    // TEMPORARY
+                    setPosts(posts);
                 }
             });
         }
         let updated = page + 2;
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + viewerId + '/posts/public',
+            url: '/api/authors/' + viewerId + '/inbox/' + type,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -147,7 +148,7 @@ function Posts({viewerId, url}) {
         }
 
         axios
-        .get('/api/authors/' + viewerId + '/posts/public', config)
+        .get('/api/authors/' + viewerId + '/inbox/' + type, config)
         .then((response) => { 
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
@@ -157,7 +158,8 @@ function Posts({viewerId, url}) {
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+                // TEMPORARY
+                setPosts(posts);
             }
         });
     }

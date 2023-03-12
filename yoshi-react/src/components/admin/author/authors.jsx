@@ -23,14 +23,19 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import Pagination from 'react-bootstrap/Pagination';
 
 // Child Component
 import Author from './author.jsx';
 
 function Authors() {
     const [authors, setAuthors] = useState([]);
+    const [page, setPage] = useState(1);
+    const size = 5;
     const url = '/api/authors';
     const navigate = useNavigate();
+    const [prev, setPrev] = useState(true);
+    const [next, setNext] = useState(false);
 
     useEffect(() => {
         console.log('Debug: Fetching all the authors.')
@@ -38,13 +43,22 @@ function Authors() {
             method: 'post',
             maxBodyLength: Infinity,
             url: url,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: page,
+                size: size
+            }
         }
 
         axios
         .get(url, config)
         .then((response) => { 
-            setAuthors(response.data.items) })
+            let authors = []
+            for (let i = 0; i < size; i++) {
+                authors.push(response.data.items[i]);
+            }
+            setAuthors(authors);
+        })
         .catch(err => {
             if (err.response.status === 404) {
                 setAuthors([]);
@@ -54,7 +68,82 @@ function Authors() {
                 navigate('500 PAGE')
             }
         });
-    }, [setAuthors, url, navigate]);
+    }, [setAuthors, url, navigate, page, size]);
+
+    const getMore = () => {
+        if (!next) {
+            let updated = page + 1;
+            setPage(updated);
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: url,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
+            }
+
+            axios
+            .get(url, config)
+            .then((response) => { 
+                let authors = []
+                for (let i = 0; i < size; i++) {
+                    authors.push(response.data.items[i]);
+                }
+                setAuthors(authors);
+                setPrev(false);
+                if (response.data.items.length < size) {
+                    setNext(true);
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setAuthors([]);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    navigate('500 PAGE')
+                }
+            });
+        }
+    }
+
+    const goBack = () => {
+        let updated = page + 1;
+        setPage(updated);
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: url,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
+            }
+        }
+
+        axios
+        .get(url, config)
+        .then((response) => { 
+            console.log(response.items)
+            let more = []
+            for (let i = 0; i < size; i++) {
+                more.push(response.data.items[i]);
+            }
+            setAuthors(more) 
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                setAuthors([]);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
+            }
+        });
+    }
 
     return (
         <div>
@@ -64,9 +153,13 @@ function Authors() {
                     <h4>No authors to show.</h4>
                 </div> :
                 <div>
-                    {Object.keys(authors).map((author, idx) => (
-                        <Author key={idx} {...authors[author]}/>
-                    ))}
+                    <Pagination>
+                        {Object.keys(authors).map((author, idx) => (
+                            <Author key={idx} {...authors[author]}/>
+                        ))}
+                        <Pagination.Prev disabled={prev} onClick={goBack}/>
+                        <Pagination.Next disabled={next} onClick={getMore}/>
+                    </Pagination>
                 </div>
             }
         </div>

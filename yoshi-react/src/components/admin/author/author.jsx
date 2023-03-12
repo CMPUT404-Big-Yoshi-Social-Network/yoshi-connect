@@ -60,13 +60,17 @@ function Author(props) {
     
     return (
         <div className='author-div' id='author'>
-            { props.username }
-            <div className='author-button-div'>
-                <button className='author-buttons' type="button" id='delete' onClick={() => deleteAuthor()}>Delete</button>
-                <Popup trigger={<button className='author-buttons'>Modify</button>} position="right center">
-                    <ModifyAuthor {...props}/>
-                </Popup>
-            </div>
+            { props.displayname === undefined ? null : 
+                <div>
+                    { props.displayname }
+                    <div className='author-button-div'>
+                        <button className='author-buttons' type="button" id='delete' onClick={() => deleteAuthor()}>Delete</button>
+                        <Popup trigger={<button className='author-buttons'>Modify</button>} position="right center">
+                            <ModifyAuthor {...props}/>
+                        </Popup>
+                    </div>
+                </div>
+            }
         </div>
     )
 }

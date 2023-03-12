@@ -39,7 +39,7 @@ function Posts({viewerId, url}) {
     useEffect(() => {
         console.log('Debug: Fetching all public posts.')
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -60,13 +60,11 @@ function Posts({viewerId, url}) {
         })
         .catch(err => {
             if (err.response.status === 404) {
-                console.warn = () => {};
                 setPosts([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                // TEMPORARY
-                setPosts([]);
+                console.log('500 PAGE')
             }
         });
 

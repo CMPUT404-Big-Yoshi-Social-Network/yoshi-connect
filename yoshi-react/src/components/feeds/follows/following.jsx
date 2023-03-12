@@ -47,9 +47,7 @@ function Following(props) {
        .get('/api/authors/' + props.authorId + '/followings')
        .then((response) => { setFollowings(response.data.items) })
        .catch(err => {
-            if (!err.response) {
-                setFollowings([]);
-            } else if (err.response.status === 404) {
+            if (err.response.status === 404) {
                 setFollowings([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized')

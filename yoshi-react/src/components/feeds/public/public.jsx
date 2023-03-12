@@ -74,7 +74,7 @@ function PublicFeed() {
                 setViewerId(viewerId)
             })
             .catch(err => { 
-                if (!err.response || err.response.status === 404 ) { 
+                if (err.response.status === 404 ) { 
                     setViewerId('')
                 } 
             });

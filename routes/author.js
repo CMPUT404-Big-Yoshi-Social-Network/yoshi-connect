@@ -40,7 +40,7 @@ const { createPostHistory } = require('./post.js');
 const { createInbox } = require('./inbox.js')
 
 // Additional Functions
-const { checkUsername, authLogin } = require('./auth.js');
+const { checkUsername, authLogin, checkExpiry } = require('./auth.js');
 
 async function registerAuthor(req, res){
     /**
@@ -265,12 +265,31 @@ async function getAuthor(authorId){
      *          Status 404 if the author does not exist or admin=true
      */
     const author = await Author.findOne({_id: authorId}, function (err, author) {
-        if (err) { return "server failure"; }
-        return err, author;
+        if (err) {
+            return "server failure";
+        }
+        return author;
     }).clone();
-    if(author == "server failure") { return 500; }
-    if(!author || author.admin == true) { return 404; }
-    return author;
+    if(author == "server failure") {
+        return [{}, 500];
+    }
+    else if(!author || author.admin == true) {
+        return [{}, 404];
+    }
+
+    const sanitizedAuthor = {
+        "type": "author",
+        "id" : author._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": author.username,
+        "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+        "github": "",
+        "profileImage": "",
+        "email": author.email, 
+        "about": author.about,
+        "pronouns": author.pronouns,
+    }
+    return [sanitizedAuthor, 200];
 }
 
 async function apiUpdateAuthor(token, author){
@@ -279,9 +298,13 @@ async function apiUpdateAuthor(token, author){
      * Returns: Status 401 if the there is no valid authentication 
      *          Status 200 if the author was successfully updated
      */
-    if (await authLogin(token, author.id, author.displayName) == false) { return 401; }
+    if (await authLogin(token, author.id, author.displayName) == false) {
+        return 401; 
+    }
 
     const authorProfile = await Author.findOne({_id: author.id});
+    if(!authorProfile)
+        return 404;
 
     const pronouns = author.pronouns;
     const about = author.about;
@@ -296,8 +319,12 @@ async function apiUpdateAuthor(token, author){
     if (github) { authorProfile.github = github; }
 
     if (admin) {
-        if (admin) { authorProfile.admin = admin; }
-        if (password) { authorProfile.password = password; }
+        if (admin) { 
+            authorProfile.admin = admin; 
+        }
+        if (password) { 
+            authorProfile.password = password; 
+        }
     }
 
     await authorProfile.save();

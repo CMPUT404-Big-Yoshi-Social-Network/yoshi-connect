@@ -17,15 +17,10 @@ limitations under the License.
 Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
-*/  
+*/ 
 
-// OpenAPI
-const {options} = require('../openAPI/options.js');
-
-// Swaggerio
-const swaggerUi = require("swagger-ui-express");
-const swaggerJsdoc = require('swagger-jsdoc');
-const openapiSpecification = swaggerJsdoc(options);
+// Routing Functions 
+const { getUserInfo } = require('../routes/userinfo');
 
 // Router Setup
 const express = require('express'); 
@@ -33,9 +28,19 @@ const express = require('express');
 // Router
 const router = express.Router();
 
-router.use('/',
-  swaggerUi.serve,
-  swaggerUi.setup(openapiSpecification)
-);
+router.get('/', async (req,res) => {
+    //TODO FIll this out to give back author of the token used for authentication.
+    if(!req.cookies["token"]){
+        return res.sendStatus(401);
+    }
+
+    const [userinfo, status] = await getUserInfo(req.cookies["token"]);
+
+    if(status == 404){
+        return res.sendStatus(404);
+    }
+
+    return res.json(userinfo);
+})
 
 module.exports = router;

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getAuthor, apiUpdateAuthor, getAuthors, getCurrentAuthor, fetchMyPosts } = require('../routes/author');
+const { getAuthor, apiUpdateAuthor, getAuthors, fetchMyPosts } = require('../routes/author');
 const { getAuthorLikes } = require('../routes/post');
 const { checkExpiry } = require('../routes/auth');
 
@@ -55,35 +55,17 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:authorId', async (req, res) => {
-  if (req.params.authorId == "null") { 
-    await getCurrentAuthor(req, res); 
-  } else {
-    if (req.params.authorId == undefined) return res.sendStatus(404);
+  //TODO Parse authorId and verify it is proper
+  //TODO reflect api changes on frontend
 
-    let author = await getAuthor(req.params.authorId);
-  
-    if (author === 404) return res.sendStatus(404);
-  
-    if (author === 500) return res.sendStatus(500);
-  
-    return res.json({
-      "type": "author",
-      "id" : author._id,
-      "host": process.env.DOMAIN_NAME,
-      "displayname": author.username,
-      "url":  process.env.DOMAIN_NAME + "users/" + author._id,
-      "github": "",
-      "profileImage": "",
-      "email": author.email, 
-      "about": author.about,
-      "pronouns": author.pronouns
-    });
+  const authorId = req.params.authorId;
+  const [author, status] = await getAuthor(authorId);
+
+  if(status == 404 || status == 500){
+    return res.sendStatus(status);
   }
-})
 
-router.post('/:authorId/posts', async (req, res) => {
-  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
-  await fetchMyPosts(req.params.authorId, req, res);
+  return res.json(author);
 })
 
 router.post('/:authorId', async (req, res) => {
@@ -95,11 +77,17 @@ router.post('/:authorId', async (req, res) => {
   const authorId = req.body.id;
   const host = req.body.host;
   const username = req.body.displayName;
+  const url = req.body.url;
 
-  if(!authorId || !host || !username)
+  if(!authorId || !host || !username || !url)
     return res.sendStatus(400);
 
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
+})
+
+router.post('/:authorId/posts', async (req, res) => {
+  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
+  await fetchMyPosts(req.params.authorId, req, res);
 })
 
 router.get('/:authorId/liked', async (req, res) => {

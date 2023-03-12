@@ -177,12 +177,29 @@ async function authAuthor(req, res) {
 async function authLogin(token, authorId, displayName){
     /**
      * Description: Authenticates the Login document 
-     * Returns: Returns false if the Login document does not exist or the authorId and username does not match the Login document
+     * Returns: Returns false if the Login document does not exist/is expired or the authorId and username does not match the Login document
      */
-    const login = await Login.findOne({token: token});
-    if (!login) { return false; }
-    if (login.authorId == authorId && login.username == displayName) { return true; }
-    return false;
+
+    const login = await Login.findOne({token: token}); 
+
+    if(login == undefined){
+        return false;
+    }
+
+    //TODO refactor checkExpiry function and replace this with checkExpiry
+    let expiresAt = new Date(login.expires);
+    let current = new Date();
+
+    if (expiresAt.getTime() < current.getTime()) {
+        return false;
+    }
+
+    const loginAuthorId = login.authorId;
+
+    if (!login || login.authorId != loginAuthorId || login.username != displayName) { 
+        return false; 
+    }
+    return true;
 }
 
 module.exports = {

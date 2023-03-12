@@ -50,6 +50,7 @@ const inbox = require('./api/inbox');
 const like = require('./api/like');
 const post = require('./api/post');
 const setting = require('./api/settings');
+const userinfo = require('./api/userinfo');
 
 // Routing Functions 
 const { checkExpiry } = require('./routes/auth');
@@ -81,6 +82,7 @@ app.use("/api/profile", profile);
 app.use("/api/authors/:authorId/friends", friends);
 app.use("/api/authors/:authorId/requests", requests);
 app.use("/api/api-docs", apiDocs);
+app.use("/api/userinfo", userinfo);
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 

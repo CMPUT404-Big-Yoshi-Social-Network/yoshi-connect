@@ -23,6 +23,8 @@ Foundation; All Rights Reserved
 const { getPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost, getPostsPaginated } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 
+const { getAuthor } = require('../routes/author.js');
+
 // Router Setup
 const express = require('express'); 
 
@@ -117,12 +119,24 @@ router.get('/', async (req, res) => {
   if(size == undefined){
     size = 5;
   }
-  const sanitizedPosts = await getPosts(page, size, authorId);
+
+  let status;
+
+  [author, status] = await getAuthor(authorId);
+
+  if(status != 200 || author.admin){
+    return res.sendStatus(status);
+  }
+
+  [posts, status] = await getPosts(page, size, authorId);
+
+  if(status != 200){
+    return res.sendStatus(status);
+  }
 
   return res.json({
     "type": "posts",
-    "authorId": authorId,
-    "items": [sanitizedPosts]
+    "items": posts
   });
 })
 

@@ -753,6 +753,11 @@ async function getPosts(page, size, authorId) {
                 $unwind: '$posts'
             },
             {
+                $match: {
+                    'posts.unlisted': false
+                }
+            },
+            {
                 $set: {
                     "posts.published": {
                         $dateFromString: { dateString: "$posts.published" }
@@ -785,6 +790,11 @@ async function getPosts(page, size, authorId) {
                 $unwind: '$posts'
             },
             {
+                $match: {
+                    'posts.unlisted': false
+                }
+            },
+            {
                 $set: {
                     "posts.published": {
                         $dateFromString: { dateString: "$posts.published" }
@@ -810,7 +820,7 @@ async function getPosts(page, size, authorId) {
         return [[], 400];
     }
     if(!posts || !posts[0] || !posts[0].posts_array){
-        return [[], 500];
+        return [[], 404];
     }
     
     posts = posts[0].posts_array;

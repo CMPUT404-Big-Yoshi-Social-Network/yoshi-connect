@@ -27,6 +27,8 @@ const { getAuthor } = require('../routes/author.js');
 
 // Router Setup
 const express = require('express'); 
+const { checkExpiry, authLogin } = require('../routes/auth');
+const { Liked } = require('../scheme/interactions');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -71,6 +73,7 @@ router.post('/:postId', async (req, res) => {
 })
 
 //DELETE [local] remove the post whose id is POST_ID
+//TODO delete comment and likes collection.
 router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -153,7 +156,42 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/:postId/likes', async (req, res) => {
-  return res.sendStatus(404);
+  //TODO: This endpoint is incorrect shift code over to sending like post
+  //check expiry
+  //check authLogin
+  //know that author is not the owner of the post and are logged in
+  //add like to post
+  //add liked to authors history
+
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+
+  if(!req.cookies || !checkExpiry(req.cookies["token"])){
+    return res.sendStatus(401);
+  }
+  if(authLogin(req.cookies["token"], authorId)){
+    return res.sendStatus(400);
+  }
+
+  const likeHistory = await Like.findOne({type: "post", Id: postId});
+  for(let i = 0; i < likeHistory.likes.length; i++){
+    like = likeHistory.liked[i];
+    if(like.liker == authorId){
+      return res.sendStatus(400);
+    }
+  }
+  likeHistory.likes.push({
+    liker: authorId
+  }).save();
+
+
+  const likedHistory = await Liked.findOne({authorId: authorId});
+
+  likedHistory.liked.push({
+    type: "post",
+    Id: postId
+  }).save();
+
 })
 
 module.exports = router;

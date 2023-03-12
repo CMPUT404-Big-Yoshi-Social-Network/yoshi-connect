@@ -45,10 +45,7 @@ import Profile from "./components/feeds/profile/profile.jsx";
 import Settings from './components/feeds/settings/settings.jsx';
 
 // Errors
-import PageNotFound from "./components/user-error/404/404.jsx";
-import UserForbidden from "./components/user-error/403/403.jsx";
-import UserUnauthorized from "./components/user-error/401/401.jsx";
-import BadRequest from './components/user-error/400/400.jsx';
+import Errors from './components/user-error/error.jsx';
 
 // API Docs
 import ApiDocs from "./components/api-docs/api-docs.jsx";
@@ -92,15 +89,15 @@ const router = createBrowserRouter([
   },
   {
     path: '/forbidden/', 
-    element: <UserForbidden/>   
+    element: <Errors/>   
   },
   {
     path: '/unauthorized/', 
-    element: <UserUnauthorized/>   
+    element: <Errors/>    
   },
   {
     path: '/badrequest/', 
-    element: <BadRequest/>   
+    element: <Errors/>    
   },
   {
     path: '/settings/', 
@@ -112,7 +109,7 @@ const router = createBrowserRouter([
   },
   {
     path: '*' || '/notfound/', 
-    element: <PageNotFound/>   
+    element: <Errors/>     
   }
 ])
   

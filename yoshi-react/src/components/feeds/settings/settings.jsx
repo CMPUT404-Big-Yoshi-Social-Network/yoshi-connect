@@ -50,6 +50,8 @@ function Settings() {
         newPassword: '',
         newEmail: ''
     })
+    const [viewer, setViewer] = useState({ viewerId: '' })
+    
     useEffect(() => {
         /**
          * Description: Before render, checks the author's account details
@@ -60,19 +62,21 @@ function Settings() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + null,
+                url: '/api/userinfo',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             }
 
             axios
-            .post('/api/authors/' + null, config)
+            .post('/api/userinfo', config)
             .then((response) => {
-                let username = response.data.author.username;
-                let email = response.data.author.email;
+                let username = response.data.displayname;
+                let email = response.data.email;
+                let viewerId = response.data.id;
                 setNewAuthor({ newUsername: username })
                 setNewAuthor({ newEmail: email })
+                setViewer({ viewerId: viewerId })
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
@@ -127,7 +131,7 @@ function Settings() {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
                     <div className='settingColM'>

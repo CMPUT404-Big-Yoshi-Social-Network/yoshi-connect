@@ -52,11 +52,6 @@ const post = require('./api/post');
 const setting = require('./api/settings');
 const userinfo = require('./api/userinfo');
 
-// Routing Functions 
-const { checkExpiry } = require('./routes/auth');
-const { createPost, getPost, getPostsPaginated, updatePost, deletePost, addLike, 
-  addComment, deleteLike, deleteComment, editComment, checkVisibility } = require('./routes/post');
-
 // App Uses
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));

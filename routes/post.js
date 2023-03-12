@@ -466,42 +466,6 @@ async function updatePost(req, res){
     return res.sendStatus(200);
 }
 
-async function deletePost(req, res){
-    /**
-     * Description: Removes an author's post from the database 
-     * Returns: Status 200 if the author's post is successfully removed from the database
-     */
-    console.log("Debug: Delete a post");
-
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
-
-    const post_history = await PostHistory.findOne({authorId: authorId});
-
-    if(post_history == undefined)
-        return sendStatus(500);
-
-    const post = post_history.posts.id(postId);
-    if(post == null)
-        return res.sendStatus(404);
-
-    if (post.visibility == 'Public') {
-        const publicPost = await PublicPost.find();
-        let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
-        if (idx > -1) { 
-            publicPost[0].posts.splice(idx, 1);
-            publicPost[0].num_posts = publicPost[0].num_posts - 1;
-            await publicPost[0].save();
-        }
-    }
-
-    post.remove();
-    post_history.num_posts = post_history.num_posts - 1;
-    post_history.save();
-
-    return res.sendStatus(200);
-}
-
 async function checkVisibility(req, res){
     /**
      * Description: Checks the visibility level of the author's post for the viewer
@@ -1069,7 +1033,6 @@ module.exports={
     getPost,
     getPostsPaginated,
     updatePost,
-    deletePost,
     addLike,
     addComment,
     deleteLike,

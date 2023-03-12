@@ -532,43 +532,26 @@ async function apigetPost(authorId, postId){
     return [post, 200]   
 }
 
-async function apiupdatePost(authorId, postId, newPost) {
+async function apiupdatePost(token, authorId, postId, newPost) {
     const title = newPost.title;
-    const desc = newPost.desc;
+    const desc = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
     const categories = newPost.categories;
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const specifics = newPost.specifics;
-    //const image = newPost.image;
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
 
+    if(!postHistory){
+        return [{}, 500];
+    }
+
     const post = postHistory.posts.id(postId);
 
-    console.log(post);
-    /*
-    let specifics_updated = false;
-    post.title = title;
-    post.description = desc;
-    post.contentType = contentType;
-    post.content = content;
-    if (post.visibility != visibility) {
-        if ( (visibility == 'Friends' || visibility == 'Public') && post.specifics.length != 0) {
-            console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
-            post.specifics = [];
-            specifics_updated = true;
-        }
-        post.visibility = visibility;
+    if(!post){
+        return [{}, 404];
     }
-    if (!specifics_updated) {
-        if (post.specifics != specifics) { post.specifics = specifics; }
-    }
-    post.categories = categories;
-    post.unlisted = unlisted;
-    post.image = image;
-    */
 
     if(title){
         post.title = title;
@@ -591,9 +574,9 @@ async function apiupdatePost(authorId, postId, newPost) {
     if(categories){
         post.categories = categories;
     }
-    //await postHistory.save()
+    await postHistory.save()
 
-    return 200;
+    return [await apigetPost(authorId, postId), 200];
 }
 
 async function deletePost(token, authorId, postId) {
@@ -697,7 +680,7 @@ async function createPost(token, authorId, postId, newPost) {
     });
     postHistory.num_posts = postHistory.num_posts + 1;
     await postHistory.save();
-    return await apigetPost(authorId, postId);
+    return [await apigetPost(authorId, postId), 200];
 }
 
 async function getPosts(page, size, author) {

@@ -57,10 +57,14 @@ router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const status = await apiupdatePost(authorId, postId, req.body);
+  if(!req.cookies["token"]){
+    res.sendStatus(401);
+  }
+
+  const [post, status] = await apiupdatePost(req.cookies["token"], authorId, postId, req.body);
   
   if (status == 200) {
-    return res.sendStatus(status);
+    return res.json(post);
   } else {
     return res.sendStatus(404);
   }

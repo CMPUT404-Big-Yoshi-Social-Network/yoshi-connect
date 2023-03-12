@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { apicreatePost, apiupdatePost, deletePost, apigetPost, getPosts } = require('../routes/post');
+const { createPost, apiupdatePost, deletePost, apigetPost, getPosts } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 
 const { getAuthor } = require('../routes/author.js');
@@ -95,7 +95,7 @@ router.put('/:postId', async (req, res) => {
     return res.sendStatus(401);
   }
 
-  const [post, status] = await apicreatePost(req.cookies["token"], authorId, postId, req.body);
+  const [post, status] = await createPost(req.cookies["token"], authorId, postId, req.body);
 
   if (status == 200) {
     return res.json(post);
@@ -134,7 +134,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
-  const [post, status] = await apicreatePost(req.cookies["token"], authorId, undefined, req.body);
+  const [post, status] = await createPost(req.cookies["token"], authorId, undefined, req.body);
 
   if (status == 200) {
     return res.json(post);

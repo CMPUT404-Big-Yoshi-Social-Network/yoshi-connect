@@ -626,7 +626,7 @@ async function deletePost(token, authorId, postId) {
     return [post, 200]; 
 }
 
-async function apicreatePost(token, authorId, postId, newPost) {
+async function createPost(token, authorId, postId, newPost) {
     //TODO Refactor checkExpiry and then replace this code with it
 
     const login = await Login.findOne({token: token}).clone();
@@ -951,7 +951,7 @@ module.exports={
     apigetPost,
     apiupdatePost,
     deletePost,
-    apicreatePost,
+    createPost,
     getPosts,
     getComments,
     createComment,

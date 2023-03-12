@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import { Image } from 'react-bootstrap';
 
 // Styling
-import './error.css';
+import './errors.css';
 
 export default function Errors() {
     /**
@@ -23,26 +23,26 @@ export default function Errors() {
                         "Page Not Found",
                         "Internal Server Error"];
     const statusMsg = ['BAD REQUEST', 'UNAUTHORIZED', 'FORBIDDEN', 'NOT FOUND', 'SERVER ERROR'];
-    let i = null;
+    let i = 3;
 
-    if (path === '/badrequest') {
+    if (path === '/badrequest' || path === '/badrequest/') {
         i = 0
     }
-    else if (path === '/unauthorized'){
+    else if (path === '/unauthorized' || path === '/unauthorized/'){
         i = 1
     }
-    else if (path === '/forbidden'){
+    else if (path === '/forbidden' || path === '/forbidden/'){
         i = 2
     }
-    else if (path === '/notfound'){
+    else if (path === '/notfound' || path === '/notfound/'){
         i = 3
     }
-    else {
+    else if (path === '/servererror' || path === '/servererror/'){
         i = 4
     }
 
     return(
-        <div className='error'>
+        <div className='errors'>
             <h1>{statusCode[i]}</h1>
             <h2>{statusDesc[i]}</h2>
             <h3>{statusMsg[i]}</h3>

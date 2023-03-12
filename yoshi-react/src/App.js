@@ -45,7 +45,7 @@ import Profile from "./components/feeds/profile/profile.jsx";
 import Settings from './components/feeds/settings/settings.jsx';
 
 // Errors
-import Errors from './components/user-error/error.jsx';
+import Errors from './components/user-error/errors.jsx';
 
 // API Docs
 import ApiDocs from "./components/api-docs/api-docs.jsx";
@@ -110,6 +110,10 @@ const router = createBrowserRouter([
   {
     path: '*' || '/notfound/', 
     element: <Errors/>     
+  },
+  {
+    path: '/servererror/',
+    element: <Errors/>
   }
 ])
   

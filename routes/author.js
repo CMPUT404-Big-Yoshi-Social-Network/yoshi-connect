@@ -38,6 +38,7 @@ const { createInbox } = require('./inbox.js');
 
 // Additional Functions
 const { checkUsername, authLogin } = require('./auth.js');
+const { Liked } = require('../scheme/interactions.js');
 
 async function registerAuthor(req, res){
     /**
@@ -111,6 +112,7 @@ async function registerAuthor(req, res){
     await new_post_history.save()
     await Follower({ username: username, authorId: authorId, followers: [] }).save();
     await Following({ username: username, authorId: authorId, followings: [] }).save();
+    await Liked({authorId: authorId, liked: [], num_posts: 0}).save();
     await createInbox(author.username, author._id);
 
     res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')

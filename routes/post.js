@@ -123,8 +123,6 @@ async function createPost(token, authorId, postId, newPost) {
     let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
     let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
 
-    
-
     if (!postHistory) {
         console.log('Debug: Create a post history');
         await createPostHistory(authorId);
@@ -142,14 +140,24 @@ async function createPost(token, authorId, postId, newPost) {
         authorId: authorId,
         categories: categories,
         count: 0,
-        likes: [],
-        comments: [],
         published: published,
         visibility: visibility,
         unlisted: unlisted
     });
     postHistory.num_posts = postHistory.num_posts + 1;
+
+    let likeDocument = Like({
+        type: "Post",
+        Id: postId,
+        likes: [],
+    }).save();
+    let commentDocument = Comment({
+        postId: postId,
+        comments: [],
+    }).save();
     await postHistory.save();
+    await likeDocument;
+    await commentDocument;
     return [await getPost(authorId, postId), 200];
 }
 

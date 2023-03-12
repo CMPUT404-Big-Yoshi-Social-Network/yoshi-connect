@@ -176,7 +176,5 @@ async function unfollowing(req, res) {
 module.exports={
     isFriend,
     unfriending,
-    unfollowing,
-    createFollowers,
-    createFollowings
+    unfollowing
 }

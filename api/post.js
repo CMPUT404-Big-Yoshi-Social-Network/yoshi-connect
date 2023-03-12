@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, apigetPost, getPosts } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 
 const { getAuthor } = require('../routes/author.js');
@@ -43,7 +43,7 @@ router.get('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  let [post, status] = await apigetPost(authorId, postId);
+  let [post, status] = await getPost(authorId, postId);
 
   if(status != 200){
     return res.sendStatus(status);

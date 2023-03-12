@@ -243,33 +243,6 @@ async function editComment(req, res){
     return res.json({ status: success })
 }
 
-async function getPost(req, res){
-    /**
-     * Description: Gets an author's post from the database 
-     * Returns: Status 404 if the post is not found in the database
-     *          The post from the database
-     */
-    console.log("Debug: Getting a post");
-
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
-
-    let post = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {'posts._id' : postId}
-        }
-    ]);
-    if(post.length == 0)
-        return res.sendStatus(404);
-    return res.json(post);
-}
-
 async function checkVisibility(req, res){
     /**
      * Description: Checks the visibility level of the author's post for the viewer
@@ -388,7 +361,7 @@ async function hasLiked(req, res) {
  * API STUFF
  */
 
-async function apigetPost(authorId, postId){
+async function getPost(authorId, postId){
     let post = await PostHistory.aggregate([
         {
             $match: {'authorId': authorId}
@@ -485,7 +458,7 @@ async function updatePost(token, authorId, postId, newPost) {
     }
     await postHistory.save()
 
-    return [await apigetPost(authorId, postId), 200];
+    return [await getPost(authorId, postId), 200];
 }
 
 async function deletePost(token, authorId, postId) {
@@ -589,7 +562,7 @@ async function createPost(token, authorId, postId, newPost) {
     });
     postHistory.num_posts = postHistory.num_posts + 1;
     await postHistory.save();
-    return [await apigetPost(authorId, postId), 200];
+    return [await getPost(authorId, postId), 200];
 }
 
 async function getPosts(page, size, author) {
@@ -811,7 +784,7 @@ async function apifetchLikes(authorId, postId) {
 
 async function apiFetchCommentLikes(authorId, postId, commentId) {
     // TODO Paging
-    const comments = apigetPost(authorId, postId).comments; 
+    const comments = getPost(authorId, postId).comments; 
     let comment = null;
 
     for (let i = 0; i < comments.length; i++) {
@@ -830,7 +803,6 @@ async function getAuthorLikes(authorId) {
 
 module.exports={
     createPostHistory,
-    getPost,
     addLike,
     addComment,
     deleteLike,
@@ -838,7 +810,7 @@ module.exports={
     editComment,
     checkVisibility,
     hasLiked,
-    apigetPost,
+    getPost,
     updatePost,
     deletePost,
     createPost,

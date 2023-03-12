@@ -70,7 +70,7 @@ function Posts({viewerId, url}) {
 
         let updated = page + 1;
         config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

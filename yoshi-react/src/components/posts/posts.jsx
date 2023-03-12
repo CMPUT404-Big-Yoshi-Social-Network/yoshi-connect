@@ -88,12 +88,12 @@ function Posts({viewerId, url}) {
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
         .catch(err => {
-            if (err.response.status === 404) {
+            if (!err.response || err.response.status === 500) {
+                setPosts([]);
+            } else if (err.response.status === 404) {
                 setSeeMore(true);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
-            } else if (err.response.status === 500) {
-                setPosts([]);
             }
         });
     }, [setPosts, url, navigate, page, size, posts, viewerId]);

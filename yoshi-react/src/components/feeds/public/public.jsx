@@ -73,9 +73,11 @@ function PublicFeed() {
                 let viewerId = response.data.id;
                 setViewerId(viewerId)
             })
-            .catch(err => { if (err.response.status === 404) { 
-                setViewerId('')
-            } });
+            .catch(err => { 
+                if (!err.response || err.response.status === 404 ) { 
+                    setViewerId('')
+                } 
+            });
         }
         getId();
     }, [navigate]);

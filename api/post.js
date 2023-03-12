@@ -152,4 +152,8 @@ router.post('/', async (req, res) => {
   }
 })
 
+router.get('/:postId/likes', async (req, res) => {
+  return res.sendStatus(404);
+})
+
 module.exports = router;

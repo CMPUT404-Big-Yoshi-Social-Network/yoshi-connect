@@ -82,4 +82,8 @@ router.post('/:authorId', async (req, res) => {
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
 
+router.get('/:authorId/liked', async (req, res) => {
+  return res.sendStatus(404);
+})
+
 module.exports = router;

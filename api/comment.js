@@ -52,6 +52,22 @@ router.get('/', async (req, res) => {
     })
 })
 
+router.post('/', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+
+  const comment = createComment(authorId, postId, req.body, process.env.DOMAIN_NAME);
+
+  return res.json({
+    "type": "comment",
+    "author": comment.author,
+    "comment": comment.comment,
+    "contentType": comment.contentType,
+    "published": comment.published,
+    "id": comment._id
+    }) 
+})
+
 router.get('/:commentId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -77,20 +93,6 @@ router.get('/:commentId/likes', async (req, res) => {
     })
  })
 
-router.post('/', async (req, res) => {
-  const authorId = req.params.authorId;
-  const postId = req.params.postId;
 
-  const comment = createComment(authorId, postId, req.body, process.env.DOMAIN_NAME);
-
-  return res.json({
-    "type": "comment",
-    "author": comment.author,
-    "comment": comment.comment,
-    "contentType": comment.contentType,
-    "published": comment.published,
-    "id": comment._id
-    }) 
-})
 
 module.exports = router;

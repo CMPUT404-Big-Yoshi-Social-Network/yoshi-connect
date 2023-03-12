@@ -60,6 +60,7 @@ function Posts({viewerId, url}) {
         })
         .catch(err => {
             if (err.response.status === 404) {
+                console.warn = () => {};
                 setPosts([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
@@ -88,6 +89,7 @@ function Posts({viewerId, url}) {
         })
         .catch(err => {
             if (err.response.status === 404) {
+                console.warn('')
                 setSeeMore(true);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');

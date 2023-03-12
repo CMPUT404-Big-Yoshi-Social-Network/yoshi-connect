@@ -44,10 +44,11 @@ function Following(props) {
          * Returns: N/A
          */
        axios
-       .post('/api/authors/' + props.authorId + '/followings')
+       .get('/api/authors/' + props.authorId + '/followings')
        .then((response) => { setFollowings(response.data.items) })
        .catch(err => {
             if (err.response.status === 404) {
+                console.warn('')
                 setFollowings([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized')

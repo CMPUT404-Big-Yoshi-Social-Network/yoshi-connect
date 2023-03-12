@@ -21,9 +21,6 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getAuthor, apiUpdateAuthor, getAuthors, fetchMyPosts } = require('../routes/author');
-//TODO getAuthorLikes should be moved out of posts
-//const { getAuthorLikes } = require('../routes/post');
-const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
 const express = require('express'); 

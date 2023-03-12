@@ -22,6 +22,8 @@ Foundation; All Rights Reserved
 // Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import Pagination from 'react-bootstrap/Pagination';
 
 // Child Component
 import Request from './request.jsx';
@@ -34,6 +36,7 @@ function Requests(props) {
      * Returns: N/A
      */
     const [requests, setRequests] = useState([]);
+    const navigate = useNavigate();
     useEffect(() => {
         /**
          * Description: Before render, checks the author ID and sends the username
@@ -42,31 +45,46 @@ function Requests(props) {
          */
         console.log('Debug: Fetching all the requests for this user')
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: '/api/authors/' + props.authorId + 'requests',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                status: 'Fetching Requests'
-            }
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
         axios
-        .post('/api/authors/' + props.authorId + 'requests', config)
+        .get('/api/authors/' + props.authorId + 'requests', config)
         .then((response) => {
             setRequests(response.data.items)
         })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 404) { 
+                setRequests([]);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            }
         });
     }, [setRequests, props]);
+
+    const getMore = () => {
+        //TODO
+        ;
+    }
+
     return (
         <div>
             <h4>Friend Requests</h4>
-            {Object.keys(requests).map((request, idx) => (
-                <Request key={idx} {...requests[request]}/>
-            ))}
+            { requests === undefined || requests.length === 0 ? 
+                <div>
+                    <h4>No requests.</h4>
+                </div> : 
+                <div> 
+                    <Pagination>
+                        {Object.keys(requests).map((request, idx) => (
+                            <Request key={idx} {...requests[request]}/>
+                        ))}
+                        <Pagination.Next onClick={getMore}/>
+                    </Pagination>  
+                </div>
+            }
         </div>
     )
 }

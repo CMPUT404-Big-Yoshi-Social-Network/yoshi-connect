@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
-// Schemas
+
 const { Follower, Following } = require('../scheme/relations.js');
 
 async function isFriend(req, res) {
@@ -178,6 +178,5 @@ module.exports={
     unfriending,
     unfollowing,
     createFollowers,
-    createFollowings,
-    createFriends,
+    createFollowings
 }

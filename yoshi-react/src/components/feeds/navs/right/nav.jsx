@@ -42,27 +42,16 @@ function RightNavBar() {
     const navigate = useNavigate();
     
     useEffect(() => {
-        const getUsername = () => {
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + null,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    status: 'Fetching authorId'
-                }
-            }
-    
+        const getId = () => {
             axios
-            .get('/api/authors/' + null, config)
+            .get('/api/userinfo/')
             .then((response) => {
-                setUsername(response.data.author.username)
+                let username = response.data.displayname;
+                setUsername({ username: username })
             })
             .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
         }
-        getUsername();
+        getId();
     }, [username, navigate])
 
     return (

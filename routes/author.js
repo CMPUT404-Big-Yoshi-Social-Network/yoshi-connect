@@ -34,7 +34,10 @@ mongoose.set('strictQuery', true);
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
 // Additional Functions
-const { createInbox } = require('./inbox.js');
+
+const { createFollowers, createFollowings } = require('./relations.js');
+const { createPostHistory } = require('./post.js');
+const { createInbox } = require('./inbox.js')
 
 // Additional Functions
 const { checkUsername, authLogin } = require('./auth.js');

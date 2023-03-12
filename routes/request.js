@@ -360,6 +360,7 @@ async function apideleteRequest(authorId, foreignId, res) {
 async function getRequests(authorId) {
     await Request.find({object: authorId}, function(err, requests){
         console.log("Debug: Requests exists");
+        if (!requests) { return res.sendStatus(404); }
         return requests
     }).clone()
 }

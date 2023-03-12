@@ -723,20 +723,34 @@ async function apiupdatePost(authorId, postId, newPost) {
     return 200;
 }
 
-async function apideletePost(authorId, postId) {
+async function apideletePost(token, authorId, postId) {
+    //TODO Refactor check expiry and then remove this code
+
+    const login = await Login.findOne({token: token}).clone();
+        
+    if (!login) {
+        return [[], 401]; 
+    }
+    let expiresAt = new Date(login.expires);
+    let current = new Date();
+
+    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
+        return [[], 401];
+    }
+
     const postHistory = await PostHistory.findOne({authorId: authorId});
 
-    if (postHistory == undefined) return sendStatus(500);
+    if (!postHistory) return sendStatus(500);
 
     const post = postHistory.posts.id(postId);
 
-    if(!post) return res.sendStatus(404);
+    if(!post) return sendStatus(404);
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
     postHistory.save();
 
-    return res.sendStatus(200); 
+    return [post, 200]; 
 }
 
 async function apicreatePost(token, authorId, postId, newPost) {
@@ -750,7 +764,7 @@ async function apicreatePost(token, authorId, postId, newPost) {
     let expiresAt = new Date(login.expires);
     let current = new Date();
 
-    if (expiresAt.getTime() < current.getTime()) {
+    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
         return [[], 401]
     }
 

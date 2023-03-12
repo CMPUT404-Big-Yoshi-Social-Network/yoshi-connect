@@ -71,10 +71,14 @@ router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const status = await apideletePost(authorId, postId);
+  if(!req.cookies["token"]){
+    return res.sendStatus(401);
+  }
+
+  const [post, status] = await apideletePost(req.cookies["token"], authorId, postId);
 
   if (status == 200) {
-    return res.sendStatus(status);
+    return res.json(post);
   } else if (status == 404) {
     return res.sendStatus(404);
   } else if (status == 500) {

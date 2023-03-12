@@ -30,7 +30,7 @@ function Posts({viewerId, url}) {
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(true);
     const size = 5;
-    
+
     useEffect(() => {
         console.log('Debug: Fetching all public posts.')
         let config = {
@@ -63,6 +63,12 @@ function Posts({viewerId, url}) {
             }
         });
     }, [setPosts, url, navigate, page, size]);
+
+    const getMore = () => {
+        //TODO
+        ;
+    }
+    
     return (
         <div>
             { posts === undefined || posts.length === 0 ? 
@@ -78,7 +84,6 @@ function Posts({viewerId, url}) {
                     </Pagination>  
                 </div>
             }
-            
         </div>
     )
 }

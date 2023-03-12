@@ -32,7 +32,6 @@ const { Friend } = require('../scheme/relations.js');
 const crypto = require('crypto');
 const { checkExpiry } = require('./auth.js');
 
-
 async function createPostHistory(author_id){
     /**
      * Description: Creates and saves the author's post history 
@@ -48,6 +47,331 @@ async function createPostHistory(author_id){
     await new_post_history.save()
 
     return;
+}
+
+async function getPost(authorId, postId){
+    let post = await PostHistory.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {'posts._id' : postId}
+        }
+    ]);
+    
+    if(post.length == 0) {
+        return [{}, 404];
+    }
+
+    post = post[0].posts
+
+    post = {
+        "type": "post",
+        "title" : post.title,
+        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+        "source": post.source,
+        "origin": post.origin,
+        "description": post.description,
+        "contentType": post.contentType,
+        "author": post.author, 
+        "categories": post.categories,
+        "count": post.count,
+        "comments": post.comments,
+        "commentSrc": post.commentSrc,
+        "published": post.published,
+        "visibility": post.visibility,
+        "unlisted": post.unlisted
+    }
+    return [post, 200]   
+}
+
+async function createPost(token, authorId, postId, newPost) {
+    //TODO Refactor checkExpiry and then replace this code with it
+
+    const login = await Login.findOne({token: token}).clone();
+        
+    if (!login) {
+        return [[], 401]; 
+    }
+    let expiresAt = new Date(login.expires);
+    let current = new Date();
+
+    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
+        return [[], 401]
+    }
+
+    const title = newPost.title;
+    const desc = newPost.description;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const published = new Date().toISOString();
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    const postTo = newPost.postTo;
+
+    if(!title || !desc || !contentType || !content || !categories || !visibility || !unlisted){
+        return [[], 400];
+    }
+
+    let postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if(postId){
+        let oldPost = postHistory.posts.id(postId);
+        if(oldPost)
+            return [[], 400]
+    }
+    
+    if(!postId) {
+        postId = crypto.randomUUID();
+    }
+
+    let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
+    let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
+
+    
+
+    if (!postHistory) {
+        console.log('Debug: Create a post history');
+        await createPostHistory(authorId);
+        postHistory = await PostHistory.findOne({authorId: authorId});
+    }
+
+    postHistory.posts.push({
+        _id: postId,
+        title: title,
+        source: source,
+        origin: origin,
+        description: desc,
+        contentType: contentType,
+        content: content,
+        authorId: authorId,
+        categories: categories,
+        count: 0,
+        likes: [],
+        comments: [],
+        published: published,
+        visibility: visibility,
+        unlisted: unlisted
+    });
+    postHistory.num_posts = postHistory.num_posts + 1;
+    await postHistory.save();
+    return [await getPost(authorId, postId), 200];
+}
+
+async function updatePost(token, authorId, postId, newPost) {
+    //TODO Refactor check expiry and then remove this code
+
+    const login = await Login.findOne({token: token}).clone();
+        
+    if (!login) {
+        return [[], 401]; 
+    }
+    let expiresAt = new Date(login.expires);
+    let current = new Date();
+
+    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
+        return [[], 401];
+    }
+
+    const title = newPost.title;
+    const desc = newPost.description;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if(!postHistory){
+        return [{}, 500];
+    }
+
+    const post = postHistory.posts.id(postId);
+
+    if(!post){
+        return [{}, 404];
+    }
+
+    if(title){
+        post.title = title;
+    }
+    if(desc){
+        post.description = desc;
+    }
+    if(contentType){
+        post.contentType = contentType;
+    }
+    if(content){
+        post.content = content;
+    }
+    if(visibility){
+        post.visibility = visibility;
+    }
+    if(unlisted){
+        post.unlisted = unlisted;
+    }
+    if(categories){
+        post.categories = categories;
+    }
+    await postHistory.save()
+
+    return [await getPost(authorId, postId), 200];
+}
+
+async function deletePost(token, authorId, postId) {
+    //TODO Refactor check expiry and then remove this code
+
+    const login = await Login.findOne({token: token}).clone();
+        
+    if (!login) {
+        return [[], 401]; 
+    }
+    let expiresAt = new Date(login.expires);
+    let current = new Date();
+
+    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
+        return [[], 401];
+    }
+
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if (!postHistory) return [[], 500];
+
+    const post = postHistory.posts.id(postId);
+
+    if(!post) return [[], 404];
+
+    post.remove();
+    postHistory.num_posts = postHistory.num_posts - 1;
+    postHistory.save();
+
+    return [post, 200]; 
+}
+
+async function getPosts(page, size, author) {
+    let posts = undefined
+    //TODO WHEN FRIENDS IS DONE FILTER POSTS FOR FRIENDS AND FOR PUBLIC 
+    if(page > 1){
+        posts = await PostHistory.aggregate([
+            {
+                $match: {'authorId': author.id}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $match: {
+                    'posts.unlisted': false
+                }
+            },
+            {
+                $match: {
+                    'posts.visibility': {$in : ["PUBLIC"]}
+                }
+            },
+            {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: { dateString: "$posts.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "posts.published": -1 }
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            },
+        ]);
+    }
+    else if (page == 1) {
+        posts = await PostHistory.aggregate([
+            {
+                $match: {'authorId': author.id}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $match: {
+                    'posts.unlisted': false,
+                    
+                }
+            },
+            {
+                $match: {
+                    'posts.visibility': {$in : ["PUBLIC"]}
+                }
+            },
+            {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: { dateString: "$posts.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "posts.published": -1 }
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            }
+            
+        ]);
+    }
+    else{
+        return [[], 400];
+    }
+    if(!posts || !posts[0] || !posts[0].posts_array){
+        return [[], 200];
+    }
+    
+    posts = posts[0].posts_array;
+
+    for(let i = 0; i < posts.length; i++){
+        const post = posts[i];
+        let sanitized_posts = {
+            "type": "post",
+            "tite'": post.title,
+            "id": post._id,
+            "source": post.source,
+            "origin": post.origin,
+            "description": post.description,
+            "contentType": post.contentType,
+            "content": post.content,
+            "author": author,
+            "categories": post.categories,
+            "count": post.comments.length,
+            "comments": "",
+            "likeCount": post.likes.length,
+            "likes": "",
+            "published": post.published,
+            "visibility": post.visibility,
+            "unlisted": post.unlisted,
+        }
+        posts[i] = sanitized_posts;
+    }
+    return [posts, 200];
 }
 
 async function addLike(req, res){
@@ -361,330 +685,15 @@ async function hasLiked(req, res) {
  * API STUFF
  */
 
-async function getPost(authorId, postId){
-    let post = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {'posts._id' : postId}
-        }
-    ]);
-    
-    if(post.length == 0) {
-        return [{}, 404];
-    }
 
-    post = post[0].posts
 
-    post = {
-        "type": "post",
-        "title" : post.title,
-        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
-        "source": post.source,
-        "origin": post.origin,
-        "description": post.description,
-        "contentType": post.contentType,
-        "author": post.author, 
-        "categories": post.categories,
-        "count": post.count,
-        "comments": post.comments,
-        "commentSrc": post.commentSrc,
-        "published": post.published,
-        "visibility": post.visibility,
-        "unlisted": post.unlisted
-    }
-    return [post, 200]   
-}
 
-async function updatePost(token, authorId, postId, newPost) {
-    //TODO Refactor check expiry and then remove this code
 
-    const login = await Login.findOne({token: token}).clone();
-        
-    if (!login) {
-        return [[], 401]; 
-    }
-    let expiresAt = new Date(login.expires);
-    let current = new Date();
 
-    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
-        return [[], 401];
-    }
 
-    const title = newPost.title;
-    const desc = newPost.description;
-    const contentType = newPost.contentType;
-    const content = newPost.content;
-    const categories = newPost.categories;
-    const visibility = newPost.visibility;
-    const unlisted = newPost.unlisted;
 
-    const postHistory = await PostHistory.findOne({authorId: authorId});
 
-    if(!postHistory){
-        return [{}, 500];
-    }
 
-    const post = postHistory.posts.id(postId);
-
-    if(!post){
-        return [{}, 404];
-    }
-
-    if(title){
-        post.title = title;
-    }
-    if(desc){
-        post.description = desc;
-    }
-    if(contentType){
-        post.contentType = contentType;
-    }
-    if(content){
-        post.content = content;
-    }
-    if(visibility){
-        post.visibility = visibility;
-    }
-    if(unlisted){
-        post.unlisted = unlisted;
-    }
-    if(categories){
-        post.categories = categories;
-    }
-    await postHistory.save()
-
-    return [await getPost(authorId, postId), 200];
-}
-
-async function deletePost(token, authorId, postId) {
-    //TODO Refactor check expiry and then remove this code
-
-    const login = await Login.findOne({token: token}).clone();
-        
-    if (!login) {
-        return [[], 401]; 
-    }
-    let expiresAt = new Date(login.expires);
-    let current = new Date();
-
-    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
-        return [[], 401];
-    }
-
-    const postHistory = await PostHistory.findOne({authorId: authorId});
-
-    if (!postHistory) return [[], 500];
-
-    const post = postHistory.posts.id(postId);
-
-    if(!post) return [[], 404];
-
-    post.remove();
-    postHistory.num_posts = postHistory.num_posts - 1;
-    postHistory.save();
-
-    return [post, 200]; 
-}
-
-async function createPost(token, authorId, postId, newPost) {
-    //TODO Refactor checkExpiry and then replace this code with it
-
-    const login = await Login.findOne({token: token}).clone();
-        
-    if (!login) {
-        return [[], 401]; 
-    }
-    let expiresAt = new Date(login.expires);
-    let current = new Date();
-
-    if (expiresAt.getTime() < current.getTime() || login.authorId != authorId) {
-        return [[], 401]
-    }
-
-    const title = newPost.title;
-    const desc = newPost.description;
-    const contentType = newPost.contentType;
-    const content = newPost.content;
-    const categories = newPost.categories;
-    const published = new Date().toISOString();
-    const visibility = newPost.visibility;
-    const unlisted = newPost.unlisted;
-    const postTo = newPost.postTo;
-
-    if(!title || !desc || !contentType || !content || !categories || !visibility || !unlisted){
-        return [[], 400];
-    }
-
-    let postHistory = await PostHistory.findOne({authorId: authorId});
-
-    if(postId){
-        let oldPost = postHistory.posts.id(postId);
-        if(oldPost)
-            return [[], 400]
-    }
-    
-    if(!postId) {
-        postId = crypto.randomUUID();
-    }
-
-    let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
-    let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
-
-    
-
-    if (!postHistory) {
-        console.log('Debug: Create a post history');
-        await createPostHistory(authorId);
-        postHistory = await PostHistory.findOne({authorId: authorId});
-    }
-
-    postHistory.posts.push({
-        _id: postId,
-        title: title,
-        source: source,
-        origin: origin,
-        description: desc,
-        contentType: contentType,
-        content: content,
-        authorId: authorId,
-        categories: categories,
-        count: 0,
-        likes: [],
-        comments: [],
-        published: published,
-        visibility: visibility,
-        unlisted: unlisted
-    });
-    postHistory.num_posts = postHistory.num_posts + 1;
-    await postHistory.save();
-    return [await getPost(authorId, postId), 200];
-}
-
-async function getPosts(page, size, author) {
-    let posts = undefined
-    //TODO WHEN FRIENDS IS DONE FILTER POSTS FOR FRIENDS AND FOR PUBLIC 
-    if(page > 1){
-        posts = await PostHistory.aggregate([
-            {
-                $match: {'authorId': author.id}
-            },
-            {
-                $unwind: '$posts'
-            },
-            {
-                $match: {
-                    'posts.unlisted': false
-                }
-            },
-            {
-                $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: { dateString: "$posts.published" }
-                    }
-                }
-            },
-            {
-                $sort: { "posts.published": -1 }
-            },
-            {
-                $skip: (page - 1) * size
-            },
-            {
-                $limit: size
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: { $push: "$posts" }
-                }
-            },
-        ]);
-    }
-    else if (page == 1) {
-        posts = await PostHistory.aggregate([
-            {
-                $match: {'authorId': author.id}
-            },
-            {
-                $unwind: '$posts'
-            },
-            {
-                $match: {
-                    'posts.unlisted': false,
-                    
-                }
-            },
-            {
-                $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: { dateString: "$posts.published" }
-                    }
-                }
-            },
-            {
-                $sort: { "posts.published": -1 }
-            },
-            {
-                $limit: size
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: { $push: "$posts" }
-                }
-            }
-            
-        ]);
-    }
-    else{
-        return [[], 400];
-    }
-    if(!posts || !posts[0] || !posts[0].posts_array){
-        return [[], 200];
-    }
-    
-    posts = posts[0].posts_array;
-
-    for(let i = 0; i < posts.length; i++){
-        const post = posts[i];
-        let sanitized_posts = {
-            "type": "post",
-            "tite'": post.title,
-            "id": post._id,
-            "source": post.source,
-            "origin": post.origin,
-            "description": post.description,
-            "contentType": post.contentType,
-            "content": post.content,
-            "author": author,
-            "categories": post.categories,
-            "count": post.comments.length,
-            "comments": "",
-            "likeCount": post.likes.length,
-            "likes": "",
-            "published": post.published,
-            "visibility": post.visibility,
-            "unlisted": post.unlisted,
-        }
-        posts[i] = sanitized_posts;
-    }
-    return [posts, 200];
-}
 
 async function getComments(authorId, postId) {
     // TODO: Paginate

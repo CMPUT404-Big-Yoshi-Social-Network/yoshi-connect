@@ -31,6 +31,7 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+//TODO Change this to get request
 router.post('/public', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
   await fetchPublicPosts(req, res);
@@ -86,15 +87,18 @@ router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const status = await apicreatePost(authorId, postId, req.body, process.env.DOMAIN_NAME);
+  if(!req.cookies["token"]){
+    return res.sendStatus(401);
+  }
+
+  const [post, status] = await apicreatePost(req.cookies["token"], authorId, postId, req.body);
 
   if (status == 200) {
+    return res.json(post);
+  }
+  else{
     return res.sendStatus(status);
-  } else if (status == 404) {
-    return res.sendStatus(404);
-  } else if (status == 500) {
-    return res.sendStatus(500); 
-  }  
+  }
 })
 
 //GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
@@ -126,15 +130,14 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
-  const status = await apicreatePost(authorId, undefined, req.body, process.env.DOMAIN_NAME);
+  const [post, status] = await apicreatePost(req.cookies["token"], authorId, undefined, req.body);
 
   if (status == 200) {
-    return res.sendStatus(status);
-  } else if (status == 404) {
-    return res.sendStatus(404);
-  } else if (status == 500) {
-    return res.sendStatus(500); 
-  }  
+    return res.json(post);
+  }
+  else{
+    return res.sendStatus(status); 
+  }
 })
 
 module.exports = router;

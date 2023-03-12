@@ -25,9 +25,12 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { PostHistory, Post, PublicPost } = require('../scheme/post.js');
 const { Like, Comment, Liked } = require('../scheme/interactions.js');
-const { Author } = require('../scheme/author.js');
+const { Login, Author } = require('../scheme/author.js');
 const { Friend } = require('../scheme/relations.js');
 
+//UUID
+const crypto = require('crypto');
+const { checkExpiry } = require('./auth.js');
 
 
 async function createPostHistory(author_id){
@@ -665,18 +668,16 @@ async function apiupdatePost(authorId, postId, newPost) {
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
     const specifics = newPost.specifics;
-    const image = newPost.image;
+    //const image = newPost.image;
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
 
-    let post = null;
-    let postIdx = postHistory.posts.map(obj => obj._id).indexOf(postId);
-    if (postIdx > -1) { 
-        post = postHistory.posts[postIdx]
-    }
+    const post = postHistory.posts.id(postId);
 
+    console.log(post);
+    /*
     let specifics_updated = false;
-    post.title = title; 
+    post.title = title;
     post.description = desc;
     post.contentType = contentType;
     post.content = content;
@@ -685,7 +686,7 @@ async function apiupdatePost(authorId, postId, newPost) {
             console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
             post.specifics = [];
             specifics_updated = true;
-        } 
+        }
         post.visibility = visibility;
     }
     if (!specifics_updated) {
@@ -694,8 +695,30 @@ async function apiupdatePost(authorId, postId, newPost) {
     post.categories = categories;
     post.unlisted = unlisted;
     post.image = image;
+    */
 
-    await postHistory.save()
+    if(title){
+        post.title = title;
+    }
+    if(desc){
+        post.description = desc;
+    }
+    if(contentType){
+        post.contentType = contentType;
+    }
+    if(content){
+        post.content = content;
+    }
+    if(visibility){
+        post.visibility = visibility;
+    }
+    if(unlisted){
+        post.unlisted = unlisted;
+    }
+    if(categories){
+        post.categories = categories;
+    }
+    //await postHistory.save()
 
     return 200;
 }
@@ -707,7 +730,7 @@ async function apideletePost(authorId, postId) {
 
     const post = postHistory.posts.id(postId);
 
-    if(post == null) return res.sendStatus(404);
+    if(!post) return res.sendStatus(404);
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
@@ -716,34 +739,63 @@ async function apideletePost(authorId, postId) {
     return res.sendStatus(200); 
 }
 
-async function apicreatePost(authorId, postId, newPost, domain) {
+async function apicreatePost(token, authorId, postId, newPost) {
+    //TODO Refactor checkExpiry and then replace this code with it
+
+    const login = await Login.findOne({token: token}).clone();
+        
+    if (!login) {
+        return [[], 401]; 
+    }
+    let expiresAt = new Date(login.expires);
+    let current = new Date();
+
+    if (expiresAt.getTime() < current.getTime()) {
+        return [[], 401]
+    }
+
     const title = newPost.title;
-    const source = newPost.source;
-    const desc = newPost.desc;
+    const desc = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
     const categories = newPost.categories;
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const specifics = newPost.specifics;
-    const image = newPost.image;
+    const postTo = newPost.postTo;
+
+    if(!title || !desc || !contentType || !content || !categories || !visibility || !unlisted){
+        return [[], 400];
+    }
 
     let postHistory = await PostHistory.findOne({authorId: authorId});
 
-    if (postHistory == null) {
-        console.log('Debug: Create a post history');
-        await createPostHistory(authorId);
+    if(postId){
+        let oldPost = postHistory.posts.id(postId);
+        if(oldPost)
+            return [[], 400]
+    }
+    
+    if(!postId) {
+        postId = crypto.randomUUID();
     }
 
-    if(postId == undefined) {
-        postId = uidgen.generateSync();
+    let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
+    let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
+
+    
+
+    if (!postHistory) {
+        console.log('Debug: Create a post history');
+        await createPostHistory(authorId);
+        postHistory = await PostHistory.findOne({authorId: authorId});
     }
-    var post = new Post({
-        _id: domain + "/authors/" + authorId + "/posts/" + postId,
+
+    postHistory.posts.push({
+        _id: postId,
         title: title,
         source: source,
-        origiin, origin,
+        origin: origin,
         description: desc,
         contentType: contentType,
         content: content,
@@ -754,15 +806,11 @@ async function apicreatePost(authorId, postId, newPost, domain) {
         comments: [],
         published: published,
         visibility: visibility,
-        specifics: specifics,
-        unlisted: unlisted,
-        image: image
+        unlisted: unlisted
     });
-
-    postHistory = await PostHistory.findOne({authorId: authorId});
-    postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
-    await postHistory.save();  
+    await postHistory.save();
+    return await apigetPost(authorId, postId);
 }
 
 async function getPosts(page, size, author) {
@@ -783,7 +831,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["Public"]}
+                    'posts.visibility': {$in : ["PUBLIC"]}
                 }
             },
             {
@@ -826,7 +874,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["Public"]}
+                    'posts.visibility': {$in : ["PUBLIC"]}
                 }
             },
             {

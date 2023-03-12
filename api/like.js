@@ -28,7 +28,8 @@ const express = require('express');
 
 // Router
 const router = express.Router({mergeParams: true});
-
+//domainName/api/authors/:authorId/posts/:postId/
+/*
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -57,6 +58,14 @@ router.post('/', async (req, res) => {
   if (req.body.data.status == 'Checking if post is already liked') {
     await hasLiked(req, res);
   }
+})
+*/
+router.get('/likes', async (req, res) => {
+
+})
+
+router.get('/comments/:commentId/likes', async (req, res) => {
+
 })
 
 module.exports = router;

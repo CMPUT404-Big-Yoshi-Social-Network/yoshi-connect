@@ -24,11 +24,13 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
-// Password
+// UUID
 const crypto = require('crypto');
 
 const postScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
+    origin: String,
+    source: String,
     title: String,
     description: String,
     contentType: String,
@@ -39,9 +41,8 @@ const postScheme = new Schema({
     comments: [{ type: String, default: crypto.randomUUID, ref: 'Comment' }],
     published: String,
     visibility: String,
-    specifics: [String],
-    unlisted: Boolean,
-    image: String},
+    postTo: String,
+    unlisted: Boolean,},
     {versionKey: false
 });
 

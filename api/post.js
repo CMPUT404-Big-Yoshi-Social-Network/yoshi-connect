@@ -110,15 +110,9 @@ router.put('/:postId', async (req, res) => {
 
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
-  let page = req.query.page;
-  let size = req.query.size;
-
-  if(page == undefined){
-    page = 1;
-  }
-  if(size == undefined){
-    size = 5;
-  }
+  
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let size = req.query.size ? parseInt(req.query.size) : 5; 
 
   let status;
 

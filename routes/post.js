@@ -763,17 +763,17 @@ async function getPosts(page, size, authorId) {
                 $sort: { "posts.published": -1 }
             },
             {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+            {
                 $group: {
                     _id: null,
                     posts_array: { $push: "$posts" }
                 }
             },
-            {
-                $skip: (page - 1) * size
-            },
-            {
-                $limit: size
-            }
         ]);
     }
     else if (page == 1) {
@@ -795,24 +795,24 @@ async function getPosts(page, size, authorId) {
                 $sort: { "posts.published": -1 }
             },
             {
+                $limit: size
+            },
+            {
                 $group: {
                     _id: null,
                     posts_array: { $push: "$posts" }
                 }
-            },
-            {
-                $limit: size
             }
+            
         ]);
     }
     else{
         return [[], 400];
     }
-
     if(!posts || !posts[0] || !posts[0].posts_array){
         return [[], 500];
     }
-
+    
     posts = posts[0].posts_array;
 
     for(let i = 0; i < posts.length; i++){

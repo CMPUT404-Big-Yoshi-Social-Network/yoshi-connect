@@ -67,19 +67,11 @@ function PublicFeed() {
              * Request: POST
              * Returns: N/A
              */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + null,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
 
             axios
-            .post('/api/authors/' + null, config)
+            .get('/api/userinfo/')
             .then((response) => {
-                let viewerId = response.data.author._id;
+                let viewerId = response.data.id;
                 setViewerId({ viewerId: viewerId })
             })
             .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });

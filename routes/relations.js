@@ -42,14 +42,6 @@ async function createFollowings(username, authorId){
     await Following({ username: username, authorId: authorId, followings: [] }).save();
 }
 
-async function createFriends(username, authorId){
-    /**
-     * Description: Creates a new entry in the database friends collection.
-     * Returns: N/A
-     */
-    await Friend({ username: username, authorId: authorId, friends: [] }).save();
-}
-
 async function isFriend(req, res) {
     /**
      * Description: Checks if the selected author is a friend or follower
@@ -202,6 +194,5 @@ module.exports={
     unfriending,
     unfollowing,
     createFollowers,
-    createFollowings,
-    createFriends,
+    createFollowings
 }

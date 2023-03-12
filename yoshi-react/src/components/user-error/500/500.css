@@ -30,20 +30,20 @@ Foundation; All Rights Reserved
          url('../../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
 }
 
-.sc404{
+.sc500{
     text-align: center;
 }
-.sc404 h1{
+.sc500 h1{
     font-size: 100pt;
     font-family: 'Uni Neue';
 }
-.sc404 h2{
+.sc500 h2{
     margin-top: -2em;
     font-size: 30pt;
     font-family: 'Signika', sans-serif;
     font-weight: 500;
 }
-.sc404 h3{
+.sc500 h3{
     font-size: 18pt;
     font-family: 'DM Sans', sans-serif;
 }

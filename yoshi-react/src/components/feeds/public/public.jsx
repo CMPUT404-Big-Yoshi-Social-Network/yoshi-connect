@@ -74,9 +74,7 @@ function PublicFeed() {
                 setViewerId(viewerId)
             })
             .catch(err => { 
-                if (err.response.status === 404 ) { 
-                    setViewerId('')
-                } 
+                console.log(err)
             });
         }
         getId();
@@ -90,7 +88,7 @@ function PublicFeed() {
                     <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts viewerId={viewer} type={''}/>               
+                    <Posts type={'public'}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

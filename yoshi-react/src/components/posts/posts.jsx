@@ -29,19 +29,45 @@ import axios from 'axios';
 // Child Component
 import Post from './post.jsx';
 
-function Posts({viewerId, type}) { 
+function Posts(type) { 
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 5;
     const navigate = useNavigate();
+    const [url, setUrl] = useState('');
+
+    useEffect(() => {
+        /**
+         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
+         * Returns: N/A
+         */
+        const getId = () => {
+            /**
+             * Description: Sends a POST request to get the current author's id 
+             * Request: POST
+             * Returns: N/A
+             */
+
+            axios
+            .get('/api/userinfo/')
+            .then((response) => {
+                let viewerId = response.data.id;
+                setUrl('/api/authors/' + viewerId + '/posts/' + type)
+            })
+            .catch(err => { 
+                console.log(err)
+            });
+        }
+        getId();
+    }, [navigate, type]);
 
     useEffect(() => {
         console.log('Debug: Fetching all public posts.')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + viewerId + '/inbox/' + type,
+            url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: page,
@@ -50,7 +76,7 @@ function Posts({viewerId, type}) {
         }
 
         axios
-        .get('/api/authors/' + viewerId + '/inbox/' + type, config)
+        .get(url, config)
         .then((response) => { 
             let posts = []
             for (let i = 0; i < size; i++) {
@@ -73,7 +99,7 @@ function Posts({viewerId, type}) {
         config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + viewerId + '/inbox/' + type,
+            url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -82,7 +108,7 @@ function Posts({viewerId, type}) {
         }
 
         axios
-        .get('/api/authors/' + viewerId + '/inbox/' + type, config)
+        .get(url, config)
         .then((response) => { 
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
@@ -95,7 +121,7 @@ function Posts({viewerId, type}) {
                 navigate('/unauthorized');
             }
         });
-    }, [setPosts, type, navigate, page, size, posts, viewerId]);
+    }, [setPosts, url, navigate, page, size, posts, viewerId]);
 
     const getMore = () => {
         if (!seeMore) {
@@ -104,7 +130,7 @@ function Posts({viewerId, type}) {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + viewerId + '/inbox/' + type,
+                url: url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -113,7 +139,7 @@ function Posts({viewerId, type}) {
             }
 
             axios
-            .get('/api/authors/' + viewerId + '/inbox/' + type, config)
+            .get(url, config)
             .then((response) => { 
                 let more = []
                 for (let i = 0; i < size; i++) {
@@ -139,7 +165,7 @@ function Posts({viewerId, type}) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + viewerId + '/inbox/' + type,
+            url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -148,7 +174,7 @@ function Posts({viewerId, type}) {
         }
 
         axios
-        .get('/api/authors/' + viewerId + '/inbox/' + type, config)
+        .get(url, config)
         .then((response) => { 
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
@@ -166,7 +192,7 @@ function Posts({viewerId, type}) {
 
     return (
         <div>
-            { posts === undefined || posts.length === 0 ? 
+            { posts.length === 0 ? 
                 <div>
                     <h4>No posts to show.</h4>
                 </div> : 

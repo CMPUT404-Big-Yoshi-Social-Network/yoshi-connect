@@ -58,7 +58,7 @@ function Following(props) {
     return (
         <div className='following-column' style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Following</h3>
-            { followings === undefined || followings.length === 0 ? 
+            { followings.length === 0 ? 
                 <div>
                     <h4>You are not following anyone.</h4>
                 </div> :

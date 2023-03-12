@@ -34,6 +34,12 @@ const router = express.Router({mergeParams: true});
 //TODO Change this to get request; TO DO!
 router.get('/public', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
+  await fetchPublicPosts(req, res);
+})
+
+// TODO
+router.get('/friends', async (req, res) => {
+  console.log('Debug: Getting the author true friends posts');
   return res.json({
     items: []
   })

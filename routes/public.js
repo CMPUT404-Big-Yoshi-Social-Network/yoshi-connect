@@ -64,9 +64,7 @@ async function fetchPublicPosts(req, res) {
     console.log('Debug: Getting public/following posts');
 
     const login = await Login.findOne({token: req.cookies.token}).clone();
-    if(!login){
-        return res.sendStatus(404);
-    }
+    if (!login) { return res.sendStatus(404); }
 
     console.log('Debug: Retrieving current author logged in')
     const username = login.username
@@ -92,9 +90,7 @@ async function fetchPublicPosts(req, res) {
     ]);
 
     let followings = [];
-    if(following.length > 0){
-        followings = following[0].follows;
-    }
+    if(following.length > 0){ followings = following[0].follows; }
 
     let posts = null;
     if(followings.length != 0){

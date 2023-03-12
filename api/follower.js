@@ -31,7 +31,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
-  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
 
   const followers = await getFollowers(authorId);
@@ -103,7 +103,7 @@ router.get('/:foreignAuthorId', async (req, res) => {
 })
 
 router.put('/:foreignAuthorId', async (req, res) => {
-  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
@@ -116,7 +116,7 @@ router.put('/:foreignAuthorId', async (req, res) => {
 })
 
 router.delete('/:foreignAuthorId', async (req, res) => {
-  if ((await checkExpiry(req, res))) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
   if(req.body.type == undefined || req.body.type != "follower")
     return res.sendStatus(400)
 

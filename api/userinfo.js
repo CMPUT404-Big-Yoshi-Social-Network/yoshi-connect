@@ -26,7 +26,7 @@ const { getUserInfo } = require('../routes/userinfo');
 const express = require('express'); 
 
 // Router
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.get('/', async (req,res) => {
     //TODO FIll this out to give back author of the token used for authentication.

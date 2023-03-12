@@ -26,7 +26,7 @@ const { getInbox, postInbox, deleteInbox} = require('../routes/inbox')
 const express = require('express'); 
 
 // Router
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
   console.log('Debug: Getting an authors inbox');

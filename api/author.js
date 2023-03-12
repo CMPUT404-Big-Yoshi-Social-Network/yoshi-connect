@@ -21,17 +21,14 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getAuthor, apiUpdateAuthor, getAuthors, fetchMyPosts } = require('../routes/author');
-const { getAuthorLikes } = require('../routes/post');
-const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
 const express = require('express'); 
 
 // Router
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
-  //if (await checkExpiry(req, res)) { return res.sendStatus(401) }
 
   let page = req.query.page;
   let size = req.query.size;
@@ -85,20 +82,8 @@ router.post('/:authorId', async (req, res) => {
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
 
-router.post('/:authorId/posts', async (req, res) => {
-  if((await checkExpiry(req, res))){ return res.sendStatus(401) }
-  await fetchMyPosts(req.params.authorId, req, res);
-})
-
 router.get('/:authorId/liked', async (req, res) => {
-  const authorId = req.params.authorId;
-
-  const liked = getAuthorLikes(authorId);
-
-  return res.json({
-      "type":"liked",
-      "items": liked
-  })
+  return res.sendStatus(404);
 })
 
 module.exports = router;

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost, getPostsPaginated } = require('../routes/post');
+const { apicreatePost, apiupdatePost, apideletePost, apigetPost, getPosts } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 
 const { getAuthor } = require('../routes/author.js');
@@ -42,28 +42,13 @@ router.get('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  let post = await apigetPost(authorId, postId);
+  let [post, status] = await apigetPost(authorId, postId);
 
-  if(post === 404) return res.sendStatus(404);
-  if(post === 500) return res.sendStatus(500);
+  if(status != 200){
+    return res.sendStatus(status);
+  }
 
-  return res.json({
-    "type": "post",
-    "title" : post.title,
-    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
-    "source": post.source,
-    "origin": post.origin,
-    "description": post.description,
-    "contentType": post.contentType,
-    "author": post.author, 
-    "categories": post.categories,
-    "count": post.count,
-    "comments": post.comments,
-    "commentSrc": post.commentSrc,
-    "published": post.published,
-    "visibility": post.visibility,
-    "unlisted": post.unlisted
-  });
+  return res.json(post);
 })
 
 //POST [local] update the post whose id is POST_ID (must be authenticated)
@@ -119,15 +104,13 @@ router.get('/', async (req, res) => {
   let page = req.query.page ? parseInt(req.query.page) : 1;
   let size = req.query.size ? parseInt(req.query.size) : 5; 
 
-  let status;
-
-  [author, status] = await getAuthor(authorId);
+  let [author, status] = await getAuthor(authorId);
 
   if(status != 200 || author.admin){
     return res.sendStatus(status);
   }
 
-  [posts, status] = await getPosts(page, size, authorId);
+  [posts, status] = await getPosts(page, size, author);
 
   if(status != 200){
     return res.sendStatus(status);

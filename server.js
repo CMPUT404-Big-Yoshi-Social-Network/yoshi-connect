@@ -70,7 +70,7 @@ app.use("/api/authors", author);
 app.use("/api/authors/:authorId/posts/:postId/comments", comment);
 app.use("/api/authors/:authorId/friends", friend);
 app.use("/api/authors/:author_id/inbox", inbox);
-app.use("/api/authors/:authorId/posts/:postId/likes", like);
+//app.use("/api/authors/:authorId/posts/:postId", like);
 app.use("/api/authors/:authorId/posts", post);
 app.use("/api/settings", setting);
 app.use("/api/signup", signup);
@@ -87,19 +87,6 @@ app.use("/api/userinfo", userinfo);
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 
 app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
-
-app.put('/server/authors/:author_id/posts/', async (req, res) => {
-  console.log('Debug: Creating a post')
-  await createPost(req, res);
-})
-
-app.get('/server/authors/:author_id/posts/', async (req, res) => {
-  console.log('Debug: Paging the posts created by the logged in author');
-	if ( await checkExpiry(req, res) ) {
-	  return res.sendStatus(404);
-	}
-  await getPostsPaginated(req, res);
-})
 
 app.get('/server/authors/:author_id/posts/:post_id', async (req, res) => {
   console.log('Debug: Viewing a specific post by a specific author');

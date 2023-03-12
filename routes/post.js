@@ -629,8 +629,31 @@ async function apigetPost(authorId, postId){
             $match: {'posts._id' : postId}
         }
     ]);
-    if(post.length == 0) return 404;
-    return post   
+    
+    if(post.length == 0) {
+        return [{}, 404];
+    }
+
+    post = post[0].posts
+
+    post = {
+        "type": "post",
+        "title" : post.title,
+        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+        "source": post.source,
+        "origin": post.origin,
+        "description": post.description,
+        "contentType": post.contentType,
+        "author": post.author, 
+        "categories": post.categories,
+        "count": post.count,
+        "comments": post.comments,
+        "commentSrc": post.commentSrc,
+        "published": post.published,
+        "visibility": post.visibility,
+        "unlisted": post.unlisted
+    }
+    return [post, 200]   
 }
 
 async function apiupdatePost(authorId, postId, newPost) {
@@ -742,13 +765,13 @@ async function apicreatePost(authorId, postId, newPost, domain) {
     await postHistory.save();  
 }
 
-async function getPosts(page, size, authorId) {
+async function getPosts(page, size, author) {
     let posts = undefined
     //TODO WHEN FRIENDS IS DONE FILTER POSTS FOR FRIENDS AND FOR PUBLIC 
     if(page > 1){
         posts = await PostHistory.aggregate([
             {
-                $match: {'authorId': authorId}
+                $match: {'authorId': author.id}
             },
             {
                 $unwind: '$posts'
@@ -790,7 +813,7 @@ async function getPosts(page, size, authorId) {
     else if (page == 1) {
         posts = await PostHistory.aggregate([
             {
-                $match: {'authorId': authorId}
+                $match: {'authorId': author.id}
             },
             {
                 $unwind: '$posts'
@@ -832,7 +855,7 @@ async function getPosts(page, size, authorId) {
         return [[], 400];
     }
     if(!posts || !posts[0] || !posts[0].posts_array){
-        return [[], 404];
+        return [[], 200];
     }
     
     posts = posts[0].posts_array;
@@ -843,8 +866,8 @@ async function getPosts(page, size, authorId) {
             "type": "post",
             "tite'": post.title,
             "id": post._id,
-            "source": "",
-            "origin": "",
+            "source": post.source,
+            "origin": post.origin,
             "description": post.description,
             "contentType": post.contentType,
             "content": post.content,

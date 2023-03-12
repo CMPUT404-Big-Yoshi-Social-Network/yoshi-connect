@@ -243,97 +243,6 @@ async function editComment(req, res){
     return res.json({ status: success })
 }
 
-async function createPost(req, res, postId){
-    /**
-     * Description: Creates an author's post in the database 
-     * Returns: N/A
-     */
-    console.log('Debug: Creating a post')
-    let authorId = req.params.author_id;
-    //Setup the rest of the post
-    const title = req.body.data.title;
-    const desc = req.body.data.desc;
-    const contentType = req.body.data.contentType;
-    const content = req.body.data.content;
-    const categories = [""];
-    const published = new Date().toISOString();
-    const visibility = req.body.data.visibility;
-    const unlisted = req.body.data.unlisted;
-    const specifics = req.body.data.specifics;
-    const image = req.body.data.image;
-
-    //Get the author's document
-    //Should be refactored to do use an aggregate pipeline in case of large number of posts
-    let post_history = await PostHistory.findOne({authorId: authorId});
-
-    if (!post_history) {
-        console.log('Debug: Create a post history');
-        await createPostHistory(authorId);
-    }
-
-    if(postId == undefined){
-
-        var post = new Post({
-            title: title,
-            description: desc,
-            contentType: contentType,
-            content: content,
-            authorId: authorId,
-            categories: categories,
-            count: 0,
-            likes: [],
-            comments: [],
-            published: published,
-            visibility: visibility,
-            specifics: specifics,
-            unlisted: unlisted,
-            image: image
-        });
-    }
-    else{
-        var post = new Post({
-            _id: postId,
-            title: title,
-            description: desc,
-            contentType: contentType,
-            content: content,
-            authorId: authorId,
-            categories: categories,
-            count: 0,
-            likes: [],
-            comments: [],
-            published: published,
-            visibility: visibility,
-            specifics: specifics,
-            unlisted: unlisted,
-            image: image
-        });
-    }
-
-    post_history = await PostHistory.findOne({authorId: authorId});
-    post_history.posts.push(post);
-    post_history.num_posts = post_history.num_posts + 1;
-
-    if(visibility == "FRIENDS") {
-        
-    }
-    else if(visibility == "PRIVATE") {
-
-    }
-    else if(visibility == "PUBLIC") {
-
-    }
-
-    await post_history.save();
-
-    if (visibility === 'Public') {
-        let publicPost = await PublicPost.find();
-        publicPost[0].posts.push({authorId: authorId, post: post});
-        publicPost[0].num_posts = publicPost[0].num_posts + 1;
-        await publicPost[0].save();
-    }
-}
-
 async function getPost(req, res){
     /**
      * Description: Gets an author's post from the database 
@@ -1029,7 +938,6 @@ async function getAuthorLikes(authorId) {
 
 module.exports={
     createPostHistory,
-    createPost,
     getPost,
     getPostsPaginated,
     updatePost,

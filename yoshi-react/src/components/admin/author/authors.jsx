@@ -71,7 +71,6 @@ function Authors() {
     }, [setAuthors, url, navigate, page, size]);
 
     const getMore = () => {
-        let isCheck = false;
         if (!next) {
             let updated = page + 1;
             setPage(updated);
@@ -97,9 +96,7 @@ function Authors() {
                 setPrev(false);
                 if (response.data.items.length < size) {
                     setNext(true);
-                } else if (response.data.items.length === size) {
-                    isCheck = true;
-                }
+                } 
             })
             .catch(err => {
                 if (err.response.status === 404) {
@@ -111,37 +108,32 @@ function Authors() {
                 }
             });
         }
-
-        if (isCheck) {
-            let updated = page + 1;
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: url,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                params: {
-                    page: updated,
-                    size: size
-                }
+        let updated = page + 2;
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: url,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
             }
-
-            axios
-            .get(url, config)
-            .then((response) => { 
-                if (response.data.items.length < size) {
-                    setNext(true);
-                }
-            })
-            .catch(err => {
-                if (err.response.status === 404) {
-                    setAuthors([]);
-                } else if (err.response.status === 401) {
-                    navigate('/unauthorized');
-                } else if (err.response.status === 500) {
-                    navigate('500 PAGE')
-                }
-            });
         }
+
+        axios
+        .get(url, config)
+        .then((response) => { 
+            if (response.data.items.length === 0) { setNext(true); }
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                setAuthors([]);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
+            }
+        });
     }
 
     const goBack = () => {

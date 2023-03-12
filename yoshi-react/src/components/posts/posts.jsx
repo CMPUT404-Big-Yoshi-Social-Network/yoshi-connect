@@ -29,7 +29,7 @@ import Post from './post.jsx';
 function Posts({viewerId, url}) { 
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
-    const [seeMore, setSeeMore] = useState(true);
+    const [seeMore, setSeeMore] = useState(false);
     const size = 5;
 
     useEffect(() => {
@@ -63,11 +63,98 @@ function Posts({viewerId, url}) {
                 navigate('500 PAGE')
             }
         });
+
+        let updated = page + 1;
+        config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: url,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
+            }
+        }
+
+        axios
+        .get(url, config)
+        .then((response) => { 
+            if (response.data.items.length === 0) { setSeeMore(true); }
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                setPosts(posts);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
+            }
+        });
     }, [setPosts, url, navigate, page, size]);
 
     const getMore = () => {
-        //TODO
-        ;
+        if (!seeMore) {
+            let updated = page + 1;
+            setPage(updated);
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: url,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
+            }
+
+            axios
+            .get(url, config)
+            .then((response) => { 
+                let more = []
+                for (let i = 0; i < size; i++) {
+                    more.push(response.data.items[i]);
+                }
+                setPosts(posts.concat(more));
+                if (response.data.items.length < size) {
+                    setSeeMore(true);
+                } 
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setPosts(posts);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    navigate('500 PAGE')
+                }
+            });
+        }
+        let updated = page + 2;
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: url,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
+            }
+        }
+
+        axios
+        .get(url, config)
+        .then((response) => { 
+            if (response.data.items.length === 0) { setSeeMore(true); }
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                setPosts(posts);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
+            }
+        });
     }
 
     return (
@@ -81,7 +168,7 @@ function Posts({viewerId, url}) {
                         {Object.keys(posts).map((post, idx) => (
                             <Post key={idx} viewerId={viewerId} post={posts[post]}/>
                         ))}  
-                        <Pagination.Next onClick={getMore}/>
+                        <Pagination.Next disabled={seeMore} onClick={getMore}/>
                     </Pagination>  
                 </div>
             }

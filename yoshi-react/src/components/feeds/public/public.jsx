@@ -73,7 +73,9 @@ function PublicFeed() {
                 let viewerId = response.data.id;
                 setViewerId({ viewerId: viewerId })
             })
-            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
+            .catch(err => { if (err.response.status === 404) { 
+                setViewerId({viewerId: ''})
+            } });
         }
         getId();
     }, [navigate, viewer]);

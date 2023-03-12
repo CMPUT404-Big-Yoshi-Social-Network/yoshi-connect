@@ -68,6 +68,37 @@ function Authors() {
                 navigate('500 PAGE')
             }
         });
+
+        let updated = page + 1;
+        config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: url,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
+            }
+        }
+
+        axios
+        .get(url, config)
+        .then((response) => { 
+            if (response.data.items.length === 0) { setNext(true); }
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                if (authors === undefined || authors.length === 0) {
+                    setAuthors([]);
+                } else {
+                    setAuthors(authors);
+                }
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
+            }
+        });
     }, [setAuthors, url, navigate, page, size]);
 
     const getMore = () => {

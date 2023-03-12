@@ -37,6 +37,8 @@ function Requests(props) {
      */
     const [requests, setRequests] = useState([]);
     const navigate = useNavigate();
+    const [seeMore, setSeeMore] = useState(false);
+
     useEffect(() => {
         /**
          * Description: Before render, checks the author ID and sends the username
@@ -62,11 +64,98 @@ function Requests(props) {
                 navigate('/unauthorized');
             }
         });
+
+        let updated = page + 1;
+        config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/api/authors/' + props.authorId + 'requests',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
+            }
+        }
+
+        axios
+        .get('/api/authors/' + props.authorId + 'requests', config)
+        .then((response) => { 
+            if (response.data.items.length === 0) { setSeeMore(true); }
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                setRequests(requests);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
+            }
+        });
     }, [setRequests, props]);
 
     const getMore = () => {
-        //TODO
-        ;
+        if (!seeMore) {
+            let updated = page + 1;
+            setPage(updated);
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/api/authors/' + props.authorId + 'requests',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
+            }
+
+            axios
+            .get('/api/authors/' + props.authorId + 'requests', config)
+            .then((response) => { 
+                let more = []
+                for (let i = 0; i < size; i++) {
+                    more.push(response.data.items[i]);
+                }
+                setRequests(requests.concat(more));
+                if (response.data.items.length < size) {
+                    setSeeMore(true);
+                } 
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setRequests(requests);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    navigate('500 PAGE')
+                }
+            });
+        }
+        let updated = page + 2;
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: '/api/authors/' + props.authorId + 'requests',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
+            }
+        }
+
+        axios
+        .get('/api/authors/' + props.authorId + 'requests', config)
+        .then((response) => { 
+            if (response.data.items.length === 0) { setSeeMore(true); }
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                setRequests(requests);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
+            }
+        });
     }
 
     return (
@@ -81,7 +170,11 @@ function Requests(props) {
                         {Object.keys(requests).map((request, idx) => (
                             <Request key={idx} {...requests[request]}/>
                         ))}
-                        <Pagination.Next onClick={getMore}/>
+                        { seeMore ? null : 
+                            <div>
+                                <Pagination.Item onClick={getMore}>See More</Pagination.Item>
+                            </div>
+                        }
                     </Pagination>  
                 </div>
             }

@@ -37,7 +37,7 @@ function Posts({viewerId, url}) {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: url,
+            url: '/api/authors/' + viewerId + '/posts/public',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: page,
@@ -46,7 +46,7 @@ function Posts({viewerId, url}) {
         }
 
         axios
-        .get(url, config)
+        .get('/api/authors/' + viewerId + '/posts/public', config)
         .then((response) => { 
             let posts = []
             for (let i = 0; i < size; i++) {
@@ -68,7 +68,7 @@ function Posts({viewerId, url}) {
         config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: url,
+            url: '/api/authors/' + viewerId + '/posts/public',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -77,7 +77,7 @@ function Posts({viewerId, url}) {
         }
 
         axios
-        .get(url, config)
+        .get('/api/authors/' + viewerId + '/posts/public', config)
         .then((response) => { 
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
@@ -99,7 +99,7 @@ function Posts({viewerId, url}) {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: url,
+                url: '/api/authors/' + viewerId + '/posts/public',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -108,7 +108,7 @@ function Posts({viewerId, url}) {
             }
 
             axios
-            .get(url, config)
+            .get('/api/authors/' + viewerId + '/posts/public', config)
             .then((response) => { 
                 let more = []
                 for (let i = 0; i < size; i++) {
@@ -133,7 +133,7 @@ function Posts({viewerId, url}) {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: url,
+            url: '/api/authors/' + viewerId + '/posts/public',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -142,7 +142,7 @@ function Posts({viewerId, url}) {
         }
 
         axios
-        .get(url, config)
+        .get('/api/authors/' + viewerId + '/posts/public', config)
         .then((response) => { 
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
@@ -168,7 +168,11 @@ function Posts({viewerId, url}) {
                         {Object.keys(posts).map((post, idx) => (
                             <Post key={idx} viewerId={viewerId} post={posts[post]}/>
                         ))}  
-                        <Pagination.Next disabled={seeMore} onClick={getMore}/>
+                        { seeMore ? null :
+                            <div>
+                                <Pagination.Item onClick={getMore}>See More</Pagination.Item>
+                            </div>
+                        }
                     </Pagination>  
                 </div>
             }

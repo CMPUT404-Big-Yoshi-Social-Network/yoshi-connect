@@ -22,6 +22,9 @@ Foundation; All Rights Reserved
 // Functionality
 import React from "react";
 import Pagination from 'react-bootstrap/Pagination';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // Child Component
 import Post from './post.jsx';
@@ -31,6 +34,7 @@ function Posts({viewerId, url}) {
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 5;
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log('Debug: Fetching all public posts.')
@@ -90,7 +94,7 @@ function Posts({viewerId, url}) {
                 navigate('500 PAGE')
             }
         });
-    }, [setPosts, url, navigate, page, size]);
+    }, [setPosts, url, navigate, page, size, posts, viewerId]);
 
     const getMore = () => {
         if (!seeMore) {

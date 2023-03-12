@@ -99,7 +99,7 @@ function Authors() {
                 navigate('500 PAGE')
             }
         });
-    }, [setAuthors, url, navigate, page, size]);
+    }, [setAuthors, url, navigate, page, size, authors]);
 
     const getMore = () => {
         if (!next) {

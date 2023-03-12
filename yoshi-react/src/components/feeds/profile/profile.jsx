@@ -91,7 +91,6 @@ function Profile() {
                 setPersonal(prevViewed => ({...prevViewed, viewed}))
                 setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
                 setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
-                getPosts(person, viewer, viewed);
             })
             .catch(err => {
                 if (err.response.status === 404) {
@@ -273,7 +272,7 @@ function Profile() {
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    <Posts viewerId={personal.viewerId} posts={'/api/authors/' + viewer.viewerId + '/posts'}/>   
+                    <Posts viewerId={personal.viewerId} posts={'/api/authors/' + personal.viewerId + '/posts'}/>   
                 </div>
                 <div className='profColR'>
                     <RightNavBar/>

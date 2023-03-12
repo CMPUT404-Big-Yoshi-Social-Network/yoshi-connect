@@ -38,6 +38,8 @@ function Requests(props) {
     const [requests, setRequests] = useState([]);
     const navigate = useNavigate();
     const [seeMore, setSeeMore] = useState(false);
+    const [page, setPage] = useState(1);
+    const size = 5;
 
     useEffect(() => {
         /**
@@ -91,7 +93,7 @@ function Requests(props) {
                 navigate('500 PAGE')
             }
         });
-    }, [setRequests, props]);
+    }, [setRequests, props, navigate, page, size, requests]);
 
     const getMore = () => {
         if (!seeMore) {

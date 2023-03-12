@@ -48,7 +48,6 @@ function Following(props) {
        .then((response) => { setFollowings(response.data.items) })
        .catch(err => {
             if (err.response.status === 404) {
-                console.warn('')
                 setFollowings([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized')

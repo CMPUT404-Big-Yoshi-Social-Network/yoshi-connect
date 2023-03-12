@@ -23,6 +23,7 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import Pagination from 'react-bootstrap/Pagination';
 
 // Child Component
 import Request from './request.jsx';
@@ -67,7 +68,7 @@ function Requests(props) {
         //TODO
         ;
     }
-    
+
     return (
         <div>
             <h4>Friend Requests</h4>

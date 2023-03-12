@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Functionality
 import React from "react";
+import Pagination from 'react-bootstrap/Pagination';
 
 // Child Component
 import Post from './post.jsx';
@@ -68,7 +69,7 @@ function Posts({viewerId, url}) {
         //TODO
         ;
     }
-    
+
     return (
         <div>
             { posts === undefined || posts.length === 0 ? 

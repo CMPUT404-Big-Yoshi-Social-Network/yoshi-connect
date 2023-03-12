@@ -52,7 +52,6 @@ function PublicFeed() {
      *          - Calls getPosts() to get the posts of the current author's following list and also public posts 
      * Returns: N/A
      */
-    const [publicPosts, setPublicPosts] = useState([]);
     const [viewer, setViewerId] = useState({ viewerId: '' })
     const navigate = useNavigate();
 
@@ -76,36 +75,7 @@ function PublicFeed() {
             })
             .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
         }
-
-        const getPosts = () => {
-            /**
-             * Description: Sends a POST request to get the current author's followings posts and public (PSA) posts  
-             * Request: POST
-             * Returns: N/A
-             * Refactor: TODO
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + viewer.viewerId + '/posts/public',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-
-            axios
-            .post('/api/authors/' + viewer.viewerId + '/posts/public', config)
-            .then((response) => { setPublicPosts(response.data.publicPosts) })
-            .catch(err => { 
-                if (err.response.status === 404) { 
-                    setPublicPosts([]);
-                } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
-                }
-            });
-        }
         getId();
-        getPosts();
     }, [navigate, viewer]);
 
     return (
@@ -116,14 +86,7 @@ function PublicFeed() {
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    { publicPosts === undefined || publicPosts.length === 0 ? 
-                            <div>
-                                <h4>No posts to show.</h4>
-                            </div> : 
-                            <div>
-                                <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
-                            </div>   
-                    }                 
+                    <Posts viewerId={viewer.viewerId} url={'/api/authors/' + viewer.viewerId + '/posts/public'}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

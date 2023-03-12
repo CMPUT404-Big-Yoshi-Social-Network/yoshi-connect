@@ -57,7 +57,6 @@ function Profile() {
         viewerId: null
     })
     const [requestButton, setRequestButton] = useState('Add');
-    const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
     let exists = useRef(null);
     useEffect(() => {
@@ -106,36 +105,6 @@ function Profile() {
             });
         }
         isRealProfile();
-
-        const getPosts = (person, viewer, viewed) => {
-            /**
-             * Description: Checks if the author account exists
-             * Request: GET
-             * Returns: N/A
-             * Refactor: NEEDED UPDATE WAITING ON POST UPDATE
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewedId + '/posts',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    personal: person,
-                    viewed: viewed,
-                    viewer: viewer
-                }
-            }
-            axios
-            .post('/api/authors/' + personal.viewedId + '/posts', config)
-            .then((response) => {
-                setPosts(response.data.posts)
-            })
-            .catch(err => {
-                if (err.response.status === 404) { setPosts([]); }
-            });
-        }
     }, [navigate, username, personal])
     useEffect(() => {
         /**
@@ -304,7 +273,7 @@ function Profile() {
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    <Posts viewerId={personal.viewerId} posts={posts}/>   
+                    <Posts viewerId={personal.viewerId} posts={'/api/authors/' + viewer.viewerId + '/posts'}/>   
                 </div>
                 <div className='profColR'>
                     <RightNavBar/>

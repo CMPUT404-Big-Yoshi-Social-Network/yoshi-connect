@@ -33,22 +33,44 @@ const commentScheme = new Schema({
     comment: String
 })
 
+const commentHistoryScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    postId: String,
+    comments: [commentScheme]},
+    {versionKey: false
+})
+
+
 const likeScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     liker: String
 })
 
+const likeHistoryScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    type: String,
+    Id: String,
+    likes: [likeScheme]},
+    {versionKey: false
+})
+
 const likedScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
+    type: String,
+    Id: String,
+})
+
+const likedHistoryScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
-    liked: [likeScheme],
+    liked: [likedScheme],
     num_posts: Number},
     {versionKey: false
 })
 
-const Like = database.model('Like', likeScheme);
-const Comment = database.model('Comment', commentScheme);
-const Liked = database.model('Liked', likedScheme);
+const Like = database.model('Like', likeHistoryScheme);
+const Comment = database.model('Comment', commentHistoryScheme);
+const Liked = database.model('Liked', likedHistoryScheme);
 
 module.exports = {
     Like,

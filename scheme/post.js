@@ -37,8 +37,6 @@ const postScheme = new Schema({
     content: String,
     categories: [String],
     count: Number,
-    likes: [{ type: String, default: crypto.randomUUID, ref: 'Like' }],
-    comments: [{ type: String, default: crypto.randomUUID, ref: 'Comment' }],
     published: String,
     visibility: String,
     postTo: String,
@@ -77,7 +75,7 @@ const inboxScheme = new Schema({
 
 const PostHistory = database.model('Post', postHistoryScheme);
 const PublicPost = database.model('PublicPost', publicScheme);
-const Inbox = database.model('Inbox', inboxScheme);    
+const Inbox = database.model('Inbox', inboxScheme);
 
 module.exports = {
     PostHistory,

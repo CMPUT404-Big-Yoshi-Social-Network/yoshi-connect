@@ -66,7 +66,7 @@ router.post('/:postId', async (req, res) => {
   if (status == 200) {
     return res.json(post);
   } else {
-    return res.sendStatus(404);
+    return res.sendStatus(status);
   }
 })
 

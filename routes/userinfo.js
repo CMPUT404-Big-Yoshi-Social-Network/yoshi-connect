@@ -24,9 +24,7 @@ const { checkExpiry } = require('./auth.js');
 const { getAuthor } = require('./author.js')
 
 async function getUserInfo(token){
-    if(await checkExpiry(token)){
-        return [{}, 401];
-    }
+    if (await checkExpiry(token)) { return [{}, 401]; }
     
     const login = await Login.findOne({token: token}); 
 

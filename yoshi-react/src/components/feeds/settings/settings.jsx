@@ -50,7 +50,7 @@ function Settings() {
         newPassword: '',
         newEmail: ''
     })
-    const [viewer, setViewer] = useState({ viewerId: '' })
+    const [viewer, setViewer] = useState('')
     
     useEffect(() => {
         /**
@@ -60,23 +60,21 @@ function Settings() {
          */
         const getAuthor = () => {
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
                 url: '/api/userinfo',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             }
 
             axios
-            .post('/api/userinfo', config)
+            .get('/api/userinfo', config)
             .then((response) => {
                 let username = response.data.displayname;
                 let email = response.data.email;
                 let viewerId = response.data.id;
                 setNewAuthor({ newUsername: username })
                 setNewAuthor({ newEmail: email })
-                setViewer({ viewerId: viewerId })
+                setViewer(viewerId)
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
@@ -133,7 +131,7 @@ function Settings() {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={viewer.viewerId}/>
+                    <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
                     <div className='settingColM'>
@@ -145,9 +143,8 @@ function Settings() {
                                 <Form.Group className="account-details-a">
                                     <p>Username</p>
                                         <Form.Control
-                                            //href={`/users/${username}`}>{username} 
                                             name="username"
-                                            value={newAuthor.newUsername}
+                                            defaultValue={newAuthor.newUsername}
                                             autoComplete="off"
                                             onChange={(e) => {setNewAuthor({...newAuthor, newUsername: e.target.value})}}
                                             type="text" className='account-details-box'/>
@@ -156,7 +153,7 @@ function Settings() {
                                     <p>Email</p>
                                     <Form.Control
                                         name="email"
-                                        value={newAuthor.newEmail}
+                                        defaultValue={newAuthor.newEmail}
                                         onChange={(e) => {setNewAuthor({...newAuthor, newEmail: e.target.value})}}
                                         type="email" className='account-details-box'/>
                                 </Form.Group>

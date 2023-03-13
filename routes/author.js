@@ -225,10 +225,8 @@ async function getAuthor(authorId){
      *          Status 404 if the author does not exist
      */
     const author = await Author.findOne({_id: authorId}, function (err, author) {
-        if (err) {
-            return "server failure";
-        }
-        return author;
+        if (err) { return "server failure"; }
+        return [author, 200];
     }).clone();
     if(author == "server failure") {
         return [{}, 500];

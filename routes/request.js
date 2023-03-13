@@ -298,7 +298,7 @@ async function sendRequest(authorId, foreignId, res) {
     
     console.log('Debug: We need to check if object follows actor (meaning they will become friends).');
     await Following.findOne({authorId: object._id}, function(err, following){
-        if (following == undefined) { 
+        if (following != undefined) { 
             let idx = following.followings.map(obj => obj.authorId).indexOf(actor._id);
             if (idx > -1) { 
               needFriend = true;  
@@ -314,22 +314,14 @@ async function sendRequest(authorId, foreignId, res) {
         summary = actor.username + "wants to " + type + " " + object.username;
     }
 
+
     const request = new Request({
-        type: type,
-        sender: actor.username,
-        senderId: actor._id,
-        receiverId: object._id,
-        receiver: object.username
+        actor: actor.username,
+        actorId: actor._id,
+        objectId: object._id,
+        object: object.username
     });
     request.save(async (err, request, next) => { if (err) { return 400; } });
-
-    request.save(async (err, author, next) => {
-        if (err) {
-            return res.json({ status: "Unsuccessful" });
-        } else {
-            return res.json({ status: "Successful" });
-        }
-    });
 
     return {
         type: type,
@@ -371,7 +363,7 @@ async function getRequests(authorId) {
 }
 
 async function getRequest(authorId, foreignId, res) {
-    await Request.findOne({actor: authorId, object: foreignId}, function(err, request){
+    await Request.findOne({actorId: authorId, objectId: foreignId}, function(err, request){
         if (!request) { return res.sendStatus(404); }
         return res.json({
             request: request

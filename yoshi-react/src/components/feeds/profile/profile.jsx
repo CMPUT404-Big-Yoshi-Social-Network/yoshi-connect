@@ -122,7 +122,10 @@ function Profile() {
             }
             axios
             .get('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
-            .then((response) => { exists.current = true; })
+            .then((response) => { 
+                exists.current = true; 
+                setRequestButton('Sent');
+            })
             .catch(err => {
                 if (err.response.status === 404) { exists.current = false; }
             });

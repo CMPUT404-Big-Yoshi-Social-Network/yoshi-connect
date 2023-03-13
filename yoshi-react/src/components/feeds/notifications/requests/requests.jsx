@@ -40,6 +40,7 @@ function Requests(props) {
     const [seeMore, setSeeMore] = useState(false);
     const [page, setPage] = useState(1);
     const size = 5;
+    const url = '/api/authors/' + props.authorId + '/requests';
 
     useEffect(() => {
         /**
@@ -51,13 +52,15 @@ function Requests(props) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + props.authorId + 'requests',
+            url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }
         axios
-        .get('/api/authors/' + props.authorId + 'requests', config)
+        .get(url, config)
         .then((response) => {
-            setRequests(response.data.items)
+            if (response.data.items.length !== 0) {
+                setRequests(response.data.items)
+            }
         })
         .catch(err => {
             if (err.response.status === 404) { 
@@ -71,7 +74,7 @@ function Requests(props) {
         config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + props.authorId + 'requests',
+            url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -80,7 +83,7 @@ function Requests(props) {
         }
 
         axios
-        .get('/api/authors/' + props.authorId + 'requests', config)
+        .get(url, config)
         .then((response) => { 
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
@@ -90,10 +93,10 @@ function Requests(props) {
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+                setRequests(requests);
             }
         });
-    }, [setRequests, props, navigate, page, size, requests]);
+    }, [setRequests, url, props, navigate, page, size, requests]);
 
     const getMore = () => {
         if (!seeMore) {

@@ -358,11 +358,16 @@ async function apideleteRequest(authorId, foreignId, res) {
 }
 
 async function getRequests(authorId) {
+    let rqs = [];
     await Request.find({object: authorId}, function(err, requests){
-        console.log("Debug: Requests exists");
-        if (!requests) { return res.sendStatus(404); }
-        return requests
+        if (!requests) { 
+            rqs = []; 
+        } else {
+            console.log("Debug: Requests exists");
+            rqs = requests;
+        }
     }).clone()
+    return rqs;
 }
 
 async function getRequest(authorId, foreignId) {

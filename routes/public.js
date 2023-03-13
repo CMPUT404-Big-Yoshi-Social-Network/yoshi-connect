@@ -138,14 +138,14 @@ async function fetchPublicPosts(req, res) {
         ]);
     }
 
-    const publicPost = await PublicPost.findOne({ }).clone();
-    if (!publicPost) {
-        let pp = new PublicPost({
-            posts: [],
-            num_posts: 0
-        });
-        pp.save(async (err, publicPost, next) => { if (err) { return res.sendStatus(500) } })
-    }
+    // const publicPost = await PublicPost.find().clone();
+    // if (publicPost.length == 0) {
+    //     let pp = new PublicPost({
+    //         posts: [],
+    //         num_posts: 0
+    //     });
+    //     pp.save(async (err, publicPost, next) => { if (err) { return res.sendStatus(500) } })
+    // }
 
     let publicPosts = await PublicPost.aggregate([
         { $match: {} },

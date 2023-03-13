@@ -50,6 +50,8 @@ function EditPost({viewerId, post}) {
          * Request: POST    
          * Returns: N/A
          */
+        e.preventDefault()
+        
         let body = {
             title: data.title,
             desc: data.desc,

@@ -351,7 +351,7 @@ async function apideleteRequest(authorId, foreignId, res) {
 
 async function getRequests(authorId) {
     let rqs = [];
-    await Request.find({object: authorId}, function(err, requests){
+    await Request.find({objectId: authorId}, function(err, requests){
         if (!requests) { 
             rqs = []; 
         } else {

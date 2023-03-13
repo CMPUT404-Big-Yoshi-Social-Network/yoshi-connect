@@ -34,6 +34,7 @@ function Request(props) {
      * Returns: N/A
      */
     const navigate = useNavigate();
+    console.log(props)
 
     const addRequest = () => {
         /**
@@ -93,7 +94,7 @@ function Request(props) {
     }
     return (
         <div id='request'>
-            { props.actor.displayname }
+            { props.actor }
             <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
             <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
         </div>

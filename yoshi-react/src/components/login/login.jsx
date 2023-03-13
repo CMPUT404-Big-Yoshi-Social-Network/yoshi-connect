@@ -40,6 +40,7 @@ export default function Login() {
       username: '',
       password: ''
     })
+    const [error, setError] = useState(false);
     const getUserpass = (e) => {
       /**
        * Description: Sends a POST request to get the author's account for public feed from the database
@@ -48,6 +49,9 @@ export default function Login() {
        */
       e.preventDefault()
 
+      if (data.username.length === 0 || data.password.length === 0){
+        setError(true)
+      }
       let justLogged =  new Date();
 
       let config = {
@@ -63,12 +67,16 @@ export default function Login() {
 
       axios(config)
       .then((response) => {
+        console.log(response.data.status);
         if (response.data.status) {
           console.log("Debug: SessionId saved locally.");
           localStorage['sessionId'] = response.data.sessionId;
 
           console.log("Debug: Going to public feed.")
           navigate('/feed');
+        }
+        else {
+          setError(true);
         }
       })
     }
@@ -79,17 +87,19 @@ export default function Login() {
             Yoshi Connect
         </Container>
         <Card className="login-card">
+          {error? <p className='login-error'>Username or password is incorrect</p>:""}
           <Card.Header>
               <h3>Log In</h3>
           </Card.Header>
           <Card.Body>
-              <Form className='form'>
+              <Form onSubmit={getUserpass} className='form'>
                   <Form.Group className="login-text">
                     <p>Username</p>
                       <Form.Control
                           name="username"
                           onChange={(e) => {setData({...data, username: e.target.value})}}
                           type="text" className='login-box'/>
+                      {error&&data.username.length<=0? <p className='login-error'>Username cannot be empty</p>:""}
                   </Form.Group>
                   <Form.Group className="login-text">
                     <p>Password</p>
@@ -97,10 +107,11 @@ export default function Login() {
                           name="password"
                           onChange={(e) => {setData({...data, password: e.target.value})}}
                           type="password" className='login-box'/>
+                      {error&&data.password.length<=0? <p className='login-error'>Password cannot be empty</p>:""}
                   </Form.Group>
                   <br></br>
-                  <Button href='/' variant="warning" type="submit" className='login-button'>Back</Button>
-                  <Button onClick={getUserpass} variant="warning" type="submit" className='login-button'>Next</Button>
+                  <Button href='/' variant="warning" type="button" className='login-button'>Back</Button>
+                  <Button variant="warning" type="submit" className='login-button'>Next</Button>
               </Form>
           </Card.Body>
         </Card>

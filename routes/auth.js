@@ -134,7 +134,7 @@ async function authAuthor(req, res) {
 
     if(!username || !password){
         console.log("Debug: Username or Password not given, Authentication failed");
-        return res.json({ status: "Unsuccessful" });
+        return res.json({ status: false });
     }
 
     const author = await Author.findOne({username: req.body.username});

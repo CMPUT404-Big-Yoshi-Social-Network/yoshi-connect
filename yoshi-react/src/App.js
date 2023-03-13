@@ -36,6 +36,7 @@ import AdminLogin from "./components/admin/admin.jsx";
 import AdminDashboard from "./components/admin/adminDashboard.jsx";
 
 // Feeds
+// import Feed from "./components/feeds/feed/feed.jsx";
 import PublicFeed from "./components/feeds/public/public.jsx";
 import FriendFeed from "./components/feeds/friends/friendFeed.jsx";
 import Messages from "./components/feeds/messages/messages.jsx";

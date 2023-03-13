@@ -19,42 +19,34 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality 
-import { useNavigate } from 'react-router-dom';
+// Functionality
+import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from "react";
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from "react";
 
 // User Interface
 import TopNav from '../navs/top/nav.jsx';
 import LeftNavBar from '../navs/left/nav.jsx';
 import RightNavBar from '../navs/right/nav.jsx';
 
-// Styling 
-import './public.css';
-
-// Child Component 
+// Child Component
 import Posts from '../../posts/posts.jsx';
 
 // Styling
-import './public.css';
+import './feed.css';
 
-function PublicFeed() {
-    /**
-     * Description: Represents the Public Feed that displays the public (PSA) and followings (of the current author) posts  
-     * Functions: 
-     *     - logOut(): Logs out an author if needed and redirects to the Welcome component 
-     *     - checkExpiry(): Checks if the current author's token has expired 
-     *     - getId(): Gets the authorId for the current author 
-     *     - getPosts(): Gets the posts of the author's following list and public (PSA) posts 
-     *     - useEffect():
-     *          - Calls checkExpiry() to check if the author's token is expired (if so, they will be logged out before render)
-     *          - Calls getId() to get the current author's id 
-     *          - Calls getPosts() to get the posts of the current author's following list and also public posts 
-     * Returns: N/A
-     */
+export default function Feed() {
     const navigate = useNavigate();
-    const [publicPosts, setPublicPosts] = useState([]);
+    const [posts, setPosts] = useState([]);
+    // const [publicPosts, setPublicPosts] = useState([]);
+    // const [friendPosts, setFriendPosts] = useState([]);
+    const feed = ['public', 'friend'];
+    const path = useLocation().pathname;
     const [viewer, setViewerId] = useState({ viewerId: '' })
+    let i = 0;
+    if (path === '/friends/' || path === '/friends') {
+        i = 1
+    }
 
     const logOut = useCallback(() => {
         /**
@@ -69,7 +61,7 @@ function PublicFeed() {
             maxBodyLength: Infinity,
             url: '/server/feed',
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: {
                 message: 'Logging Out'
@@ -166,37 +158,39 @@ function PublicFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/public/posts',
+                // eslint-disable-next-line
+                url: '/server/'+feed[i]+'/posts',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
 
             axios
-            .post('/server/public/posts', config)
-            .then((response) => { setPublicPosts(response.data.publicPosts) })
+            // eslint-disable-next-line
+            .post('/server/'+feed[i]+'/posts', config)
+            .then((response) => { setPosts(response.data.posts) })
             .catch(err => { console.error(err); });
         }
         getId();
         getPosts();
+        // eslint-disable-next-line
     }, []);
 
     return (
         <div>
-            <TopNav/>
-            <div className='pubRow'>
-                <div className='pubColL'>
-                    <LeftNavBar/>
-                </div>
-                <div className='pubColM'>
-                    <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
-                </div>
-                <div className='pubColR'>
-                    <RightNavBar/>
-                </div>
+        <TopNav/>
+        <div className='feedRow'>
+            <div className='feedColL'>
+                <LeftNavBar/>
+            </div>
+            <div className='feedColM'>
+                <Posts viewerId={viewer.viewerId} posts={posts}/>
+            </div>
+            <div className='feedColR'>
+                <RightNavBar/>
             </div>
         </div>
+
+    </div>
     )
 }
-
-export default PublicFeed;

@@ -44,7 +44,7 @@ function EditPost({viewerId, post}) {
         postId: post._id
     })
     
-    const modifyPost = () => {
+    const modifyPost = (e) => {
         /**
          * Description: Sends a POST request of the updated post conetents 
          * Request: POST    

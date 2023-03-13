@@ -69,7 +69,7 @@ router.post('/:postId', async (req, res) => {
     res.sendStatus(401);
   }
 
-  const [post, status] = await updatePost(req.cookies["token"], authorId, postId, req.body);
+  const [post, status] = await updatePost(req.cookies["token"], authorId, postId, req.body.data);
   
   if (status == 200) {
     return res.json(post);

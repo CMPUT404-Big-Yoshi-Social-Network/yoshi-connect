@@ -196,7 +196,7 @@ async function fetchPublicPosts(req, res) {
         allPosts = [];
     }
 
-    // Remove duplicates
+    // Remove duplicates (https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects)
     allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
 
     if (allPosts){

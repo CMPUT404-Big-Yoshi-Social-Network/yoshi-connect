@@ -50,28 +50,19 @@ function EditPost({viewerId, post}) {
          * Request: POST    
          * Returns: N/A
          */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/api/authors/' + post.authorId + '/posts/' + post._id,
-            headers: {
-            'Content-Type': 'multipart/form-data'
-            },
-            data: {
-                title: data.title,
-                desc: data.desc,
-                contentType: data.contentType,
-                visibility: data.visibility,
-                content: data.content,
-                unlisted: data.unlisted,
-                specifics: data.specifics,
-                image: data.image,
-                postId: data.postId,
-                status: 'Modify'
-            }
+        let body = {
+            title: data.title,
+            desc: data.desc,
+            contentType: data.contentType,
+            visibility: data.visibility,
+            content: data.content,
+            unlisted: data.unlisted,
+            specifics: data.specifics,
+            image: data.image,
+            postId: data.postId,
         }
         
-        axios.post('/api/authors/' + post.authorId + '/posts/' + post._id, config)
+        axios.post('/api/authors/' + post.authorId + '/posts/' + post._id, body)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }

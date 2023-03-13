@@ -204,6 +204,20 @@ async function updatePost(token, authorId, postId, newPost) {
     }
     await postHistory.save()
 
+    //TODO remove possiblity of visibility being "public"
+    if(post.visibility == "PUBLIC" || post.visibility == "Public"){
+        let publicPosts = await PublicPost.findOne().clone();
+
+        for(let i = 0; i < publicPosts.posts.length; i++){
+            let publicPost = publicPosts.posts[i];
+            if(publicPost.post._id == post._id){
+                publicPosts.posts[i].post = post;
+                await publicPosts.save();
+                break;
+            }
+        }
+    }
+
     return [await getPost(authorId, postId), 200];
 }
 

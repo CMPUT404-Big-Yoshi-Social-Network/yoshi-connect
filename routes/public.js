@@ -196,6 +196,9 @@ async function fetchPublicPosts(req, res) {
         allPosts = [];
     }
 
+    // Remove duplicates
+    allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
+
     if (allPosts){
         return res.json({
             items: allPosts

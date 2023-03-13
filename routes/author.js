@@ -40,7 +40,7 @@ const { PostHistory } = require('../scheme/post.js');
 const { createInbox } = require('./inbox.js')
 
 // Additional Functions
-const { checkUsername, authLogin } = require('./auth.js');
+const { checkUsername, checkExpiry } = require('./auth.js');
 
 async function registerAuthor(req, res){
     /**
@@ -255,35 +255,29 @@ async function apiUpdateAuthor(token, author){
      * Returns: Status 401 if the there is no valid authentication 
      *          Status 200 if the author was successfully updated
      */
-    if (await authLogin(token, author.id) == false) {
-        return 401; 
+    if (await checkExpiry(token)) { return 401; }
+
+    let authorProfile = await Author.findOne({_id: author.id});
+    if(!authorProfile) return 404;
+
+    if (author.pronouns != undefined) {
+        authorProfile.pronouns = author.pronouns;
     }
-
-    const authorProfile = await Author.findOne({_id: author.id});
-    if(!authorProfile)
-        return 404;
-
-    const pronouns = author.pronouns;
-    const about = author.about;
-    const email = author.email;
-    const github = author.github;
-    const password = author.password;
-    const admin = author.admin;
-
-    if (pronouns) { authorProfile.pronouns = pronouns; }
-    if (email) { authorProfile.email = email; }
-    if (about) { authorProfile.about = about; }
-    if (github) { authorProfile.github = github; }
-
-    if (admin) {
-        if (admin) { 
-            authorProfile.admin = admin; 
-        }
-        if (password) { 
-            authorProfile.password = password; 
-        }
+    if (author.email != undefined) {
+        authorProfile.email = author.email;
     }
-
+    if (author.about != undefined) {
+        authorProfile.about = author.about;
+    }
+    if (author.github != undefined) {
+        authorProfile.github = author.github;
+    }
+    if (author.password != undefined) {
+        authorProfile.password = crypto_js.SHA256(author.password);
+    }
+    if (author.admin != undefined) {
+        authorProfile.admin = author.admin; 
+    }
     await authorProfile.save();
 
     return 200;

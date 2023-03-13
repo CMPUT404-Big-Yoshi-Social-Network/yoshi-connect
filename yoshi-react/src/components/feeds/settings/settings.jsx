@@ -104,10 +104,10 @@ function Settings() {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: {
-                status: 'Modify an Author',
-                newUsername: newAuthor.newUsername,
-                newPassword: newAuthor.newPassword,
-                newEmail: newAuthor.newEmail
+                id: viewer,
+                username: newAuthor.newUsername,
+                password: newAuthor.newPassword,
+                email: newAuthor.newEmail
             }
         }
 

@@ -1,5 +1,5 @@
 // Routing
-const { getCurrentAuthor, updateAuthor } = require('../routes/author');
+const { apiUpdateAuthor } = require('../routes/author');
 const { removeLogin } = require('../routes/auth');
 
 // Router Setup
@@ -8,18 +8,20 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.post('/', async (req, res) => {
-  if(!req.cookies || await checkExpiry(req.cookies["token"])){ return res.sendStatus(401) }
-  console.log('Debug: Updating author account details');
-  if (req.body.data.status === 'Get Author') { await getCurrentAuthor(req, res); }
-})
-
 router.post('/logout', async (req, res) => { removeLogin(req, res); })
 
 router.put('/', async (req, res) => {
-  if(!req.cookies || await checkExpiry(req.cookies["token"])){ return res.sendStatus(401) }
-  console.log('Debug: Updating author account details');
-  if (req.body.data.status === 'Modify an Author') { await updateAuthor(req, res); }
+  const status = await apiUpdateAuthor(req.cookies.token, req.body.data);
+
+  if (status == 401) { 
+    return res.sendStatus(401); 
+  } else if (status == 404) {
+    return res.sendStatus(404);
+  } else if (status == 200) {
+    return res.sendStatus(200);
+  }
+
+
 })
 
 module.exports = router;

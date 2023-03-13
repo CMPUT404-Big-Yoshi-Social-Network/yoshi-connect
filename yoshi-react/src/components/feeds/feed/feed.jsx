@@ -37,12 +37,11 @@ import './feed.css';
 
 export default function Feed() {
     const navigate = useNavigate();
-    const [posts, setPosts] = useState([]);
-    // const [publicPosts, setPublicPosts] = useState([]);
-    // const [friendPosts, setFriendPosts] = useState([]);
-    const feed = ['public', 'friend'];
     const path = useLocation().pathname;
+    const [posts, setPosts] = useState([]);
     const [viewer, setViewerId] = useState({ viewerId: '' })
+
+    const feed = ['public', 'friend'];
     let i = 0;
     if (path === '/friends/' || path === '/friends') {
         i = 1

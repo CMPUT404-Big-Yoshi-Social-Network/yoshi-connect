@@ -82,7 +82,7 @@ function Posts(props) {
         .then((response) => { 
             let posts = []
             if (response.data.items.length !== 0) {
-                for (let i = 0; i < size; i++) {
+                for (let i = 0; i < response.data.items.length; i++) {
                     posts.push(response.data.items[i]);
                 }
             }
@@ -147,7 +147,7 @@ function Posts(props) {
             .get(url, config)
             .then((response) => { 
                 let more = []
-                for (let i = 0; i < size; i++) {
+                for (let i = 0; i < response.data.items.length; i++) {
                     more.push(response.data.items[i]);
                 }
                 setPosts(posts.concat(more));
@@ -208,7 +208,7 @@ function Posts(props) {
                         ))}  
                         { seeMore ? null :
                             <div>
-                                <Pagination.Item onClick={getMore}>See More</Pagination.Item>
+                                <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
                             </div>
                         }
                     </Pagination>  

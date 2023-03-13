@@ -62,6 +62,7 @@ async function fetchPublicPosts(req, res) {
      *          The public posts and the author's following posts
      */    
     console.log('Debug: Getting public/following posts');
+    // TO DO NEEDS TO DO PAGING 
 
     const login = await Login.findOne({token: req.cookies.token}).clone();
     if (!login) { return res.sendStatus(404); }

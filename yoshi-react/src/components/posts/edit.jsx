@@ -50,11 +50,10 @@ function EditPost({viewerId, post}) {
          * Request: POST    
          * Returns: N/A
          */
-        console.log('Debug: Creating a post')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/authors/' + post.authorId + '/posts/' + data.postId,
+            url: '/api/authors/' + post.authorId + '/posts/' + post._id,
             headers: {
             'Content-Type': 'multipart/form-data'
             },
@@ -72,7 +71,7 @@ function EditPost({viewerId, post}) {
             }
         }
         
-        axios.post('/server/authors/' + post.authorId + '/posts/' + data.postId, config)
+        axios.post('/api/authors/' + post.authorId + '/posts/' + post._id, config)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }
@@ -106,7 +105,7 @@ function EditPost({viewerId, post}) {
     return (
         post.authorId !== viewerId ? null :
             <div className='editBackground'>
-            <form method='PUT'>
+            <form>
                 <label>
                     Title:
                     <input type="text" name="title" value={data.title || ''} onChange={(e) => {
@@ -170,7 +169,7 @@ function EditPost({viewerId, post}) {
                         <br/>
                         <img src="" style={{maxHeight: "15vh"}} alt="" />
                 </div>
-                <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Author</button>
+                <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Post</button>
             </form>
         </div>
     )

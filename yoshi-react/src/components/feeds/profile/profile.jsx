@@ -78,7 +78,7 @@ function Profile() {
              * Returns: N/A
              */
             axios
-            .get('/api/profile')
+            .get('/api/profile/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
                 person = response.data.personal
@@ -103,17 +103,17 @@ function Profile() {
             });
         }
         isRealProfile();
-    }, [navigate, username, personal])
+    }, [navigate, username])
     useEffect(() => {
         /**
          * Description: Checks if the viewer has already sent a friend request
          * Request: POST
          * Returns: N/A
          */
-        if (!personal.person) { 
+        if (!personal.person && personal.viewerId != null && personal.viewedId != null) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
                 url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
@@ -121,7 +121,7 @@ function Profile() {
                 }
             }
             axios
-            .post('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .get('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
             .then((response) => { exists.current = true; })
             .catch(err => {
                 if (err.response.status === 404) { exists.current = false; }
@@ -135,7 +135,7 @@ function Profile() {
          * Returns: N/A
          * REFACTOR: CHECK 
          */
-        if (!exists.current && !personal.person) {
+        if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
             console.log('See if they are followers or friends.');
             let config = {
                 method: 'post',
@@ -158,7 +158,7 @@ function Profile() {
                 if (err.response.status === 500) { console.log('500 PAGE') }
             });
         }
-    }, [username, personal, exists, setRequestButton, requestButton])
+    }, [username, personal, exists, requestButton])
 
     const SendRequest = () => {
         if (requestButton === "Add") {
@@ -271,7 +271,7 @@ function Profile() {
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    <Posts viewerId={personal.viewerId} posts={'/api/authors/' + personal.viewerId + '/posts'}/>   
+                    <Posts viewerId={personal.viewerId} type={'friends'}/>   
                 </div>
                 <div className='profColR'>
                     <RightNavBar/>

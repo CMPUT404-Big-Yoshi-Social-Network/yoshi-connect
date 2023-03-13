@@ -132,7 +132,8 @@ async function getProfile(req, res) {
     const login = await Login.findOne({token: req.cookies.token});
     if (login == undefined) { return res.sendStatus(404); }
 
-    const author = await Author.findOne({username: req.path.split("/")[req.path.split("/").length - 1]})
+    const username = req.params.username;
+    const author = await Author.findOne({username: username})
     if (!author) { 
         return res.sendStatus(404); 
     } else if (author.username == login.username) {

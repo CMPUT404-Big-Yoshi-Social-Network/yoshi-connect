@@ -370,7 +370,7 @@ async function getRequests(authorId) {
     return rqs;
 }
 
-async function getRequest(authorId, foreignId) {
+async function getRequest(authorId, foreignId, res) {
     await Request.findOne({actor: authorId, object: foreignId}, function(err, request){
         if (!request) { return res.sendStatus(404); }
         return res.json({

@@ -189,7 +189,7 @@ async function deleteFollower(token, authorId, foreignId, body){
     return 200;
 }
 
-async function isFriend(authorId, foreignId) {
+async function isFriend(authorId, foreignId, res) {
     //TODO CHECK IF FRIEND
     //get followers for authorId
     //get following for authorId

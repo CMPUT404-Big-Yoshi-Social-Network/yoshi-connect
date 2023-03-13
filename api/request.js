@@ -45,7 +45,7 @@ router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  await getRequest(authorId, foreignId);
+  await getRequest(authorId, foreignId, res);
 })
 
 router.put('/:foreignAuthorId', async (req, res) => {

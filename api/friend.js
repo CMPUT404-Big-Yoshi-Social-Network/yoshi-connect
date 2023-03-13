@@ -74,7 +74,7 @@ router.post('/:foreignId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
 
-  await isFriend(authorId, foreignId);
+  await isFriend(authorId, foreignId, res);
 })
 
 router.post('/posts', async (req, res) => {

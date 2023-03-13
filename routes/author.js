@@ -33,6 +33,8 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
+const { PostHistory } = require('../scheme/post.js');
+
 
 // Additional Functions
 const { createInbox } = require('./inbox.js')
@@ -103,19 +105,22 @@ async function registerAuthor(req, res){
         
     })
 
-    new_post_history = new PostHistory ({
-        authorId: author_id,
+    let new_post_history = new PostHistory ({
+        authorId: author._id,
         num_posts: 0,
         posts: []
-    }).save
+    })
 
-    await new_post_history.save()
-    await Follower({ username: username, authorId: authorId, followers: [] }).save();
-    await Following({ username: username, authorId: authorId, followings: [] }).save();
+    new_post_history.save((err) => {
+        if(err){ return res.sendStatus(500); }
+    });
+
+    await Follower({ username: username, authorId: author._id, followers: [] }).save();
+    await Following({ username: username, authorId: author._id, followings: [] }).save();
     await createInbox(author.username, author._id);
 
     res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
-    return res.json({ sessionId: token });
+    return res.sendStatus(200);
 }
 
 async function getProfile(req, res) {

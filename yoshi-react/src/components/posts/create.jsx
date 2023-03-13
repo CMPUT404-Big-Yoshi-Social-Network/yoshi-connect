@@ -48,9 +48,9 @@ function CreatePost() {
         likes: [],
         comments: [],
         unlisted: false,
-        image: "",
+        image: '',
         authorId: '',
-        specifics: [],
+        postTo: '',
         postId: ''
     })
     const [isOpen, setIsOpen] = useState(false);
@@ -89,9 +89,9 @@ function CreatePost() {
         togglePostMenu();
 
         let config = {
-            method: 'put',
+            method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/authors/' + data.authorId + '/posts/',
+            url: '/api/authors/' + data.authorId + '/posts/',
             headers: {
             'Content-Type': 'multipart/form-data'
             },
@@ -104,12 +104,12 @@ function CreatePost() {
                 likes: data.likes,
                 comments: data.comments,
                 unlisted: data.unlisted,
-                specifics: data.specifics,
+                postTo: data.postTo,
                 image: data.image
             }
         }
         
-        axios.put('/server/authors/' + data.authorId + '/posts/', config)
+        axios.post('/api/authors/' + data.authorId + '/posts/', config)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }
@@ -184,7 +184,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Message To:</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, specifics: [e.target.value]})
+                            setData({...data, postTo: [e.target.value]})
                         }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>

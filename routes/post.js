@@ -89,41 +89,31 @@ async function getPost(authorId, postId){
 }
 
 async function createPost(token, authorId, postId, newPost) {
-
-    if((await authLogin(token, authorId)) == false){
-        return [[], 401];
-    }
+    if((await authLogin(token, authorId)) == false){ return [[], 401]; }
 
     const title = newPost.title;
-    const desc = newPost.description;
+    const desc = newPost.desc;
     const contentType = newPost.contentType;
     const content = newPost.content;
-    const categories = newPost.categories;
+    const categories = [''];
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
-    if(!title || !desc || !contentType || !content || !categories || !visibility || !unlisted){
-        return [[], 400];
-    }
+    if (!title || !desc || !contentType || !content || !visibility) { return [[], 400]; }
 
     let postHistory = await PostHistory.findOne({authorId: authorId});
 
-    if(postId){
+    if(postId != undefined){
         let oldPost = postHistory.posts.id(postId);
-        if(oldPost)
-            return [[], 400]
+        if(oldPost) return [[], 400]
     }
     
-    if(!postId) {
-        postId = crypto.randomUUID();
-    }
+    if (!postId) { postId = crypto.randomUUID(); }
 
     let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
     let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
-
-    
 
     if (!postHistory) {
         console.log('Debug: Create a post history');
@@ -146,7 +136,8 @@ async function createPost(token, authorId, postId, newPost) {
         comments: [],
         published: published,
         visibility: visibility,
-        unlisted: unlisted
+        unlisted: unlisted,
+        postTo: postTo
     });
     postHistory.num_posts = postHistory.num_posts + 1;
     await postHistory.save();

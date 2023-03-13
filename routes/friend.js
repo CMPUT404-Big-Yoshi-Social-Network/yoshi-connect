@@ -23,7 +23,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Follower, Friend, Following } = require('../scheme/relations.js');
+const { Follower, Friend, Following, Request } = require('../scheme/relations.js');
 
 // Additional Functions
 const { senderAdded } = require('./request.js');
@@ -58,22 +58,12 @@ async function getFriends(id){
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
-    if(!authLogin(token, authorId))
-        return 401;
+    if(!authLogin(token, authorId)) return 401;
 
-    req.body.data = {};
-    req.body.data.sender = body.actor.displayName;
-    req.body.data.receiver = body.object.displayName;
-    if(body.object == undefined || body.actor == undefined)
-        return 400;
+    const request = await Request.findOne({actorId: authorId, objectId: foreignId});
+    if (!request) { return 401; }
 
-    const request = await Request.findOne({senderUUID: foreignId, receiverUUID: authorId});
-    if(!request){
-        return 401;
-    }
-
-    await senderAdded(req, res);
-    return;
+    await senderAdded(authorId, foreignId, req, res);
 }
 
 async function deleteFollower(token, authorId, foreignId, body){

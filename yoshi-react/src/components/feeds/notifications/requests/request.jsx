@@ -34,7 +34,6 @@ function Request(props) {
      * Returns: N/A
      */
     const navigate = useNavigate();
-    console.log(props)
 
     const addRequest = () => {
         /**
@@ -46,13 +45,13 @@ function Request(props) {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + props.actor._id + '/followers/' + props.object._id,
+            url: '/api/authors/' + props.actorId + '/followers/' + props.objectId,
             headers: {
                 'Content-Type': 'application/json'
             }
         }
         axios
-        .put('/api/authors/' + props.actor._id + '/followers/' + props.object._id, config)
+        .put('/api/authors/' + props.actorId + '/followers/' + props.objectId, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {

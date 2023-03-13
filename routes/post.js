@@ -23,9 +23,9 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, Post, PublicPost } = require('../scheme/post.js');
+const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
 const { Like, Comment, Liked } = require('../scheme/interactions.js');
-const { Login, Author } = require('../scheme/author.js');
+const { Author } = require('../scheme/author.js');
 const { Friend } = require('../scheme/relations.js');
 
 //UUID
@@ -121,7 +121,7 @@ async function createPost(token, authorId, postId, newPost) {
         postHistory = await PostHistory.findOne({authorId: authorId});
     }
 
-    postHistory.posts.push({
+    let post = new Post({
         _id: postId,
         title: title,
         source: source,
@@ -139,8 +139,20 @@ async function createPost(token, authorId, postId, newPost) {
         unlisted: unlisted,
         postTo: postTo
     });
+    console.log(postHistory)
+    postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
     await postHistory.save();
+
+    if (visibility == 'Public') {
+        const publicPost = await PublicPost.findOne().clone();
+        publicPost.posts.push({
+            authorId: authorId,
+            post: post,
+        })
+        publicPost.num_posts = publicPost.num_posts + 1;
+        await publicPost.save();
+    }
     return [await getPost(authorId, postId), 200];
 }
 

@@ -110,16 +110,11 @@ function Post({viewerId, post}) {
         let config = {
             method: "delete",
             maxBodyLength: "Infinity",
-            url: url,
-            headers: { 'Content-Type': 'application/json' },
-            data: {
-                authorId: authorId,
-                postId: postId,
-                status: "Remove post"
-            }
+            url: '/api/authors/' + authorId + '/posts/' + postId,
+            headers: { 'Content-Type': 'application/json' }
         };
 
-        axios.delete(url, config).then((response) => {}).catch((error) => { console.log(error); });
+        axios.delete('/api/authors/' + authorId + '/posts/' + postId, config).then((response) => {}).catch((error) => { console.log(error); });
     }
 
     const addLike = () => {

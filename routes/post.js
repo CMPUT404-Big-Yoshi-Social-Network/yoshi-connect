@@ -224,6 +224,19 @@ async function deletePost(token, authorId, postId) {
     postHistory.num_posts = postHistory.num_posts - 1;
     postHistory.save();
 
+    if (post.visibility === 'Public') {
+        const publicPost = await PublicPost.findOne().clone();
+        let posts = publicPost.posts;
+        for (let i = 0; i < posts.length; i++) {
+            if (posts[i].post._id === post._id) {
+                publicPost.posts[i].remove();
+                break;
+            }
+        }
+        publicPost.num_posts = publicPost.num_posts - 1;
+        await publicPost.save();
+    }
+
     return [post, 200]; 
 }
 

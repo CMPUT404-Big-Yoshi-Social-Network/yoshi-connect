@@ -44,12 +44,14 @@ function EditPost({viewerId, post}) {
         postId: post._id
     })
     
-    const modifyPost = () => {
+    const modifyPost = (e) => {
         /**
          * Description: Sends a POST request of the updated post conetents 
          * Request: POST    
          * Returns: N/A
          */
+        e.preventDefault()
+
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

@@ -175,34 +175,30 @@ async function updatePost(token, authorId, postId, newPost) {
         return [{}, 500];
     }
 
-    const post = postHistory.posts.id(postId);
+    let post = postHistory.posts.id(postId);
 
-    if(!post){
-        return [{}, 404];
-    }
+    if (!post) { return [{}, 404]; }
 
-    if(title){
-        post.title = title;
-    }
-    if(desc){
-        post.description = desc;
-    }
-    if(contentType){
-        post.contentType = contentType;
-    }
-    if(content){
-        post.content = content;
-    }
-    if(visibility){
-        post.visibility = visibility;
-    }
-    if(unlisted){
-        post.unlisted = unlisted;
-    }
-    if(categories){
-        post.categories = categories;
-    }
+    post.title = title;
+    post.description = desc;
+    post.contentType = contentType;
+    post.content = content;
+    post.visibility = visibility;
+    post.unlisted = unlisted;
+    post.categories = categories;
     await postHistory.save()
+
+    if (post.visibility === 'Public') {
+        const publicPost = await PublicPost.findOne().clone();
+        let posts = publicPost.posts;
+        for (let i = 0; i < posts.length; i++) {
+            if (posts[i].post._id === post._id) {
+                publicPost.posts[i].post = post;
+                break;
+            }
+        }
+        await publicPost.save();
+    }
 
     return [await getPost(authorId, postId), 200];
 }

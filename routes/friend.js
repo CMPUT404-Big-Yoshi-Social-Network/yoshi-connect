@@ -23,117 +23,13 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Login } = require('../scheme/author.js');
-const { Follower, Friend } = require('../scheme/relations.js');
-const { PostHistory } = require('../scheme/post.js');
+const { Follower, Friend, Following, Request } = require('../scheme/relations.js');
 
 // Additional Functions
 const { senderAdded } = require('./request.js');
 
 // Additional Functions
 const {authLogin} = require('./auth.js')
-
-async function fetchFriends(req, res) {
-    /**
-     * Desciption: Fetches the friends of a specified author from the database
-     * Returns: Status 404 if there is no associated token with a login document 
-     *          Either returns the list of friends or an empty list of friends if the author has no friends
-     */
-    const login = await Login.findOne({token: req.cookies.token}).clone();
-    if (!login) { return res.sendStatus(404); }
-
-    const username = login.username;
-    await Friend.findOne({username: username}, function(err, friends){
-        console.log("Debug: Friends exists");
-        if (friends == undefined) { return res.json({ friends: [] }); }
-        return res.json({ friends: friends.friends })
-    }).clone();
-}
-
-async function fetchFriendPosts(req, res) {
-    /**
-     * Description: Fetches the posts of friends of the author 
-     *              Aggregates with $match, $unwind, $project, and $group in order to collect all friends 
-     *              Aggregates with $match (by authorId), $unwind, $match (to get only listed posts), $set, 
-     *              $addFields (couples post to authorId), $sort (by publishing date), and $group in order 
-     *              to collect all the friends' posts
-     * Returns: Status 404 if there is no associated token in the login collection
-     *          If the author has no friends, it will return an empty array 
-     *          If successful, it will return the posts 
-     */
-    const login = await Login.findOne({token: req.cookies.token}).clone();
-    if (!login) { return res.sendStatus(404); }
-
-    console.log('Debug: Retrieving current author logged in')
-    const username = login.username
-    const friend = await Friend.aggregate([
-        {
-            $match: {'username': username} 
-        },
-        {
-            $unwind: '$friends'
-        },
-        {
-            $project: { "friends.authorId": 1 }
-        },
-        {
-            $group: {
-                _id: null,
-                friends: { $addToSet: "$friends.authorId"}
-            }
-        },
-    ]);
-
-    let friends = [];
-    if (friend.length > 0) { 
-        friends = friend[0].friends; 
-    } else { 
-        return res.json({ friendPosts: [] }); 
-    }
-
-    const posts = await PostHistory.aggregate([
-        {
-            $match: {
-                $expr: {
-                    $in : ["$authorId", friends]
-                }
-            },
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {
-                $expr: {
-                    $ne: ["$unlisted", true]
-                }
-            }
-        },
-        {
-            $set: {
-                "posts.published": {
-                    $dateFromString: {
-                        dateString: "$posts.published"
-                    }
-                }
-            }
-        },
-        {
-            $addFields: { "posts.authorId": "$authorId" }
-        },
-        {
-            $sort: {"posts.published": -1}
-        },
-        {
-            $group: {
-                _id: null,
-                posts_array: {$push: "$posts"}
-            }
-        },
-    ]);
-
-    return res.json({ friendPosts: posts[0].posts_array });
-}
 
 /**
  * API STUFF
@@ -150,34 +46,24 @@ async function getFollowers(id){
     return followers.followers;
 }
 
+async function getFollowings(id){
+    const following = await Following.findOne({authorId: id});
+    if (!following) { return 404; }
+    return following.followings;
+}
+
 async function getFriends(id){
-    /**
-     * Description: Gets all the friends of an author
-     * Returns: Status 404 if there are no existing friends
-     *          If successful, returns a list of friends
-     */
-    const friends = await Friend.findOne({authorId: id});
-    if (!friends) { return 404; }
-    return friends.friends;
+    // TODO: Write this query
+    
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
-    if(!authLogin(token, authorId))
-        return 401;
+    if(!authLogin(token, authorId)) return 401;
 
-    req.body.data = {};
-    req.body.data.sender = body.actor.displayName;
-    req.body.data.receiver = body.object.displayName;
-    if(body.object == undefined || body.actor == undefined)
-        return 400;
+    const request = await Request.findOne({actorId: authorId, objectId: foreignId});
+    if (!request) { return 401; }
 
-    const request = await Request.findOne({senderUUID: foreignId, receiverUUID: authorId});
-    if(!request){
-        return 401;
-    }
-
-    await senderAdded(req, res);
-    return;
+    await senderAdded(authorId, foreignId, req, res);
 }
 
 async function deleteFollower(token, authorId, foreignId, body){
@@ -293,10 +179,48 @@ async function deleteFollower(token, authorId, foreignId, body){
     return 200;
 }
 
+async function isFriend(authorId, foreignId, res) {
+    //TODO CHECK IF FRIEND
+    //get followers for authorId
+    //get following for authorId
+    //check if both are real
+    let actorFollows = false;
+    let objectFollows = false;
+    const followerA = await Follower.findOne({authorId: authorId}, {followers: {$elemMatch: {authorId : {$eq: foreignId}}}});
+    if (followerA.followers === []) { objectFollows = true; }
+    const followerB = await Following.findOne({authorId: foreignId}, {following: {$elemMatch: {authorId : {$eq: authorId}}}});
+    if (followerB.followers === []) { actorFollows = true; }
+    if (actorFollows && objectFollows) {
+        return res.json({
+            status: 'Friends'
+        }) 
+    } else {
+        if (actorFollows && !objectFollows) {
+            return res.json({
+                status: 'Follows'
+            })  
+        } else if (!actorFollows) {
+            return res.json({
+                status: 'Strangers'
+            })  
+        }
+    }
+}
+
+async function fetchFriendPosts(req, res) {
+    //TODO GET FRIEND POSTS
+    return res.sendStatus(404); // TEMPORARY
+
+}
+
 module.exports={
-    fetchFriends,
     fetchFriendPosts,
     getFollowers,
+    getFollowings,
+    addFollower,
+    deleteFollower,
     getFriends,
-    addFollower
+    addFollower,
+    deleteFollower,
+    isFriend
 }

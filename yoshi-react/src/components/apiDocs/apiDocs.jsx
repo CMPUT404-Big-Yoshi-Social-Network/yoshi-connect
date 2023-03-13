@@ -22,12 +22,14 @@ Foundation; All Rights Reserved
 // Functionality
 import React from "react";
 
-function Follow(props) {
-    return (
-        <div id='follow'>
-            { props.displayname }
-        </div>
-    )
+export default function ApiDocs() {
+  const style = {
+    position:'absolute',
+    top:'0',
+    left:'0',
+    height:'100%',
+    width:'100%',
+    border:'0',
+  }
+  return(<iframe src="http://localhost:8080/api/api-docs" style={style} title="docs"></iframe>);
 }
-
-export default Follow;

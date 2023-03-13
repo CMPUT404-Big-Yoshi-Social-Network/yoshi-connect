@@ -23,20 +23,12 @@ Foundation; All Rights Reserved
 import React from "react";
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AddAuthor() {
-    /**
-     * Description: Represents a new author 
-     * Functions:
-     *     - addAuthor(): Adds the new author to the database
-     * Returns: N/A
-     */
-    const url = '/server/admin/dashboard';
-    const [data, setData] = useState({
-        username: '',
-        password: '',
-        email: ''
-      })
+    const url = '/api/admin/dashboard';
+    const [data, setData] = useState({ username: '', password: '', email: '' })
+    const navigate = useNavigate();
 
     const addAuthor = async (e) => {
         /**
@@ -54,19 +46,23 @@ function AddAuthor() {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: {
-                status: 'Add New Author',
+                status: 'Add',
                 username: data.username,
                 password: data.password,
                 email: data.email,
                 admin: false
-            }
+            } 
         }
 
         axios
         .put(url, config)
         .then((response) => {})
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 400) {
+                navigate('/badrequest'); 
+            } else if (err.response.status === 500) {
+                console.log('NEED 500 PAGE!') 
+            } 
         });
     }
     

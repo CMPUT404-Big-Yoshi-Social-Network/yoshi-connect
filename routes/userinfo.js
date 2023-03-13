@@ -19,15 +19,20 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality
-import React from "react";
+const { Login } = require('../scheme/author.js');
+const { checkExpiry } = require('./auth.js');
+const { getAuthor } = require('./author.js')
 
-function Follow(props) {
-    return (
-        <div id='follow'>
-            { props.displayname }
-        </div>
-    )
+async function getUserInfo(token){
+    if (await checkExpiry(token)) { return [{}, 401]; }
+    
+    const login = await Login.findOne({token: token}); 
+
+    const authorId = login.authorId;
+
+    return await getAuthor(authorId);
 }
 
-export default Follow;
+module.exports = {
+    getUserInfo,
+}

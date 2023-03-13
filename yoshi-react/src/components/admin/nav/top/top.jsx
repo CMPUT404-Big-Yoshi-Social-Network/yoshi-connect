@@ -25,8 +25,7 @@ import React from 'react';
 // User Interface
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
-// import { Form, Nav } from 'react-bootstrap';
-import './topAdminNav.css'
+import './top.css'
 
 function TopAdminNav() {
     /**
@@ -34,8 +33,6 @@ function TopAdminNav() {
      * Returns: N/A
      */
     return (
-        // TODO: Need to Add Search functionality and Notification Functionality
-        // Might need to query notifications and use map (refer to leftNav.jsx
         <Navbar className='topAdminNav'>
             <Container>
                 <Navbar.Brand className='topAdminNavBrand' href='/feed'>

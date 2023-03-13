@@ -24,28 +24,25 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
-// Schemas
-const { Request } = require('./relations.js');
-const { Like, Comment } = require('./relations.js');
-
-// Password
+// UUID
 const crypto = require('crypto');
 
 const postScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
+    origin: String,
+    source: String,
     title: String,
     description: String,
     contentType: String,
     content: String,
     categories: [String],
     count: Number,
-    likes: [likeScheme],
-    comments: [commentScheme],
+    likes: [{ type: String, default: crypto.randomUUID, ref: 'Like' }],
+    comments: [{ type: String, default: crypto.randomUUID, ref: 'Comment' }],
     published: String,
     visibility: String,
-    specifics: [String],
-    unlisted: Boolean,
-    image: String},
+    postTo: String,
+    unlisted: Boolean,},
     {versionKey: false
 });
 
@@ -72,20 +69,20 @@ const inboxScheme = new Schema({
     authorId: String,
     username: String,
     posts: [postScheme],
-    likes: [Like],
-    comments: [Comment],
-    requests: [Request]},
+    likes: [{ type: String, default: crypto.randomUUID, ref: 'Like' }],
+    comments: [{ type: String, default: crypto.randomUUID, ref: 'Comment' }],
+    requests: [{ type: String, default: crypto.randomUUID, ref: 'Request' }]},
     {versionKey: false
 })
 
-const PostHistory = database.model('Posts', postHistoryScheme);
-const Post = database.model('Post', postScheme);
+const PostHistory = database.model('PostHistory', postHistoryScheme);
 const PublicPost = database.model('PublicPost', publicScheme);
-const Inbox = database.model('Inbox', inboxScheme);    
+const Inbox = database.model('Inbox', inboxScheme); 
+const Post = database.model('Post', postScheme);    
 
 module.exports = {
     PostHistory,
-    Post,
     PublicPost,
-    Inbox
+    Inbox,
+    Post
 }

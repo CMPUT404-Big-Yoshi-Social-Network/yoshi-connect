@@ -20,83 +20,52 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getAuthor, apiUpdateAuthor, getAuthors } = require('./routes/author');
+const { getAuthor, apiUpdateAuthor, getAuthors, fetchMyPosts } = require('../routes/author');
 
-/**
- * @openapi
- * /api/authors:
- *  get:
- *    description: Get a list of authors, paginated. by default it's page 1 with size 1. Currently pages are broken
- *    responses:
- *      200:
- *        description: A list of authors
- */
-app.get('/api/authors', async (req, res) => {
-  const page = req.query.page;
-  const size = req.query.size;
-  if(page == undefined)
-    page = 1;
-  if(size == undefined)
-    size = 5;
-  const sanitizedAuthors = await getAuthors(page, size);
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router({mergeParams: true});
+
+router.get('/', async (req, res) => {
+
+  let page = req.query.page;
+  let size = req.query.size;
+
+  if (page == undefined) page = 1;
+  if (size == undefined) size = 5;
+
+  const [sanitizedAuthors, status] = await getAuthors(page, size);
+
+  if(status == 500){
+    return res.sendStatus(500);
+  }
+  if(status == 400){
+    return res.sendStatus(400);
+  }
 
   return res.json({
     "type": "authors",
-    "items": [sanitizedAuthors]
+    "items": sanitizedAuthors
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}:
- *  get:
- *    description: Fetchs a single Author object from the database and sends it back as a JSON object
- *    responses:
- *      404:
- *        description: Returns Status 404 when an Author does not exist 
- *      500:
- *        description: Returns Status 500 when the server is unable to retrieve the Author from the database
- */
-app.get('/api/authors/:authorId', async (req, res) => {
-  if(req.params.authorId == undefined)
-    return res.sendStatus(404);
+router.get('/:authorId', async (req, res) => {
+  //TODO Parse authorId and verify it is proper
+  //TODO reflect api changes on frontend
 
-  let author = await getAuthor(req.params.authorId);
+  const authorId = req.params.authorId;
+  const [author, status] = await getAuthor(authorId);
 
-  if(author === 404)
-    return res.sendStatus(404);
+  if(status == 404 || status == 500){
+    return res.sendStatus(status);
+  }
 
-  if(author === 500)
-    return res.sendStatus(500);
-
-  return res.json({
-    "type": "author",
-    "id" : author._id,
-    "host": process.env.DOMAIN_NAME,
-    "displayname": author.username,
-    "url":  process.env.DOMAIN_NAME + "users/" + author._id,
-    "github": "",
-    "profileImage": "",
-    "email": author.email, 
-    "about": author.about,
-    "pronouns": author.pronouns
-  });
+  return res.json(author);
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}:
- *  post:
- *    description: Updates the Author objects attributes
- *    responses:
- *      404:
- *        description: Returns Status 404 when the cookies don't exist
- *      400:
- *        description: Returns Status 400 when the body type doesn't match the author 
- *      400:
- *        description: Returns Status 400 when the author ID, host, nor username are valid 
- */
-app.post('/api/authors/:authorId', async (req, res) => {
+router.post('/:authorId', async (req, res) => {
   if(!req.cookies["token"])
     return res.sendStatus(401);
   if(req.body.type !== 'author')
@@ -105,9 +74,16 @@ app.post('/api/authors/:authorId', async (req, res) => {
   const authorId = req.body.id;
   const host = req.body.host;
   const username = req.body.displayName;
+  const url = req.body.url;
 
-  if(!authorId || !host || !username)
+  if(!authorId || !host || !username || !url)
     return res.sendStatus(400);
 
   return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
 })
+
+router.get('/:authorId/liked', async (req, res) => {
+  return res.sendStatus(404);
+})
+
+module.exports = router;

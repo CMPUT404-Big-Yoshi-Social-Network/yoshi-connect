@@ -20,9 +20,9 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import TopNav from '../navs/top/nav.jsx';
@@ -33,7 +33,7 @@ import RightNavBar from '../navs/right/nav.jsx';
 import Posts from '../../posts/posts.jsx';
 
 // Styling
-import './friendFeed.css';
+import './feed.css';
 
 function FriendFeed() {
     /**
@@ -49,17 +49,9 @@ function FriendFeed() {
      *     - getPosts(): Gets the current logged in author's friends' posts 
      * Returns: N/A
      */
-    const navigate = useNavigate();
     const [friendPosts, setFriendPosts] = useState([]);
     const [viewer, setViewerId] = useState({ viewerId: '' })
-
-    useEffect(() => {
-        /**
-         * Description: Calls checkExpiry() to see if the author has an expired token 
-         * Returns: N/A
-         */
-        checkExpiry();
-    })
+    const navigate = useNavigate();
 
     useEffect(() => {
         /**
@@ -70,32 +62,18 @@ function FriendFeed() {
          * Returns: N/A
          */
         const getId = () => {
-            /**
-             * Description: Sends a POST request to get the current author's id 
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/server/posts/',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    sessionId: localStorage.getItem('sessionId'),
-                    status: 'Fetching current authorId'
-                }
-            }
-
             axios
-            .post('/server/posts/', config)
+            .get('/api/userinfo/')
             .then((response) => {
-                let viewerId = response.data.authorId;
+                let viewerId = response.data.author._id;
                 setViewerId({ viewerId: viewerId })
             })
-            .catch(err => { });
+            .catch(err => { if (err.response.status === 404) { 
+                setViewerId('')
+            } 
+            });
         }
+        getId();
 
         const getPosts = () => {
             /**
@@ -106,85 +84,40 @@ function FriendFeed() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/friends/posts',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    sessionId: localStorage.getItem('sessionId'),
-                }
+                url: '/api/authors/' + viewer.viewerId + '/friends/posts',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             }
 
             axios
-            .post('/server/friends/posts', config)
+            .post('/api/authors/' + viewer.viewerId + '/friends/posts', config)
             .then((response) => { setFriendPosts(response.data.friendPosts) })
-            .catch(err => { console.error(err); });
+            .catch(err => {
+                if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 404) {
+                    setFriendPosts([]);
+                }
+             });
         }
-
-        getId();
         getPosts();
-    }, []);
-
-    const logOut = () => {
-        /**
-         * Description: Sends a POST request to log out the current author then navigates the author to the Welcome component 
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: { message: 'Logging Out' }
-        }
-
-        axios
-        .post('/server/feed', config)
-        .then((response) => { localStorage['sessionId'] = ""; navigate("/"); })
-        .catch(err => { });
-    }
-
-    const checkExpiry = () => {
-        /**
-         * Description: Sends a GET request to check if the token for the current author has expired; if so, it logs the author out and 
-         *              sends them to the Welcome component and deletes their token from the localStorage 
-         * Request: GET
-         * Returns: N/A
-         */
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: '/feed',
-        }
-
-        axios
-        .get('/server/feed', config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
-                logOut();
-                navigate('/');
-            }
-            else{console.log('Debug: Your token is not expired.')}
-        })
-        .catch(err => {
-            if (err.response.status === 401) {
-                console.log("Debug: Not authorized.");
-                navigate('/unauthorized'); 
-            }
-        });
-    }
+    }, [viewer, navigate]);
 
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={viewer.viewerId}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
+                    { friendPosts === undefined || friendPosts.length === 0 ? 
+                        <div>
+                            <h4>No posts to show.</h4>
+                        </div> : 
+                        <div>
+                            <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
+                        </div>
+                    }
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

@@ -27,7 +27,7 @@ import React from 'react';
 
 // User Interface
 import { Container, Nav, Navbar, Button } from 'react-bootstrap';
-import './rightAdminNav.css';
+import './right.css';
 
 function RightAdminNavBar() {
     /**
@@ -56,14 +56,6 @@ function RightAdminNavBar() {
                         <img className='rn-admUsersImg' alt='rn-admUsersImg' src='/images/admin/icon_users.png' width={25}/>
                         <Nav.Link className='rn-admuser' href="/admin/users">Users</Nav.Link>
                     </div>
-                    {/* <div className='rn-admdiv'>
-                        <img className='rn-admServerImg' alt='rn-admServerImg' src='/images/icon_create_post.png' width={25}/>
-                        <Nav.Link className='rn-admserver'href="/admin/servers">Servers</Nav.Link>
-                    </div>
-                    <div className='rn-admdiv'>
-                        <img className='rn-admNodesImg' alt='rn-admNodesImg' src='/images/icon_messages.png' width={25}/>
-                        <Nav.Link className='rn-admnodes' href="/admin/nodes">Nodes</Nav.Link>
-                    </div> */}
                 </Nav>
                 <div className='rn-admdiv'>
                     <a href='/settings'>

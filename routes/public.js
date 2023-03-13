@@ -62,11 +62,10 @@ async function fetchPublicPosts(req, res) {
      *          The public posts and the author's following posts
      */    
     console.log('Debug: Getting public/following posts');
+    // TO DO NEEDS TO DO PAGING 
 
     const login = await Login.findOne({token: req.cookies.token}).clone();
-    if(!login){
-        return res.sendStatus(404);
-    }
+    if (!login) { return res.sendStatus(404); }
 
     console.log('Debug: Retrieving current author logged in')
     const username = login.username
@@ -92,9 +91,7 @@ async function fetchPublicPosts(req, res) {
     ]);
 
     let followings = [];
-    if(following.length > 0){
-        followings = following[0].follows;
-    }
+    if(following.length > 0){ followings = following[0].follows; }
 
     let posts = null;
     if(followings.length != 0){
@@ -142,6 +139,15 @@ async function fetchPublicPosts(req, res) {
         ]);
     }
 
+    const publicPost = await PublicPost.find().clone();
+    if (publicPost.length == 0) {
+        let pp = new PublicPost({
+            posts: [],
+            num_posts: 0
+        });
+        pp.save(async (err, publicPost, next) => { if (err) { return res.sendStatus(500) } })
+    }
+
     let publicPosts = await PublicPost.aggregate([
         { $match: {} },
         {
@@ -182,7 +188,7 @@ async function fetchPublicPosts(req, res) {
     let allPosts = null;
     if (publicPosts[0] != undefined && posts != undefined) {
         allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
-    } else if (posts != undefined) {
+    } else if (posts != undefined && posts[0]?.posts_array != undefined) {
         allPosts = posts[0].posts_array;
     } else if (publicPosts[0] != undefined) {
         allPosts = publicPosts[0].publicPosts;
@@ -190,9 +196,12 @@ async function fetchPublicPosts(req, res) {
         allPosts = [];
     }
 
+    // Remove duplicates (https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects)
+    allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
+
     if (allPosts){
         return res.json({
-            publicPosts: allPosts
+            items: allPosts
           });
     }
 }

@@ -267,6 +267,7 @@ function Profile() {
             <TopNav authorId={personal.viewerId}/>
             <div className='profRow'>
                 <div className='pubColL'>
+                    {personal.viewerId}
                     <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
@@ -274,7 +275,10 @@ function Profile() {
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    <Posts viewerId={personal.viewerId} type={'friends'}/>   
+                    { personal.person ? 
+                        <Posts type={'personal'}/> : 
+                        <Posts type={'other'}/> 
+                    }   
                 </div>
                 <div className='profColR'>
                     <RightNavBar/>

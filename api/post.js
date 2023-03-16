@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 const { fetchFriendPosts } = require('../routes/friend');
 
@@ -42,6 +42,17 @@ router.get('/public', async (req, res) => {
 router.get('/friends-posts', async (req, res) => {
   console.log('Debug: Getting the author true friends posts');
   await fetchFriendPosts(req, res);
+})
+
+// TODO
+router.get('/personal', async (req, res) => {
+  console.log('Debug: Getting the author true friends posts');
+  await fetchMyPosts(req, res);
+})
+
+router.get('/other', async (req, res) => {
+  console.log('Debug: Getting the author true friends posts');
+  await fetchOtherPosts(req, res);
 })
 
 //GET [local, remote] get the public post whose id is POST_ID

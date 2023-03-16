@@ -35,9 +35,13 @@ import './nav.css';
 function LeftNavBar(props) {
     const url = window.location.pathname;
     const { username } = useParams();
+    let url1 = ''
+    if (username) {
+        url1 = '/users/' + username
+    }
     return (
         <div className='left-column'>
-            { url === '/feed' || url === '/' + {username} ? <Following authorId={props.authorId}/> :
+            { url === '/feed' || url === url1 ? <Following authorId={props.authorId}/> :
                 url === '/friends' ? <Friends authorId={props.authorId}/> : 
                 url === '/settings' ? <SettingsNav/> : 
                 url === '/messages' ? <h2 style={{paddingLeft: '1em'}}>Messages</h2> : null

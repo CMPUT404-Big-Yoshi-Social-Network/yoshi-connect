@@ -785,6 +785,97 @@ async function getAuthorLikes(authorId) {
     return await Liked.findOne({authorId: authorId});
 }
 
+async function fetchMyPosts(req, res) {
+    const posts = await PostHistory.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $in : ["$authorId", [req.params.authorId]]
+                }
+            },
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: {
+                        dateString: "$posts.published"
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                "posts.authorId": "$authorId"
+            }
+        },
+        {
+            $sort: {"posts.published": -1}
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: {$push: "$posts"}
+            }
+        },
+    ]);
+
+    return res.json({
+        items: posts[0].posts_array
+    })
+}
+
+async function fetchOtherPosts(req, res) {
+    const posts = await PostHistory.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $in : ["$authorId", [req.params.authorId]]
+                }
+            },
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {
+                $expr: {
+                    $ne: ["$unlisted", true]
+                }
+            }
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: {
+                        dateString: "$posts.published"
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                "posts.authorId": "$authorId"
+            }
+        },
+        {
+            $sort: {"posts.published": -1}
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: {$push: "$posts"}
+            }
+        },
+    ]);
+
+    return res.json({
+        items: posts[0].posts_array
+    })
+}
+
 module.exports={
     createPostHistory,
     addLike,
@@ -803,5 +894,7 @@ module.exports={
     createComment,
     apifetchLikes,
     apiFetchCommentLikes,
-    getAuthorLikes
+    getAuthorLikes,
+    fetchMyPosts,
+    fetchOtherPosts
 }

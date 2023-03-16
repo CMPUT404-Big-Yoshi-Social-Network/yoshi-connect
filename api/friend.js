@@ -41,11 +41,10 @@ router.get('/', async (req, res) => {
 
   sanitizedObjects = [];
   for(let i = 0; i < friends.length; i++){
-    const friend = friends[i];
+    const friendId = friends[i];
 
-    const friendProfile = await Author.findOne({_id: friend.authorId}); 
-    if(!friendProfile)
-      continue
+    const friendProfile = await Author.findOne({_id: friendId}); 
+    if (!friendProfile) continue
 
       sanitizedObject = {
       "type": "author",

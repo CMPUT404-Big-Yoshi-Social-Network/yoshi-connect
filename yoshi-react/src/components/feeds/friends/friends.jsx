@@ -38,7 +38,9 @@ function Friends(props) {
     useEffect(() => {
         axios
         .get('/api/authors/' + props.authorId + '/friends')
-        .then((response) => { setFriends(response.data.items) })
+        .then((response) => { 
+            setFriends(response.data.items) 
+        })
         .catch(err => { 
             if (err.response.status === 404) { setFriends([]); }
          });

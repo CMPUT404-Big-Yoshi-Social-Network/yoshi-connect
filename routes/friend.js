@@ -88,17 +88,17 @@ async function getFriends(id){
             $unwind: "$followings"
         },
         {
-            $match: { "followings.authorId": { $in : [id] } }
+            $match: {'followings.authorId': id} 
         },
         {
             $group: {
                 _id: null,
-                friends_array: {$push: "$friends"}
-            } 
+                friends: {$push: "$authorId"}
+            }
         }
     ]);
 
-    console.log(friends[0].friends_array)
+    return friends[0].friends
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){

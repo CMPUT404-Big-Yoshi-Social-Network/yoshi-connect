@@ -62,18 +62,11 @@ router.put('/:foreignAuthorId', async (req, res) => {
   })
 })
 
-router.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+router.delete('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const request = await apideleteRequest(authorId, foreignId, res);
-
-  return res.json({
-    "type": request.type,
-    "summary": request.summary,
-    "actor": request.actor,
-    "object": request.object
-  })
+  await apideleteRequest(authorId, foreignId, res);
 })
 
 module.exports = router;

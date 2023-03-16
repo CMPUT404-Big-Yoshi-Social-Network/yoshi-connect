@@ -191,16 +191,8 @@ function Profile() {
             });
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
-            let config = {
-                method: 'delete',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-            }
             axios
-            .delete('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .delete('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId)
             .then((response) => { })
             .catch(err => {
                 if (err.response.status === 401) {

@@ -221,12 +221,12 @@ async function apideleteRequest(authorId, foreignId, res) {
     if (!request) { return 500 }
     summary = actor.username + " wants to undo " + request.type + " request to " + object.username;  
 
-    return {
+    return res.json({
         type: request.type,
         summary: summary,
         actor: actor,
         object: object
-    }
+    })
 }
 
 async function getRequests(authorId) {

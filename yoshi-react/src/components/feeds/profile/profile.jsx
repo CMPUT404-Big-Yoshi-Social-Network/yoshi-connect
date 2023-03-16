@@ -213,16 +213,8 @@ function Profile() {
             });
         } else if (requestButton === 'Unfriend') {
             console.log('Debug: We want to unfriend.')
-            let config = {
-                method: 'delete',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
             axios
-            .delete('/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
+            .delete('/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfriended.')

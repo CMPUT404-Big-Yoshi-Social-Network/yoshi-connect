@@ -36,14 +36,8 @@ function Friends(props) {
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/api/authors/' + props.authorId + '/friends',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }
         axios
-        .post('/api/authors/' + props.authorId + '/friends', config)
+        .get('/api/authors/' + props.authorId + '/friends')
         .then((response) => { setFriends(response.data.items) })
         .catch(err => { 
             if (err.response.status === 404) { setFriends([]); }

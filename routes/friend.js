@@ -54,6 +54,31 @@ async function getFollowings(id){
 
 async function getFriends(id){
     // TODO: Write this query
+    const following = await Following.findOne({authorId: id});
+
+    const friends = await Following.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $in : ["$authorId", following.followings]
+                }
+            },
+        },
+        {
+            $unwind: "$followings"
+        },
+        {
+            $match: { $expr: { $in: ["$authorId", id] } } 
+        },
+        {
+            $group: {
+                _id: null,
+                friends_array: {$push: "$friends"}
+            } 
+        }
+    ]);
+
+    console.log(friends)
     
 }
 

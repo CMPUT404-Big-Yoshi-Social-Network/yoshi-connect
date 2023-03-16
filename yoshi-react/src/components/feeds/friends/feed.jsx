@@ -75,31 +75,24 @@ function FriendFeed() {
         }
         getId();
 
-        // const getPosts = () => {
-        //     /**
-        //      * Description: Sends a POST request in order to get the posts of the current author's friends 
-        //      * Request: POST
-        //      * Returns: N/A
-        //      */
-        //     let config = {
-        //         method: 'post',
-        //         maxBodyLength: Infinity,
-        //         url: '/api/authors/' + viewer.viewerId + '/friends/posts',
-        //         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        //     }
-
-        //     axios
-        //     .post('/api/authors/' + viewer.viewerId + '/friends/posts', config)
-        //     .then((response) => { setFriendPosts(response.data.friendPosts) })
-        //     .catch(err => {
-        //         if (err.response.status === 401) {
-        //             navigate('/unauthorized');
-        //         } else if (err.response.status === 404) {
-        //             setFriendPosts([]);
-        //         }
-        //      });
-        // }
-        // getPosts();
+        const getPosts = () => {
+            /**
+             * Description: Sends a POST request in order to get the posts of the current author's friends 
+             * Request: POST
+             * Returns: N/A
+             */
+            axios
+            .get('/api/authors/' + viewer.viewerId + '/posts/friends-posts')
+            .then((response) => { setFriendPosts(response.data.items) })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 404) {
+                    setFriendPosts([]);
+                }
+             });
+        }
+        getPosts();
     }, [viewer, navigate]);
 
     return (

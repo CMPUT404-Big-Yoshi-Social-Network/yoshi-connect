@@ -24,12 +24,13 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { Follower, Friend, Following, Request } = require('../scheme/relations.js');
+const { PostHistory } = require('../scheme/post.js');
 
 // Additional Functions
 const { senderAdded } = require('./request.js');
 
 // Additional Functions
-const {authLogin} = require('./auth.js')
+const {authLogin} = require('./auth.js');
 
 /**
  * API STUFF
@@ -252,9 +253,54 @@ async function isFriend(authorId, foreignId, res) {
 }
 
 async function fetchFriendPosts(req, res) {
-    //TODO GET FRIEND POSTS
-    return res.sendStatus(404); // TEMPORARY
+    const friends = await getFriends(req.params.authorId);
 
+    const posts = await PostHistory.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $in : ["$authorId", friends]
+                }
+            },
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {
+                $expr: {
+                    $ne: ["$unlisted", true]
+                }
+            }
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: {
+                        dateString: "$posts.published"
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                "posts.authorId": "$authorId"
+            }
+        },
+        {
+            $sort: {"posts.published": -1}
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: {$push: "$posts"}
+            }
+        },
+    ]);
+
+    return res.json({
+        items: posts[0].posts_array
+    })
 }
 
 module.exports={

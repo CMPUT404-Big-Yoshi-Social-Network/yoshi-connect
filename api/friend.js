@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFriends, isFriend, fetchFriendPosts } = require('../routes/friend');
+const { getFriends, isFriend } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
@@ -74,11 +74,6 @@ router.post('/:foreignId', async (req, res) => {
   const foreignId = req.params.foreignId;
 
   await isFriend(authorId, foreignId, res);
-})
-
-router.post('/posts', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
-  fetchFriendPosts(req, res);
 })
 
 router.get('/:foreignId', async (req, res) => {

@@ -54,13 +54,33 @@ async function getFollowings(id){
 
 async function getFriends(id){
     // TODO: Write this query
-    const following = await Following.findOne({authorId: id});
+    const following = await Following.aggregate([
+        {
+            $match: {'authorId': id} 
+        },
+        {
+            $unwind: '$followings'
+        },
+        {
+            $project: {
+                "followings.authorId": 1
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                follows: { $addToSet: "$followings.authorId"}
+            }
+        },
+    ]);
 
+    let followings = [];
+    if(following.length > 0){ followings = following[0].follows; }
     const friends = await Following.aggregate([
         {
             $match: {
                 $expr: {
-                    $in : ["$authorId", following.followings]
+                    $in : ["$authorId", followings]
                 }
             },
         },
@@ -68,7 +88,7 @@ async function getFriends(id){
             $unwind: "$followings"
         },
         {
-            $match: { $expr: { $in: ["$authorId", id] } } 
+            $match: { "followings.authorId": { $in : [id] } }
         },
         {
             $group: {
@@ -78,8 +98,7 @@ async function getFriends(id){
         }
     ]);
 
-    console.log(friends)
-    
+    console.log(friends[0].friends_array)
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){

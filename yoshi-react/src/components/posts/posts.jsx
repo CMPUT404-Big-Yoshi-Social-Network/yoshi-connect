@@ -37,6 +37,12 @@ function Posts(props) {
     const navigate = useNavigate();
     const [url, setUrl] = useState('');
     const [viewerId, setViewerId] = useState('');
+    let type = '';
+    if (props.type.otherUrl) {
+        type = props.type.otherUrl
+    } else {
+        type = props.type
+    }
 
     useEffect(() => {
         /**
@@ -55,14 +61,14 @@ function Posts(props) {
             .then((response) => {
                 let viewerId = response.data.id;
                 setViewerId(viewerId);
-                setUrl('/api/authors/' + viewerId + '/posts/' + props.type)
+                setUrl('/api/authors/' + viewerId + '/posts/' + type)
             })
             .catch(err => { 
                 console.log(err)
             });
         }
         getId();
-    }, [navigate, props]);
+    }, [navigate, props, type]);
 
     useEffect(() => {
        if (url) {

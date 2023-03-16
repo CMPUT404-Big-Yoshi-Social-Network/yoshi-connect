@@ -46,12 +46,10 @@ router.get('/friends-posts', async (req, res) => {
 
 // TODO
 router.get('/personal', async (req, res) => {
-  console.log('Debug: Getting the author true friends posts');
   await fetchMyPosts(req, res);
 })
 
-router.get('/other', async (req, res) => {
-  console.log('Debug: Getting the author true friends posts');
+router.get('/other/:other', async (req, res) => {
   await fetchOtherPosts(req, res);
 })
 

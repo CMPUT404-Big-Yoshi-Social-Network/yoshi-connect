@@ -57,6 +57,7 @@ function Profile() {
         viewerId: null
     })
     const [requestButton, setRequestButton] = useState('Add');
+    const [otherUrl, setOtherUrl] = useState([]);
     const navigate = useNavigate();
     let exists = useRef(null);
     useEffect(() => {
@@ -70,6 +71,7 @@ function Profile() {
         let viewed = '';
         let viewedId = '';
         let viewerId = '';
+        let otherUrl = '';
 
         const isRealProfile = () => {
             /**
@@ -91,6 +93,9 @@ function Profile() {
                 setPersonal(prevViewed => ({...prevViewed, viewed}))
                 setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
                 setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+
+                otherUrl = 'other/' + viewedId;
+                setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
             })
             .catch(err => {
                 if (err.response.status === 404) {
@@ -267,7 +272,6 @@ function Profile() {
             <TopNav authorId={personal.viewerId}/>
             <div className='profRow'>
                 <div className='pubColL'>
-                    {personal.viewerId}
                     <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
@@ -277,7 +281,7 @@ function Profile() {
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
                     { personal.person ? 
                         <Posts type={'personal'}/> : 
-                        <Posts type={'other'}/> 
+                        <Posts type={otherUrl}/> 
                     }   
                 </div>
                 <div className='profColR'>

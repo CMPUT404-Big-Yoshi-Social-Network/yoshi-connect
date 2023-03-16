@@ -832,7 +832,7 @@ async function fetchOtherPosts(req, res) {
         {
             $match: {
                 $expr: {
-                    $in : ["$authorId", [req.params.authorId]]
+                    $in : ["$authorId", [req.params.other]]
                 }
             },
         },

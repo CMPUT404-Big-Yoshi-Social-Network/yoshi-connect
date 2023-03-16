@@ -49,7 +49,6 @@ function FriendFeed() {
      *     - getPosts(): Gets the current logged in author's friends' posts 
      * Returns: N/A
      */
-    const [friendPosts, setFriendPosts] = useState([]);
     const [viewer, setViewerId] = useState({ viewerId: '' })
     const navigate = useNavigate();
 
@@ -75,24 +74,24 @@ function FriendFeed() {
         }
         getId();
 
-        const getPosts = () => {
-            /**
-             * Description: Sends a POST request in order to get the posts of the current author's friends 
-             * Request: POST
-             * Returns: N/A
-             */
-            axios
-            .get('/api/authors/' + viewer.viewerId + '/posts/friends-posts')
-            .then((response) => { setFriendPosts(response.data.items) })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    navigate('/unauthorized');
-                } else if (err.response.status === 404) {
-                    setFriendPosts([]);
-                }
-             });
-        }
-        getPosts();
+        // const getPosts = () => {
+        //     /**
+        //      * Description: Sends a POST request in order to get the posts of the current author's friends 
+        //      * Request: POST
+        //      * Returns: N/A
+        //      */
+        //     axios
+        //     .get('/api/authors/' + viewer.viewerId + '/posts/friends-posts')
+        //     .then((response) => { setFriendPosts(response.data.items) })
+        //     .catch(err => {
+        //         if (err.response.status === 401) {
+        //             navigate('/unauthorized');
+        //         } else if (err.response.status === 404) {
+        //             setFriendPosts([]);
+        //         }
+        //      });
+        // }
+        // getPosts();
     }, [viewer, navigate]);
 
     return (
@@ -103,14 +102,7 @@ function FriendFeed() {
                     <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    { friendPosts === undefined || friendPosts.length === 0 ? 
-                        <div>
-                            <h4>No posts to show.</h4>
-                        </div> : 
-                        <div>
-                            <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
-                        </div>
-                    }
+                    <Posts type={'friends-posts'}/>  
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

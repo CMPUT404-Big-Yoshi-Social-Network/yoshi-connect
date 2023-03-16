@@ -20,11 +20,14 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { sendRequest, apideleteRequest, getRequests, getRequest } = require('../routes/request');
+const { getFollowings, deleteFollowing } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
 const express = require('express'); 
+
+// Schemas
+const { Author } = require('../scheme/author');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -33,40 +36,47 @@ router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
   const authorId = req.params.authorId;
 
-  const requests = await getRequests(authorId);
+  const followings = await getFollowings(authorId);
+  if(followings == 404 || followings == 404) return res.sendStatus(404);
+
+  sanitizedObjects = [];
+  for(let i = 0; i < followings.length; i++){
+    const following = followings[i];
+
+    const followingProfile = await Author.findOne({_id: following.authorId}); 
+    if(!followingProfile) continue
+
+      sanitizedObject = {
+      "type": "author",
+      "id" : followingProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": followingProfile.username,
+      "url":  process.env.DOMAIN_NAME + "users/" + followingProfile._id,
+      "github": "",
+      "profileImage": "",
+      "email": followingProfile.email,
+      "about": followingProfile.about,
+      "pronouns": followingProfile.pronouns
+    }
+
+    sanitizedObjects.push(sanitizedObject);
+  }
 
   return res.json({
-    type: "requests",
-    items: requests
+    type: "followings",
+    items: sanitizedObjects
   });
 })
 
-router.get('/:foreignAuthorId', async (req, res) => {
-  const authorId = req.params.authorId;
-  const foreignId = req.params.foreignAuthorId;
-
-  await getRequest(authorId, foreignId, res);
-})
-
-router.put('/:foreignAuthorId', async (req, res) => {
-  const authorId = req.params.authorId;
-  const foreignId = req.params.foreignAuthorId;
-
-  const request = await sendRequest(authorId, foreignId, res);
-
-  return res.json({
-    "type": request.type,
-    "summary": request.summary,
-    "actor": request.actor,
-    "object": request.object
-  })
-})
-
 router.delete('/:foreignAuthorId', async (req, res) => {
+  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
+
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  await apideleteRequest(authorId, foreignId, res);
+  const statusCode = await deleteFollowing(authorId, foreignId);
+
+  return res.sendStatus(statusCode);
 })
 
 module.exports = router;

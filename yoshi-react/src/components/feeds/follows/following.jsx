@@ -22,11 +22,12 @@ Foundation; All Rights Reserved
 // Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 // Styling
 import Follow from './follow.jsx';
 
-function Following() {
+function Following(props) {
     /**
      * Description: Represents the list of Followings for an author 
      * Functions: 
@@ -34,6 +35,7 @@ function Following() {
      * Returns: N/A
      */
     const [followings, setFollowings] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         /**
@@ -41,32 +43,35 @@ function Following() {
          * Request: POST 
          * Returns: N/A
          */
-       console.log('Debug: Fetching all followings for this author')
-
-       let config = {
-           method: 'post',
-           maxBodyLength: Infinity,
-           url: '/server/following',
-           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-           data: { sessionId: localStorage.getItem('sessionId') }
-       }
-
-       axios
-       .post('/server/following', config)
-       .then((response) => { setFollowings(response.data.following) })
-       .catch(err => {
-           console.error(err);
-       });
-    }, []);
+        if (props.authorId) {
+            axios
+            .get('/api/authors/' + props.authorId + '/followings')
+            .then((response) => { 
+                setFollowings(response.data.items) 
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setFollowings([]);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                }
+            });
+        }
+    }, [navigate, props]);
 
     return (
         <div className='following-column' style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Following</h3>
-            {(followings === undefined) ? null :
+            { followings.length === 0 ? 
                 <div>
-                    {Object.keys(followings).map((following, idx) => (
-                        <Follow className='following' key={idx} {...followings[following]}/>
-                    ))}
+                    <h4>You are not following anyone.</h4>
+                </div> :
+                <div>
+                    <div>
+                        {Object.keys(followings).map((following, idx) => (
+                            <Follow className='following' key={idx} {...followings[following]}/>
+                        ))}
+                    </div>
                 </div>
             }
         </div>

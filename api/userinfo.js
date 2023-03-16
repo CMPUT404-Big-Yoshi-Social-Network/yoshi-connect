@@ -17,24 +17,26 @@ limitations under the License.
 Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
-*/
+*/ 
 
-@font-face {
-    font-family: "Uni Neue";
-    src: url('../../fonts/UniNeue-Trial-Regular.eot');
-    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
-         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
-         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
-         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
-}
+// Routing Functions 
+const { getUserInfo } = require('../routes/userinfo');
 
-.left-admin-column{
-    left: 0;
-    top: 5em;
-    position: fixed;
-    width: 15%;
-    height: 100%;
-    background-color: #0A0F10;
-    border: #24292F 0.1em solid;
-    font-family: 'Uni Neue', sans-serif;
-}
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router({mergeParams: true});
+
+router.get('/', async (req,res) => {
+    //TODO FIll this out to give back author of the token used for authentication.
+    if (!req.cookies.token) { return res.sendStatus(401); }
+
+    const [userinfo, status] = await getUserInfo(req.cookies.token);
+
+    if (status == 404) { return res.sendStatus(404); }
+
+    return res.json(userinfo);
+})
+
+module.exports = router;

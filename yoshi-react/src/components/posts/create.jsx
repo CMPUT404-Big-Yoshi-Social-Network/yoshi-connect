@@ -48,9 +48,9 @@ function CreatePost() {
         likes: [],
         comments: [],
         unlisted: false,
-        image: "",
+        image: '',
         authorId: '',
-        specifics: [],
+        postTo: '',
         postId: ''
     })
     const [isOpen, setIsOpen] = useState(false);
@@ -61,20 +61,21 @@ function CreatePost() {
          * Request: POST
          * Returns: N/A
          */
-       let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/posts/',
-            headers: { 'Content-Type': 'application/json' },
-            data: { sessionId: localStorage.getItem('sessionId'), status: 'Fetching current authorId' }
+        const getId = () => {
+            axios
+            .get('/api/userinfo/')
+            .then((response) => {
+                let authorId = response.data.id;
+                setData(prevAuthorId => ({...prevAuthorId, authorId}))
+            })
+            .catch(err => { 
+                if (err.response.status === 404) { 
+                 let authorId = ''
+                 setData(prevAuthorId => ({...prevAuthorId, authorId}))
+                } 
+            });
         }
-        axios
-        .post('/server/posts/', config)
-        .then((response) => {
-            let authorId = response.data.authorId;
-            setData(prevAuthorId => ({...prevAuthorId, authorId}))
-        })
-        .catch(err => { });
+        getId();
     }, []);
     
     const savePost = () => {
@@ -88,9 +89,9 @@ function CreatePost() {
         togglePostMenu();
 
         let config = {
-            method: 'put',
+            method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/authors/' + data.authorId + '/posts/',
+            url: '/api/authors/' + data.authorId + '/posts/',
             headers: {
             'Content-Type': 'multipart/form-data'
             },
@@ -103,12 +104,12 @@ function CreatePost() {
                 likes: data.likes,
                 comments: data.comments,
                 unlisted: data.unlisted,
-                specifics: data.specifics,
+                postTo: data.postTo,
                 image: data.image
             }
         }
         
-        axios.put('/server/authors/' + data.authorId + '/posts/', config)
+        axios.post('/api/authors/' + data.authorId + '/posts/', config)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }
@@ -183,7 +184,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Message To:</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, specifics: [e.target.value]})
+                            setData({...data, postTo: [e.target.value]})
                         }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>

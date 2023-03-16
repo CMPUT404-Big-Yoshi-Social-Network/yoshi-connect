@@ -20,95 +20,85 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { fetchPosts, apicreatePost, apiupdatePost, apideletePost, apigetPost } = require('./routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts } = require('../routes/post');
+const { fetchPublicPosts } = require('../routes/public');
+const { fetchFriendPosts } = require('../routes/friend');
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}:
- *  get:
- *    description: Gets the a specific Post from the database made by a specific Author 
- *    responses:
- *      200:
- *        description: Returns the Post as a JSON object
- *      404:
- *        description: When the Post or Author is not found 
- *      500: 
- *        description: When the server is unable to get the Post
- */
-app.get('/api/authors/:authorId/posts/:postId', async (req, res) => {
+const { getAuthor } = require('../routes/author.js');
+
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router({mergeParams: true});
+
+//TODO Change this to get request; TO DO!
+router.get('/public', async (req, res) => {
+  console.log('Debug: Getting the author following/public posts');
+  await fetchPublicPosts(req, res);
+})
+
+// TODO
+router.get('/friends-posts', async (req, res) => {
+  console.log('Debug: Getting the author true friends posts');
+  await fetchFriendPosts(req, res);
+})
+
+// TODO
+router.get('/personal', async (req, res) => {
+  await fetchMyPosts(req, res);
+})
+
+router.get('/other/:other', async (req, res) => {
+  await fetchOtherPosts(req, res);
+})
+
+//GET [local, remote] get the public post whose id is POST_ID
+router.get('/:postId', async (req, res) => {
   if(req.params.authorId == undefined) return res.sendStatus(404);
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  let post = await apigetPost(authorId, postId);
+  let [post, status] = await getPost(authorId, postId);
 
-  if(post === 404) return res.sendStatus(404);
-  if(post === 500) return res.sendStatus(500);
+  if(status != 200){
+    return res.sendStatus(status);
+  }
 
-  return res.json({
-    "type": "post",
-    "title" : post.title,
-    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
-    "source": post.source,
-    "origin": post.origin,
-    "description": post.description,
-    "contentType": post.contentType,
-    "author": post.author, 
-    "categories": post.categories,
-    "count": post.count,
-    "comments": post.comments,
-    "commentSrc": post.commentSrc,
-    "published": post.published,
-    "visibility": post.visibility,
-    "unlisted": post.unlisted
-  });
+  return res.json(post);
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}:
- *  post:
- *    description: Updates an existing Post made by a specific Author 
- *    responses:
- *      200:
- *        description: Returns Status 200 when the server successfully updated the Post
- *      404:
- *        description: Returns Status 404 when the server was unable to find any Post related to the given URL
- */
-app.post('/api/authors/:authorId/posts/:postId', async (req, res) => {
+//POST [local] update the post whose id is POST_ID (must be authenticated)
+router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const status = await apiupdatePost(authorId, postId, req.body);
+  if(!req.cookies["token"]){
+    res.sendStatus(401);
+  }
+
+  const [post, status] = await updatePost(req.cookies["token"], authorId, postId, req.body);
   
   if (status == 200) {
-    return res.sendStatus(status);
+    return res.json(post);
   } else {
-    return res.sendStatus(404);
+    return res.sendStatus(status);
   }
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}:
- *  delete:
- *    description: Deletes a specific Post made by a specific Author
- *    responses:
- *      200:
- *        description: Returns Status 200 if the server successfully deleted the Post
- *      404:
- *        description: Returns Status 404 if the server was unable to find either the Author or the Author's Post
- *      500:
- *        description: Returns Status 500 if the server was unable to delete the Post
- */
-app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
+//DELETE [local] remove the post whose id is POST_ID
+router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const status = await apideletePost(authorId, postId);
+  if(!req.cookies["token"]){
+    return res.sendStatus(401);
+  }
+
+  const [post, status] = await deletePost(req.cookies["token"], authorId, postId);
 
   if (status == 200) {
-    return res.sendStatus(status);
+    return res.json(post);
   } else if (status == 404) {
     return res.sendStatus(404);
   } else if (status == 500) {
@@ -116,85 +106,68 @@ app.delete('/api/authors/:authorId/posts/:postId', async (req, res) => {
   }
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts/{postId}:
- *  put:
- *    description: Creates a Post object made by a specific Author 
- *    responses:
- *      200:
- *        description: Returns Status 200 if the Post was able to be stored into the database 
- *      404:
- *        description: Returns Status 404 if the Author or Post does not exist 
- *      500: 
- *        description: Returns Status 500 if the server was unable to create and save the Post
- */
-app.put('/api/authors/:authorId/posts/:postId', async (req, res) => {
+//PUT [local] create a post where its id is POST_ID
+router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const status = await apicreatePost(authorId, postId, req.body, process.env.DOMAIN_NAME);
+  if(!req.cookies["token"]){
+    return res.sendStatus(401);
+  }
+
+  const [post, status] = await createPost(req.cookies["token"], authorId, postId, req.body);
 
   if (status == 200) {
+    return res.json(post);
+  }
+  else{
     return res.sendStatus(status);
-  } else if (status == 404) {
-    return res.sendStatus(404);
-  } else if (status == 500) {
-    return res.sendStatus(500); 
-  }  
+  }
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts:
- *  get:
- *    description: Fetches the posts of a specific Author 
- *    responses:
- *      200:
- *        description: Returns a list of Posts by a specific Author
- */
-app.get('/api/authors/:authorId/posts', async (req, res) => {
+//GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
+router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
-  const page = req.query.page;
-  const size = req.query.size;
+  
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let size = req.query.size ? parseInt(req.query.size) : 5; 
 
-  if(page == undefined)
-  page = 1;
-  if(size == undefined)
-    size = 5;
+  let [author, status] = await getAuthor(authorId);
 
-  const sanitizedPosts = await fetchPosts(page, size, authorId);
+  if(status != 200 || author.admin){
+    return res.sendStatus(status);
+  }
+
+  [posts, status] = await getPosts(page, size, author);
+
+  if(status != 200){
+    return res.sendStatus(status);
+  }
 
   return res.json({
     "type": "posts",
-    "authorId": authorId,
-    "items": [sanitizedPosts]
+    "items": posts
   });
 })
 
-/**
- * @openapi
- * /api/authors/{authorId}/posts:
- *  post:
- *    description: Creates a Post given no PostId (i.e., needs to be generated)
- *    responses:
- *      200:
- *        description: Returns Status 200 if the Post was successfully created and saved into the database
- *      404:
- *        description: Returns Status 404 if the Author does not exist 
- *      500 
- *        description: Returns Status 500 if the server was unable to store or create the Post 
- */
-app.post('/api/authors/:authorId/posts', async (req, res) => {
+//POST [local] create a new post but generate a new id
+router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
-  const status = await apicreatePost(authorId, undefined, req.body, process.env.DOMAIN_NAME);
+  if (!req.cookies["token"]) { return res.sendStatus(401); }
+
+  const [post, status] = await createPost(req.cookies["token"], authorId, undefined, req.body.data);
 
   if (status == 200) {
-    return res.sendStatus(status);
-  } else if (status == 404) {
-    return res.sendStatus(404);
-  } else if (status == 500) {
-    return res.sendStatus(500); 
-  }  
+    return res.json(post);
+  }
+  else{
+    return res.sendStatus(status); 
+  }
 })
+
+router.get('/:postId/likes', async (req, res) => {
+  return res.sendStatus(404);
+})
+
+module.exports = router;

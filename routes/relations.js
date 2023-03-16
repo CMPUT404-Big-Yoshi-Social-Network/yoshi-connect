@@ -23,32 +23,8 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
-// Schemas
-const { Follower, Following, Friend } = require('../scheme/relations.js');
 
-async function createFollowers(username, authorId){
-    /**
-     * Description: Creates a new entry in the database follower collection.
-     * Returns: N/A
-     */
-    await Follower({ username: username, authorId: authorId, followers: [] }).save();
-}
-
-async function createFollowings(username, authorId){
-    /**
-     * Description: Creates a new entry in the database following collection.
-     * Returns: N/A
-     */
-    await Following({ username: username, authorId: authorId, followings: [] }).save();
-}
-
-async function createFriends(username, authorId){
-    /**
-     * Description: Creates a new entry in the database friends collection.
-     * Returns: N/A
-     */
-    await Friend({ username: username, authorId: authorId, friends: [] }).save();
-}
+const { Follower, Following } = require('../scheme/relations.js');
 
 async function isFriend(req, res) {
     /**
@@ -200,8 +176,5 @@ async function unfollowing(req, res) {
 module.exports={
     isFriend,
     unfriending,
-    unfollowing,
-    createFollowers,
-    createFollowings,
-    createFriends,
+    unfollowing
 }

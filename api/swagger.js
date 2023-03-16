@@ -20,14 +20,22 @@ Foundation; All Rights Reserved
 */  
 
 // OpenAPI
-const {options} = require('./openAPI/options.js');
+const {options} = require('../openAPI/options.js');
 
 // Swaggerio
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require('swagger-jsdoc');
 const openapiSpecification = swaggerJsdoc(options);
 
-app.use('/server/api-docs',
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router({mergeParams: true});
+
+router.use('/',
   swaggerUi.serve,
   swaggerUi.setup(openapiSpecification)
 );
+
+module.exports = router;

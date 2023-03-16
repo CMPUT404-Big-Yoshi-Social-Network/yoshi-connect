@@ -20,60 +20,27 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React from "react";
-import Pagination from 'react-bootstrap/Pagination';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import Pagination from 'react-bootstrap/Pagination';
 
 // Child Component
-import Post from './post.jsx';
+import Author from './author.jsx';
 
-function Posts(props) { 
-    const [posts, setPosts] = useState([]);
+function Authors() {
+    const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
-    const [seeMore, setSeeMore] = useState(false);
     const size = 5;
+    const url = '/api/authors';
     const navigate = useNavigate();
-    const [url, setUrl] = useState('');
-    const [viewerId, setViewerId] = useState('');
-    let type = '';
-    if (props.type.otherUrl) {
-        type = props.type.otherUrl
-    } else {
-        type = props.type
-    }
+    const [prev, setPrev] = useState(true);
+    const [next, setNext] = useState(false);
 
     useEffect(() => {
-        /**
-         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
-         * Returns: N/A
-         */
-        const getId = () => {
-            /**
-             * Description: Sends a POST request to get the current author's id 
-             * Request: POST
-             * Returns: N/A
-             */
-
-            axios
-            .get('/api/userinfo/')
-            .then((response) => {
-                let viewerId = response.data.id;
-                setViewerId(viewerId);
-                setUrl('/api/authors/' + viewerId + '/posts/' + type)
-            })
-            .catch(err => { 
-                console.log(err)
-            });
-        }
-        getId();
-    }, [navigate, props, type]);
-
-    useEffect(() => {
-       if (url) {
+        console.log('Debug: Fetching all the authors.')
         let config = {
-            method: 'get',
+            method: 'post',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -86,28 +53,25 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => { 
-            let posts = []
-            if (response.data.items.length !== 0) {
-                for (let i = 0; i < response.data.items.length; i++) {
-                    posts.push(response.data.items[i]);
-                }
+            let authors = []
+            for (let i = 0; i < size; i++) {
+                authors.push(response.data.items[i]);
             }
-            setPosts(posts);
+            setAuthors(authors);
         })
         .catch(err => {
             if (err.response.status === 404) {
-                setPosts([]);
+                setAuthors([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                //TEMPORARY
-                setPosts([]);
+                navigate('500 PAGE')
             }
         });
 
         let updated = page + 1;
         config = {
-            method: 'get',
+            method: 'post',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -120,26 +84,29 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setSeeMore(true); }
+            if (response.data.items.length === 0) { setNext(true); }
         })
         .catch(err => {
-            if (err.response.status === 500) {
-                setPosts([]);
-            } else if (err.response.status === 404) {
-                setSeeMore(true);
+            if (err.response.status === 404) {
+                if (authors === undefined || authors.length === 0) {
+                    setAuthors([]);
+                } else {
+                    setAuthors(authors);
+                }
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
             }
         });
-       } 
-    }, [url, navigate, page, size]);
+    }, [setAuthors, url, navigate, page, size, authors]);
 
     const getMore = () => {
-        if (!seeMore) {
+        if (!next) {
             let updated = page + 1;
             setPage(updated);
             let config = {
-                method: 'get',
+                method: 'post',
                 maxBodyLength: Infinity,
                 url: url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -152,29 +119,29 @@ function Posts(props) {
             axios
             .get(url, config)
             .then((response) => { 
-                let more = []
-                for (let i = 0; i < response.data.items.length; i++) {
-                    more.push(response.data.items[i]);
+                let authors = []
+                for (let i = 0; i < size; i++) {
+                    authors.push(response.data.items[i]);
                 }
-                setPosts(posts.concat(more));
+                setAuthors(authors);
+                setPrev(false);
                 if (response.data.items.length < size) {
-                    setSeeMore(true);
+                    setNext(true);
                 } 
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    setPosts(posts);
+                    setAuthors([]);
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
-                    // TEMPORARY
-                    setPosts(posts);
+                    navigate('500 PAGE')
                 }
             });
         }
         let updated = page + 2;
         let config = {
-            method: 'get',
+            method: 'post',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -187,41 +154,78 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setSeeMore(true); }
+            if (response.data.items.length === 0) { setNext(true); }
         })
         .catch(err => {
             if (err.response.status === 404) {
-                setPosts(posts);
+                setAuthors([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                // TEMPORARY
-                setPosts(posts);
+                navigate('500 PAGE')
             }
         });
     }
 
+    const goBack = () => {
+        if (!prev && prev !== 1) {
+            let updated = page - 1;
+            setPage(updated);
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: url,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
+            }
+    
+            axios
+            .get(url, config)
+            .then((response) => { 
+                let more = []
+                for (let i = 0; i < size; i++) {
+                    more.push(response.data.items[i]);
+                }
+                setAuthors(more) 
+                setNext(false)
+                if (updated === 1) {
+                    setPrev(true)
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setAuthors([]);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    navigate('500 PAGE')
+                }
+            });
+        }
+    }
+
     return (
         <div>
-            { posts.length === 0 ? 
+            <h3>Authors</h3>
+            { authors === undefined || authors.length === 0 ? 
                 <div>
-                    <h4>No posts to show.</h4>
-                </div> : 
-                <div> 
+                    <h4>No authors to show.</h4>
+                </div> :
+                <div>
                     <Pagination>
-                        {Object.keys(posts).map((post, idx) => (
-                            <Post key={idx} viewerId={viewerId} post={posts[post]}/>
-                        ))}  
-                        { seeMore ? null :
-                            <div>
-                                <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
-                            </div>
-                        }
-                    </Pagination>  
+                        {Object.keys(authors).map((author, idx) => (
+                            <Author key={idx} {...authors[author]}/>
+                        ))}
+                        <Pagination.Prev disabled={prev} onClick={goBack}/>
+                        <Pagination.Next disabled={next} onClick={getMore}/>
+                    </Pagination>
                 </div>
             }
         </div>
     )
 }
 
-export default Posts;
+export default Authors;

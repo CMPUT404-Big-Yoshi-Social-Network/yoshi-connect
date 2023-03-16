@@ -17,26 +17,21 @@ limitations under the License.
 Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
-*/
+*/ 
 
-// Functionality
-import React from "react";
+// Routing Functions 
+const { checkExpiry } = require('../routes/auth');
+const { getProfile } = require('../routes/author');
 
-export default function ApiDocs() {
-  //let html_docs = "";
-  //const get_docs = async () => {
-    //return await axios.get("/server/api-docs");
-  //}
-  //useEffect( () => {
-    //html_docs = get_docs();
-  //});
-  const style = {
-    position:'absolute',
-    top:'0',
-    left:'0',
-    height:'100%',
-    width:'100%',
-    border:'0',
-  }
-  return(<iframe src="http://localhost:8080/server/api-docs" style={style} title="docs"></iframe>);
-}
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router({mergeParams: true});
+
+router.get('/', async (req,res) => {
+    if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401); }
+    await getProfile(req, res);
+})
+
+module.exports = router;

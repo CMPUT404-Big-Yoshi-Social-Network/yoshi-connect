@@ -26,14 +26,14 @@ import axios from 'axios';
 import Popup from 'reactjs-popup';
 
 // Child Component
-import Authors from './authors.jsx';
-import AddAuthor from "./addForm.jsx";
-import TopAdminNav from './topAdminNav.jsx';
-import LeftAdminNavBar from './leftAdminNav.jsx';
-import RightAdminNavBar from './rightAdminNav.jsx';
+import Authors from '../author/authors.jsx';
+import AddAuthor from "../forms/addForm.jsx";
+import TopAdminNav from '../nav/top/top.jsx';
+import LeftAdminNavBar from '../nav/left/left.jsx';
+import RightAdminNavBar from '../nav/right/right.jsx';
 
 // Styling
-import './admin-dashboard.css';
+import './adminDashboard.css';
 
 function AdminDashboard() {
     /**
@@ -44,7 +44,7 @@ function AdminDashboard() {
      * Returns: N/A
      */
     const navigate = useNavigate();
-    const url = '/server/admin/dashboard';
+    const url = '/api/admin/dashboard';
 
     const getDashboard = () => {
         /**
@@ -60,29 +60,20 @@ function AdminDashboard() {
         }
         axios
         .get(url, config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.");
-                LogOut();
-                navigate('/login');
-            } else if(response.data.status === "NonAdmin"){
-                console.log("Debug: You're not an admin.")
-                navigate('/forbidden');
-            } else {
-                console.log("Successfully logged in.");
-            }
-            console.log('Debug: Your token is not expired.')
-        })
+        .then((response) => { })
         .catch(err => {
             if (err.response.status === 403) {
-                console.log("Debug: Forbidden.");
                 navigate('/forbidden'); 
+            } else if (err.response.status === 401) {
+                LogOut();
+                navigate('/');
             }
         });
     }
     useEffect(() => {
        getDashboard();
     });
+
     const LogOut = () => {
         /**
          * Description: Sends a POST request to log the admin out
@@ -95,18 +86,17 @@ function AdminDashboard() {
             url: url,
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                status: 'Logging Out'
             }
         }
         axios
         .post(url, config)
-        .then((response) => {
-            navigate("/");
-        })
+        .then((response) => { navigate("/"); })
         .catch(err => {
-          console.error(err);
+          if (err.response.status === 500) {
+            console.log('500 PAGE');
+          } else if (err.response.status === 401) {
+            navigate('/unauthorized')
+          }
         });
     }
     return (

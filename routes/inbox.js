@@ -58,7 +58,6 @@ async function postInbox(req, res){
         const count = req.body.count;
         const comments = req.body.comments;
         const published = req.body.published;
-        const specifics = req.body.specifics;
         const visibility = req.body.visibility;
         const unlisted = req.body.unlisted //Expected to be false
         const authorId = req.body.authorId;

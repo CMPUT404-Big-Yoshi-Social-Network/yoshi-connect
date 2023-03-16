@@ -17,17 +17,20 @@ limitations under the License.
 Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
-*/
+*/  
 
-// Functionality
-import React from "react";
+// Routing Functions 
+const { authAuthor } = require('../routes/auth');
 
-function Follow(props) {
-    return (
-        <div id='follow'>
-            { props.displayname }
-        </div>
-    )
-}
+// Router Setup
+const express = require('express'); 
 
-export default Follow;
+// Router
+const router = express.Router({mergeParams: true});
+
+router.post('/', async (req, res) => {
+  console.log('Debug: Login as Author')
+  await authAuthor(req, res);
+})
+
+module.exports = router;

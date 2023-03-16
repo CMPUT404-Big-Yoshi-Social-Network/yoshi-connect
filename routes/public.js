@@ -94,7 +94,6 @@ async function fetchPublicPosts(req, res) {
     if(following.length > 0){ followings = following[0].follows; }
 
     let posts = null;
-    console.log(followings)
     if(followings.length != 0){
         posts = await PostHistory.aggregate([
             {

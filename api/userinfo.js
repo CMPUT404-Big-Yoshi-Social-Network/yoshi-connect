@@ -33,7 +33,7 @@ router.get('/', async (req,res) => {
 
     const [userinfo, status] = await getUserInfo(req.cookies.token);
 
-    if (status == 404) { return res.sendStatus(404); }
+    if (status != 200) { return res.sendStatus(status); }
 
     return res.json(userinfo);
 })

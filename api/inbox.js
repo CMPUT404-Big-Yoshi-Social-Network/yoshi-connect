@@ -28,18 +28,10 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.get('/', async (req, res) => {
-  console.log('Debug: Getting an authors inbox');
-  await getInbox(req, res);
-})
+router.get('/', async (req, res) => { await getInbox(req, res); })
 
-router.post('/', async (req, res) => {
-  await postInbox(req, res);
-})
+router.post('/', async (req, res) => { await postInbox(req, res); })
 
-router.delete('/', async (req, res) => {
-  console.log("delete inbox")
-  await deleteInbox(req, res);
-})
+router.delete('/', async (req, res) => { await deleteInbox(req, res); })
 
 module.exports = router;

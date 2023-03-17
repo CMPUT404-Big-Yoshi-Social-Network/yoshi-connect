@@ -56,8 +56,21 @@ async function addAuthor(req, res){
     });
 
     author.save((err) => {
-        if(err){ return res.sendStatus(500); }
-        return res.sendStatus(200);
+        if (err) { return res.sendStatus(500); }
+        return res.json({
+            "type": "author",
+            "id" : process.env.DOMAIN_NAME + "authors/" + uuid,
+            "authorId" : uuid,
+            "host": process.env.DOMAIN_NAME,
+            "url": process.env.DOMAIN_NAME + "authors/" + uuid,
+            "displayname": username,
+            "email": email,
+            "about": "",
+            "pronouns": "",
+            "github": "",
+            "profileImage": "",
+            admin: false
+        });
     });
 }
 
@@ -90,7 +103,18 @@ async function modifyAuthor(req, res){
             logins[i].admin = req.body.newAdmin;
             logins[i].save();
         }
-        return res.sendStatus(200);
+        return res.json({
+            "type": "author",
+            "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+            "authorId" : author._id,
+            "host": process.env.DOMAIN_NAME,
+            "url": process.env.DOMAIN_NAME + "authors/" + author._id,
+            "displayname": req.body.newUsername,
+            "email": req.body.newEmail,
+            "about": req.body.newAbout,
+            "pronouns": req.body.newPronouns,
+            "admin": req.body.newAdmin
+        })
     }).clone();
 }
 
@@ -100,7 +124,7 @@ async function deleteAuthor(req, res){
 
         Login.deleteMany({authorId: req.body.author.id}, function(err, obj) { 
             if (err) throw res.sendStatus(500);
-            return res.sendStatus(200)
+            return res.sendStatus(204);
         }).clone();
     }).clone();
 }

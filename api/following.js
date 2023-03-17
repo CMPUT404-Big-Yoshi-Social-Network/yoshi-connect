@@ -33,18 +33,20 @@ const { Author } = require('../scheme/author');
 const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
-  const authorId = req.params.authorId;
+  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
 
+  const authorId = req.params.authorId;
   const followings = await getFollowings(authorId);
-  if(followings == 404 || followings == 404) return res.sendStatus(404);
+
+  if (followings == 404 || followings == 404) { return res.sendStatus(404); }
 
   sanitizedObjects = [];
-  for(let i = 0; i < followings.length; i++){
+  for (let i = 0; i < followings.length; i++) {
     const following = followings[i];
 
     const followingProfile = await Author.findOne({_id: following.authorId}); 
-    if(!followingProfile) continue
+    if (!followingProfile) 
+      continue
 
       sanitizedObject = {
       "type": "author",
@@ -69,7 +71,7 @@ router.get('/', async (req, res) => {
 })
 
 router.delete('/:foreignAuthorId', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;

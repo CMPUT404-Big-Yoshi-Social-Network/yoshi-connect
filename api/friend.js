@@ -34,17 +34,17 @@ const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
-
   const friends = await getFriends(authorId);
 
-  if (friends == 404) return res.sendStatus(404);
+  if (friends == 404) { return res.sendStatus(404); }
 
   sanitizedObjects = [];
   for(let i = 0; i < friends.length; i++){
     const friendId = friends[i];
 
     const friendProfile = await Author.findOne({_id: friendId}); 
-    if (!friendProfile) continue
+    if (!friendProfile) 
+      continue
 
       sanitizedObject = {
       "type": "author",
@@ -69,7 +69,8 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/:foreignId', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
+
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
 
@@ -79,8 +80,8 @@ router.post('/:foreignId', async (req, res) => {
 router.get('/:foreignId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
+
   isFriend(authorId, foreignId);
-  return res.sendStatus(200);
 })
 
 module.exports = router;

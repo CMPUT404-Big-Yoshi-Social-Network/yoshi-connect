@@ -33,9 +33,6 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.use('/',
-  swaggerUi.serve,
-  swaggerUi.setup(openapiSpecification)
-);
+router.use('/', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
 module.exports = router;

@@ -98,16 +98,18 @@ async function sendRequest(authorId, foreignId, res) {
 
     if (needFriend) {
         type = 'friend'
-        summary = actor.username + "wants to " + type + " " + object.username;
+        summary = actor.username + " wants to " + type + " " + object.username;
     } else {
         type = 'follow'
-        summary = actor.username + "wants to " + type + " " + object.username;
+        summary = actor.username + " wants to " + type + " " + object.username;
     }
 
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
     const request = new Request({
         _id: uuid,
+        type: type,
+        summary: summary,
         actor: actor.username,
         actorId: actor._id,
         objectId: object._id,
@@ -190,7 +192,7 @@ async function getRequests(authorId) {
 async function getRequest(authorId, foreignId, res) {
     await Request.findOne({actorId: authorId, objectId: foreignId}, function(err, request){
         if (!request) { return res.sendStatus(404); }
-        return res.json({ request: request })
+        return res.json(request)
     }).clone()
 }
 

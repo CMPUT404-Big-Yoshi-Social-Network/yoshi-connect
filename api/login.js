@@ -28,9 +28,6 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.post('/', async (req, res) => {
-  console.log('Debug: Login as Author')
-  await authAuthor(req, res);
-})
+router.post('/', async (req, res) => { await authAuthor(req, res); })
 
 module.exports = router;

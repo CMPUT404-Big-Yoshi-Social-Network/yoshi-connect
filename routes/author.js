@@ -164,10 +164,10 @@ async function getAuthor(authorId){
 }
 
 async function updateAuthor(token, author){
-    if (await checkExpiry(token)) { return 401; }
+    if (await checkExpiry(token)) { return [null, 401]; }
 
     let authorProfile = await Author.findOne({_id: author.id});
-    if(!authorProfile) return 404;
+    if(!authorProfile) return [null, 404];
 
     if (author.pronouns != undefined) { authorProfile.pronouns = author.pronouns; }
     if (author.email != undefined) { authorProfile.email = author.email; }
@@ -178,7 +178,21 @@ async function updateAuthor(token, author){
 
     await authorProfile.save();
 
-    return 200;
+    sanitizedAuthor = {
+        "type": 'author',
+        "id" : process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
+        "authorId" : authorProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": authorProfile.username,
+        "url":  process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
+        "github": authorProfile.github,
+        "profileImage": authorProfile.profileImage,
+        "email": authorProfile.email, 
+        "about": authorProfile.about,
+        "pronouns": authorProfile.pronouns,
+    }
+
+    return [sanitizedAuthor, 200];
 }
 
 async function getAuthors(page, size){

@@ -42,8 +42,7 @@ function Author(props) {
             url: url,
             headers: { 'Content-Type': 'application/json' },
             data: {
-                author: props,
-                status: 'Delete'
+                author: props
             }
         }
         axios

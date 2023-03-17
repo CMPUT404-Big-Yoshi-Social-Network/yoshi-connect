@@ -36,30 +36,10 @@ import Posts from '../../posts/posts.jsx';
 import './feed.css';
 
 function FriendFeed() {
-    /**
-     * Description: Represents the Friend Feed that displays the posts from friends as well as a friends list
-     * Functions:
-     *     - logOut(): Logs out the author if their token expired 
-     *     - checkExpiry(): Checks if the current token is expired for the current author logged in 
-     *     - useEffect(): 
-     *          - Calls checkExpiry() to check a token's expiry (whether to log out author or not)
-     *          - Gets the current author's id using getId() 
-     *          - Gets the friends posts for the current author using getPosts() 
-     *     - getId(): Gets the current logged in author's id
-     *     - getPosts(): Gets the current logged in author's friends' posts 
-     * Returns: N/A
-     */
     const [viewer, setViewerId] = useState({ viewerId: '' })
     const navigate = useNavigate();
 
     useEffect(() => {
-        /**
-         * Description: 
-         *     - Sends a POST request through getId() to get the authorId
-         *     - Sends a POST request through getPosts to get the author's friends' posts 
-         * Request: POST
-         * Returns: N/A
-         */
         const getId = () => {
             axios
             .get('/api/userinfo/')
@@ -73,25 +53,6 @@ function FriendFeed() {
             });
         }
         getId();
-
-        // const getPosts = () => {
-        //     /**
-        //      * Description: Sends a POST request in order to get the posts of the current author's friends 
-        //      * Request: POST
-        //      * Returns: N/A
-        //      */
-        //     axios
-        //     .get('/api/authors/' + viewer.viewerId + '/posts/friends-posts')
-        //     .then((response) => { setFriendPosts(response.data.items) })
-        //     .catch(err => {
-        //         if (err.response.status === 401) {
-        //             navigate('/unauthorized');
-        //         } else if (err.response.status === 404) {
-        //             setFriendPosts([]);
-        //         }
-        //      });
-        // }
-        // getPosts();
     }, [viewer, navigate]);
 
     return (

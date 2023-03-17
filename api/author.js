@@ -63,20 +63,19 @@ router.get('/:authorId', async (req, res) => {
 })
 
 router.post('/:authorId', async (req, res) => {
-  if(!req.cookies["token"])
-    return res.sendStatus(401);
-  if(req.body.type !== 'author')
-    return res.sendStatus(400);
+  if (!req.cookies.token) { return res.sendStatus(401); }
+  if (req.body.type !== 'author') { return res.sendStatus(400); }
 
   const authorId = req.body.id;
   const host = req.body.host;
   const username = req.body.displayName;
   const url = req.body.url;
 
-  if(!authorId || !host || !username || !url)
-    return res.sendStatus(400);
+  if (!authorId || !host || !username || !url) { return res.sendStatus(400); }
 
-  return res.sendStatus(await updateAuthor(req.cookies["token"], req.body));
+  const authorStatus = await updateAuthor(req.cookies.token, req.body)
+
+  if (authorStatus[1] == 200) { return res.json(authorStatus[0]) }
 })
 
 router.get('/:authorId/liked', async (req, res) => {

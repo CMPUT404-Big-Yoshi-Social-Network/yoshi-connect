@@ -90,7 +90,11 @@ async function getFriends(id){
         }
     ]);
 
-    return friends[0].friends
+    if (friends[0] == undefined) {
+        return []
+    } else {
+        return friends[0].friends
+    }
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
@@ -207,10 +211,17 @@ async function fetchFriendPosts(req, res) {
         },
     ]);
 
-    return res.json({
-        type: "posts",
-        items: posts[0].posts_array
-    })
+    if (posts[0] == undefined) {
+        return res.json({
+            type: "posts",
+            items: []
+        })        
+    } else {
+        return res.json({
+            type: "posts",
+            items: posts[0].posts_array
+        })
+    }
 }
 
 module.exports={

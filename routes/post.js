@@ -125,6 +125,8 @@ async function createPost(token, authorId, postId, newPost) {
         authorId: authorId,
         categories: categories,
         count: 0,
+        like_count: 0,
+        comment_count: 0,
         published: published,
         visibility: visibility,
         unlisted: unlisted,

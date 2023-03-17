@@ -34,6 +34,8 @@ const postScheme = new Schema({
     content: String,
     categories: [String],
     count: Number,
+    like_count: Number,
+    comment_count: Number,
     published: String,
     visibility: String,
     postTo: String,

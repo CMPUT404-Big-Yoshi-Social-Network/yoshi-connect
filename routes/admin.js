@@ -39,7 +39,7 @@ async function addAuthor(req, res){
     const username = req.body.data.username;
     const email = req.body.data.email;
     const password = req.body.data.password;
-    let uuid = crypto.randomUUID.replace(/-/g, "");
+    let uuid = String(crypto.randomUUID).replace(/-/g, "");
 
     if (!username && !email && !password) { return res.sendStatus(400); }
 

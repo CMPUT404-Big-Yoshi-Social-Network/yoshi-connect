@@ -34,7 +34,7 @@ const crypto = require('crypto');
 const { authLogin } = require('./auth.js');
 
 async function createPostHistory(author_id){
-    let uuid = crypto.randomUUID.replace(/-/g, "");
+    let uuid = String(crypto.randomUUID).replace(/-/g, "");
     let new_post_history = new PostHistory ({
         _id: uuid,
         authorId: author_id,
@@ -104,7 +104,7 @@ async function createPost(token, authorId, postId, newPost) {
         if(oldPost) return [[], 400]
     }
     
-    if (!postId) { postId = crypto.randomUUID.replace(/-/g, ""); }
+    if (!postId) { postId = String(crypto.randomUUID).replace(/-/g, ""); }
 
     let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
     let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
@@ -346,7 +346,7 @@ async function addLike(req, res){
     let publicPost = await PublicPost.find();
     let success = false;
     let numLikes = 0;
-    let uuid = crypto.randomUUID.replace(/-/g, "");
+    let uuid = String(crypto.randomUUID).replace(/-/g, "");
 
     var like = new Like({ 
         _id: uuid,
@@ -524,7 +524,7 @@ async function getComments(authorId, postId) {
 async function createComment(authorId, postId, newComment, domain) {
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const author = await Author.findOne({authorId: authorId});
-    let uuid = crypto.randomUUID.replace(/-/g, "");
+    let uuid = String(crypto.randomUUID).replace(/-/g, "");
 
     var comment = new Comment({
         author: author,

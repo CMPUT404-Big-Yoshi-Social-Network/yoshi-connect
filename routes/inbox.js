@@ -11,7 +11,7 @@ const { Request } = require('../scheme/relations.js');
 const crypto = require('crypto');
 
 async function createInbox(username, authorId){
-    let uuid = crypto.randomUUID.replace(/-/g, "");
+    let uuid = String(crypto.randomUUID).replace(/-/g, "");
     await Inbox({
         _id: uuid,
         authorId: authorId,
@@ -72,7 +72,7 @@ async function postInbox(req, res){
                 return res.sendStatus(400); 
         }
 
-        let uuid = crypto.randomUUID.replace(/-/g, "");
+        let uuid = String(crypto.randomUUID).replace(/-/g, "");
         const post = Post({
                 _id: uuid,
                 title: title,
@@ -97,7 +97,7 @@ async function postInbox(req, res){
     } else if(req.body.type === "follow") {
         const senderUUID = await Author.findOne({username: req.body.data.sender});
         const receiverUUID = await Author.findOne({username: req.body.data.receiver});
-        let uuidReq = crypto.randomUUID.replace(/-/g, "");
+        let uuidReq = String(crypto.randomUUID).replace(/-/g, "");
         const request = new Request({
             _id: uuidReq,
             senderId: req.body.sender,
@@ -111,7 +111,7 @@ async function postInbox(req, res){
         return res.sendStatus(200);
     } else if(req.body.type === "like") {
         
-        let uuidLike = crypto.randomUUID.replace(/-/g, "");
+        let uuidLike = String(crypto.randomUUID).replace(/-/g, "");
         const like = new Like({
             _id: uuidLike,
             liker: req.body.liker
@@ -119,7 +119,7 @@ async function postInbox(req, res){
 
         postInboxLike(like, req.params.author_id);
     } else if (req.body.type === "comment") {
-        let uuidCom = crypto.randomUUID.replace(/-/g, "");
+        let uuidCom = String(crypto.randomUUID).replace(/-/g, "");
         const comment = new Comment({
             _id: uuidCom,
             commenter: req.body.commenter,

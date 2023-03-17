@@ -107,7 +107,7 @@ async function authAuthor(req, res) {
         let curr = new Date();
         let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
         let token = uidgen.generateSync();
-        let uuid = crypto.randomUUID.replace(/-/g, "");
+        let uuid = String(crypto.randomUUID).replace(/-/g, "");
 
         let login = new Login({
             _id: uuid,

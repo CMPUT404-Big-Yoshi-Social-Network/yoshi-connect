@@ -41,7 +41,7 @@ async function senderAdded(authorId, foreignId, req, res) {
             following.followings.push({authorId: foreignId, username: object.username});
             await following.save();
         } else {
-            let uuidFollowing = crypto.randomUUID.replace(/-/g, "");
+            let uuidFollowing = String(crypto.randomUUID).replace(/-/g, "");
             var following = new Following({
                 _id: uuidFollowing,
                 username: actor.username,
@@ -60,7 +60,7 @@ async function senderAdded(authorId, foreignId, req, res) {
             follower.followers.push({username: actor.username, authorId: authorId});
             await follower.save();
         } else {
-            let uuidFollower = crypto.randomUUID.replace(/-/g, "");
+            let uuidFollower = String(crypto.randomUUID).replace(/-/g, "");
             var follower = new Follower({
                 _id: uuidFollower,
                 username: object.username,
@@ -104,7 +104,7 @@ async function sendRequest(authorId, foreignId, res) {
         summary = actor.username + "wants to " + type + " " + object.username;
     }
 
-    let uuid = crypto.randomUUID.replace(/-/g, "");
+    let uuid = String(crypto.randomUUID).replace(/-/g, "");
 
     const request = new Request({
         _id: uuid,

@@ -26,6 +26,9 @@ const crypto_js = require('crypto-js')
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
 
+// UUID
+const crypto = require('crypto');
+
 // Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
@@ -96,18 +99,18 @@ async function authAuthor(req, res) {
     const p_hashed_password = req.author.password;
     if(p_hashed_password == crypto_js.SHA256(password)){
         if(req.cookies.token != null && req.cookies.token != undefined){
-            await Login.deleteOne({token: req.cookies.token}, function(err, login) {
-                if (err) { res.sendStatus(500); }
-            }).clone()
+            await Login.deleteOne({token: req.cookies.token}, function(err, login) { if (err) { res.sendStatus(500); } }).clone()
         }
 
-        if (req.baseUrl == '/api/admin') { if (!req.author.admin) { return res.sendStatus(403) } }
+        if (req.baseUrl == '/admin') { if (!req.author.admin) { return res.sendStatus(403) } }
 
         let curr = new Date();
         let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
         let token = uidgen.generateSync();
+        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
         let login = new Login({
+            _id: uuid,
             authorId: req.author._id,
             username: req.body.username,
             token: token,
@@ -116,7 +119,7 @@ async function authAuthor(req, res) {
         });
 
         login_saved = await login.save();
-        if(login == login_saved){
+        if(login_saved){
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
             return res.sendStatus(200)
         }

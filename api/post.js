@@ -34,52 +34,34 @@ const { Liked } = require('../scheme/interactions');
 // Router
 const router = express.Router({mergeParams: true});
 
-//TODO Change this to get request; TO DO!
-router.get('/public', async (req, res) => {
-  console.log('Debug: Getting the author following/public posts');
-  await fetchPublicPosts(req, res);
-})
+router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
 
-// TODO
-router.get('/friends-posts', async (req, res) => {
-  console.log('Debug: Getting the author true friends posts');
-  await fetchFriendPosts(req, res);
-})
+router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, res); })
 
-// TODO
-router.get('/personal', async (req, res) => {
-  await fetchMyPosts(req, res);
-})
+router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
 
-router.get('/other/:other', async (req, res) => {
-  await fetchOtherPosts(req, res);
-})
+router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
 
-//GET [local, remote] get the public post whose id is POST_ID
 router.get('/:postId', async (req, res) => {
-  if(req.params.authorId == undefined) return res.sendStatus(404);
+  if (req.params.authorId == undefined) { return res.sendStatus(404); }
+
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
   let [post, status] = await getPost(authorId, postId);
 
-  if(status != 200){
-    return res.sendStatus(status);
-  }
+  if (status != 200) { return res.sendStatus(status); }
 
   return res.json(post);
 })
 
-//POST [local] update the post whose id is POST_ID (must be authenticated)
 router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  if(!req.cookies["token"]){
-    res.sendStatus(401);
-  }
+  if (!req.cookies.token) { res.sendStatus(401); }
 
-  const [post, status] = await updatePost(req.cookies["token"], authorId, postId, req.body);
+  const [post, status] = await updatePost(req.cookies.token, authorId, postId, req.body);
   
   if (status == 200) {
     return res.json(post);
@@ -88,47 +70,36 @@ router.post('/:postId', async (req, res) => {
   }
 })
 
-//DELETE [local] remove the post whose id is POST_ID
-//TODO delete comment and likes collection.
 router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  if(!req.cookies["token"]){
-    return res.sendStatus(401);
-  }
+  if (!req.cookies.token) { return res.sendStatus(401); }
 
-  const [post, status] = await deletePost(req.cookies["token"], authorId, postId);
+  const [post, status] = await deletePost(req.cookies.token, authorId, postId);
 
   if (status == 200) {
     return res.json(post);
-  } else if (status == 404) {
-    return res.sendStatus(404);
-  } else if (status == 500) {
-    return res.sendStatus(500);
-  }
+  } else {
+    return res.sendStatus(status);
+  } 
 })
 
-//PUT [local] create a post where its id is POST_ID
 router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  if(!req.cookies["token"]){
-    return res.sendStatus(401);
-  }
+  if (!req.cookies.token) { return res.sendStatus(401); }
 
-  const [post, status] = await createPost(req.cookies["token"], authorId, postId, req.body);
+  const [post, status] = await createPost(req.cookies.token, authorId, postId, req.body);
 
   if (status == 200) {
     return res.json(post);
-  }
-  else{
+  } else {
     return res.sendStatus(status);
   }
 })
 
-//GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   
@@ -137,15 +108,11 @@ router.get('/', async (req, res) => {
 
   let [author, status] = await getAuthor(authorId);
 
-  if(status != 200 || author.admin){
-    return res.sendStatus(status);
-  }
+  if (status != 200 || author.admin) { return res.sendStatus(status); }
 
   [posts, status] = await getPosts(page, size, author);
 
-  if(status != 200){
-    return res.sendStatus(status);
-  }
+  if (status != 200) { return res.sendStatus(status); }
 
   return res.json({
     "type": "posts",
@@ -153,18 +120,16 @@ router.get('/', async (req, res) => {
   });
 })
 
-//POST [local] create a new post but generate a new id
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
-  if (!req.cookies["token"]) { return res.sendStatus(401); }
+  if (!req.cookies.token) { return res.sendStatus(401); }
 
-  const [post, status] = await createPost(req.cookies["token"], authorId, undefined, req.body.data);
+  const [post, status] = await createPost(req.cookies.token, authorId, undefined, req.body.data);
 
   if (status == 200) {
     return res.json(post);
-  }
-  else{
+  } else {
     return res.sendStatus(status); 
   }
 })

@@ -24,11 +24,8 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
-// Password
-const crypto = require('crypto');
-
 const authorScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     username: String,
     password: String,
     email: String,
@@ -41,7 +38,7 @@ const authorScheme = new Schema({
 });
 
 const loginScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     authorId: String,
     username: String,
     token: String,

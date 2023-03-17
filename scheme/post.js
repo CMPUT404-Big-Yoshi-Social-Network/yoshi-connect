@@ -24,11 +24,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
-// UUID
-const crypto = require('crypto');
-
 const postScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     origin: String,
     source: String,
     title: String,
@@ -45,7 +42,7 @@ const postScheme = new Schema({
 });
 
 const postHistoryScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     authorId: String,
     num_posts: Number,
     posts: [postScheme]},
@@ -53,7 +50,7 @@ const postHistoryScheme = new Schema({
 })
 
 const publicScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     posts: [{
         authorId: String,
         post: postScheme,
@@ -63,13 +60,13 @@ const publicScheme = new Schema({
 })
 
 const inboxScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     authorId: String,
     username: String,
     posts: [postScheme],
-    likes: [{ type: String, default: crypto.randomUUID, ref: 'Like' }],
-    comments: [{ type: String, default: crypto.randomUUID, ref: 'Comment' }],
-    requests: [{ type: String, default: crypto.randomUUID, ref: 'Request' }]},
+    likes: [{ type: String, ref: 'Like' }],
+    comments: [{ type: String, ref: 'Comment' }],
+    requests: [{ type: String, ref: 'Request' }]},
     {versionKey: false
 })
 

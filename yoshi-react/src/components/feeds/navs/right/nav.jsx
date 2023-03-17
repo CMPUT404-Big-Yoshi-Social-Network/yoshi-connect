@@ -44,7 +44,7 @@ function RightNavBar() {
     useEffect(() => {
         const getId = () => {
             axios
-            .get('/api/userinfo/')
+            .get('/userinfo/')
             .then((response) => {
                 let username = response.data.displayname;
                 setUsername(username)

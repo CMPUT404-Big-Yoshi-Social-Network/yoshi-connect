@@ -75,10 +75,8 @@ router.get('/:commentId/likes', async (req, res) => {
   let page = req.query.page;
   let size = req.query.size;
 
-  if(page == undefined)
-  page = 1;
-  if(size == undefined)
-    size = 5;
+  if (page == undefined) { page = 1; }
+  if(size == undefined) { size = 5; }
 
   const likes = apiFetchCommentLikes(authorId, postId, commentId); 
 
@@ -92,7 +90,5 @@ router.get('/:commentId/likes', async (req, res) => {
     "likes": likes
     })
  })
-
-
 
 module.exports = router;

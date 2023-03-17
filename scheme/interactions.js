@@ -24,11 +24,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
-// Password
-const crypto = require('crypto');
-
 const commentScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     commenter: String,
     comment: String
 })
@@ -39,7 +36,6 @@ const commentHistoryScheme = new Schema({
     comments: [commentScheme]},
     {versionKey: false
 })
-
 
 const likeScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},

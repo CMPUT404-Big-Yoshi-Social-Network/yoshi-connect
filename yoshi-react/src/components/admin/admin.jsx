@@ -29,7 +29,7 @@ import { Button } from 'react-bootstrap';
 import '../login/login.css';
 
 export default function AdminLogin() { 
-    const url = '/api/admin';
+    const url = '/admin';
     const navigate = useNavigate();
     const [data, setData] = useState({ username: '', password: '' })
 

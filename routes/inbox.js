@@ -7,8 +7,13 @@ const { Post, Inbox } = require('../scheme/post.js');
 const { Like, Comment } = require('../scheme/interactions.js');
 const { Request } = require('../scheme/relations.js');
 
+// UUID
+const crypto = require('crypto');
+
 async function createInbox(username, authorId){
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     await Inbox({
+        _id: uuid,
         authorId: authorId,
         username: username,
         posts: [],
@@ -66,8 +71,10 @@ async function postInbox(req, res){
             unlisted === undefined || authorId === undefined ) { 
                 return res.sendStatus(400); 
         }
-    
+
+        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
         const post = Post({
+                _id: uuid,
                 title: title,
                 description: description,
                 contentType: contentType,
@@ -90,8 +97,9 @@ async function postInbox(req, res){
     } else if(req.body.type === "follow") {
         const senderUUID = await Author.findOne({username: req.body.data.sender});
         const receiverUUID = await Author.findOne({username: req.body.data.receiver});
-
+        let uuidReq = String(crypto.randomUUID()).replace(/-/g, "");
         const request = new Request({
+            _id: uuidReq,
             senderId: req.body.sender,
             senderUUID: senderUUID,
             receiverId: req.body.receiver,
@@ -103,14 +111,17 @@ async function postInbox(req, res){
         return res.sendStatus(200);
     } else if(req.body.type === "like") {
         
-
+        let uuidLike = String(crypto.randomUUID()).replace(/-/g, "");
         const like = new Like({
+            _id: uuidLike,
             liker: req.body.liker
         });
 
         postInboxLike(like, req.params.author_id);
     } else if (req.body.type === "comment") {
+        let uuidCom = String(crypto.randomUUID()).replace(/-/g, "");
         const comment = new Comment({
+            _id: uuidCom,
             commenter: req.body.commenter,
             comment: req.body.comment
         });

@@ -33,18 +33,18 @@ router.post('/', async (req, res) => { await authAuthor(req, res); })
 
 router.get('/dashboard', async (req, res) => {
   if(!(await checkAdmin(req, res))){ return res.sendStatus(403) }
-  if(!req.cookies || await checkExpiry(req.cookies["token"])){ return res.sendStatus(401) }
+  if(!req.cookies || await checkExpiry(req.cookies.token)){ return res.sendStatus(401) }
   return res.sendStatus(200)
 })
 
 router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
 
-router.delete('/dashboard', (req, res) => { if (req.body.status == 'Delete') { deleteAuthor(req, res); } })
+router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
 
 router.put('/dashboard', (req, res) => {
-  if (req.body.data.status == 'Add') {
+  if (req.body.status == 'Add') {
     addAuthor(req, res);
-  } else if (req.body.data.status == 'Modify') {
+  } else if (req.body.status == 'Modify') {
     modifyAuthor(req, res);
   }
 })

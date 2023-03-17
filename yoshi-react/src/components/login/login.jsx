@@ -53,7 +53,7 @@ export default function Login() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/api/login',
+        url: '/login',
         headers: {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged

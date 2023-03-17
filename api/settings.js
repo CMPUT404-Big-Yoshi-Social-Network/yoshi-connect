@@ -12,16 +12,7 @@ router.post('/logout', async (req, res) => { removeLogin(req, res); })
 
 router.put('/', async (req, res) => {
   const status = await updateAuthor(req.cookies.token, req.body.data);
-
-  if (status == 401) { 
-    return res.sendStatus(401); 
-  } else if (status == 404) {
-    return res.sendStatus(404);
-  } else if (status == 200) {
-    return res.sendStatus(200);
-  }
-
-
+  return res.sendStatus(status);
 })
 
 module.exports = router;

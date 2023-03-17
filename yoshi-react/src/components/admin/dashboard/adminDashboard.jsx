@@ -44,22 +44,11 @@ function AdminDashboard() {
      * Returns: N/A
      */
     const navigate = useNavigate();
-    const url = '/api/admin/dashboard';
+    const url = '/admin/dashboard';
 
     const getDashboard = () => {
-        /**
-         * Description: Sends a GET request to retreive the admin dashboard authorization
-         * Request: GET
-         * Returns: N/A
-         */
-        console.log('Debug: Getting Admin Dashboard.')
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: '/',
-        }
         axios
-        .get(url, config)
+        .get(url)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 403) {
@@ -75,11 +64,6 @@ function AdminDashboard() {
     });
 
     const LogOut = () => {
-        /**
-         * Description: Sends a POST request to log the admin out
-         * Request: POST
-         * Returns: N/A
-         */
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

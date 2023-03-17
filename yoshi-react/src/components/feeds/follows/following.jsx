@@ -45,7 +45,7 @@ function Following(props) {
          */
         if (props.authorId) {
             axios
-            .get('/api/authors/' + props.authorId + '/followings')
+            .get('/authors/' + props.authorId + '/followings')
             .then((response) => { 
                 setFollowings(response.data.items) 
             })

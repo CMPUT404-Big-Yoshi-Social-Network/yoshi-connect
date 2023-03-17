@@ -37,15 +37,9 @@ router.get('/dashboard', async (req, res) => {
   return res.sendStatus(200)
 })
 
-router.post('/dashboard', async (req, res) => {
-  removeLogin(req, res);
-})
+router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
 
-router.delete('/dashboard', (req, res) => {
-  if (req.body.status == 'Delete') {
-    deleteAuthor(req, res);
-  }
-})
+router.delete('/dashboard', (req, res) => { if (req.body.status == 'Delete') { deleteAuthor(req, res); } })
 
 router.put('/dashboard', (req, res) => {
   if (req.body.data.status == 'Add') {

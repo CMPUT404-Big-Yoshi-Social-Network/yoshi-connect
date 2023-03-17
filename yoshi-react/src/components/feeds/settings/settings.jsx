@@ -50,6 +50,8 @@ function Settings() {
         newPassword: '',
         newEmail: ''
     })
+    const [viewer, setViewer] = useState('')
+    
     useEffect(() => {
         /**
          * Description: Before render, checks the author's account details
@@ -58,25 +60,27 @@ function Settings() {
          */
         const getAuthor = () => {
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + null,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                url: '/api/userinfo',
+                headers: { 'Content-Type': 'application/json' }
             }
 
             axios
-            .post('/api/authors/' + null, config)
+            .get('/api/userinfo', config)
             .then((response) => {
-                let username = response.data.author.username;
-                let email = response.data.author.email;
+                let username = response.data.displayname;
+                let email = response.data.email;
+                let viewerId = response.data.id;
                 setNewAuthor({ newUsername: username })
                 setNewAuthor({ newEmail: email })
+                setViewer(viewerId)
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
-                    navigate('/notfound'); 
+                    setNewAuthor({ newUsername: '' })
+                    setNewAuthor({ newEmail: '' })
+                    setViewer({ viewerId: '' })
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized')
                 }
@@ -100,10 +104,10 @@ function Settings() {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: {
-                status: 'Modify an Author',
-                newUsername: newAuthor.newUsername,
-                newPassword: newAuthor.newPassword,
-                newEmail: newAuthor.newEmail
+                id: viewer,
+                username: newAuthor.newUsername,
+                password: newAuthor.newPassword,
+                email: newAuthor.newEmail
             }
         }
 
@@ -127,7 +131,7 @@ function Settings() {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
                     <div className='settingColM'>
@@ -139,9 +143,8 @@ function Settings() {
                                 <Form.Group className="account-details-a">
                                     <p>Username</p>
                                         <Form.Control
-                                            //href={`/users/${username}`}>{username} 
                                             name="username"
-                                            value={newAuthor.newUsername}
+                                            defaultValue={newAuthor.newUsername}
                                             autoComplete="off"
                                             onChange={(e) => {setNewAuthor({...newAuthor, newUsername: e.target.value})}}
                                             type="text" className='account-details-box'/>
@@ -150,7 +153,7 @@ function Settings() {
                                     <p>Email</p>
                                     <Form.Control
                                         name="email"
-                                        value={newAuthor.newEmail}
+                                        defaultValue={newAuthor.newEmail}
                                         onChange={(e) => {setNewAuthor({...newAuthor, newEmail: e.target.value})}}
                                         type="email" className='account-details-box'/>
                                 </Form.Group>

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFollowings } = require('../routes/friend');
+const { getFollowings, deleteFollowing } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
@@ -37,8 +37,7 @@ router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
 
   const followings = await getFollowings(authorId);
-
-  if(followings == 404 || followings == 404) return res.send(404);
+  if(followings == 404 || followings == 404) return res.sendStatus(404);
 
   sanitizedObjects = [];
   for(let i = 0; i < followings.length; i++){
@@ -71,12 +70,11 @@ router.get('/', async (req, res) => {
 
 router.delete('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
-  if(req.body.type == undefined || req.body.type != "follower") return res.sendStatus(400)
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const statusCode = await deleteFollower(req.cookies["token"], authorId, foreignId, req.body);
+  const statusCode = await deleteFollowing(authorId, foreignId);
 
   return res.sendStatus(statusCode);
 })

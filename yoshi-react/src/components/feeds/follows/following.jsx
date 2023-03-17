@@ -43,35 +43,35 @@ function Following(props) {
          * Request: POST 
          * Returns: N/A
          */
-       axios
-       .post('/api/authors/' + props.authorId + '/followings')
-       .then((response) => { setFollowings(response.data.items) })
-       .catch(err => {
-            if (err.response.status === 404) {
-                navigate('/notfound')
-            } else if (err.response.status === 401) {
-                navigate('/unauthorized')
-            } else if (err.response.status === 404) {
-                setFollowings([]);
-            }
-       });
+        if (props.authorId) {
+            axios
+            .get('/api/authors/' + props.authorId + '/followings')
+            .then((response) => { 
+                setFollowings(response.data.items) 
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setFollowings([]);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                }
+            });
+        }
     }, [navigate, props]);
 
     return (
         <div className='following-column' style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Following</h3>
-            { followings === undefined || followings.length === 0 ? 
+            { followings.length === 0 ? 
                 <div>
                     <h4>You are not following anyone.</h4>
                 </div> :
                 <div>
-                    {(followings === undefined) ? null :
-                        <div>
-                            {Object.keys(followings).map((following, idx) => (
-                                <Follow className='following' key={idx} {...followings[following]}/>
-                            ))}
-                        </div>
-                    }
+                    <div>
+                        {Object.keys(followings).map((following, idx) => (
+                            <Follow className='following' key={idx} {...followings[following]}/>
+                        ))}
+                    </div>
                 </div>
             }
         </div>

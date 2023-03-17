@@ -51,11 +51,10 @@ const followingScheme = new Schema({
 
 const requestScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
-    senderId: String,
-    senderUUID: String,
-    receiverId: String,
-    receiverUUID: String,
-    status: String},
+    actor: String,
+    actorId: String,
+    objectId: String,
+    object: String},
     {versionKey: false
 });
 

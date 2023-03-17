@@ -31,7 +31,7 @@ const router = express.Router({mergeParams: true});
 
 router.get('/', async (req,res) => {
     if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401); }
-    getProfile(req, res);
+    await getProfile(req, res);
 })
 
 module.exports = router;

@@ -16,16 +16,14 @@ async function createInbox(username, authorId){
         comments: [],
         requests: []
     }).save();
-
-    return;
 }
 
 async function getInbox(req, res){
-    console.log('Debug: Paging the posts')
     const authorId = req.params.author_id;
 
     let page = 1;
     let size = 5;
+
     if(req.query.page != undefined) { page = req.query.page; }
     if(req.query.size != undefined) { size = req.query.size; }
 
@@ -59,11 +57,14 @@ async function postInbox(req, res){
         const comments = req.body.comments;
         const published = req.body.published;
         const visibility = req.body.visibility;
-        const unlisted = req.body.unlisted //Expected to be false
+        const unlisted = req.body.unlisted;
         const authorId = req.body.authorId;
 
-        if( title === undefined || id === undefined || description === undefined || contentType === undefined || content === undefined || categories === undefined || count === undefined || comments === undefined|| published === undefined || visibility === undefined || unlisted === undefined || authorId === undefined ){
-            return res.sendStatus(400);
+        if ( title === undefined || id === undefined || description === undefined || 
+            contentType === undefined || content === undefined || categories === undefined || 
+            count === undefined || comments === undefined|| published === undefined || visibility === undefined || 
+            unlisted === undefined || authorId === undefined ) { 
+                return res.sendStatus(400); 
         }
     
         const post = Post({
@@ -86,8 +87,7 @@ async function postInbox(req, res){
         postInboxPost(post, req.params.author_id);
 
         return res.sendStatus(200);
-    }
-    else if(req.body.type === "follow") {
+    } else if(req.body.type === "follow") {
         const senderUUID = await Author.findOne({username: req.body.data.sender});
         const receiverUUID = await Author.findOne({username: req.body.data.receiver});
 
@@ -101,8 +101,7 @@ async function postInbox(req, res){
         postInboxRequest(request, req.params.author_id);
 
         return res.sendStatus(200);
-    }
-    else if(req.body.type === "like") {
+    } else if(req.body.type === "like") {
         
 
         const like = new Like({
@@ -110,16 +109,14 @@ async function postInbox(req, res){
         });
 
         postInboxLike(like, req.params.author_id);
-    }
-    else if (req.body.type === "comment") {
+    } else if (req.body.type === "comment") {
         const comment = new Comment({
             commenter: req.body.commenter,
             comment: req.body.comment
         });
 
         postInboxComment(comment, req.params.author_id);
-    }
-    else {
+    } else {
         res.sendStatus(400);
     }
 }

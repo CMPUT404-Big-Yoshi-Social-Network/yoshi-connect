@@ -20,8 +20,9 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
+const { fetchFriendPosts } = require('../routes/friend');
 
 const { getAuthor } = require('../routes/author.js');
 
@@ -33,10 +34,25 @@ const { Liked } = require('../scheme/interactions');
 // Router
 const router = express.Router({mergeParams: true});
 
-//TODO Change this to get request
-router.post('/public', async (req, res) => {
+//TODO Change this to get request; TO DO!
+router.get('/public', async (req, res) => {
   console.log('Debug: Getting the author following/public posts');
   await fetchPublicPosts(req, res);
+})
+
+// TODO
+router.get('/friends-posts', async (req, res) => {
+  console.log('Debug: Getting the author true friends posts');
+  await fetchFriendPosts(req, res);
+})
+
+// TODO
+router.get('/personal', async (req, res) => {
+  await fetchMyPosts(req, res);
+})
+
+router.get('/other/:other', async (req, res) => {
+  await fetchOtherPosts(req, res);
 })
 
 //GET [local, remote] get the public post whose id is POST_ID
@@ -141,11 +157,9 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
-  if(!req.cookies["token"]){
-    return res.sendStatus(401);
-  }
+  if (!req.cookies["token"]) { return res.sendStatus(401); }
 
-  const [post, status] = await createPost(req.cookies["token"], authorId, undefined, req.body);
+  const [post, status] = await createPost(req.cookies["token"], authorId, undefined, req.body.data);
 
   if (status == 200) {
     return res.json(post);

@@ -45,13 +45,13 @@ function Request(props) {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + props.actor._id + '/followers/' + props.object._id,
+            url: '/api/authors/' + props.actorId + '/followers/' + props.objectId,
             headers: {
                 'Content-Type': 'application/json'
             }
         }
         axios
-        .put('/api/authors/' + props.actor._id + '/followers/' + props.object._id, config)
+        .put('/api/authors/' + props.actorId + '/followers/' + props.objectId, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {
@@ -93,7 +93,7 @@ function Request(props) {
     }
     return (
         <div id='request'>
-            { props.actor.displayName }
+            { props.actor }
             <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
             <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
         </div>

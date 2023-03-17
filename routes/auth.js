@@ -34,10 +34,6 @@ mongoose.set('strictQuery', true);
 const { Author, Login } = require('../scheme/author.js');
 
 async function checkUsername(req) {
-    /**
-     * Description: Checks if the username that an author or admin request is in use or not 
-     * Returns: If the username is not in use, then a String will be return: "Not in use", else "In use"
-     */
     const author = await Author.findOne({username: req.body.username});
 
     if (author == undefined) { return "Not in use"; }
@@ -52,10 +48,9 @@ async function checkUsername(req) {
 
 async function removeLogin(req, res) {
     if (req.cookies.token != undefined) {
-        console.log('Debug: Getting the token in the login database.');
+
         Login.deleteOne({token: req.cookies.token}, function(err, login) {
             if (err) throw res.sendStatus(500);
-            console.log("Debug: Login token deleted");
             return res.sendStatus(200)
         })
     } else {
@@ -64,12 +59,6 @@ async function removeLogin(req, res) {
 }
 
 async function checkExpiry(token) {
-    /**
-     * Description: Checks if a token is expired by checking the Login collection for its expiry and its existence 
-     * Returns: If there is no cookies, token, or login document, or the expiry date has passed then it is expired and will return true 
-     *          If there is any cookies, token, or login document, or expiry date has not passed then it is not expired and will 
-     *          return false 
-     */
     if (token == undefined) { return true }
 
     const login = await Login.findOne({token: token}).clone();
@@ -79,19 +68,12 @@ async function checkExpiry(token) {
     let expiresAt = new Date(login.expires);
     let current = new Date();
 
-    if (expiresAt.getTime() < current.getTime()) {
-        return true
-    }
+    if (expiresAt.getTime() < current.getTime()) { return true; }
     return false
 }
 
 async function checkAdmin(req){
-    /**
-     * Description: Checks if the current author is an admin or not 
-     * Returns: N/A
-     */
     if (req.cookies.token != undefined) {
-        console.log('Debug: Checking the admin status of the Token')
         const login_session = await Login.findOne({token: req.cookies.token});
         if (login_session == null) { return false; }
         if (login_session.admin === false) { return false; }
@@ -101,14 +83,6 @@ async function checkAdmin(req){
 }
 
 async function authAuthor(req, res) {
-    /**
-     * Description: Authenticates an Author by cross-checking their username and password to the Author and Login database 
-     * Returns: 
-     *     - Returns false if: Author does not exist, the author is trying to log in as an admin and they are not an admin, login 
-     *                         document is not saved, or password does not match hash
-     *     - Returns true if: Author is authenticated and passes all checks; Login document is saved (cached) 
-     *     - Returns "Unsuccesful" if: Author does not provide a username or password after submitting in Login component 
-     */
     const username = req.body.username;
     const password = req.body.password;
 
@@ -121,13 +95,13 @@ async function authAuthor(req, res) {
 
     const p_hashed_password = req.author.password;
     if(p_hashed_password == crypto_js.SHA256(password)){
-        console.log("Debug: Authentication successful");
-        if(req.cookies.token != null){
+        if(req.cookies.token != null && req.cookies.token != undefined){
             await Login.deleteOne({token: req.cookies.token}, function(err, login) {
                 if (err) { res.sendStatus(500); }
-                console.log("Debug: Login token deleted");
             }).clone()
         }
+
+        if (req.baseUrl == '/api/admin') { if (!req.author.admin) { return res.sendStatus(403) } }
 
         let curr = new Date();
         let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
@@ -141,13 +115,8 @@ async function authAuthor(req, res) {
             expires: expiresAt
         });
 
-        if (req.baseUrl == '/api/admin') {
-            if (!req.author.admin) { return res.sendStatus(403) }
-        }
-
         login_saved = await login.save();
         if(login == login_saved){
-            console.log("Debug: Login Cached.")
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
             return res.sendStatus(200)
         }
@@ -157,19 +126,11 @@ async function authAuthor(req, res) {
 }
 
 async function authLogin(token, authorId){
-    /**
-     * Description: Authenticates the Login document 
-     * Returns: Returns false if the Login document does not exist/is expired or the authorId and username does not match the Login document
-     */
+    if (await checkExpiry(token)) { return false; }
 
-    if(await checkExpiry(token)){
-        return false
-    }
     const login = await Login.findOne({token: token});  
 
-    if (!login || login.authorId != authorId) { 
-        return false; 
-    }
+    if (!login || login.authorId != authorId) { return false; }
     return true;
 }
 

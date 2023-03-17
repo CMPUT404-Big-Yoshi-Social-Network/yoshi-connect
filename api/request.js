@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { sendRequest, apideleteRequest, getRequests, getRequest } = require('../routes/request');
+const { sendRequest, deleteRequest, getRequests, getRequest } = require('../routes/request');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
@@ -45,7 +45,7 @@ router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  await getRequest(authorId, foreignId);
+  await getRequest(authorId, foreignId, res);
 })
 
 router.put('/:foreignAuthorId', async (req, res) => {
@@ -62,18 +62,11 @@ router.put('/:foreignAuthorId', async (req, res) => {
   })
 })
 
-router.delete('/api/authors/:authorId/requests/:foreignAuthorId', async (req, res) => {
+router.delete('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const request = await apideleteRequest(authorId, foreignId, res);
-
-  return res.json({
-    "type": request.type,
-    "summary": request.summary,
-    "actor": request.actor,
-    "object": request.object
-  })
+  await deleteRequest(authorId, foreignId, res);
 })
 
 module.exports = router;

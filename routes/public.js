@@ -27,73 +27,35 @@ const { Login } = require('../scheme/author.js');
 const { Following } = require('../scheme/relations.js');
 const { PostHistory, PublicPost } = require('../scheme/post.js');
 
-async function fetchFollowing(req, res) {
-    /**
-     * Description: Finds an author's followers in the database 
-     * Returns: Status 404 if the author is not logged in
-     *          The author's followers
-     */
-    const login = await Login.findOne({token: req.cookies.token}).clone();
-    if(!login){
-        return res.sendStatus(404);
-    }
-
-    console.log('Debug: Retrieving current author logged in')
-    const username = login.username
-    
-    await Following.findOne({username: username}, function(err, following){
-        console.log("Debug: Following exists");
-        if(following == undefined){
-            return res.json({
-                following: []
-            });
-        }
-
-        return res.json({
-            following: following.followings
-        })
-    }).clone();
-}
-
 async function fetchPublicPosts(req, res) {
-    /**
-     * Description: Retrives the public/following posts from the database 
-     * Returns: Status 404 if the author is not logged in
-     *          The public posts and the author's following posts
-     */    
-    console.log('Debug: Getting public/following posts');
-
+    // TODO: Paging
     const login = await Login.findOne({token: req.cookies.token}).clone();
-    if(!login){
-        return res.sendStatus(404);
-    }
-
-    console.log('Debug: Retrieving current author logged in')
-    const username = login.username
-
-    const following = await Following.aggregate([
-        {
-            $match: {'username': username} 
-        },
-        {
-            $unwind: '$followings'
-        },
-        {
-            $project: {
-                "followings.authorId": 1
-            }
-        },
-        {
-            $group: {
-                _id: null,
-                follows: { $addToSet: "$followings.authorId"}
-            }
-        },
-    ]);
 
     let followings = [];
-    if(following.length > 0){
-        followings = following[0].follows;
+    if (!login && login != null) { 
+        const username = login.username
+    
+        const following = await Following.aggregate([
+            {
+                $match: {'username': username} 
+            },
+            {
+                $unwind: '$followings'
+            },
+            {
+                $project: {
+                    "followings.authorId": 1
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    follows: { $addToSet: "$followings.authorId"}
+                }
+            },
+        ]);
+        if(following.length > 0){ followings = following[0].follows; }
+    
     }
 
     let posts = null;
@@ -142,6 +104,15 @@ async function fetchPublicPosts(req, res) {
         ]);
     }
 
+    const publicPost = await PublicPost.find().clone();
+    if (publicPost.length == 0) {
+        let pp = new PublicPost({
+            posts: [],
+            num_posts: 0
+        });
+        pp.save(async (err, publicPost, next) => { if (err) { return res.sendStatus(500) } })
+    }
+
     let publicPosts = await PublicPost.aggregate([
         { $match: {} },
         {
@@ -182,7 +153,7 @@ async function fetchPublicPosts(req, res) {
     let allPosts = null;
     if (publicPosts[0] != undefined && posts != undefined) {
         allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
-    } else if (posts != undefined) {
+    } else if (posts != undefined && posts[0]?.posts_array != undefined) {
         allPosts = posts[0].posts_array;
     } else if (publicPosts[0] != undefined) {
         allPosts = publicPosts[0].publicPosts;
@@ -190,14 +161,16 @@ async function fetchPublicPosts(req, res) {
         allPosts = [];
     }
 
+    // Remove duplicates (https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects)
+    allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
+
     if (allPosts){
         return res.json({
-            publicPosts: allPosts
+            items: allPosts
           });
     }
 }
 
 module.exports={
-    fetchFollowing,
     fetchPublicPosts
 }

@@ -71,7 +71,7 @@ app.use("/api/login", login);
 app.use("/api/admin", admin);
 app.use("/api/authors/:authorId/followers", followers);
 app.use("/api/authors/:authorId/followings", followings);
-app.use("/api/profile", profile);
+app.use("/api/profile/:username", profile);
 app.use("/api/authors/:authorId/friends", friends);
 app.use("/api/authors/:authorId/requests", requests);
 app.use("/api/api-docs", apiDocs);

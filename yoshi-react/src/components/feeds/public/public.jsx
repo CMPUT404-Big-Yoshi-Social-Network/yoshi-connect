@@ -52,8 +52,7 @@ function PublicFeed() {
      *          - Calls getPosts() to get the posts of the current author's following list and also public posts 
      * Returns: N/A
      */
-    const [publicPosts, setPublicPosts] = useState([]);
-    const [viewer, setViewerId] = useState({ viewerId: '' })
+    const [viewer, setViewerId] = useState('')
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -67,71 +66,29 @@ function PublicFeed() {
              * Request: POST
              * Returns: N/A
              */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + null,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
 
             axios
-            .post('/api/authors/' + null, config)
+            .get('/api/userinfo/')
             .then((response) => {
-                let viewerId = response.data.author._id;
-                setViewerId({ viewerId: viewerId })
+                let viewerId = response.data.id;
+                setViewerId(viewerId)
             })
-            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
-        }
-
-        const getPosts = () => {
-            /**
-             * Description: Sends a POST request to get the current author's followings posts and public (PSA) posts  
-             * Request: POST
-             * Returns: N/A
-             * Refactor: TODO
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + viewer.viewerId + '/posts/public',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-
-            axios
-            .post('/api/authors/' + viewer.viewerId + '/posts/public', config)
-            .then((response) => { setPublicPosts(response.data.publicPosts) })
-            .catch(err => { 
-                if (err.response.status === 404) { 
-                    setPublicPosts([]);
-                } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
-                }
-            });
+            .catch(err => { if (err.response.status === 404) { 
+                setViewerId('')
+            }})
         }
         getId();
-        getPosts();
-    }, [navigate, viewer]);
+    }, [navigate]);
 
     return (
         <div>
-            <TopNav authorId={viewer.viewerId}/>
+            <TopNav authorId={viewer}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    { publicPosts === undefined || publicPosts.length === 0 ? 
-                            <div>
-                                <h4>No posts to show.</h4>
-                            </div> : 
-                            <div>
-                                <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
-                            </div>   
-                    }                 
+                    <Posts type={'public'}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

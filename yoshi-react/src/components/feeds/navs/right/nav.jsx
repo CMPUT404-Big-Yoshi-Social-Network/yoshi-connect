@@ -38,31 +38,23 @@ function RightNavBar() {
      * Description: Represents the right navigation bar
      * Returns: N/A
      */
-    const [username, setUsername] = useState();
+    const [username, setUsername] = useState('');
     const navigate = useNavigate();
     
     useEffect(() => {
-        const getUsername = () => {
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + null,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    status: 'Fetching authorId'
-                }
-            }
-    
+        const getId = () => {
             axios
-            .get('/api/authors/' + null, config)
+            .get('/api/userinfo/')
             .then((response) => {
-                setUsername(response.data.author.username)
+                let username = response.data.displayname;
+                setUsername(username)
             })
-            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
+            .catch(err => { if (err.response.status === 404) { 
+                setUsername('')
+            } 
+            });
         }
-        getUsername();
+        getId();
     }, [username, navigate])
 
     return (

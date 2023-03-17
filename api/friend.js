@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFriends, isFriend, fetchFriendPosts } = require('../routes/friend');
+const { getFriends, isFriend } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
@@ -41,11 +41,10 @@ router.get('/', async (req, res) => {
 
   sanitizedObjects = [];
   for(let i = 0; i < friends.length; i++){
-    const friend = friends[i];
+    const friendId = friends[i];
 
-    const friendProfile = await Author.findOne({_id: friend.authorId}); 
-    if(!friendProfile)
-      continue
+    const friendProfile = await Author.findOne({_id: friendId}); 
+    if (!friendProfile) continue
 
       sanitizedObject = {
       "type": "author",
@@ -74,12 +73,7 @@ router.post('/:foreignId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
 
-  await isFriend(authorId, foreignId);
-})
-
-router.post('/posts', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
-  fetchFriendPosts(req, res);
+  await isFriend(authorId, foreignId, res);
 })
 
 router.get('/:foreignId', async (req, res) => {

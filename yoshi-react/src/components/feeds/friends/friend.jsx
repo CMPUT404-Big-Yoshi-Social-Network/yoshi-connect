@@ -31,7 +31,7 @@ function Friend(props) {
      */
     return (
         <div id='friend'>
-            { props.username }
+            { props.displayname }
         </div>
     )
 }

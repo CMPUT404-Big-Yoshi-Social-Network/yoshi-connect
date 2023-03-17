@@ -20,7 +20,9 @@ Foundation; All Rights Reserved
 */
 
 // Functionality 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // User Interface 
 import TopNav from '../navs/top/nav.jsx';
@@ -36,13 +38,48 @@ function Messages() {
      *     - logOut(): Logs out an author and sends them to the Welcome component 
      * Returns: N/A
      */
+    const [viewer, setViewer] = useState({ viewerId: '' });
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        /**
+         * Description: Before render, checks the author's account details
+         * Request: POST
+         * Returns: N/A
+         */
+        const getAuthor = () => {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/api/userinfo',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            axios
+            .post('/api/userinfo', config)
+            .then((response) => {
+                let viewerId = response.data.id;
+                setViewer({ viewerId: viewerId })
+            })
+            .catch(err => { 
+                if (err.response.status === 404) { 
+                    setViewer({ viewerId: '' })
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                }
+            });
+        }
+        getAuthor();
+    }, [navigate])
 
     return (
         <div>
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
                     <div style={{paddingLeft: '1em'}}>

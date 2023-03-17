@@ -49,7 +49,6 @@ function FriendFeed() {
      *     - getPosts(): Gets the current logged in author's friends' posts 
      * Returns: N/A
      */
-    const [friendPosts, setFriendPosts] = useState([]);
     const [viewer, setViewerId] = useState({ viewerId: '' })
     const navigate = useNavigate();
 
@@ -62,56 +61,37 @@ function FriendFeed() {
          * Returns: N/A
          */
         const getId = () => {
-            /**
-             * Description: Sends a POST request to get the current author's id 
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + null,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
-
             axios
-            .post('/api/authors/' + null, config)
+            .get('/api/userinfo/')
             .then((response) => {
-                let viewerId = response.data.author._id;
+                let viewerId = response.data.id;
                 setViewerId({ viewerId: viewerId })
             })
-            .catch(err => { if (err.response.status === 404) { navigate('/notfound'); } });
+            .catch(err => { if (err.response.status === 404) { 
+                setViewerId('')
+            } 
+            });
         }
-
-        const getPosts = () => {
-            /**
-             * Description: Sends a POST request in order to get the posts of the current author's friends 
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/authors/' + viewer.viewerId + '/friends/posts',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            }
-
-            axios
-            .post('/api/authors/' + viewer.viewerId + '/friends/posts', config)
-            .then((response) => { setFriendPosts(response.data.friendPosts) })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    navigate('/unauthorized');
-                } else if (err.response.status === 404) {
-                    setFriendPosts([]);
-                }
-             });
-        }
-
         getId();
-        getPosts();
+
+        // const getPosts = () => {
+        //     /**
+        //      * Description: Sends a POST request in order to get the posts of the current author's friends 
+        //      * Request: POST
+        //      * Returns: N/A
+        //      */
+        //     axios
+        //     .get('/api/authors/' + viewer.viewerId + '/posts/friends-posts')
+        //     .then((response) => { setFriendPosts(response.data.items) })
+        //     .catch(err => {
+        //         if (err.response.status === 401) {
+        //             navigate('/unauthorized');
+        //         } else if (err.response.status === 404) {
+        //             setFriendPosts([]);
+        //         }
+        //      });
+        // }
+        // getPosts();
     }, [viewer, navigate]);
 
     return (
@@ -122,14 +102,7 @@ function FriendFeed() {
                     <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    { friendPosts === undefined || friendPosts.length === 0 ? 
-                        <div>
-                            <h4>No posts to show.</h4>
-                        </div> : 
-                        <div>
-                            <Posts viewerId={viewer.viewerId} posts={friendPosts}/>
-                        </div>
-                    }
+                    <Posts type={'friends-posts'}/>  
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

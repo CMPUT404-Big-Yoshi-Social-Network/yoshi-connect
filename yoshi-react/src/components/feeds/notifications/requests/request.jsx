@@ -93,7 +93,7 @@ function Request(props) {
     }
     return (
         <div id='request'>
-            { props.actor }
+            { props.actor.displayName }
             <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
             <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
         </div>

@@ -152,4 +152,6 @@ async function fetchLikes(authorId, postId) {
     }   
 }
 
-async function getAuthorLikes(authorId) { return await Liked.findOne({authorId: authorId}); }
+async function getAuthorLikes(authorId) { 
+    return await Liked.findOne({authorId: authorId}); 
+}

@@ -133,16 +133,20 @@ async function createPost(token, authorId, postId, newPost) {
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
 
-    let likeDocument = Like({
+    let likes = LikeHistory({
         type: "Post",
         Id: postId,
         likes: [],
     }).save();
-    let commentDocument = Comment({
+
+    let comments = CommentHistory({
         postId: postId,
         comments: [],
     }).save();
+
     await postHistory.save();
+    await likes;
+    await comments;
 
     if (visibility == 'Public') {
         const publicPost = await PublicPost.findOne().clone();
@@ -441,15 +445,11 @@ async function fetchOtherPosts(req, res) {
 }
 
 module.exports={
-    deleteComment,
-    editComment,
     getPost,
     updatePost,
     deletePost,
     createPost,
     getPosts,
-    getComments,
-    createComment,
     fetchMyPosts,
     fetchOtherPosts
 }

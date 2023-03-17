@@ -77,7 +77,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     if (success) {
         await deleteRequest(authorId, foreignId, req, res);
     } else {
-        return res.json({ status: "Unsuccessful" });
+        return res.sendStatus(500);
     }
 }
 
@@ -186,7 +186,10 @@ async function getRequests(authorId) {
             rqs = requests;
         }
     }).clone()
-    return rqs;
+    return res.json({
+        "type": 'requests',
+        items: rqs
+    })
 }
 
 async function getRequest(authorId, foreignId, res) {

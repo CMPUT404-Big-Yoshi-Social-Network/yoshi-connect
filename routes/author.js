@@ -96,8 +96,10 @@ async function registerAuthor(req, res){
 
     new_post_history.save((err) => { if (err) { return res.sendStatus(500); } });
 
-    await Follower({ username: username, authorId: author._id, followers: [] }).save();
-    await Following({ username: username, authorId: author._id, followings: [] }).save();
+    let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
+    let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
+    await Follower({ _id: uuidFollower, username: username, authorId: author._id, followers: [] }).save();
+    await Following({ _id: uuidFollowing, username: username, authorId: author._id, followings: [] }).save();
     await createInbox(author.username, author._id);
 
     res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')

@@ -52,9 +52,6 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:authorId', async (req, res) => {
-  //TODO Parse authorId and verify it is proper
-  //TODO reflect api changes on frontend
-
   const authorId = req.params.authorId;
   const [author, status] = await getAuthor(authorId);
 

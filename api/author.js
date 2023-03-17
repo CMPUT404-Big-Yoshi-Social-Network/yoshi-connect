@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getAuthor, apiUpdateAuthor, getAuthors, fetchMyPosts } = require('../routes/author');
+const { getAuthor, updateAuthor, getAuthors, fetchMyPosts } = require('../routes/author');
 
 // Router Setup
 const express = require('express'); 
@@ -79,7 +79,7 @@ router.post('/:authorId', async (req, res) => {
   if(!authorId || !host || !username || !url)
     return res.sendStatus(400);
 
-  return res.sendStatus(await apiUpdateAuthor(req.cookies["token"], req.body));
+  return res.sendStatus(await updateAuthor(req.cookies["token"], req.body));
 })
 
 router.get('/:authorId/liked', async (req, res) => {

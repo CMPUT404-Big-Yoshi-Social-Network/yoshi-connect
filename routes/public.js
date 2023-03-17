@@ -27,48 +27,12 @@ const { Login } = require('../scheme/author.js');
 const { Following } = require('../scheme/relations.js');
 const { PostHistory, PublicPost } = require('../scheme/post.js');
 
-async function fetchFollowing(req, res) {
-    /**
-     * Description: Finds an author's followers in the database 
-     * Returns: Status 404 if the author is not logged in
-     *          The author's followers
-     */
-    const login = await Login.findOne({token: req.cookies.token}).clone();
-    if(!login){
-        return res.sendStatus(404);
-    }
-
-    console.log('Debug: Retrieving current author logged in')
-    const username = login.username
-    
-    await Following.findOne({username: username}, function(err, following){
-        console.log("Debug: Following exists");
-        if(following == undefined){
-            return res.json({
-                following: []
-            });
-        }
-
-        return res.json({
-            following: following.followings
-        })
-    }).clone();
-}
-
 async function fetchPublicPosts(req, res) {
-    /**
-     * Description: Retrives the public/following posts from the database 
-     * Returns: Status 404 if the author is not logged in
-     *          The public posts and the author's following posts
-     */    
-    console.log('Debug: Getting public/following posts');
-    // TO DO NEEDS TO DO PAGING 
-
+    // TODO: Paging
     const login = await Login.findOne({token: req.cookies.token}).clone();
 
     let followings = [];
     if (!login && login != null) { 
-        console.log('Debug: Retrieving current author logged in')
         const username = login.username
     
         const following = await Following.aggregate([
@@ -208,6 +172,5 @@ async function fetchPublicPosts(req, res) {
 }
 
 module.exports={
-    fetchFollowing,
     fetchPublicPosts
 }

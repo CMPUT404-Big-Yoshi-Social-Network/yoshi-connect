@@ -19,11 +19,12 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Follower, Friend, Following, Request } = require('../scheme/relations.js');
+const { Follower, Following, Request } = require('../scheme/relations.js');
 const { PostHistory } = require('../scheme/post.js');
 
 // Additional Functions
@@ -32,16 +33,7 @@ const { senderAdded } = require('./request.js');
 // Additional Functions
 const {authLogin} = require('./auth.js');
 
-/**
- * API STUFF
- */
-
 async function getFollowers(id){
-    /**
-     * Description: Gets all the follows of an author
-     * Returns: Status 404 if there are no existing followers
-     *          If successful, returns a list of followers
-     */
     const followers = await Follower.findOne({authorId: id});
     if (!followers) { return 404; }
     return followers.followers;
@@ -54,7 +46,6 @@ async function getFollowings(id){
 }
 
 async function getFriends(id){
-    // TODO: Write this query
     const following = await Following.aggregate([
         {
             $match: {'authorId': id} 
@@ -126,10 +117,6 @@ async function deleteFollowing(authorId, foreignId){
 }
 
 async function isFriend(authorId, foreignId, res) {
-    //TODO CHECK IF FRIEND
-    //get followers for authorId
-    //get following for authorId
-    //check if both are real
     let actorFollows = false;
     let objectFollows = false;
     const followerA = await Following.findOne({authorId: authorId}, {followings: {$elemMatch: {authorId : {$eq: foreignId}}}});

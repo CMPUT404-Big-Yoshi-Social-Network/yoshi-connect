@@ -1,5 +1,5 @@
 // Routing
-const { apiUpdateAuthor } = require('../routes/author');
+const { updateAuthor } = require('../routes/author');
 const { removeLogin } = require('../routes/auth');
 
 // Router Setup
@@ -11,7 +11,7 @@ const router = express.Router({mergeParams: true});
 router.post('/logout', async (req, res) => { removeLogin(req, res); })
 
 router.put('/', async (req, res) => {
-  const status = await apiUpdateAuthor(req.cookies.token, req.body.data);
+  const status = await updateAuthor(req.cookies.token, req.body.data);
 
   if (status == 401) { 
     return res.sendStatus(401); 

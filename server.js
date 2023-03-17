@@ -80,50 +80,7 @@ app.use("/api/userinfo", userinfo);
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 
 app.get('/favicon.ico', (req, res) => { res.sendStatus(404); })
-/*
-app.post('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  console.log('Debug: Updating a specific post by a specific author')
-  if ( await checkExpiry(req, res) ) {
-	return res.sendStatus(404);
-  } else if ( req.body.data.status == 'Checking Visibility') {
-	console.log('Debug: Checking the visibility of a post');
-	checkVisibility(req, res);
-  } else if (req.body.data.status == 'Modify') {
-	console.log('Debug: Updating a post');
-	await updatePost(req, res);
-  }
-})
 
-app.delete('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-   console.log('Debug: Deleting a specific post by a specific author')
-  if ( await checkExpiry(req, res) ) { return res.sendStatus(404); }
-  if ( req.body.status == 'Remove like' ) {
-    console.log('Debug: Removing a like from a post!')
-    deleteLike(req, res);
-  } else if ( req.body.status == 'Remove comment' ) {
-    console.log('Debug: Removing a comment from a post!')
-    deleteComment(req, res);
-  } else if ( req.body.status == 'Remove post') {
-    await deletePost(req, res);
-  }
-})
-
-app.put('/server/authors/:author_id/posts/:post_id', async (req, res) => {
-  if ( await checkExpiry(req, res) ) { return res.sendStatus(404); }
-  if ( req.body.status == 'Add comment' ) {
-    console.log('Debug: Adding a comment to a post!');
-    addComment(req, res);
-  } else if ( req.body.data.status == 'Add like' ) {
-    console.log('Debug: Adding a like to a post!');
-    addLike(req, res);
-  } else if ( req.body.data.status == 'Modify comment' ) {
-    console.log('Debug: Updating a comment on a post!')
-    editComment(req, res);
-  } else {
-	  await createPost(req, res, req.params.post_id);
-  }
-})
-*/
 app.get('/',(req, res) => {
   res.render("index");
 }); 

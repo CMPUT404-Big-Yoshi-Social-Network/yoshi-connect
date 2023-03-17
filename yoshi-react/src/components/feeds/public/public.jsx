@@ -75,7 +75,7 @@ function PublicFeed() {
             })
             .catch(err => { if (err.response.status === 404) { 
                 setViewerId('')
-            })
+            }})
         }
         getId();
     }, [navigate]);

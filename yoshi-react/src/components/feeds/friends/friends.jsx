@@ -27,12 +27,6 @@ import React, { useEffect, useState } from "react";
 import Friend from './friend.jsx';
 
 function Friends(props) {
-    /**
-     * Description: Represents the friends list of the current author 
-     * Functions: 
-     *     - useEffect(): Fetches the author's friends  
-     * Returns: N/A
-     */
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {

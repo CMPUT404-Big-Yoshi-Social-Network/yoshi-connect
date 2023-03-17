@@ -90,7 +90,11 @@ async function getFriends(id){
         }
     ]);
 
-    return friends[0].friends
+    if (friends[0] == undefined) {
+        return []
+    } else {
+        return friends[0].friends
+    }
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
@@ -113,7 +117,7 @@ async function deleteFollowing(authorId, foreignId){
             break
         }
     }
-    return 200;
+    return 204;
 }
 
 async function isFriend(authorId, foreignId, res) {
@@ -125,15 +129,36 @@ async function isFriend(authorId, foreignId, res) {
     if (followerB.followings.length != 0) { objectFollows = true; }
     if (actorFollows && objectFollows) {
         return res.json({
+            type: "relation",
+            "aId" : process.env.DOMAIN_NAME + "authors/" + authorId,
+            "actorId" : authorId,
+            "host": process.env.DOMAIN_NAME,
+            "oId" : process.env.DOMAIN_NAME + "authors/" + foreignId,
+            "objectId" : foreignId,
+            "host": process.env.DOMAIN_NAME,
             status: 'Friends'
         }) 
     } else {
         if (actorFollows && !objectFollows) {
             return res.json({
+                type: "relation",
+                "aId" : process.env.DOMAIN_NAME + "authors/" + authorId,
+                "actorId" : authorId,
+                "host": process.env.DOMAIN_NAME,
+                "oId" : process.env.DOMAIN_NAME + "authors/" + foreignId,
+                "objectId" : foreignId,
+                "host": process.env.DOMAIN_NAME,
                 status: 'Follows'
             })  
         } else if (!actorFollows) {
             return res.json({
+                type: "relation",
+                "aId" : process.env.DOMAIN_NAME + "authors/" + authorId,
+                "actorId" : authorId,
+                "host": process.env.DOMAIN_NAME,
+                "oId" : process.env.DOMAIN_NAME + "authors/" + foreignId,
+                "objectId" : foreignId,
+                "host": process.env.DOMAIN_NAME,
                 status: 'Strangers'
             })  
         }
@@ -186,9 +211,17 @@ async function fetchFriendPosts(req, res) {
         },
     ]);
 
-    return res.json({
-        items: posts[0].posts_array
-    })
+    if (posts[0] == undefined) {
+        return res.json({
+            type: "posts",
+            items: []
+        })        
+    } else {
+        return res.json({
+            type: "posts",
+            items: posts[0].posts_array
+        })
+    }
 }
 
 module.exports={

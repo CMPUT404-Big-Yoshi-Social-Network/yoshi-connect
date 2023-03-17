@@ -31,27 +31,27 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
+  
   const authorId = req.params.authorId;
-
   const followers = await getFollowers(authorId);
 
-  if(followers == 404) return res.send(404);
+  if (followers == 404) { return res.send(404); }
 
   sanitizedObjects = [];
   for(let i = 0; i < followers.length; i++){
     const follower = followers[i];
 
     const followerProfile = await Author.findOne({_id: follower.authorId}); 
-    if(!followerProfile)
+    if (!followerProfile)
       continue
 
       sanitizedObject = {
       "type": "author",
-      "id" : followerProfile._id,
+      "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
       "host": process.env.DOMAIN_NAME,
       "displayname": followerProfile.username,
-      "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+      "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
       "github": "",
       "profileImage": "",
       "email": followerProfile.email,
@@ -74,23 +74,22 @@ router.get('/:foreignAuthorId', async (req, res) => {
 
   const followers = await getFollowers(authorId);
 
-  if(followers == 404)
-    return res.sendStatus(404);
+  if (followers == 404) { return res.sendStatus(404); }
 
-  for(let i = 0; i < followers.length; i++){
+  for (let i = 0; i < followers.length; i++) {
     const follower = followers[i];
-    if(follower.authorId == foreignId){
+    if (follower.authorId == foreignId) {
 
       const followerProfile = await Author.findOne({_id: follower.authorId}); 
-      if(!followerProfile)
+      if (!followerProfile)
         continue
 
       return res.json({
         "type": "author",
-        "id" : followerProfile._id,
+        "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
         "host": process.env.DOMAIN_NAME,
         "displayname": followerProfile.username,
-        "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+        "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
         "github": "",
         "profileImage": "",
         "about": followerProfile.about,
@@ -103,27 +102,28 @@ router.get('/:foreignAuthorId', async (req, res) => {
 })
 
 router.put('/:foreignAuthorId', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const follower = await addFollower(req.cookies["token"], authorId, foreignId, req.body, req, res);
+  const follower = await addFollower(req.cookies.token, authorId, foreignId, req.body, req, res);
 
-  if(follower == 401)
-    return res.sendStatus(401);
-  else if(follower == 400)
+  if (follower == 401) { 
+    return res.sendStatus(401); 
+  }
+  else if (follower == 400) {
     return res.sendStatus(400);
+  }
 })
 
 router.delete('/:foreignAuthorId', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
-  if(req.body.type == undefined || req.body.type != "follower")
-    return res.sendStatus(400)
+  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
+  if (req.body.type == undefined || req.body.type != "follower") { return res.sendStatus(400) }
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const statusCode = await deleteFollower(req.cookies["token"], authorId, foreignId, req.body);
+  const statusCode = await deleteFollower(req.cookies.token, authorId, foreignId, req.body);
 
   return res.sendStatus(statusCode);
 })

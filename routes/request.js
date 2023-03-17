@@ -23,6 +23,9 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
+// UUID
+const crypto = require('crypto');
+
 // Schemas
 const { Author } = require('../scheme/author.js');
 const { Request, Follower, Following } = require('../scheme/relations.js');
@@ -38,7 +41,9 @@ async function senderAdded(authorId, foreignId, req, res) {
             following.followings.push({authorId: foreignId, username: object.username});
             await following.save();
         } else {
+            let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
             var following = new Following({
+                _id: uuidFollowing,
                 username: actor.username,
                 authorId: authorId,
                 followings: [{
@@ -55,7 +60,9 @@ async function senderAdded(authorId, foreignId, req, res) {
             follower.followers.push({username: actor.username, authorId: authorId});
             await follower.save();
         } else {
+            let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
             var follower = new Follower({
+                _id: uuidFollower,
                 username: object.username,
                 authorId: foreignId,
                 followers: [{
@@ -70,7 +77,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     if (success) {
         await deleteRequest(authorId, foreignId, req, res);
     } else {
-        return res.json({ status: "Unsuccessful" });
+        return res.sendStatus(500);
     }
 }
 
@@ -91,14 +98,18 @@ async function sendRequest(authorId, foreignId, res) {
 
     if (needFriend) {
         type = 'friend'
-        summary = actor.username + "wants to " + type + " " + object.username;
+        summary = actor.username + " wants to " + type + " " + object.username;
     } else {
         type = 'follow'
-        summary = actor.username + "wants to " + type + " " + object.username;
+        summary = actor.username + " wants to " + type + " " + object.username;
     }
 
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
     const request = new Request({
+        _id: uuid,
+        type: type,
+        summary: summary,
         actor: actor.username,
         actorId: actor._id,
         objectId: object._id,
@@ -109,8 +120,24 @@ async function sendRequest(authorId, foreignId, res) {
     return {
         type: type,
         summary: summary,
-        actor: actor,
-        object: object
+        actor: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: actor.username,
+            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            github: actor.github,
+            profileImage: actor.profileImage
+        },
+        object: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage
+        }
     }
 }
 
@@ -129,12 +156,28 @@ async function deleteRequest(authorId, foreignId, res) {
     return res.json({
         type: request.type,
         summary: summary,
-        actor: actor,
-        object: object
+        actor: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: actor.username,
+            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            github: actor.github,
+            profileImage: actor.profileImage
+        },
+        object: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage
+        }
     })
 }
 
-async function getRequests(authorId) {
+async function getRequests(authorId, res) {
     let rqs = [];
     await Request.find({objectId: authorId}, function(err, requests){
         if (!requests) { 
@@ -143,13 +186,16 @@ async function getRequests(authorId) {
             rqs = requests;
         }
     }).clone()
-    return rqs;
+    return res.json({
+        "type": 'requests',
+        items: rqs
+    })
 }
 
 async function getRequest(authorId, foreignId, res) {
     await Request.findOne({actorId: authorId, objectId: foreignId}, function(err, request){
         if (!request) { return res.sendStatus(404); }
-        return res.json({ request: request })
+        return res.json(request)
     }).clone()
 }
 

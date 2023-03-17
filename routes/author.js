@@ -22,6 +22,9 @@ Foundation; All Rights Reserved
 // Password
 const crypto_js = require('crypto-js');
 
+// UUID
+const crypto = require('crypto');
+
 // UUID Identification Generator
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
@@ -48,11 +51,13 @@ async function registerAuthor(req, res){
     const email = req.body.data.email;
     const password = req.body.data.password;
     const checkEmail = await Author.findOne({email: email})
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
     if ( !username || !email || !password ) { return res.sendStatus(400); }
     if (checkEmail !== undefined && checkEmail !== null) { return res.sendStatus(400); }
 
     var author = new Author({
+        _id: uuid,
         username: username,
         password: crypto_js.SHA256(password),
         email: email,
@@ -68,8 +73,10 @@ async function registerAuthor(req, res){
     let curr = new Date();
     let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
     let token = uidgen.generateSync();
+    let uuidLogin = String(crypto.randomUUID()).replace(/-/g, "");
 
     let login = new Login({
+        _id: uuidLogin,
         authorId: author._id,
         username: username,
         token: token,
@@ -79,7 +86,9 @@ async function registerAuthor(req, res){
 
     login.save((err, login) => { if (err) { res.sendStatus(500); } })
 
+    let uuidPH = String(crypto.randomUUID()).replace(/-/g, "");
     let new_post_history = new PostHistory ({
+        _id: uuidPH,
         authorId: author._id,
         num_posts: 0,
         posts: []
@@ -87,8 +96,10 @@ async function registerAuthor(req, res){
 
     new_post_history.save((err) => { if (err) { return res.sendStatus(500); } });
 
-    await Follower({ username: username, authorId: author._id, followers: [] }).save();
-    await Following({ username: username, authorId: author._id, followings: [] }).save();
+    let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
+    let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
+    await Follower({ _id: uuidFollower, username: username, authorId: author._id, followers: [] }).save();
+    await Following({ _id: uuidFollowing, username: username, authorId: author._id, followings: [] }).save();
     await createInbox(author.username, author._id);
 
     res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
@@ -138,7 +149,8 @@ async function getAuthor(authorId){
 
     const sanitizedAuthor = {
         "type": "author",
-        "id" : author._id,
+        "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+        "authorId" : author._id,
         "host": process.env.DOMAIN_NAME,
         "displayname": author.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
@@ -152,10 +164,10 @@ async function getAuthor(authorId){
 }
 
 async function updateAuthor(token, author){
-    if (await checkExpiry(token)) { return 401; }
+    if (await checkExpiry(token)) { return [null, 401]; }
 
     let authorProfile = await Author.findOne({_id: author.id});
-    if(!authorProfile) return 404;
+    if(!authorProfile) return [null, 404];
 
     if (author.pronouns != undefined) { authorProfile.pronouns = author.pronouns; }
     if (author.email != undefined) { authorProfile.email = author.email; }
@@ -166,7 +178,21 @@ async function updateAuthor(token, author){
 
     await authorProfile.save();
 
-    return 200;
+    sanitizedAuthor = {
+        "type": 'author',
+        "id" : process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
+        "authorId" : authorProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": authorProfile.username,
+        "url":  process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
+        "github": authorProfile.github,
+        "profileImage": authorProfile.profileImage,
+        "email": authorProfile.email, 
+        "about": authorProfile.about,
+        "pronouns": authorProfile.pronouns,
+    }
+
+    return [sanitizedAuthor, 200];
 }
 
 async function getAuthors(page, size){
@@ -186,13 +212,12 @@ async function getAuthors(page, size){
 
     for(let i = 0; i < authors.length; i++){
         const author = authors[i];
-        //TODO Add GitHub and ProfileImage
         sanitizedAuthors.push({
                 "type": "author",
-                "id" : author._id,
+                "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
                 "host": process.env.DOMAIN_NAME,
                 "displayname": author.username,
-                "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+                "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
                 "github": "",
                 "profileImage": "",
                 "email": author.email, 

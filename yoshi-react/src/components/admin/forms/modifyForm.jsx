@@ -37,7 +37,7 @@ function ModifyAuthor(props) {
         newProfileImage: props.profileImage,
         newGitHub: props.github
     })
-    const url = '/api/admin/dashboard';
+    const url = '/admin/dashboard';
 
     const modify = (e) => {
         /**
@@ -47,25 +47,19 @@ function ModifyAuthor(props) {
          */
         e.preventDefault();
 
-        let config = {
-            method: 'put',
-            maxBodyLength: Infinity,
-            url: url,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: {
-                status: 'Modify',
-                newUsername: data.newUsername,
-                newPassword: data.newPassword,
-                newEmail: data.newEmail,
-                newAbout: data.newAbout,
-                newPronouns: data.newPronouns,
-                newAdmin: data.newAdmin,
-                authorId: props.id
-            }
+        let body = {
+            status: 'Modify',
+            newUsername: data.newUsername,
+            newPassword: data.newPassword,
+            newEmail: data.newEmail,
+            newAbout: data.newAbout,
+            newPronouns: data.newPronouns,
+            newAdmin: data.newAdmin,
+            authorId: props.id
         }
 
         axios
-        .put(url, config)
+        .put(url, body)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 400) {

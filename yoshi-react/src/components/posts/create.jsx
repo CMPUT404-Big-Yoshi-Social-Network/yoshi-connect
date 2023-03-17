@@ -63,9 +63,9 @@ function CreatePost() {
          */
         const getId = () => {
             axios
-            .get('/api/userinfo/')
+            .get('/userinfo/')
             .then((response) => {
-                let authorId = response.data.id;
+                let authorId = response.data.authorId;
                 setData(prevAuthorId => ({...prevAuthorId, authorId}))
             })
             .catch(err => { 
@@ -91,7 +91,7 @@ function CreatePost() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + data.authorId + '/posts/',
+            url: '/authors/' + data.authorId + '/posts/',
             headers: {
             'Content-Type': 'multipart/form-data'
             },
@@ -109,7 +109,7 @@ function CreatePost() {
             }
         }
         
-        axios.post('/api/authors/' + data.authorId + '/posts/', config)
+        axios.post('/authors/' + data.authorId + '/posts/', config)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }

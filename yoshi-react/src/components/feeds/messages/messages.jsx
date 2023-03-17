@@ -48,19 +48,10 @@ function Messages() {
          * Returns: N/A
          */
         const getAuthor = () => {
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/api/userinfo',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
-
             axios
-            .post('/api/userinfo', config)
+            .get('/userinfo')
             .then((response) => {
-                let viewerId = response.data.id;
+                let viewerId = response.data.authorId;
                 setViewer({ viewerId: viewerId })
             })
             .catch(err => { 

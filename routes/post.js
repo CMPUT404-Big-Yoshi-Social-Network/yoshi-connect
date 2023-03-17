@@ -24,15 +24,17 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
-const { Like, Comment, Liked } = require('../scheme/interactions.js');
-const { Author } = require('../scheme/author.js');
 
-//UUID
+// UUID
 const crypto = require('crypto');
+
+// Additional Functions
 const { authLogin } = require('./auth.js');
 
 async function createPostHistory(author_id){
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let new_post_history = new PostHistory ({
+        _id: uuid,
         authorId: author_id,
         num_posts: 0,
         posts: []
@@ -100,7 +102,7 @@ async function createPost(token, authorId, postId, newPost) {
         if(oldPost) return [[], 400]
     }
     
-    if (!postId) { postId = crypto.randomUUID(); }
+    if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
 
     let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
     let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
@@ -337,249 +339,6 @@ async function getPosts(page, size, author) {
     return [posts, 200];
 }
 
-async function addLike(req, res){
-    const postHistory = await PostHistory.findOne({authorId: req.body.data.authorId});
-    let publicPost = await PublicPost.find();
-    let success = false;
-    let numLikes = 0;
-
-    var like = new Like({liker: req.body.data.liker });
-
-    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
-    if (idx > -1) { 
-        let likerIdx = postHistory.posts[idx].likes.map(obj => obj.liker).indexOf(like.liker);
-        if (likerIdx <= -1) {
-            postHistory.posts[idx].likes.push(like);
-            numLikes = postHistory.posts[idx].likes.length;
-            await postHistory.save();
-            success = true;
-
-            for (let i = 0; i < publicPost[0].posts.length; i++) {
-                if (publicPost[0].posts[i].post._id === req.body.data.postId) {
-                    publicPost[0].posts[i].post.likes.push(like);
-                    numLikes = publicPost[0].posts[i].post.likes.length;
-                    await publicPost[0].save();
-                }
-            }
-        }
-    } 
-
-    return res.json({ status: success, numLikes: numLikes })
-}
-
-async function deleteLike(req, res){
-    let success = false;
-    let numLikes = 0;
-    let publicPost = await PublicPost.find();
-    await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
-        if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
-            if (post_idx > -1) { 
-                let like_idx = history.posts[post_idx].likes.map(obj => obj._id).indexOf(req.body.likeId);
-                history.posts[post_idx].likes.splice(like_idx, 1);
-                await history.save();
-                success = true;
-
-                for (let i = 0; i < publicPost[0].posts.length; i++) {
-                    if (publicPost[0].posts[i].post._id === req.body.data.postId) {
-                        let like_idx = publicPost[0].posts[i].likes.map(obj => obj._id).indexOf(req.body.likeId);
-                        publicPost[0].posts[i].likes.splice(like_idx, 1);
-                        numLikes = publicPost[0].posts[i].likes.length;
-                        await publicPost[0].save();
-                    }
-                }
-            }
-        }
-    }).clone()
- 
-    return res.json({
-        status: success,
-        numLikes: numLikes
-    })
-}
-
-async function deleteComment(req, res){
-    let success = false;
-    let numComments = 0;
-    let publicPost = await PublicPost.find();
-    await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
-        if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
-            if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.commentId);
-                history.posts[post_idx].comments.splice(com_idx, 1);
-                history.posts[post_idx].count - 1;
-                numComments = history.posts[post_idx].count;
-                success = true;
-                await history.save();
-
-                for (let i = 0; i < publicPost[0].posts.length; i++) {
-                    if (publicPost[0].posts[i].post._id === req.body.postId) {
-                        let com_idx = publicPost[0].posts[i].post.comments.map(obj => obj._id).indexOf(req.body.commentId);
-                        publicPost[0].posts[i].post.comments.splice(com_idx, 1);
-                        publicPost[0].posts[i].post.count - 1;
-                        numComments = publicPost[0].posts[i].post.count;
-                        await publicPost[0].save();
-                    }
-                }
-            }
-        }
-    }).clone()
-    
-    return res.json({
-        status: success,
-        numComments: numComments
-    })
-}
-
-async function editComment(req, res){
-    let success = false;
-    let publicPost = await PublicPost.find();
-    await PostHistory.findOne({authorId: req.body.data.authorId}, async function(err, history){
-        if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
-            if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                history.posts[post_idx].comments[com_idx].comment = req.body.data.comment;
-                history.save();
-                success = true;
-            }
-
-            for (let i = 0; i < publicPost[0].posts.length; i++) {
-                if (publicPost[0].posts[i].post._id === req.body.data.postId) {
-                    let com_idx = publicPost[0].posts[i].post.comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                    publicPost[0].posts[i].post.comments[com_idx].comment = req.body.data.comment;
-                    publicPost[0].posts[i].post.count - 1;
-                    numComments = publicPost[0].posts[i].post.count;
-                    await publicPost[0].save();
-                }
-            }
-        }
-    }).clone()
-    
-    return res.json({ status: success })
-}
-
-async function hasLiked(req, res) {
-    const likers = await fetchLikes(req, res);
-    for (let i = 0; i < likers.length; i++) {
-        if (likers[i].liker === req.body.data.viewerId) {
-            return res.json({ status: 'liked' })
-        }
-    }
-    return res.json({ status: 'unliked' })
-}
-
-async function getComments(authorId, postId) {
-    // TODO: Paginate
-    const posts = PostHistory.find(
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: '$posts'
-        },
-        {
-            $match: {'_id': postId}
-        },
-        {
-            index: { $indexOfArray: ['_id', postId] }
-        },
-        {
-            $unwind: '$index'
-        },
-        {
-            $set: {
-                "index.comments.published": {
-                    $dateFromString: { dateString: "$index.comments.published" }
-                }
-            }
-        },
-        {
-            $sort: { "index.comments.published": -1 }
-        },
-        {
-            $group: {
-                _id: null,
-                post_array: { $push: "$index" }
-            }
-        }
-    )
-
-    if (posts[0] != undefined) {
-        return posts[0].post_array.comments;
-    } else {
-        return [];
-    }   
-}
-
-async function createComment(authorId, postId, newComment, domain) {
-    const postHistory = await PostHistory.findOne({authorId: authorId});
-    const author = await Author.findOne({authorId: authorId});
-
-    var comment = new Comment({
-        author: author,
-        comment: newComment.content,
-        contentType: newComment.contentType,
-        published: new Date().toISOString(),
-        _id: domain + "authors/" + authorId + "/posts/" + postId + "/comments/" + uidgen.generateSync()
-    });
-
-    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.postId);
-
-    if (idx > -1) { 
-        postHistory.posts[idx].comments.push(comment);
-        postHistory.posts[idx].count + 1;
-        postHistory.save();
-    }
-
-    return comment  
-}
-
-async function fetchLikes(authorId, postId) {
-    // TODO: Paginate
-    const posts = PostHistory.find(
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: '$posts'
-        },
-        {
-            index: { $indexOfArray: ['_id', postId] }
-        },
-        {
-            $group: {
-                _id: null,
-                post_array: { $push: "$index" }
-            }
-        }
-    )
-
-    if (posts[0] != undefined) {
-        return posts[0].post_array.likes;
-    } else {
-        return [];
-    }   
-}
-
-async function fetchCommentLikes(authorId, postId, commentId) {
-    // TODO Paging
-    const comments = getPost(authorId, postId).comments; 
-    let comment = null;
-
-    for (let i = 0; i < comments.length; i++) {
-        if (comments[i]._id === commentId) {
-            comment = comments[i];
-            break;
-        }
-    }
-
-    return comment.likes;
-}
-
-async function getAuthorLikes(authorId) { return await Liked.findOne({authorId: authorId}); }
-
 async function fetchMyPosts(req, res) {
     const posts = await PostHistory.aggregate([
         {
@@ -618,6 +377,7 @@ async function fetchMyPosts(req, res) {
     ]);
 
     return res.json({
+        type: "posts",
         items: posts[0].posts_array
     })
 }
@@ -667,26 +427,17 @@ async function fetchOtherPosts(req, res) {
     ]);
 
     return res.json({
+        type: "posts",
         items: posts[0].posts_array
     })
 }
 
 module.exports={
-    addLike,
-    deleteLike,
-    deleteComment,
-    editComment,
-    hasLiked,
     getPost,
     updatePost,
     deletePost,
     createPost,
     getPosts,
-    getComments,
-    createComment,
-    fetchLikes,
-    fetchCommentLikes,
-    getAuthorLikes,
     fetchMyPosts,
     fetchOtherPosts
 }

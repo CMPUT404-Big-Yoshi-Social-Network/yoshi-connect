@@ -32,7 +32,7 @@ import ModifyAuthor from "../forms/modifyForm.jsx";
 import './author.css';
 
 function Author(props) {
-    const url = '/api/admin/dashboard';
+    const url = '/admin/dashboard';
     const navigate = useNavigate();
 
     const deleteAuthor = () => {
@@ -42,8 +42,7 @@ function Author(props) {
             url: url,
             headers: { 'Content-Type': 'application/json' },
             data: {
-                author: props,
-                status: 'Delete'
+                author: props
             }
         }
         axios

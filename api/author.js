@@ -38,12 +38,8 @@ router.get('/', async (req, res) => {
 
   const [sanitizedAuthors, status] = await getAuthors(page, size);
 
-  if(status == 500){
-    return res.sendStatus(500);
-  }
-  if(status == 400){
-    return res.sendStatus(400);
-  }
+  if (status == 500) { return res.sendStatus(500); }
+  if (status == 400) { return res.sendStatus(400); }
 
   return res.json({
     "type": "authors",
@@ -55,32 +51,26 @@ router.get('/:authorId', async (req, res) => {
   const authorId = req.params.authorId;
   const [author, status] = await getAuthor(authorId);
 
-  if(status == 404 || status == 500){
-    return res.sendStatus(status);
-  }
+  if (status == 404 || status == 500) { return res.sendStatus(status); }
 
   return res.json(author);
 })
 
 router.post('/:authorId', async (req, res) => {
-  if(!req.cookies["token"])
-    return res.sendStatus(401);
-  if(req.body.type !== 'author')
-    return res.sendStatus(400);
+  if (!req.cookies.token) { return res.sendStatus(401); }
+  if (req.body.type !== 'author') { return res.sendStatus(400); }
 
   const authorId = req.body.id;
   const host = req.body.host;
   const username = req.body.displayName;
   const url = req.body.url;
 
-  if(!authorId || !host || !username || !url)
-    return res.sendStatus(400);
+  if (!authorId || !host || !username || !url) { return res.sendStatus(400); }
 
-  return res.sendStatus(await updateAuthor(req.cookies["token"], req.body));
-})
+  const [author, status] = await updateAuthor(req.cookies.token, req.body)
 
-router.get('/:authorId/liked', async (req, res) => {
-  return res.sendStatus(404);
+  if (status == 200) { return res.json(author) }
+  if (status == 404 || status == 401) { return res.sendStatus(status); }
 })
 
 module.exports = router;

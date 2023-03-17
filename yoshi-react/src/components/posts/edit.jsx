@@ -64,7 +64,7 @@ function EditPost({viewerId, post}) {
             postId: data.postId,
         }
         
-        axios.post('/api/authors/' + post.authorId + '/posts/' + post._id, body)
+        axios.post('/authors/' + post.authorId + '/posts/' + post._id, body)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }

@@ -48,7 +48,7 @@ function SettingsNav() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/api/settings/logout',
+            url: '/settings/logout',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -57,7 +57,7 @@ function SettingsNav() {
             }
         }
         axios
-        .post('/api/settings/logout', config)
+        .post('/settings/logout', config)
         .then((response) => { navigate("/"); })
         .catch(err => {
             if (err.response.status === 500) {

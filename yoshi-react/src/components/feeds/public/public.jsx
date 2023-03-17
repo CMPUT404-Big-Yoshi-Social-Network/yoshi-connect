@@ -68,9 +68,9 @@ function PublicFeed() {
              */
 
             axios
-            .get('/api/userinfo/')
+            .get('/userinfo/')
             .then((response) => {
-                let viewerId = response.data.id;
+                let viewerId = response.data.authorId;
                 setViewerId(viewerId)
             })
             .catch(err => { if (err.response.status === 404) { 

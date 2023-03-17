@@ -28,9 +28,7 @@ async function getUserInfo(token){
     
     const login = await Login.findOne({token: token}); 
 
-    const authorId = login.authorId;
-
-    return await getAuthor(authorId);
+    return await getAuthor(login.authorId);
 }
 
 module.exports = {

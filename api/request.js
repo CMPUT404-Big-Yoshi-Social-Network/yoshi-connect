@@ -30,15 +30,10 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies["token"])) { return res.sendStatus(401) }
+  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
+
   const authorId = req.params.authorId;
-
-  const requests = await getRequests(authorId);
-
-  return res.json({
-    type: "requests",
-    items: requests
-  });
+  await getRequests(authorId, res);
 })
 
 router.get('/:foreignAuthorId', async (req, res) => {

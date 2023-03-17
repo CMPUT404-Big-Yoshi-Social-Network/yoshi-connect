@@ -57,11 +57,11 @@ function Posts(props) {
              */
 
             axios
-            .get('/api/userinfo/')
+            .get('/userinfo/')
             .then((response) => {
-                let viewerId = response.data.id;
+                let viewerId = response.data.authorId;
                 setViewerId(viewerId);
-                setUrl('/api/authors/' + viewerId + '/posts/' + type)
+                setUrl('/authors/' + viewerId + '/posts/' + type)
             })
             .catch(err => { 
                 console.log(err)

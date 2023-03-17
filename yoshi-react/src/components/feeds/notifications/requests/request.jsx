@@ -45,13 +45,13 @@ function Request(props) {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + props.actorId + '/followers/' + props.objectId,
+            url: '/authors/' + props.actorId + '/followers/' + props.objectId,
             headers: {
                 'Content-Type': 'application/json'
             }
         }
         axios
-        .put('/api/authors/' + props.actorId + '/followers/' + props.objectId, config)
+        .put('/authors/' + props.actorId + '/followers/' + props.objectId, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {
@@ -73,7 +73,7 @@ function Request(props) {
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
-            url: '/api/authors/' + props.actor + '/requests/' + props.object,
+            url: '/authors/' + props.actor + '/requests/' + props.object,
             headers: {
                 'Content-Type': 'application/json'
             }

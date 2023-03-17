@@ -31,31 +31,16 @@ function AddAuthor() {
     const navigate = useNavigate();
 
     const addAuthor = async (e) => {
-        /**
-         * Description: Adds the new author to the database
-         * Request: PUT
-         * Returns: N/A
-         */
         e.preventDefault();
-        console.log('Debug: Attempting to add an author.');
-        let config = {
-            method: 'put',
-            maxBodyLength: Infinity,
-            url: url,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            data: {
-                status: 'Add',
-                username: data.username,
-                password: data.password,
-                email: data.email,
-                admin: false
-            } 
+        let body = {
+            status: 'Add',
+            username: data.username,
+            password: data.password,
+            email: data.email,
+            admin: false
         }
-
         axios
-        .put(url, config)
+        .put(url, body)
         .then((response) => {})
         .catch(err => {
             if (err.response.status === 400) {

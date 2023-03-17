@@ -33,12 +33,12 @@ mongoose.set('strictQuery', true);
 const { Login, Author } = require('../scheme/author.js');
 
 async function addAuthor(req, res){
-    let existingAuthor = await Author.findOne({username: req.body.data.username}).clone();
+    let existingAuthor = await Author.findOne({username: req.body.username}).clone();
     if (existingAuthor !== undefined && existingAuthor !== null) { return res.sendStatus(400); }
 
-    const username = req.body.data.username;
-    const email = req.body.data.email;
-    const password = req.body.data.password;
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
     if (!username && !email && !password) { return res.sendStatus(400); }
@@ -62,32 +62,32 @@ async function addAuthor(req, res){
 }
 
 async function modifyAuthor(req, res){
-    const author = await Author.findOne({_id: req.body.data.authorId}).clone();
+    const author = await Author.findOne({_id: req.body.authorId}).clone();
 
     if (author == undefined) { return res.sendStatus(404); }
 
-    if (author.username != req.body.data.newUsername) {
-        let existingAuthor = await Author.findOne({username: req.body.data.newUsername});
+    if (author.username != req.body.newUsername) {
+        let existingAuthor = await Author.findOne({username: req.body.newUsername});
         if (existingAuthor) { return res.sendStatus(400); }
     }
 
-    if (author.email != req.body.data.newEmail) {
-        let existingAuthor = await Author.findOne({email: req.body.data.newEmail});
+    if (author.email != req.body.newEmail) {
+        let existingAuthor = await Author.findOne({email: req.body.newEmail});
         if (existingAuthor) { return res.sendStatus(400); }
     }
 
-    author.username = req.body.data.newUsername;
-    author.password = crypto_js.SHA256(req.body.data.newPassword);
-    author.email = req.body.data.newEmail;
-    author.about = req.body.data.newAbout;
-    author.pronouns = req.body.data.newPronouns;
-    author.admin = req.body.data.newAdmin;
+    author.username = req.body.newUsername;
+    author.password = crypto_js.SHA256(req.body.newPassword);
+    author.email = req.body.newEmail;
+    author.about = req.body.newAbout;
+    author.pronouns = req.body.newPronouns;
+    author.admin = req.body.newAdmin;
     author.save();
 
-    await Login.find({username: req.body.data.username}, function(err, logins){
+    await Login.find({username: req.body.username}, function(err, logins){
         if (err) { res.sendStatus(500); }
         for(let i = 0; i < logins.length; i++){
-            logins[i].admin = req.body.data.newAdmin;
+            logins[i].admin = req.body.newAdmin;
             logins[i].save();
         }
         return res.sendStatus(200);

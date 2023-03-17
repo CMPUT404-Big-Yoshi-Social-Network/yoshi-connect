@@ -42,9 +42,9 @@ router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
 router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
 
 router.put('/dashboard', (req, res) => {
-  if (req.body.data.status == 'Add') {
+  if (req.body.status == 'Add') {
     addAuthor(req, res);
-  } else if (req.body.data.status == 'Modify') {
+  } else if (req.body.status == 'Modify') {
     modifyAuthor(req, res);
   }
 })

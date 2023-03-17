@@ -38,9 +38,8 @@ function Authors() {
     const [next, setNext] = useState(false);
 
     useEffect(() => {
-        console.log('Debug: Fetching all the authors.')
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -71,7 +70,7 @@ function Authors() {
 
         let updated = page + 1;
         config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -106,7 +105,7 @@ function Authors() {
             let updated = page + 1;
             setPage(updated);
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
                 url: url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -141,7 +140,7 @@ function Authors() {
         }
         let updated = page + 2;
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -172,7 +171,7 @@ function Authors() {
             let updated = page - 1;
             setPage(updated);
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
                 url: url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

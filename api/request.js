@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
 
   const authorId = req.params.authorId;
-  await getRequests(authorId);
+  await getRequests(authorId, res);
 })
 
 router.get('/:foreignAuthorId', async (req, res) => {

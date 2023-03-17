@@ -177,7 +177,7 @@ async function deleteRequest(authorId, foreignId, res) {
     })
 }
 
-async function getRequests(authorId) {
+async function getRequests(authorId, res) {
     let rqs = [];
     await Request.find({objectId: authorId}, function(err, requests){
         if (!requests) { 

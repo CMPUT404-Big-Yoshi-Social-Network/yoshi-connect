@@ -22,10 +22,12 @@ Foundation; All Rights Reserved
 // Setting up database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 require('dotenv').config();
 mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
+
+// Parser
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 // App Setup
 const express = require('express');

@@ -60,20 +60,20 @@ app.use(express.json());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Routing
-app.use("/api/authors", author);
-app.use("/api/authors/:authorId/posts/:postId/comments", comment);
-app.use("/api/authors/:authorId/friends", friend);
-app.use("/api/authors/:author_id/inbox", inbox);
-app.use("/api/authors/:authorId/posts", post);
+app.use("/authors", author);
+app.use("/authors/:authorId/posts/:postId/comments", comment);
+app.use("/authors/:authorId/friends", friend);
+app.use("/authors/:author_id/inbox", inbox);
+app.use("/authors/:authorId/posts", post);
 app.use("/api/settings", setting);
 app.use("/api/signup", signup);
 app.use("/api/login", login);
 app.use("/api/admin", admin);
-app.use("/api/authors/:authorId/followers", followers);
-app.use("/api/authors/:authorId/followings", followings);
+app.use("/authors/:authorId/followers", followers);
+app.use("/authors/:authorId/followings", followings);
 app.use("/api/profile/:username", profile);
-app.use("/api/authors/:authorId/friends", friends);
-app.use("/api/authors/:authorId/requests", requests);
+app.use("/authors/:authorId/friends", friends);
+app.use("/authors/:authorId/requests", requests);
 app.use("/api/api-docs", apiDocs);
 app.use("/api/userinfo", userinfo);
 

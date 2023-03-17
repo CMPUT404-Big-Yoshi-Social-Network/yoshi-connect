@@ -120,13 +120,13 @@ function Profile() {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .get('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .get('/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
             .then((response) => { 
                 exists.current = true; 
                 setRequestButton('Sent');
@@ -148,11 +148,11 @@ function Profile() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             }
             axios
-            .post('/api/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)
+            .post('/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status === 'Friends') {
                     setRequestButton('Unfriend');
@@ -174,13 +174,13 @@ function Profile() {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .put('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .put('/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
             .then((response) => { })
             .catch(err => {
               if (err.response.status === 401) {
@@ -192,7 +192,7 @@ function Profile() {
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
             axios
-            .delete('/api/authors/' + personal.viewerId + '/requests/' + personal.viewedId)
+            .delete('/authors/' + personal.viewerId + '/requests/' + personal.viewedId)
             .then((response) => { })
             .catch(err => {
                 if (err.response.status === 401) {
@@ -206,7 +206,7 @@ function Profile() {
         } else if (requestButton === 'Unfriend') {
             console.log('Debug: We want to unfriend.')
             axios
-            .delete('/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId)
+            .delete('/authors/' + personal.viewerId + '/followings/' + personal.viewedId)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfriended.')
@@ -227,13 +227,13 @@ function Profile() {
             let config = {
                 method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .delete('/api/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
+            .delete('/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')

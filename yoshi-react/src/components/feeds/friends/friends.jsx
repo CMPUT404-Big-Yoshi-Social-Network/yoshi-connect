@@ -31,7 +31,7 @@ function Friends(props) {
 
     useEffect(() => {
         axios
-        .get('/api/authors/' + props.authorId + '/friends')
+        .get('/authors/' + props.authorId + '/friends')
         .then((response) => { 
             setFriends(response.data.items) 
         })

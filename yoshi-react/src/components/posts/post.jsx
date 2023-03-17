@@ -71,7 +71,7 @@ function Post({viewerId, post}) {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/authors/' + authorId + '/posts/' + postId + '/likes',
+                url: '/authors/' + authorId + '/posts/' + postId + '/likes',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -82,7 +82,7 @@ function Post({viewerId, post}) {
                 }
             }
             axios
-            .post('/api/authors/' + authorId + '/posts/' + postId + '/likes', config)
+            .post('/authors/' + authorId + '/posts/' + postId + '/likes', config)
             .then((response) => {
                 if (response.data.status === 'liked') { setLike(true); } else { setLike(false); }
             })
@@ -110,11 +110,11 @@ function Post({viewerId, post}) {
         let config = {
             method: "delete",
             maxBodyLength: "Infinity",
-            url: '/api/authors/' + authorId + '/posts/' + postId,
+            url: '/authors/' + authorId + '/posts/' + postId,
             headers: { 'Content-Type': 'application/json' }
         };
 
-        axios.delete('/api/authors/' + authorId + '/posts/' + postId, config).then((response) => {}).catch((error) => { console.log(error); });
+        axios.delete('/authors/' + authorId + '/posts/' + postId, config).then((response) => {}).catch((error) => { console.log(error); });
     }
 
     const addLike = () => {

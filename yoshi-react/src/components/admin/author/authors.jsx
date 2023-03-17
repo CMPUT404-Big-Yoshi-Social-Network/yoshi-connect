@@ -32,7 +32,7 @@ function Authors() {
     const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
     const size = 5;
-    const url = '/api/authors';
+    const url = '/authors';
     const navigate = useNavigate();
     const [prev, setPrev] = useState(true);
     const [next, setNext] = useState(false);

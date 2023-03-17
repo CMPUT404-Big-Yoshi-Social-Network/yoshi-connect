@@ -22,6 +22,9 @@ Foundation; All Rights Reserved
 // Password
 const crypto_js = require('crypto-js');
 
+// UUID
+const crypto = require('crypto');
+
 // Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
@@ -36,10 +39,12 @@ async function addAuthor(req, res){
     const username = req.body.data.username;
     const email = req.body.data.email;
     const password = req.body.data.password;
+    let uuid = crypto.randomUUID.replace(/-/g, "");
 
     if (!username && !email && !password) { return res.sendStatus(400); }
 
     let author = new Author({
+        _id: uuid,
         username: username,
         password: crypto_js.SHA256(password),
         email: email,

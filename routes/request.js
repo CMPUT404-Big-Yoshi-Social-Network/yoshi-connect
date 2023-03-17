@@ -23,6 +23,9 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
+// uuid
+const crypto = require('crypto');
+
 // Schemas
 const { Author } = require('../scheme/author.js');
 const { Request, Follower, Following } = require('../scheme/relations.js');
@@ -38,7 +41,9 @@ async function senderAdded(authorId, foreignId, req, res) {
             following.followings.push({authorId: foreignId, username: object.username});
             await following.save();
         } else {
+            let uuidFollowing = crypto.randomUUID.replace(/-/g, "");
             var following = new Following({
+                _id: uuidFollowing,
                 username: actor.username,
                 authorId: authorId,
                 followings: [{
@@ -55,7 +60,9 @@ async function senderAdded(authorId, foreignId, req, res) {
             follower.followers.push({username: actor.username, authorId: authorId});
             await follower.save();
         } else {
+            let uuidFollower = crypto.randomUUID.replace(/-/g, "");
             var follower = new Follower({
+                _id: uuidFollower,
                 username: object.username,
                 authorId: foreignId,
                 followers: [{
@@ -97,8 +104,10 @@ async function sendRequest(authorId, foreignId, res) {
         summary = actor.username + "wants to " + type + " " + object.username;
     }
 
+    let uuid = crypto.randomUUID.replace(/-/g, "");
 
     const request = new Request({
+        _id: uuid,
         actor: actor.username,
         actorId: actor._id,
         objectId: object._id,

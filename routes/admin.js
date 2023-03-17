@@ -22,9 +22,8 @@ Foundation; All Rights Reserved
 // Password
 const crypto_js = require('crypto-js');
 
-// UUID Identification Generator
-const UIDGenerator = require('uid-generator')
-const uidgen = new UIDGenerator();
+// UUID
+const crypto = require('crypto');
 
 // Database
 const mongoose = require('mongoose');
@@ -40,7 +39,7 @@ async function addAuthor(req, res){
     const username = req.body.data.username;
     const email = req.body.data.email;
     const password = req.body.data.password;
-    let uuid = uidgen.generateSync().replace(/-/g, "");
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
     if (!username && !email && !password) { return res.sendStatus(400); }
 

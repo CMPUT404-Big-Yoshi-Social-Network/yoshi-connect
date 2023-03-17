@@ -27,15 +27,14 @@ const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
 const { Like, Comment, Liked } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 
-// UUID Identification Generator
-const UIDGenerator = require('uid-generator')
-const uidgen = new UIDGenerator();
+// UUID
+const crypto = require('crypto');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
 
 async function createPostHistory(author_id){
-    let uuid = uidgen.generateSync().replace(/-/g, "");
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let new_post_history = new PostHistory ({
         _id: uuid,
         authorId: author_id,
@@ -105,7 +104,7 @@ async function createPost(token, authorId, postId, newPost) {
         if(oldPost) return [[], 400]
     }
     
-    if (!postId) { postId = uidgen.generateSync().replace(/-/g, ""); }
+    if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
 
     let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
     let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
@@ -347,7 +346,7 @@ async function addLike(req, res){
     let publicPost = await PublicPost.find();
     let success = false;
     let numLikes = 0;
-    let uuid = uidgen.generateSync().replace(/-/g, "");
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
     var like = new Like({ 
         _id: uuid,
@@ -525,7 +524,7 @@ async function getComments(authorId, postId) {
 async function createComment(authorId, postId, newComment, domain) {
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const author = await Author.findOne({authorId: authorId});
-    let uuid = uidgen.generateSync().replace(/-/g, "");
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
     var comment = new Comment({
         author: author,

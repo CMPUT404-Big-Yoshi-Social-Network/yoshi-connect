@@ -26,6 +26,9 @@ const crypto_js = require('crypto-js')
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
 
+// UUID
+const crypto = require('crypto');
+
 // Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
@@ -106,7 +109,7 @@ async function authAuthor(req, res) {
         let curr = new Date();
         let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
         let token = uidgen.generateSync();
-        let uuid = uidgen.generateSync().replace(/-/g, "");
+        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
         let login = new Login({
             _id: uuid,

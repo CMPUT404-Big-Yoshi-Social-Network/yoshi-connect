@@ -24,8 +24,10 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
+const crypto = require('crypto');
+
 const commentScheme = new Schema({
-    _id: String,
+    _id: {type: String, default: crypto.randomUUID},
     commenter: String,
     comment: String
 })
@@ -64,12 +66,12 @@ const likedHistoryScheme = new Schema({
     {versionKey: false
 })
 
-const Like = database.model('Like', likeHistoryScheme);
-const Comment = database.model('Comment', commentHistoryScheme);
-const Liked = database.model('Liked', likedHistoryScheme);
+const LikeHistory = database.model('Like', likeHistoryScheme);
+const CommentHistory = database.model('Comment', commentHistoryScheme);
+const LikedHistory = database.model('Liked', likedHistoryScheme);
 
 module.exports = {
-    Like,
-    Comment,
-    Liked
+    LikeHistory,
+    CommentHistory,
+    LikedHistory
 }

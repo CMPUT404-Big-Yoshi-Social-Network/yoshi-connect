@@ -24,7 +24,7 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
-const { Like, Comment, Liked } = require('../scheme/interactions.js');
+const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 
 // UUID

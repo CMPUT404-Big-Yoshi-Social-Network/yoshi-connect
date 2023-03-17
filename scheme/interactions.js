@@ -38,52 +38,20 @@ const likeScheme = new Schema({
     liker: String
 })
 
-const postScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    title: String,
-    description: String,
-    contentType: String,
-    content: String,
-    categories: [String],
-    count: Number,
-    likes: [likeScheme],
-    comments: [commentScheme],
-    published: String,
-    visibility: String,
-    specifics: [String],
-    unlisted: Boolean,
-    image: String},
-    {versionKey: false
-});
-
-const postHistoryScheme = new Schema({
+const likedScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     authorId: String,
-    num_posts: Number,
-    posts: [postScheme]},
-    {versionKey: false
-})
-
-const publicScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    posts: [{
-        authorId: String,
-        post: postScheme,
-    }],
+    liked: [likeScheme],
     num_posts: Number},
     {versionKey: false
 })
 
-const PostHistory = database.model('Posts', postHistoryScheme);
-const Post = database.model('Post', postScheme);
 const Like = database.model('Like', likeScheme);
 const Comment = database.model('Comment', commentScheme);
-const PublicPost = database.model('PublicPost', publicScheme);
+const Liked = database.model('Liked', likedScheme);
 
 module.exports = {
-    PostHistory,
-    Post,
     Like,
     Comment,
-    PublicPost
+    Liked
 }

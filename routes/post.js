@@ -23,15 +23,15 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, Post, Like, Comment, PublicPost } = require('../dbSchema/postScheme.js');
-const { Friend } = require('../dbSchema/authorScheme.js');
+const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
+const { Like, Comment, Liked } = require('../scheme/interactions.js');
+const { Author } = require('../scheme/author.js');
+
+//UUID
+const crypto = require('crypto');
+const { authLogin } = require('./auth.js');
 
 async function createPostHistory(author_id){
-    /**
-     * Description: Creates and saves the author's post history 
-     * Returns: N/A
-     */
-    console.log('Debug: Creating post history for user')
     let new_post_history = new PostHistory ({
         authorId: author_id,
         num_posts: 0,
@@ -39,31 +39,316 @@ async function createPostHistory(author_id){
     })
 
     await new_post_history.save()
+}
 
-    return;
+async function getPost(authorId, postId){
+    let post = await PostHistory.aggregate([
+        {
+            $match: {'authorId': authorId}
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {'posts._id' : postId}
+        }
+    ]);
+    
+    if (post.length == 0) { return [{}, 404]; }
+
+    post = post[0].posts
+
+    post = {
+        "type": "post",
+        "title" : post.title,
+        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+        "source": post.source,
+        "origin": post.origin,
+        "description": post.description,
+        "contentType": post.contentType,
+        "author": post.author, 
+        "categories": post.categories,
+        "count": post.count,
+        "comments": post.comments,
+        "commentSrc": post.commentSrc,
+        "published": post.published,
+        "visibility": post.visibility,
+        "unlisted": post.unlisted
+    }
+    return [post, 200]   
+}
+
+async function createPost(token, authorId, postId, newPost) {
+    if((await authLogin(token, authorId)) == false){ return [[], 401]; }
+
+    const title = newPost.title;
+    const desc = newPost.desc;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = [''];
+    const published = new Date().toISOString();
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    const postTo = newPost.postTo;
+
+    if (!title || !desc || !contentType || !content || !visibility) { return [[], 400]; }
+
+    let postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if(postId != undefined){
+        let oldPost = postHistory.posts.id(postId);
+        if(oldPost) return [[], 400]
+    }
+    
+    if (!postId) { postId = crypto.randomUUID(); }
+
+    let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
+    let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
+
+    if (!postHistory) {
+        await createPostHistory(authorId);
+        postHistory = await PostHistory.findOne({authorId: authorId});
+    }
+
+    let post = new Post({
+        _id: postId,
+        title: title,
+        source: source,
+        origin: origin,
+        description: desc,
+        contentType: contentType,
+        content: content,
+        authorId: authorId,
+        categories: categories,
+        count: 0,
+        likes: [],
+        comments: [],
+        published: published,
+        visibility: visibility,
+        unlisted: unlisted,
+        postTo: postTo
+    });
+    postHistory.posts.push(post);
+    postHistory.num_posts = postHistory.num_posts + 1;
+    await postHistory.save();
+
+    if (visibility == 'Public') {
+        const publicPost = await PublicPost.findOne().clone();
+        publicPost.posts.push({
+            authorId: authorId,
+            post: post,
+        })
+        publicPost.num_posts = publicPost.num_posts + 1;
+        await publicPost.save();
+    }
+    return [await getPost(authorId, postId), 200];
+}
+
+async function updatePost(token, authorId, postId, newPost) {
+    if (!authLogin(token, authorId)) { return [{}, 401]; }
+
+    const title = newPost.title;
+    const desc = newPost.description;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if (!postHistory) { return [{}, 500]; }
+
+    let post = postHistory.posts.id(postId);
+
+    if (!post) { return [{}, 404]; }
+
+    post.title = title;
+    post.description = desc;
+    post.contentType = contentType;
+    post.content = content;
+    post.visibility = visibility;
+    post.unlisted = unlisted;
+    post.categories = categories;
+    await postHistory.save()
+
+    //TODO Remove possiblity of visibility being "public"?
+    if(post.visibility == "PUBLIC" || post.visibility == "Public"){
+        let publicPosts = await PublicPost.findOne().clone();
+
+        for(let i = 0; i < publicPosts.posts.length; i++){
+            let publicPost = publicPosts.posts[i];
+            if(publicPost.post._id == post._id){
+                publicPosts.posts[i].post = post;
+                await publicPosts.save();
+                break;
+            }
+        }
+    }
+
+    return [await getPost(authorId, postId), 200];
+}
+
+async function deletePost(token, authorId, postId) {
+    if (!authLogin(token, authorId)) { return [{}, 401]; }
+
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+
+    if (!postHistory) { return [[], 500]; }
+
+    const post = postHistory.posts.id(postId);
+
+    if(!post) { return [[], 404]; }
+
+    post.remove();
+    postHistory.num_posts = postHistory.num_posts - 1;
+    postHistory.save();
+
+    if (post.visibility == "PUBLIC" || post.visibility == "Public") {
+        const publicPost = await PublicPost.findOne().clone();
+        let posts = publicPost.posts;
+        for (let i = 0; i < posts.length; i++) {
+            if (posts[i].post._id === post._id) {
+                publicPost.posts[i].remove();
+                break;
+            }
+        }
+        publicPost.num_posts = publicPost.num_posts - 1;
+        await publicPost.save();
+    }
+
+    return [post, 200]; 
+}
+
+async function getPosts(page, size, author) {
+    let posts = undefined
+    if(page > 1){
+        posts = await PostHistory.aggregate([
+            {
+                $match: {'authorId': author.id}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $match: {
+                    'posts.unlisted': false
+                }
+            },
+            {
+                $match: {
+                    'posts.visibility': {$in : ["PUBLIC"]}
+                }
+            },
+            {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: { dateString: "$posts.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "posts.published": -1 }
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            },
+        ]);
+    } else if (page == 1) {
+        posts = await PostHistory.aggregate([
+            {
+                $match: {'authorId': author.id}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $match: {
+                    'posts.unlisted': false,
+                    
+                }
+            },
+            {
+                $match: {
+                    'posts.visibility': {$in : ["PUBLIC"]}
+                }
+            },
+            {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: { dateString: "$posts.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "posts.published": -1 }
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            }
+            
+        ]);
+    } else{
+        return [[], 400];
+    }
+    
+    if (!posts || !posts[0] || !posts[0].posts_array) { return [[], 200]; }
+    
+    posts = posts[0].posts_array;
+
+    for (let i = 0; i < posts.length; i++) {
+        const post = posts[i];
+        let sanitized_posts = {
+            "type": "post",
+            "tite'": post.title,
+            "id": post._id,
+            "source": post.source,
+            "origin": post.origin,
+            "description": post.description,
+            "contentType": post.contentType,
+            "content": post.content,
+            "author": author,
+            "categories": post.categories,
+            "count": post.comments.length,
+            "comments": "",
+            "likeCount": post.likes.length,
+            "likes": "",
+            "published": post.published,
+            "visibility": post.visibility,
+            "unlisted": post.unlisted,
+        }
+        posts[i] = sanitized_posts;
+    }
+    return [posts, 200];
 }
 
 async function addLike(req, res){
-    /**
-     * Description: Adds a like to the author's post to the database 
-     * Returns: A boolean status if the like is successfully saved into the database
-     *          The number of likes the post has
-     */
-    console.log('Debug: Adding a like')
     const postHistory = await PostHistory.findOne({authorId: req.body.data.authorId});
     let publicPost = await PublicPost.find();
     let success = false;
     let numLikes = 0;
 
-    var like = new Like({
-        liker: req.body.data.liker
-    });
+    var like = new Like({liker: req.body.data.liker });
 
     let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
     if (idx > -1) { 
         let likerIdx = postHistory.posts[idx].likes.map(obj => obj.liker).indexOf(like.liker);
         if (likerIdx <= -1) {
-            console.log('Debug: Adding that like!')
             postHistory.posts[idx].likes.push(like);
             numLikes = postHistory.posts[idx].likes.length;
             await postHistory.save();
@@ -77,25 +362,16 @@ async function addLike(req, res){
                 }
             }
         }
-    } else {
-        console.log('Debug: No such post exists!')
-    }
+    } 
 
     return res.json({ status: success, numLikes: numLikes })
 }
 
 async function deleteLike(req, res){
-    /**
-     * Description: Removes a like from the author's post in the database 
-     * Returns: A boolean status if the like is successfully removed from the database
-     *          The number of likes the post has
-     */
-    console.log('Debug: Removing a like')
     let success = false;
     let numLikes = 0;
     let publicPost = await PublicPost.find();
     await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
-        console.log('Debug: Find the post with the like.')
         if (history) {
             let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
             if (post_idx > -1) { 
@@ -122,59 +398,14 @@ async function deleteLike(req, res){
     })
 }
 
-async function addComment(req, res){
-    /**
-     * Description: Adds a comment to an author's post to the database 
-     * Returns: A boolean status if the comment is successfully saved into the database
-     *          The number of comments the post has
-     */
-    console.log('Debug: Adding a comment')
-    const postHistory = await PostHistory.findOne({authorId: req.body.authorId});
-    let publicPost = await PublicPost.find();
-    let success = false;
-
-    var comment = new Comment({
-        commenter: req.body.commenter,
-        comment: req.body.content
-    });
-
-    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.postId);
-    if (idx > -1) { 
-        postHistory.posts[idx].comments.push(comment);
-        postHistory.posts[idx].count + 1;
-        postHistory.save();
-        success = true;
-
-        for (let i = 0; i < publicPost[0].posts.length; i++) {
-            if (publicPost[0].posts[i].post._id === req.body.postId) {
-                publicPost[0].posts[i].post.count + 1;
-                publicPost[0].posts[i].post.comments.push(comment);
-                await publicPost[0].save();
-            }
-        }
-    } else {
-        console.log('Debug: No such post exists!')
-    }
-
-    return res.json({ status: success, numComments: postHistory.posts[idx].count })
-}
-
 async function deleteComment(req, res){
-    /**
-     * Description: Removes a comment from an author's post in the database 
-     * Returns: A boolean status if the comment is successfully removed from the database
-     *          The number of comments the post has
-     */
-    console.log('Debug: Deleting a comment')
     let success = false;
     let numComments = 0;
     let publicPost = await PublicPost.find();
     await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
-        console.log('Debug: Find the post with the comment.')
         if (history) {
             let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
             if (post_idx > -1) { 
-                console.log('Debug: Found comment')
                 let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.commentId);
                 history.posts[post_idx].comments.splice(com_idx, 1);
                 history.posts[post_idx].count - 1;
@@ -202,19 +433,12 @@ async function deleteComment(req, res){
 }
 
 async function editComment(req, res){
-    /**
-     * Description: Edits a comment from an author's post in the database 
-     * Returns: A boolean status if the comment is successfully edited to the database
-     */
-    console.log('Debug: Editing a comment')
     let success = false;
     let publicPost = await PublicPost.find();
     await PostHistory.findOne({authorId: req.body.data.authorId}, async function(err, history){
-        console.log('Debug: Find the post with the comment.')
         if (history) {
             let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
             if (post_idx > -1) { 
-                console.log('Debug: Found the comment')
                 let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
                 history.posts[post_idx].comments[com_idx].comment = req.body.data.comment;
                 history.save();
@@ -236,542 +460,14 @@ async function editComment(req, res){
     return res.json({ status: success })
 }
 
-async function createPost(req, res, postId){
-    /**
-     * Description: Creates an author's post in the database 
-     * Returns: N/A
-     */
-    console.log('Debug: Creating a post')
-    let authorId = req.params.author_id;
-    //Setup the rest of the post
-    const title = req.body.data.title;
-    const desc = req.body.data.desc;
-    const contentType = req.body.data.contentType;
-    const content = req.body.data.content;
-    const categories = [""];
-    const published = new Date().toISOString();
-    const visibility = req.body.data.visibility;
-    const unlisted = req.body.data.unlisted;
-    const specifics = req.body.data.specifics;
-    const image = req.body.data.image;
-
-    //Get the author's document
-    //Should be refactored to do use an aggregate pipeline in case of large number of posts
-    let post_history = await PostHistory.findOne({authorId: authorId});
-
-    if (!post_history) {
-        console.log('Debug: Create a post history');
-        await createPostHistory(authorId);
-    }
-
-    if(postId == undefined){
-
-        var post = new Post({
-            title: title,
-            description: desc,
-            contentType: contentType,
-            content: content,
-            authorId: authorId,
-            categories: categories,
-            count: 0,
-            likes: [],
-            comments: [],
-            published: published,
-            visibility: visibility,
-            specifics: specifics,
-            unlisted: unlisted,
-            image: image
-        });
-    }
-    else{
-        var post = new Post({
-            _id: postId,
-            title: title,
-            description: desc,
-            contentType: contentType,
-            content: content,
-            authorId: authorId,
-            categories: categories,
-            count: 0,
-            likes: [],
-            comments: [],
-            published: published,
-            visibility: visibility,
-            specifics: specifics,
-            unlisted: unlisted,
-            image: image
-        });
-    }
-
-    post_history = await PostHistory.findOne({authorId: authorId});
-    post_history.posts.push(post);
-    post_history.num_posts = post_history.num_posts + 1;
-    await post_history.save();
-
-    if (visibility === 'Public') {
-        let publicPost = await PublicPost.find();
-        publicPost[0].posts.push({authorId: authorId, post: post});
-        publicPost[0].num_posts = publicPost[0].num_posts + 1;
-        await publicPost[0].save();
-    }
-}
-
-async function getPost(req, res){
-    /**
-     * Description: Gets an author's post from the database 
-     * Returns: Status 404 if the post is not found in the database
-     *          The post from the database
-     */
-    console.log("Debug: Getting a post");
-
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
-
-    let post = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {'posts._id' : postId}
-        }
-    ]);
-    if(post.length == 0)
-        return res.sendStatus(404);
-    return res.json(post);
-}
-
-async function getPostsPaginated(req, res){
-    /**
-     * Description: Pages the posts form the database 
-     * Returns: Status 200 if the posts are successfully retrieved and paginated from the database
-     */
-    console.log('Debug: Paging the posts')
-    const authorId = req.params.author_id;
-
-    console.log(req.query.page);
-    console.log(req.query.size);
-
-    let page = 1;
-    let size = 5;
-    if(req.query.page != undefined)
-        page = req.query.page;
-    if(req.query.size != undefined)
-        size = req.query.size;
-
-    const start_index = (page - 1) * size; 
-    const end_index = page * size;
-    /*
-    let posts = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $slice: ["$posts", 1]
-        }
-    ])
-    */
-    let posts = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $project: {_id: 1, posts: {$slice: ["$posts", start_index, end_index]}}
-        },
-        {
-            $unwind: "$posts"
-        }
-    ])
-    return res.sendStatus(200);
-}
-
-async function updatePost(req, res){
-    /**
-     * Description: Updates an author's post in the database 
-     * Returns: Status 200 if the author's post is successfully updated in the database
-     */
-    console.log("Debug: Update a post");
-
-    const authorId = req.params.author_id;
-    const postId = req.body.data.postId;
-
-    const title = req.body.data.title;
-    const desc = req.body.data.desc;
-    const contentType = req.body.data.contentType;
-    const content = req.body.data.content;
-    const categories = req.body.data.categories;
-    const visibility = req.body.data.visibility;
-    const unlisted = req.body.data.listed;
-    const specifics = req.body.data.specifics;
-    const image = req.body.data.image;
-
-    const post_history = await PostHistory.findOne({authorId: authorId});
-    const publicPost = await PublicPost.find();
-
-    let post = null;
-    let postIdx = post_history.posts.map(obj => obj._id).indexOf(postId);
-    if (postIdx > -1) { 
-        post = post_history.posts[postIdx]
-    }
-
-    let specifics_updated = false;
-    post.title = title; 
-    post.description = desc;
-    post.contentType = contentType;
-    post.content = content;
-    if ( post.visibility != visibility ) {
-        if ( (visibility == 'Friends' || visibility == 'Public') && post.specifics.length != 0) {
-            console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
-            post.specifics = [];
-            specifics_updated = true;
-        } else if (visibility == 'Public' && post.visibility != 'Public') {
-            publicPost[0].posts.push({authorId: authorId, post: post});
-            publicPost[0].num_posts = publicPost[0].num_posts + 1;
-            await publicPost[0].save();
-        } else if (post.visibility == 'Public' && visibility != 'Public') {
-            let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
-            if (idx > -1) { 
-                publicPost[0].posts.splice(idx, 1);
-                publicPost[0].num_posts = publicPost[0].num_posts - 1;
-                await publicPost[0].save();
-            }
-        }
-        post.visibility = visibility;
-    }
-    if ( !specifics_updated ) {
-        if ( post.specifics != specifics ) {
-            post.specifics = specifics;
-        }
-    }
-    post.categories = categories;
-    post.unlisted = unlisted;
-    post.image = image;
-
-    for (let i = 0; i < publicPost[0].posts.length; i++) {
-        if (publicPost[0].posts[i].post._id === postId) {
-            publicPost[0].posts[i].post = post;
-            await publicPost[0].save();
-        }
-    }
-
-    await post_history.save()
-    console.log("Debug: Post has been updated and saved.");
-
-    return res.sendStatus(200);
-}
-
-async function deletePost(req, res){
-    /**
-     * Description: Removes an author's post from the database 
-     * Returns: Status 200 if the author's post is successfully removed from the database
-     */
-    console.log("Debug: Delete a post");
-
-    const authorId = req.params.author_id;
-    const postId = req.params.post_id;
-
-    const post_history = await PostHistory.findOne({authorId: authorId});
-
-    if(post_history == undefined)
-        return sendStatus(500);
-
-    const post = post_history.posts.id(postId);
-    if(post == null)
-        return res.sendStatus(404);
-
-    if (post.visibility == 'Public') {
-        const publicPost = await PublicPost.find();
-        let idx = publicPost[0].posts.map(obj => obj.post._id).indexOf(postId);
-        if (idx > -1) { 
-            publicPost[0].posts.splice(idx, 1);
-            publicPost[0].num_posts = publicPost[0].num_posts - 1;
-            await publicPost[0].save();
-        }
-    }
-
-    post.remove();
-    post_history.num_posts = post_history.num_posts - 1;
-    post_history.save();
-
-    return res.sendStatus(200);
-}
-
-async function checkVisibility(req, res){
-    /**
-     * Description: Checks the visibility level of the author's post for the viewer
-     * Returns: Status 404 if the author's post is not found in the database
-     *          Status 404 if the author's post visibility level is not viewable for the viewer
-     *          The author's post if the visibility level is viewable for the viewer
-     */
-    console.log('Debug: Checks the visibility of the post for the viewer');
-    const authorId = req.params.author_id;
-    const viewerId = req.body.data.viewerId;
-    const postId = req.params.post_id;
-
-    let post = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {'posts._id' : postId}
-        }
-    ]);
-    if(post.length == 0) { return res.sendStatus(404); }
-
-    let viewable = false;
-    if ( post.visibility == 'Public') {
-        console.log('Debug: Everyone can see this post.')
-        viewable = true;
-    } else if ( post.visibility == 'Friends' ) {
-        console.log('Debug: Only friends can see this post.')
-        let friends = [];
-        await Friend.findOne({authorId: authorId}, function(err, friend){
-            console.log('Debug: Finding the friends list of post author.')
-            if (friend) {
-                friends = friend.friends;
-            }
-        }).clone()
-
-        for ( let i = 0; i < friends.length ; i++ ) {
-            if ( viewerId == friends[i].authorId ) {
-                viewable = true;
-                break;
-            }
-        }
-
-        if ( !viewable ) {
-            return res.sendStatus(404);
-        } 
-    } else if ( post.visibility == 'Private' ) {
-        console.log('Debug: Only specific people can see this post (i.e., messages).')
-        for ( let i = 0; i < post.specifics.length ; i++ ) {
-            if ( viewerId == post.specifics[i].authorId ) {
-                viewable = true;
-                break;
-            }
-        }
-        if ( !viewable ) {
-            return res.sendStatus(404);
-        }
-    }
-
-    return res.json({
-        viewable: viewable
-    })
-
-}
-
-async function fetchLikers(req, res) {
-    /**
-     * Description: Finds the authors that liked an author's post from the database 
-     * Returns: Status 404 if the author's post is not found in the database
-     *          The authors who liked the post
-     */
-    console.log('Debug: Getting the likers for a specific post.');
-
-    const authorId = req.body.data.authorId;
-    const postId = req.body.data.postId;
-
-    const post = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {'posts._id' : postId}
-        }
-    ]);
-    if(post.length == 0) { return res.sendStatus(404); }
-    
-    return post[0].posts.likes
-}
-
 async function hasLiked(req, res) {
-    /**
-     * Description: Shows the like status of the authors who liked a post from the database 
-     * Returns: The status 'liked' if the author has liked the post
-     *          The status 'unliked' if the author has unliked the post
-     */
-    const likers = await fetchLikers(req, res);
+    const likers = await fetchLikes(req, res);
     for (let i = 0; i < likers.length; i++) {
         if (likers[i].liker === req.body.data.viewerId) {
-            return res.json({
-                status: 'liked'
-            })
+            return res.json({ status: 'liked' })
         }
     }
-    return res.json({
-        status: 'unliked'
-    })
-}
-
-/**
- * API STUFF
- */
-
-async function apigetPost(authorId, postId){
-    let post = await PostHistory.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {'posts._id' : postId}
-        }
-    ]);
-    if(post.length == 0) return 404;
-    return post   
-}
-
-async function apiupdatePost(authorId, postId, newPost) {
-    const title = newPost.title;
-    const desc = newPost.desc;
-    const contentType = newPost.contentType;
-    const content = newPost.content;
-    const categories = newPost.categories;
-    const visibility = newPost.visibility;
-    const unlisted = newPost.unlisted;
-    const specifics = newPost.specifics;
-    const image = newPost.image;
-
-    const postHistory = await PostHistory.findOne({authorId: authorId});
-
-    let post = null;
-    let postIdx = postHistory.posts.map(obj => obj._id).indexOf(postId);
-    if (postIdx > -1) { 
-        post = postHistory.posts[postIdx]
-    }
-
-    let specifics_updated = false;
-    post.title = title; 
-    post.description = desc;
-    post.contentType = contentType;
-    post.content = content;
-    if (post.visibility != visibility) {
-        if ( (visibility == 'Friends' || visibility == 'Public') && post.specifics.length != 0) {
-            console.log('Debug: The user turned their private post to specific users to a public / friends viewable post.')
-            post.specifics = [];
-            specifics_updated = true;
-        } 
-        post.visibility = visibility;
-    }
-    if (!specifics_updated) {
-        if (post.specifics != specifics) { post.specifics = specifics; }
-    }
-    post.categories = categories;
-    post.unlisted = unlisted;
-    post.image = image;
-
-    await postHistory.save()
-
-    return 200;
-}
-
-async function apideletePost(authorId, postId) {
-    const postHistory = await PostHistory.findOne({authorId: authorId});
-
-    if (postHistory == undefined) return sendStatus(500);
-
-    const post = postHistory.posts.id(postId);
-
-    if(post == null) return res.sendStatus(404);
-
-    post.remove();
-    postHistory.num_posts = postHistory.num_posts - 1;
-    postHistory.save();
-
-    return res.sendStatus(200); 
-}
-
-async function apicreatePost(authorId, postId, newPost, domain) {
-    const title = newPost.title;
-    const source = newPost.source;
-    const desc = newPost.desc;
-    const contentType = newPost.contentType;
-    const content = newPost.content;
-    const categories = newPost.categories;
-    const published = new Date().toISOString();
-    const visibility = newPost.visibility;
-    const unlisted = newPost.unlisted;
-    const specifics = newPost.specifics;
-    const image = newPost.image;
-
-    let postHistory = await PostHistory.findOne({authorId: authorId});
-
-    if (postHistory == null) {
-        console.log('Debug: Create a post history');
-        await createPostHistory(authorId);
-    }
-
-    if(postId == undefined) {
-        postId = uidgen.generateSync();
-    }
-    var post = new Post({
-        _id: domain + "/authors/" + authorId + "/posts/" + postId,
-        title: title,
-        source: source,
-        origiin, origin,
-        description: desc,
-        contentType: contentType,
-        content: content,
-        authorId: authorId,
-        categories: categories,
-        count: 0,
-        likes: [],
-        comments: [],
-        published: published,
-        visibility: visibility,
-        specifics: specifics,
-        unlisted: unlisted,
-        image: image
-    });
-
-    postHistory = await PostHistory.findOne({authorId: authorId});
-    postHistory.posts.push(post);
-    postHistory.num_posts = postHistory.num_posts + 1;
-    await postHistory.save();  
-}
-
-async function fetchPosts(page, size, authorId) {
-    const posts = PostHistory.find(
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: '$posts'
-        },
-        {
-            $set: {
-                "posts.published": {
-                    $dateFromString: { dateString: "$posts.published" }
-                }
-            }
-        },
-        {
-            $sort: { "posts.published": -1 }
-        },
-        {
-            $group: {
-                _id: null,
-                posts_array: { $push: "$posts" }
-            }
-        }
-    )
-
-    if (posts[0] != undefined) {
-        return posts[0].posts_array;
-    } else {
-        return [];
-    }
+    return res.json({ status: 'unliked' })
 }
 
 async function getComments(authorId, postId) {
@@ -818,7 +514,6 @@ async function getComments(authorId, postId) {
 }
 
 async function createComment(authorId, postId, newComment, domain) {
-    console.log('Debug: Adding a comment')
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const author = await Author.findOne({authorId: authorId});
 
@@ -831,19 +526,17 @@ async function createComment(authorId, postId, newComment, domain) {
     });
 
     let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.postId);
+
     if (idx > -1) { 
         postHistory.posts[idx].comments.push(comment);
         postHistory.posts[idx].count + 1;
         postHistory.save();
     }
-    else {
-        console.log('Debug: No such post exists!')
-    }
 
     return comment  
 }
 
-async function apifetchLikes(authorId, postId) {
+async function fetchLikes(authorId, postId) {
     // TODO: Paginate
     const posts = PostHistory.find(
         {
@@ -854,9 +547,6 @@ async function apifetchLikes(authorId, postId) {
         },
         {
             index: { $indexOfArray: ['_id', postId] }
-        },
-        {
-            $unwind: '$index'
         },
         {
             $group: {
@@ -873,25 +563,130 @@ async function apifetchLikes(authorId, postId) {
     }   
 }
 
+async function fetchCommentLikes(authorId, postId, commentId) {
+    // TODO Paging
+    const comments = getPost(authorId, postId).comments; 
+    let comment = null;
+
+    for (let i = 0; i < comments.length; i++) {
+        if (comments[i]._id === commentId) {
+            comment = comments[i];
+            break;
+        }
+    }
+
+    return comment.likes;
+}
+
+async function getAuthorLikes(authorId) { return await Liked.findOne({authorId: authorId}); }
+
+async function fetchMyPosts(req, res) {
+    const posts = await PostHistory.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $in : ["$authorId", [req.params.authorId]]
+                }
+            },
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: {
+                        dateString: "$posts.published"
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                "posts.authorId": "$authorId"
+            }
+        },
+        {
+            $sort: {"posts.published": -1}
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: {$push: "$posts"}
+            }
+        },
+    ]);
+
+    return res.json({
+        items: posts[0].posts_array
+    })
+}
+
+async function fetchOtherPosts(req, res) {
+    const posts = await PostHistory.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $in : ["$authorId", [req.params.other]]
+                }
+            },
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {
+                $expr: {
+                    $ne: ["$unlisted", true]
+                }
+            }
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: {
+                        dateString: "$posts.published"
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                "posts.authorId": "$authorId"
+            }
+        },
+        {
+            $sort: {"posts.published": -1}
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: {$push: "$posts"}
+            }
+        },
+    ]);
+
+    return res.json({
+        items: posts[0].posts_array
+    })
+}
+
 module.exports={
-    createPostHistory,
-    createPost,
-    getPost,
-    getPostsPaginated,
-    updatePost,
-    deletePost,
     addLike,
-    addComment,
     deleteLike,
     deleteComment,
     editComment,
-    checkVisibility,
     hasLiked,
-    apigetPost,
-    apiupdatePost,
-    apideletePost,
-    apicreatePost,
-    fetchPosts,
+    getPost,
+    updatePost,
+    deletePost,
+    createPost,
+    getPosts,
     getComments,
-    createComment
+    createComment,
+    fetchLikes,
+    fetchCommentLikes,
+    getAuthorLikes,
+    fetchMyPosts,
+    fetchOtherPosts
 }

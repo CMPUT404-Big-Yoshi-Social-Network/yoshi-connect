@@ -22,7 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import React from "react";
 import axios from 'axios';
-import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function Request(props) {
     /**
@@ -33,36 +33,8 @@ function Request(props) {
      *     - rejectRequest(): Deletes a request if it is rejected by the author 
      * Returns: N/A
      */
-    const { senderId } = props;
-    const [username, setUsername] = useState({
-        username: ''
-    })
-    useEffect(() => {
-        /**
-         * Description: Before render, checks the author ID and sends the username
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-             method: 'post',
-             maxBodyLength: Infinity,
-             url: '/server/requests/',
-             headers: {
-                 'Content-Type': 'application/json'
-             },
-             data: {
-                 sessionId: localStorage.getItem('sessionId'),
-                 status: 'Fetching current authorId'
-             }
-         }
-         axios
-         .post('/server/requests/', config)
-         .then((response) => {
-             let username = response.data.username;
-             setUsername(prevUsername => ({...prevUsername, username}))
-         })
-         .catch(err => { });
-     }, []);
+    const navigate = useNavigate();
+
     const addRequest = () => {
         /**
          * Description: Adds the authour if the request is accpeted
@@ -73,22 +45,22 @@ function Request(props) {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/server/requests',
+            url: '/api/authors/' + props.actorId + '/followers/' + props.objectId,
             headers: {
                 'Content-Type': 'application/json'
-            },
-            data: {
-                sender: senderId,
-                receiver: username.username,
-                status: 'Sender is added by Receiver'
             }
         }
         axios
-        .put('/server/requests', config)
-        .then((response) => {
-        })
+        .put('/api/authors/' + props.actorId + '/followers/' + props.objectId, config)
+        .then((response) => { })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE');
+            }
         });
     }
     const rejectRequest = () => {
@@ -101,27 +73,27 @@ function Request(props) {
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
-            url: '/server/requests',
+            url: '/api/authors/' + props.actor + '/requests/' + props.object,
             headers: {
                 'Content-Type': 'application/json'
-            },
-            data: {
-                sender: senderId,
-                receiver: username,
-                status: 'Sender is rejected by Receiver'
             }
         }
         axios
         .delete('/server/requests', config)
-        .then((response) => {
-        })
+        .then((response) => { })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE');
+            }
         });
     }
     return (
         <div id='request'>
-            { senderId }
+            { props.actor }
             <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
             <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
         </div>

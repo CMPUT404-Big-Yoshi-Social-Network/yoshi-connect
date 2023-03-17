@@ -27,27 +27,6 @@ const database = mongoose.connection;
 // Password
 const crypto = require('crypto');
 
-const authorScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    username: String,
-    password: String,
-    email: String,
-    about: String,
-    pronouns: String,
-    admin: Boolean,},
-    {versionKey: false
-});
-
-const loginScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    authorId: String,
-    username: String,
-    token: String,
-    admin: Boolean,
-    expires: String,},
-    {versionKey: false
-});
-
 const followerScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     username: String,
@@ -70,39 +49,22 @@ const followingScheme = new Schema({
     {versionKey: false
 });
 
-const friendScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    username: String,
-    authorId: String,
-    friends: [{
-        username: String,
-        authorId: String
-    }]},
-    {versionKey: false
-});
-
 const requestScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
-    senderId: String,
-    senderUUID: String,
-    receiverId: String,
-    receiverUUID: String,
-    status: String},
+    actor: String,
+    actorId: String,
+    objectId: String,
+    object: String},
     {versionKey: false
 });
 
-const Friend = database.model('Friend', friendScheme);
+//const Friend = database.model('Friend', friendScheme);
 const Following = database.model('Following', followingScheme);
-const Login = database.model('Login', loginScheme);
-const Author = database.model('Author', authorScheme);
 const Request = database.model('Request', requestScheme);
 const Follower = database.model('Follower', followerScheme);
 
 module.exports = {
-    Friend,
     Following,
-    Login,
-    Author,
     Request,
     Follower
 }

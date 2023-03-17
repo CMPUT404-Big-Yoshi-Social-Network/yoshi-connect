@@ -27,32 +27,26 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Login, Author } = require('../dbSchema/authorScheme.js');
+const { Login, Author } = require('../scheme/author.js');
 
 async function addAuthor(req, res){
-    /**
-     * Description: Adds an author to the database 
-     * Returns: Status 200 if the author is successfully saved into the database
-     *          Status 500 if the author is unsuccessfully saved into the database (Server Error)
-     */
-    console.log('Debug: Adding a new author.');
-
     let existingAuthor = await Author.findOne({username: req.body.data.username}).clone();
-    if (existingAuthor !== undefined && existingAuthor !== null) { 
-        console.log('Debug: Author exists')
-        return res.sendStatus(400); 
-    }
+    if (existingAuthor !== undefined && existingAuthor !== null) { return res.sendStatus(400); }
 
     const username = req.body.data.username;
     const email = req.body.data.email;
     const password = req.body.data.password;
 
+    if (!username && !email && !password) { return res.sendStatus(400); }
+
     let author = new Author({
         username: username,
         password: crypto_js.SHA256(password),
         email: email,
-        about: '',
-        pronouns: '',
+        about: "",
+        pronouns: "",
+        github: "",
+        profileImage: "",
         admin: false,
     });
 
@@ -60,38 +54,23 @@ async function addAuthor(req, res){
         if(err){ return res.sendStatus(500); }
         return res.sendStatus(200);
     });
-
-    console.log("Debug: " + author.username + " added successfully to database.");
 }
 
 async function modifyAuthor(req, res){
-    /**
-     * Description: Modifies an existing author in the database 
-     * Returns: Status 404 if the author could not be found 
-     *          Status 400 if the admin inputs a displayName or email is already taken 
-     *          Status 500 if there is an error finding a current login (token)
-     *          Status 200 if the author is successfully 
-     */
     const author = await Author.findOne({_id: req.body.data.authorId}).clone();
 
-    if(author == undefined){ 
-        console.log('Debug: Could not find author.')
-        return res.sendStatus(404); 
-    }
+    if (author == undefined) { return res.sendStatus(404); }
 
     if (author.username != req.body.data.newUsername) {
-        console.log('Debug: Checking if username is taken.')
-        existing_author = await Author.findOne({username: req.body.data.newUsername});
-        if (existing_author) { return res.sendStatus(400); }
+        let existingAuthor = await Author.findOne({username: req.body.data.newUsername});
+        if (existingAuthor) { return res.sendStatus(400); }
     }
 
     if (author.email != req.body.data.newEmail) {
-        console.log('Debug: Checking if username is taken.')
-        existing_author = await Author.findOne({email: req.body.data.newEmail});
-        if (existing_author) { return res.sendStatus(400); }
+        let existingAuthor = await Author.findOne({email: req.body.data.newEmail});
+        if (existingAuthor) { return res.sendStatus(400); }
     }
 
-    console.log('Debug: Found the author.');
     author.username = req.body.data.newUsername;
     author.password = crypto_js.SHA256(req.body.data.newPassword);
     author.email = req.body.data.newEmail;
@@ -111,17 +90,13 @@ async function modifyAuthor(req, res){
 }
 
 async function deleteAuthor(req, res){
-    /**
-     * Description: Deletes an existing author 
-     * Returns: Status 404 if the author could not be found 
-     *          Status 200 after the login (token) for the author is deleted along with their author account 
-     */
-    console.log('Debug: Attempt to delete an author.')
-    await Author.deleteOne({username: req.body.username}, function(err, obj){
-        console.log('Debug: Delete count for deleting an author ' + obj)
-        if (obj.deletedCount == 0) { return res.sendStatus(404); }
+    await Author.deleteOne({_id: req.body.author.id}, function(err, obj){
+        if (!obj.acknowledged) { return res.sendStatus(404); }
 
-        Login.deleteMany({username: req.body.username}, function(err, obj) { return res.sendStatus(200) }).clone();
+        Login.deleteMany({authorId: req.body.author.id}, function(err, obj) { 
+            if (err) throw res.sendStatus(500);
+            return res.sendStatus(200)
+        }).clone();
     }).clone();
 }
 

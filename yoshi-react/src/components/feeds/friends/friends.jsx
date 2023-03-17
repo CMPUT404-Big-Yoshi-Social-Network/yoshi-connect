@@ -26,7 +26,7 @@ import React, { useEffect, useState } from "react";
 // Child Component 
 import Friend from './friend.jsx';
 
-function Friends() {
+function Friends(props) {
     /**
      * Description: Represents the friends list of the current author 
      * Functions: 
@@ -36,29 +36,20 @@ function Friends() {
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
-        /**
-         * Description: Fetches all the Author objects that are friends with the current author 
-         * Request: POST
-         * Returns: N/A 
-         */
-        console.log('Debug: Fetching all the friends for this author')
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/friends',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            data: { sessionId: localStorage.getItem('sessionId'), }
-        }
         axios
-        .post('/server/friends', config)
-        .then((response) => { setFriends(response.data.friends) })
-        .catch(err => { console.error(err); });
-    }, [setFriends]);
+        .get('/api/authors/' + props.authorId + '/friends')
+        .then((response) => { 
+            setFriends(response.data.items) 
+        })
+        .catch(err => { 
+            if (err.response.status === 404) { setFriends([]); }
+         });
+    }, [setFriends, props]);
 
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Friends</h3>
-            { (friends === undefined) ? null :
+            { friends === undefined || friends.length === 0 ? null :
                 <div>
                     {Object.keys(friends).map((friend, idx) => (
                         <Friend key={idx} {...friends[friend]}/>

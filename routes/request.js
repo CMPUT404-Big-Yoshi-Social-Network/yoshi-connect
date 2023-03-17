@@ -23,8 +23,9 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
-// uuid
-const crypto = require('crypto');
+// UUID Identification Generator
+const UIDGenerator = require('uid-generator')
+const uidgen = new UIDGenerator();
 
 // Schemas
 const { Author } = require('../scheme/author.js');
@@ -41,7 +42,7 @@ async function senderAdded(authorId, foreignId, req, res) {
             following.followings.push({authorId: foreignId, username: object.username});
             await following.save();
         } else {
-            let uuidFollowing = String(crypto.randomUUID).replace(/-/g, "");
+            let uuidFollowing = uidgen.generateSync().replace(/-/g, "");
             var following = new Following({
                 _id: uuidFollowing,
                 username: actor.username,
@@ -60,7 +61,7 @@ async function senderAdded(authorId, foreignId, req, res) {
             follower.followers.push({username: actor.username, authorId: authorId});
             await follower.save();
         } else {
-            let uuidFollower = String(crypto.randomUUID).replace(/-/g, "");
+            let uuidFollower = uidgen.generateSync().replace(/-/g, "");
             var follower = new Follower({
                 _id: uuidFollower,
                 username: object.username,
@@ -104,7 +105,7 @@ async function sendRequest(authorId, foreignId, res) {
         summary = actor.username + "wants to " + type + " " + object.username;
     }
 
-    let uuid = String(crypto.randomUUID).replace(/-/g, "");
+    let uuid = uidgen.generateSync().replace(/-/g, "");
 
     const request = new Request({
         _id: uuid,

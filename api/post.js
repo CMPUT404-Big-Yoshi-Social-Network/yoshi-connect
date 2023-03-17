@@ -150,7 +150,6 @@ router.get('/', async (req, res) => {
   });
 })
 
-//POST [local] create a new post but generate a new id
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 

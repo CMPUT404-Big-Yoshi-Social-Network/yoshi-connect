@@ -22,9 +22,6 @@ Foundation; All Rights Reserved
 // Password
 const crypto_js = require('crypto-js');
 
-// UUID
-const crypto = require('crypto');
-
 // UUID Identification Generator
 const UIDGenerator = require('uid-generator')
 const uidgen = new UIDGenerator();
@@ -51,7 +48,7 @@ async function registerAuthor(req, res){
     const email = req.body.data.email;
     const password = req.body.data.password;
     const checkEmail = await Author.findOne({email: email})
-    let uuid = String(crypto.randomUUID).replace(/-/g, "");
+    let uuid = uidgen.generateSync().replace(/-/g, "");
 
     if ( !username || !email || !password ) { return res.sendStatus(400); }
     if (checkEmail !== undefined && checkEmail !== null) { return res.sendStatus(400); }
@@ -73,7 +70,7 @@ async function registerAuthor(req, res){
     let curr = new Date();
     let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
     let token = uidgen.generateSync();
-    let uuidLogin = String(crypto.randomUUID).replace(/-/g, "");
+    let uuidLogin = uidgen.generateSync().replace(/-/g, "");
 
     let login = new Login({
         _id: uuidLogin,
@@ -86,7 +83,7 @@ async function registerAuthor(req, res){
 
     login.save((err, login) => { if (err) { res.sendStatus(500); } })
 
-    let uuidPH = String(crypto.randomUUID).replace(/-/g, "");
+    let uuidPH = uidgen.generateSync().replace(/-/g, "");
     let new_post_history = new PostHistory ({
         _id: uuidPH,
         authorId: author._id,

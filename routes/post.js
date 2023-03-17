@@ -106,8 +106,8 @@ async function createPost(token, authorId, postId, newPost) {
     
     if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
 
-    let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
-    let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
+    let source = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
+    let origin = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
 
     if (!postHistory) {
         await createPostHistory(authorId);

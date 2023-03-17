@@ -63,7 +63,7 @@ function CreatePost() {
          */
         const getId = () => {
             axios
-            .get('/api/userinfo/')
+            .get('/userinfo/')
             .then((response) => {
                 let authorId = response.data.authorId;
                 setData(prevAuthorId => ({...prevAuthorId, authorId}))

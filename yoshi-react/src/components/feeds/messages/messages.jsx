@@ -51,14 +51,14 @@ function Messages() {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/api/userinfo',
+                url: '/userinfo',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             }
 
             axios
-            .post('/api/userinfo', config)
+            .post('/userinfo', config)
             .then((response) => {
                 let viewerId = response.data.authorId;
                 setViewer({ viewerId: viewerId })

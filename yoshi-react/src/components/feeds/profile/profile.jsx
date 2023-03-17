@@ -80,7 +80,7 @@ function Profile() {
              * Returns: N/A
              */
             axios
-            .get('/api/profile/' + username)
+            .get('/profile/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
                 person = response.data.personal

@@ -37,7 +37,7 @@ export default function Signup() {
    */
   const navigate = useNavigate();
   const [data, setData] = useState({ username: '', email: '', password: '' })
-  const url = '/api/signup';
+  const url = '/signup';
 
   const getAccount = async (e) => {
     /**

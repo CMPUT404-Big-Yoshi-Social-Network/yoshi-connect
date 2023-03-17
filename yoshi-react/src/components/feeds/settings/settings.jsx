@@ -62,12 +62,12 @@ function Settings() {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: '/api/userinfo',
+                url: '/userinfo',
                 headers: { 'Content-Type': 'application/json' }
             }
 
             axios
-            .get('/api/userinfo', config)
+            .get('/userinfo', config)
             .then((response) => {
                 let username = response.data.displayname;
                 let email = response.data.email;
@@ -99,7 +99,7 @@ function Settings() {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/api/settings',
+            url: '/settings',
             headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -112,7 +112,7 @@ function Settings() {
         }
 
         axios
-        .put('/api/settings', config)
+        .put('/settings', config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 404) {

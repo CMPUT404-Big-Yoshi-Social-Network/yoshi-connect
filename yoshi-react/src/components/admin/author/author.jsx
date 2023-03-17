@@ -32,7 +32,7 @@ import ModifyAuthor from "../forms/modifyForm.jsx";
 import './author.css';
 
 function Author(props) {
-    const url = '/api/admin/dashboard';
+    const url = '/admin/dashboard';
     const navigate = useNavigate();
 
     const deleteAuthor = () => {

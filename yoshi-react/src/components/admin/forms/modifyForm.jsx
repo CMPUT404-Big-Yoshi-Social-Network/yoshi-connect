@@ -37,7 +37,7 @@ function ModifyAuthor(props) {
         newProfileImage: props.profileImage,
         newGitHub: props.github
     })
-    const url = '/api/admin/dashboard';
+    const url = '/admin/dashboard';
 
     const modify = (e) => {
         /**

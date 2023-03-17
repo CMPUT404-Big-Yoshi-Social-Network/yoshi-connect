@@ -26,7 +26,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function AddAuthor() {
-    const url = '/api/admin/dashboard';
+    const url = '/admin/dashboard';
     const [data, setData] = useState({ username: '', password: '', email: '' })
     const navigate = useNavigate();
 

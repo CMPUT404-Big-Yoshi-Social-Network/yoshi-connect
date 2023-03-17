@@ -65,17 +65,17 @@ app.use("/authors/:authorId/posts/:postId/comments", comment);
 app.use("/authors/:authorId/friends", friend);
 app.use("/authors/:author_id/inbox", inbox);
 app.use("/authors/:authorId/posts", post);
-app.use("/api/settings", setting);
-app.use("/api/signup", signup);
-app.use("/api/login", login);
-app.use("/api/admin", admin);
+app.use("/settings", setting);
+app.use("/signup", signup);
+app.use("/login", login);
+app.use("/admin", admin);
 app.use("/authors/:authorId/followers", followers);
 app.use("/authors/:authorId/followings", followings);
-app.use("/api/profile/:username", profile);
+app.use("/profile/:username", profile);
 app.use("/authors/:authorId/friends", friends);
 app.use("/authors/:authorId/requests", requests);
-app.use("/api/api-docs", apiDocs);
-app.use("/api/userinfo", userinfo);
+app.use("/api-docs", apiDocs);
+app.use("/userinfo", userinfo);
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 

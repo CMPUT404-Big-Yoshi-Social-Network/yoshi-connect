@@ -42,7 +42,7 @@ function FriendFeed() {
     useEffect(() => {
         const getId = () => {
             axios
-            .get('/api/userinfo/')
+            .get('/userinfo/')
             .then((response) => {
                 let viewerId = response.data.authorId;
                 setViewerId({ viewerId: viewerId })

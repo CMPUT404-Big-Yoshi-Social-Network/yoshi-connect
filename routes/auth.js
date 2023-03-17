@@ -104,7 +104,7 @@ async function authAuthor(req, res) {
             }).clone()
         }
 
-        if (req.baseUrl == '/api/admin') { if (!req.author.admin) { return res.sendStatus(403) } }
+        if (req.baseUrl == '/admin') { if (!req.author.admin) { return res.sendStatus(403) } }
 
         let curr = new Date();
         let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));

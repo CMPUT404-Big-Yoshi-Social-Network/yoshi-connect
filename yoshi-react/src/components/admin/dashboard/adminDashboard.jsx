@@ -44,7 +44,7 @@ function AdminDashboard() {
      * Returns: N/A
      */
     const navigate = useNavigate();
-    const url = '/api/admin/dashboard';
+    const url = '/admin/dashboard';
 
     const getDashboard = () => {
         /**

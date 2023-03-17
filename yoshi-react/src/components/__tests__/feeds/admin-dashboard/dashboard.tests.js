@@ -25,7 +25,7 @@ import "@testing-library/jest-dom";
 import { BrowserRouter } from 'react-router-dom';
 
 // Tested Component
-import AdminDashboard from "../../../admin/adminDashboard.jsx";
+import AdminDashboard from "../../../../admin/adminDashboard.jsx";
 
 test("test description here", async () => {
     render(<BrowserRouter><AdminDashboard/></BrowserRouter>);

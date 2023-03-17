@@ -34,8 +34,8 @@ const postScheme = new Schema({
     content: String,
     categories: [String],
     count: Number,
-    likes: [{ String, ref: 'Like' }],
-    comments: [{ String, ref: 'Comment' }],
+    likes: [{ type: String, ref: 'Like' }],
+    comments: [{ type: String, ref: 'Comment' }],
     published: String,
     visibility: String,
     postTo: String,
@@ -66,9 +66,9 @@ const inboxScheme = new Schema({
     authorId: String,
     username: String,
     posts: [postScheme],
-    likes: [{ String, ref: 'Like' }],
-    comments: [{ String, ref: 'Comment' }],
-    requests: [{ String, ref: 'Request' }]},
+    likes: [{ type: String, ref: 'Like' }],
+    comments: [{ type: String, ref: 'Comment' }],
+    requests: [{ type: String, ref: 'Request' }]},
     {versionKey: false
 })
 

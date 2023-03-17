@@ -65,33 +65,34 @@ async function fetchPublicPosts(req, res) {
     // TO DO NEEDS TO DO PAGING 
 
     const login = await Login.findOne({token: req.cookies.token}).clone();
-    if (!login) { return res.sendStatus(404); }
-
-    console.log('Debug: Retrieving current author logged in')
-    const username = login.username
-
-    const following = await Following.aggregate([
-        {
-            $match: {'username': username} 
-        },
-        {
-            $unwind: '$followings'
-        },
-        {
-            $project: {
-                "followings.authorId": 1
-            }
-        },
-        {
-            $group: {
-                _id: null,
-                follows: { $addToSet: "$followings.authorId"}
-            }
-        },
-    ]);
 
     let followings = [];
-    if(following.length > 0){ followings = following[0].follows; }
+    if (!login && login != null) { 
+        console.log('Debug: Retrieving current author logged in')
+        const username = login.username
+    
+        const following = await Following.aggregate([
+            {
+                $match: {'username': username} 
+            },
+            {
+                $unwind: '$followings'
+            },
+            {
+                $project: {
+                    "followings.authorId": 1
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    follows: { $addToSet: "$followings.authorId"}
+                }
+            },
+        ]);
+        if(following.length > 0){ followings = following[0].follows; }
+    
+    }
 
     let posts = null;
     if(followings.length != 0){

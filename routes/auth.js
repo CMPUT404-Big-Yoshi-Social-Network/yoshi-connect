@@ -121,7 +121,7 @@ async function authAuthor(req, res) {
         });
 
         login_saved = await login.save();
-        if(login == login_saved){
+        if(login_saved){
             res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
             return res.sendStatus(200)
         }

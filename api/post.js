@@ -129,9 +129,8 @@ router.post('/', async (req, res) => {
 
   if (status == 200) {
     return res.json(post);
-  } else {
-    return res.sendStatus(status); 
   }
+  return res.sendStatus(status); 
 })
 
 router.get('/:postId/likes', async (req, res) => {

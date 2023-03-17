@@ -86,7 +86,7 @@ async function createPost(token, authorId, postId, newPost) {
     if((await authLogin(token, authorId)) == false){ return [[], 401]; }
 
     const title = newPost.title;
-    const desccription = newPost.description;
+    const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
     const categories = [''];
@@ -95,7 +95,7 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
-    if (!title || !desccription || !contentType || !content || !visibility) { return [[], 400]; }
+    if (!title || !description || !contentType || !content || !visibility) { return [[], 400]; }
 
     let postHistory = await PostHistory.findOne({authorId: authorId});
 
@@ -119,7 +119,7 @@ async function createPost(token, authorId, postId, newPost) {
         title: title,
         source: source,
         origin: origin,
-        description: desccription,
+        description: description,
         contentType: contentType,
         content: content,
         authorId: authorId,

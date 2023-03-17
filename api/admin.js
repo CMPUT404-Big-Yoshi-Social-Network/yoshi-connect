@@ -29,9 +29,7 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.post('/', async (req, res) => {  
-  await authAuthor(req, res); 
-})
+router.post('/', async (req, res) => { await authAuthor(req, res); })
 
 router.get('/dashboard', async (req, res) => {
   if(!(await checkAdmin(req, res))){ return res.sendStatus(403) }
@@ -39,15 +37,9 @@ router.get('/dashboard', async (req, res) => {
   return res.sendStatus(200)
 })
 
-router.post('/dashboard', async (req, res) => {
-  removeLogin(req, res);
-})
+router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
 
-router.delete('/dashboard', (req, res) => {
-  if (req.body.status == 'Delete') {
-    deleteAuthor(req, res);
-  }
-})
+router.delete('/dashboard', (req, res) => { if (req.body.status == 'Delete') { deleteAuthor(req, res); } })
 
 router.put('/dashboard', (req, res) => {
   if (req.body.data.status == 'Add') {

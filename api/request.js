@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { sendRequest, apideleteRequest, getRequests, getRequest } = require('../routes/request');
+const { sendRequest, deleteRequest, getRequests, getRequest } = require('../routes/request');
 const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
@@ -66,7 +66,7 @@ router.delete('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  await apideleteRequest(authorId, foreignId, res);
+  await deleteRequest(authorId, foreignId, res);
 })
 
 module.exports = router;

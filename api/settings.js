@@ -20,8 +20,6 @@ router.put('/', async (req, res) => {
   } else if (status == 200) {
     return res.sendStatus(200);
   }
-
-
 })
 
 module.exports = router;

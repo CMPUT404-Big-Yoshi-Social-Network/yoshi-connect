@@ -48,10 +48,10 @@ router.get('/', async (req, res) => {
 
       sanitizedObject = {
       "type": "author",
-      "id" : friendProfile._id,
+      "id" : process.env.DOMAIN_NAME + "authors/" + friendProfile._id,
       "host": process.env.DOMAIN_NAME,
       "displayname": friendProfile.username,
-      "url":  process.env.DOMAIN_NAME + "users/" + friendProfile._id,
+      "url":  process.env.DOMAIN_NAME + "authors/" + friendProfile._id,
       "github": "",
       "profileImage": "",
       "email": friendProfile.email,

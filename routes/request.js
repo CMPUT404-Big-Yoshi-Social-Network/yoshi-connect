@@ -118,8 +118,24 @@ async function sendRequest(authorId, foreignId, res) {
     return {
         type: type,
         summary: summary,
-        actor: actor,
-        object: object
+        actor: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: actor.username,
+            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            github: actor.github,
+            profileImage: actor.profileImage
+        },
+        object: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage
+        }
     }
 }
 
@@ -138,8 +154,24 @@ async function deleteRequest(authorId, foreignId, res) {
     return res.json({
         type: request.type,
         summary: summary,
-        actor: actor,
-        object: object
+        actor: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: actor.username,
+            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            github: actor.github,
+            profileImage: actor.profileImage
+        },
+        object: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage
+        }
     })
 }
 

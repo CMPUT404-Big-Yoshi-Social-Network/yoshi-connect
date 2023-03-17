@@ -48,10 +48,10 @@ router.get('/', async (req, res) => {
 
       sanitizedObject = {
       "type": "author",
-      "id" : followerProfile._id,
+      "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
       "host": process.env.DOMAIN_NAME,
       "displayname": followerProfile.username,
-      "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+      "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
       "github": "",
       "profileImage": "",
       "email": followerProfile.email,
@@ -87,10 +87,10 @@ router.get('/:foreignAuthorId', async (req, res) => {
 
       return res.json({
         "type": "author",
-        "id" : followerProfile._id,
+        "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
         "host": process.env.DOMAIN_NAME,
         "displayname": followerProfile.username,
-        "url":  process.env.DOMAIN_NAME + "users/" + followerProfile._id,
+        "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
         "github": "",
         "profileImage": "",
         "about": followerProfile.about,

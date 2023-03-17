@@ -149,7 +149,7 @@ async function getAuthor(authorId){
 
     const sanitizedAuthor = {
         "type": "author",
-        "id" : author._id,
+        "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
         "host": process.env.DOMAIN_NAME,
         "displayname": author.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
@@ -197,13 +197,12 @@ async function getAuthors(page, size){
 
     for(let i = 0; i < authors.length; i++){
         const author = authors[i];
-        //TODO Add GitHub and ProfileImage
         sanitizedAuthors.push({
                 "type": "author",
-                "id" : author._id,
+                "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
                 "host": process.env.DOMAIN_NAME,
                 "displayname": author.username,
-                "url":  process.env.DOMAIN_NAME + "users/" + author._id,
+                "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
                 "github": "",
                 "profileImage": "",
                 "email": author.email, 

@@ -49,8 +49,11 @@ function Post({viewerId, post}) {
     const postId = post._id;
     const authorId = post.authorId;
     const url = "/server/authors/" + viewerId + "/posts/" + postId;
-    const [numLikes, setNumLikes] = useState(post.likes.length);
-    const numComments = post.comments.length;
+
+    // TEMPORARY
+    const [numLikes, setNumLikes] = useState(0);
+    const numComments = 0;
+
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);

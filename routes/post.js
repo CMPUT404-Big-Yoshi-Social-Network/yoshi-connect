@@ -114,7 +114,7 @@ async function createPost(token, authorId, postId, newPost) {
         postHistory = await PostHistory.findOne({authorId: authorId});
     }
 
-    let post = new Post({
+    let post = {
         _id: postId,
         title: title,
         source: source,
@@ -131,7 +131,8 @@ async function createPost(token, authorId, postId, newPost) {
         visibility: visibility,
         unlisted: unlisted,
         postTo: postTo
-    });
+    };
+
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
 
@@ -150,7 +151,7 @@ async function createPost(token, authorId, postId, newPost) {
     await likes;
     await comments;
 
-    if (visibility == 'Public') {
+    if (visibility == 'PUBLIC') {
         const publicPost = await PublicPost.findOne().clone();
         publicPost.posts.push({
             authorId: authorId,

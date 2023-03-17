@@ -71,7 +71,7 @@ function Settings() {
             .then((response) => {
                 let username = response.data.displayname;
                 let email = response.data.email;
-                let viewerId = response.data.id;
+                let viewerId = response.data.authorId;
                 setNewAuthor({ newUsername: username })
                 setNewAuthor({ newEmail: email })
                 setViewer(viewerId)

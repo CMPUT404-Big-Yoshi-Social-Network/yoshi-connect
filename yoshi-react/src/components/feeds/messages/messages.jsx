@@ -60,7 +60,7 @@ function Messages() {
             axios
             .post('/api/userinfo', config)
             .then((response) => {
-                let viewerId = response.data.id;
+                let viewerId = response.data.authorId;
                 setViewer({ viewerId: viewerId })
             })
             .catch(err => { 

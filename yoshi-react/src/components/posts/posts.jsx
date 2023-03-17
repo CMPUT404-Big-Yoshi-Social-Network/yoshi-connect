@@ -59,7 +59,7 @@ function Posts(props) {
             axios
             .get('/api/userinfo/')
             .then((response) => {
-                let viewerId = response.data.id;
+                let viewerId = response.data.authorId;
                 setViewerId(viewerId);
                 setUrl('/api/authors/' + viewerId + '/posts/' + type)
             })
@@ -72,6 +72,7 @@ function Posts(props) {
 
     useEffect(() => {
        if (url) {
+        console.log(url)
         let config = {
             method: 'get',
             maxBodyLength: Infinity,

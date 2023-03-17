@@ -150,6 +150,7 @@ async function getAuthor(authorId){
     const sanitizedAuthor = {
         "type": "author",
         "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+        "authorId" : process.env.DOMAIN_NAME + "authors/" + author._id,
         "host": process.env.DOMAIN_NAME,
         "displayname": author.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + author._id,

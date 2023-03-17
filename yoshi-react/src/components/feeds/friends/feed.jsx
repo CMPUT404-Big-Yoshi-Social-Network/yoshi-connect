@@ -64,7 +64,7 @@ function FriendFeed() {
             axios
             .get('/api/userinfo/')
             .then((response) => {
-                let viewerId = response.data.id;
+                let viewerId = response.data.authorId;
                 setViewerId({ viewerId: viewerId })
             })
             .catch(err => { if (err.response.status === 404) { 

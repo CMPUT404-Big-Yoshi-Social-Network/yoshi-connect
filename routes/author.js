@@ -149,7 +149,7 @@ async function getAuthor(authorId){
 
     const sanitizedAuthor = {
         "type": "author",
-        "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+        "id" : process.env.DOMAIN_NAME + "/api/authors/" + author._id,
         "authorId" : author._id,
         "host": process.env.DOMAIN_NAME,
         "displayname": author.username,
@@ -180,7 +180,7 @@ async function updateAuthor(token, author){
 
     sanitizedAuthor = {
         "type": 'author',
-        "id" : process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
+        "id" : process.env.DOMAIN_NAME + "api/authors/" + authorProfile._id,
         "authorId" : authorProfile._id,
         "host": process.env.DOMAIN_NAME,
         "displayname": authorProfile.username,
@@ -214,7 +214,7 @@ async function getAuthors(page, size){
         const author = authors[i];
         sanitizedAuthors.push({
                 "type": "author",
-                "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+                "id" : process.env.DOMAIN_NAME + "api/authors/" + author._id,
                 "host": process.env.DOMAIN_NAME,
                 "displayname": author.username,
                 "url":  process.env.DOMAIN_NAME + "authors/" + author._id,

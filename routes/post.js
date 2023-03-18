@@ -23,9 +23,10 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
+const { PostHistory, PublicPost, Inbox } = require('../scheme/post.js');
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
+const {Follower} = require('../scheme/relations.js');
 
 // UUID
 const crypto = require('crypto');
@@ -162,6 +163,26 @@ async function createPost(token, authorId, postId, newPost) {
         publicPost.num_posts = publicPost.num_posts + 1;
         await publicPost.save();
     }
+
+    //If unlisted don't send 
+    if(unlisted === "false"){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        let promiseList = [];
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            console.log(follower);
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+            console.log(inbox);
+
+            inbox.posts.push(post);
+            promiseList.push(inbox.save());
+        }
+
+        for(let i = 0; i < promiseList.length; i++){
+            await promiseList[i];
+        }
+    }
     return [await getPost(authorId, postId), 200];
 }
 
@@ -207,6 +228,25 @@ async function updatePost(token, authorId, postId, newPost) {
         }
     }
 
+    if(unlisted === "false"){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        let promiseList = [];
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            console.log(follower);
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+            console.log(inbox);
+
+            inbox.posts.push(post);
+            promiseList.push(inbox.save());
+        }
+
+        for(let i = 0; i < promiseList.length; i++){
+            await promiseList[i];
+        }
+    }
+
     return [await getPost(authorId, postId), 200];
 }
 
@@ -224,8 +264,8 @@ async function deletePost(token, authorId, postId) {
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
 
-    const likes = await LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
-    const comments = await CommentHistory.findOneAndDelete({postId: postId});
+    const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
+    const comments = CommentHistory.findOneAndDelete({postId: postId});
     
     postHistory.save();
 
@@ -241,6 +281,9 @@ async function deletePost(token, authorId, postId) {
         publicPost.num_posts = publicPost.num_posts - 1;
         await publicPost.save();
     }
+
+    await likes;
+    await comments;
 
     return [post, 200]; 
 }

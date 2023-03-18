@@ -34,18 +34,20 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
 	const type = req.body.type;
+	
 	if(type == "post"){
-		postInboxPost(req.body);
+		//For other servers to send their authors posts to us
+		await postInboxPost(req.body);
 	}
 	if(type == "follow"){
-		postInboxFollow(req.body);
+		//For local/remote authors to server 
+		await postInboxFollow(req.body);
 	}
 	if(type == "like"){
-		console.log(req.body)
 		await postInboxLike(req.body, req.params.authorId);
 	}
 	if(type == "comment"){
-		postInboxComment(req.body);
+		await postInboxComment(req.body);
 	}
 	return res.sendStatus(200);
 })

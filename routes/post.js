@@ -140,7 +140,7 @@ async function createPost(token, authorId, postId, newPost) {
     const savePostPromise = postHistory.save();
 
     let likes = LikeHistory({
-        type: "Post",
+        type: "post",
         Id: postId,
         likes: [],
     }).save();

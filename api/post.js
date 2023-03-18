@@ -30,6 +30,7 @@ const { getAuthor } = require('../routes/author.js');
 const express = require('express'); 
 const { checkExpiry, authLogin } = require('../routes/auth');
 const { Liked } = require('../scheme/interactions');
+const { getLikes } = require('../routes/likes');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -144,7 +145,13 @@ router.get('/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  
+  const [likes, status] = await getLikes(authorId, postId, null, "post");
+
+  if(status != 200){
+    return res.sendStatus(status)
+  }
+
+  return res.json(likes);
 
   /*
   const authorId = req.params.authorId;

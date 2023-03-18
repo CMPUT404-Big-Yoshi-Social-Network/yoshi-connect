@@ -60,16 +60,15 @@ const likeHistoryScheme = new Schema({
 })
 
 const likedScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     type: String,
-    Id: String,
 })
 
 const likedHistoryScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     authorId: String,
     liked: [likedScheme],
-    num_posts: Number},
+    numObjects: Number},
     {versionKey: false
 })
 

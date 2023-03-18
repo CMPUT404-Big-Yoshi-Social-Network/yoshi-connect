@@ -24,7 +24,7 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { PostHistory, PublicPost } = require('../scheme/post.js');
-const { LikeHistory, Liked } = require('../scheme/interactions.js');
+const { LikeHistory, LikedHistory } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 
 // UUID
@@ -34,17 +34,50 @@ const crypto = require('crypto');
 const { authLogin } = require('./auth.js');
 
 
-async function getLike(authorId, postId, type){
-    let likes = await Like.findOne({Id: postId, type: type}).clone();
+async function getLikes(authorId, postId, commentId, type){
+    let objectId;
+    if(type == "comment"){
+        objectId = commentId;
+    }
+    else if(type == "post"){
+        objectId = postId;
+    }
+    else{
+        return [{}, 400];
+    }
+
+    let likes = await LikeHistory.findOne({Id: objectId, type: type}).clone();
     if(!likes){
         return [{}, 404];
     }
     likes = likes.likes;
     
+    const object = (type == "comment") ? "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId : "authors/" + authorId + "/posts/" + postId;
+    let sanitizedLikes = [];
     for(let i = 0; i < likes.length; i++){
-        like = likes[i];
-        //continue after addLike is finished
+        let liker = likes[i];
+
+        let author = {
+            "id": liker._id,
+            "host": liker.host,
+            "displayName": liker.displayName,
+            "url": liker.url,
+            "github": liker.github,
+            "profileImage": liker.profileImage
+        }
+
+        let sanitizedLike = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            summary: liker.displayName + " likes your post",
+            type: "like",
+            author: author,
+            object: process.env.DOMAIN_NAME + object 
+        };
+
+        sanitizedLikes.push(sanitizedLike);
     }
+
+    return [{sanitizedLikes}, 200];
 }
 
 async function addLike(like, author){
@@ -66,11 +99,11 @@ async function addLike(like, author){
     let likes;
     if(objectType == "comments"){
         //Add a like to a comment document
-        likes = await LikeHistory.findOne({type: "Comment", Id: Id}).clone();
+        likes = await LikeHistory.findOne({type: "comment", Id: Id}).clone();
     }
     if(objectType == "posts"){
         //Add a like to a post document
-        likes = await LikeHistory.findOne({type: "Post", Id: Id}).clone();
+        likes = await LikeHistory.findOne({type: "post", Id: Id}).clone();
     }
     else{ return [{}, 400]; }
 
@@ -79,6 +112,26 @@ async function addLike(like, author){
     return [{}, 200];
 }
 
+async function addLiked(authorId, objectId){
+    //Add this object to the list of posts that the author has liked
+    //extract author uuid from authorID
+    let authorUUID = authorId.split("/")
+    authorUUID = authorUUID[authorUUID.length - 1]; 
+    const liked = await LikedHistory.findOne({authorId: authorUUID});
+    if(!liked){
+        return;
+    }
+
+    let object = objectId.split("/");
+    let type = object[object.length - 2];
+    
+    liked.liked.push({type: (type == "posts") ? "post" : "comment", _id: objectId});
+    liked.numObjects++;
+    await liked.save();
+    return;
+}
+
+//TODO Refactor this to work
 async function deleteLike(req, res){
     let success = false;
     let numLikes = 0;
@@ -108,6 +161,11 @@ async function deleteLike(req, res){
         status: success,
         numLikes: numLikes
     })
+}
+
+//TODO Delete the liked
+async function deleteLiked(objectId){
+    
 }
 
 async function fetchCommentLikes(authorId, postId, commentId) {
@@ -168,6 +226,7 @@ async function getAuthorLikes(authorId) {
 }
 
 module.exports = {
-    getLike,
+    getLikes,
     addLike,
+    addLiked
 }

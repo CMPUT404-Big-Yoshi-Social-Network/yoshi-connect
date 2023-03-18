@@ -11,7 +11,7 @@ const { Request } = require('../scheme/relations.js');
 const crypto = require('crypto');
 
 // Other routes functions
-const { addLike } = require('./likes.js');
+const { addLike, addLiked } = require('./likes.js');
 
 async function createInbox(username, authorId){
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
@@ -152,8 +152,6 @@ async function postInboxRequest(request, authorId){
 async function postInboxLike(like, authorId){
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
-    console.log(authorId)
-    console.log(inbox);
 
     author = {
         _id: author.id,
@@ -166,6 +164,7 @@ async function postInboxLike(like, authorId){
 
     //Add a like to the authors post/comment
     await addLike(like, author);
+    await addLiked(author._id, like.object);
 
     //TODO Unliking should also be added
 

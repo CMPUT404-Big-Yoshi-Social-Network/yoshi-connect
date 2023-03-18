@@ -25,23 +25,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Request(props) {
-    /**
-     * Description: Represents the request
-     * Functions:
-     *     - useEffect(): Before render, checks the author ID and sends the username
-     *     - addRequest(): Adds the authour if the request is accpeted
-     *     - rejectRequest(): Deletes a request if it is rejected by the author 
-     * Returns: N/A
-     */
     const navigate = useNavigate();
 
     const addRequest = () => {
-        /**
-         * Description: Adds the authour if the request is accpeted
-         * Request: PUT
-         * Returns: N/A
-         */
-        console.log('Debug: Adding Author')
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
@@ -64,22 +50,9 @@ function Request(props) {
         });
     }
     const rejectRequest = () => {
-        /**
-         * Description: Deletes a request if it is rejected by the author 
-         * Request: DELETE
-         * Returns: N/A
-         */
         console.log('Debug: Rejecting Author')
-        let config = {
-            method: 'delete',
-            maxBodyLength: Infinity,
-            url: '/authors/' + props.actor + '/requests/' + props.object,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
         axios
-        .delete('/server/requests', config)
+        .delete('/authors/' + props.actorId + '/requests/' + props.objectId)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {

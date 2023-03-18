@@ -75,7 +75,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     }).clone()
 
     if (success) {
-        await deleteRequest(authorId, foreignId, req, res);
+        await deleteRequest(authorId, foreignId, res);
     } else {
         return res.sendStatus(500);
     }

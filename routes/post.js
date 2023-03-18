@@ -104,8 +104,8 @@ async function createPost(token, authorId, postId, newPost) {
     
     if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
 
-    let source = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
-    let origin = process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId;
+    let source = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
+    let origin = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
 
     if (!postHistory) {
         await createPostHistory(authorId);
@@ -426,10 +426,17 @@ async function fetchOtherPosts(req, res) {
         },
     ]);
 
-    return res.json({
-        type: "posts",
-        items: posts[0].posts_array
-    })
+    if (posts[0] == undefined) {
+        return res.json({
+            type: "posts",
+            items: [] 
+        })
+    } else {
+        return res.json({
+            type: "posts",
+            items: posts[0].posts_array
+        })
+    }
 }
 
 module.exports={

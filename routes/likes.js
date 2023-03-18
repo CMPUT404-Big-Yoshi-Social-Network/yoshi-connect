@@ -183,8 +183,8 @@ async function fetchCommentLikes(authorId, postId, commentId) {
     return comment.likes;
 }
 
-async function hasLiked(req, res) {
-    const likers = await fetchLikes(req, res);
+async function hasLiked(authorId, res) {
+    const history = await LikedHistory.findOne({authorId: authorId});
     for (let i = 0; i < likers.length; i++) {
         if (likers[i].liker === req.body.data.viewerId) {
             return res.json({ status: 'liked' })

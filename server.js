@@ -65,7 +65,7 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 app.use("/authors", author);
 app.use("/authors/:authorId/posts/:postId/comments", comment);
 app.use("/authors/:authorId/friends", friend);
-app.use("/authors/:author_id/inbox", inbox);
+app.use("/authors/:authorId/inbox", inbox);
 app.use("/authors/:authorId/posts", post);
 app.use("/settings", setting);
 app.use("/signup", signup);

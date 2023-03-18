@@ -30,7 +30,7 @@ function Friends(props) {
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
-        if (props.authorId !== '') {
+        if (props.authorId) {
             axios
             .get('/authors/' + props.authorId + '/friends')
             .then((response) => { 
@@ -40,7 +40,7 @@ function Friends(props) {
                 if (err.response.status === 404) { setFriends([]); }
              });
         }
-    }, [setFriends, props]);
+    }, [props]);
 
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>

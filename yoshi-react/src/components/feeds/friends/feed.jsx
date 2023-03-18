@@ -22,7 +22,6 @@ Foundation; All Rights Reserved
 // Functionality
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import TopNav from '../navs/top/nav.jsx';
@@ -37,7 +36,6 @@ import './feed.css';
 
 function FriendFeed() {
     const [viewer, setViewerId] = useState({ viewerId: '' })
-    const navigate = useNavigate();
 
     useEffect(() => {
         const getId = () => {
@@ -53,7 +51,7 @@ function FriendFeed() {
             });
         }
         getId();
-    }, [viewer, navigate]);
+    }, []);
 
     return (
         <div>

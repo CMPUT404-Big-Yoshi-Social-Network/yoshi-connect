@@ -444,6 +444,7 @@ async function fetchMyPosts(req, res) {
     ]);
 
     return res.json({
+        type: "posts",
         items: posts[0].posts_array
     })
 }
@@ -492,9 +493,17 @@ async function fetchOtherPosts(req, res) {
         },
     ]);
 
-    return res.json({
-        items: posts[0].posts_array
-    })
+    if (posts[0] == undefined) {
+        return res.json({
+            type: "posts",
+            items: [] 
+        })
+    } else {
+        return res.json({
+            type: "posts",
+            items: posts[0].posts_array
+        })
+    }
 }
 
 module.exports={

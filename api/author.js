@@ -73,6 +73,4 @@ router.post('/:authorId', async (req, res) => {
   if (status == 404 || status == 401) { return res.sendStatus(status); }
 })
 
-router.get('/:authorId/liked', async (req, res) => { return res.sendStatus(404); })
-
 module.exports = router;

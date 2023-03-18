@@ -30,15 +30,17 @@ function Friends(props) {
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
-        axios
-        .get('/authors/' + props.authorId + '/friends')
-        .then((response) => { 
-            setFriends(response.data.items) 
-        })
-        .catch(err => { 
-            if (err.response.status === 404) { setFriends([]); }
-         });
-    }, [setFriends, props]);
+        if (props.authorId) {
+            axios
+            .get('/authors/' + props.authorId + '/friends')
+            .then((response) => { 
+                setFriends(response.data.items) 
+            })
+            .catch(err => { 
+                if (err.response.status === 404) { setFriends([]); }
+             });
+        }
+    }, [props]);
 
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>

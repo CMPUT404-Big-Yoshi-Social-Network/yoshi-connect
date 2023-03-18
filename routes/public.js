@@ -55,7 +55,6 @@ async function fetchPublicPosts(req, res) {
             },
         ]);
         if(following.length > 0){ followings = following[0].follows; }
-    
     }
 
     let posts = null;
@@ -166,6 +165,7 @@ async function fetchPublicPosts(req, res) {
 
     if (allPosts){
         return res.json({
+            type: "posts",
             items: allPosts
           });
     }

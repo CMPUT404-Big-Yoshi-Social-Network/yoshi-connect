@@ -72,7 +72,6 @@ function Posts(props) {
 
     useEffect(() => {
        if (url) {
-        console.log(url)
         let config = {
             method: 'get',
             maxBodyLength: Infinity,

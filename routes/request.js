@@ -75,9 +75,9 @@ async function senderAdded(authorId, foreignId, req, res) {
     }).clone()
 
     if (success) {
-        await deleteRequest(authorId, foreignId, req, res);
+        await deleteRequest(authorId, foreignId, res);
     } else {
-        return res.json({ status: "Unsuccessful" });
+        return res.sendStatus(500);
     }
 }
 
@@ -177,7 +177,7 @@ async function deleteRequest(authorId, foreignId, res) {
     })
 }
 
-async function getRequests(authorId) {
+async function getRequests(authorId, res) {
     let rqs = [];
     await Request.find({objectId: authorId}, function(err, requests){
         if (!requests) { 
@@ -186,7 +186,10 @@ async function getRequests(authorId) {
             rqs = requests;
         }
     }).clone()
-    return rqs;
+    return res.json({
+        "type": 'requests',
+        items: rqs
+    })
 }
 
 async function getRequest(authorId, foreignId, res) {

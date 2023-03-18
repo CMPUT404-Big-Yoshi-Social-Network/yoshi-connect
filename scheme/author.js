@@ -52,5 +52,7 @@ const Author = database.model('Author', authorScheme);
 
 module.exports = {
     Login,
-    Author
+    Author,
+    authorScheme,
+    loginScheme
 }

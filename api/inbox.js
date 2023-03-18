@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInbox, deleteInbox, postInboxPost} = require('../routes/inbox')
+const { getInbox, postInboxLike, deleteInbox, postInboxPost} = require('../routes/inbox')
 
 // Router Setup
 const express = require('express'); 
@@ -41,17 +41,17 @@ router.post('/', async (req, res) => {
 		postInboxFollow(req.body);
 	}
 	if(type == "like"){
-		postInboxLike(req.body);
+		console.log(req.body)
+		await postInboxLike(req.body, req.params.authorId);
 	}
 	if(type == "comment"){
 		postInboxComment(req.body);
 	}
-
-	await postInbox(req, res); 
+	return res.sendStatus(200);
 })
 
 router.delete('/', async (req, res) => { 
-	await deleteInbox(req, res); 
+	await deleteInbox(req, res);
 })
 
 module.exports = router;

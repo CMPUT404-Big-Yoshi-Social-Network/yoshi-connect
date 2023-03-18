@@ -23,8 +23,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
-const { Like, Liked } = require('../scheme/interactions.js');
+const { PostHistory, PublicPost } = require('../scheme/post.js');
+const { LikeHistory, Liked } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 
 // UUID
@@ -34,38 +34,49 @@ const crypto = require('crypto');
 const { authLogin } = require('./auth.js');
 
 
-async function addLike(req, res){
-    const postHistory = await PostHistory.findOne({authorId: req.body.data.authorId});
-    let publicPost = await PublicPost.find();
-    let success = false;
-    let numLikes = 0;
-    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+async function getLike(authorId, postId, type){
+    let likes = await Like.findOne({Id: postId, type: type}).clone();
+    if(!likes){
+        return [{}, 404];
+    }
+    likes = likes.likes;
+    
+    for(let i = 0; i < likes.length; i++){
+        like = likes[i];
+        //continue after addLike is finished
+    }
+}
 
-    var like = new Like({ 
-        _id: uuid,
-        liker: req.body.data.liker 
-    });
+async function addLike(like, author){
+    const type = like.type;
+    const summary = like.summary;
+    let object = like.object;
 
-    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.data.postId);
-    if (idx > -1) { 
-        let likerIdx = postHistory.posts[idx].likes.map(obj => obj.liker).indexOf(like.liker);
-        if (likerIdx <= -1) {
-            postHistory.posts[idx].likes.push(like);
-            numLikes = postHistory.posts[idx].likes.length;
-            await postHistory.save();
-            success = true;
+    if(!type || !summary || !object){
+        return [{}, 400];
+    }
+    if(type != "like"){
+        return [{}, 400];
+    }
 
-            for (let i = 0; i < publicPost[0].posts.length; i++) {
-                if (publicPost[0].posts[i].post._id === req.body.data.postId) {
-                    publicPost[0].posts[i].post.likes.push(like);
-                    numLikes = publicPost[0].posts[i].post.likes.length;
-                    await publicPost[0].save();
-                }
-            }
-        }
-    } 
+    object = object.split("/");
+    let objectType = object[object.length - 2];
+    let Id = object[object.length - 1];
 
-    return res.json({ status: success, numLikes: numLikes })
+    let likes;
+    if(objectType == "comments"){
+        //Add a like to a comment document
+        likes = await LikeHistory.findOne({type: "Comment", Id: Id}).clone();
+    }
+    if(objectType == "posts"){
+        //Add a like to a post document
+        likes = await LikeHistory.findOne({type: "Post", Id: Id}).clone();
+    }
+    else{ return [{}, 400]; }
+
+    likes.likes.push(author);
+    await likes.save();
+    return [{}, 200];
 }
 
 async function deleteLike(req, res){
@@ -154,4 +165,9 @@ async function fetchLikes(authorId, postId) {
 
 async function getAuthorLikes(authorId) { 
     return await Liked.findOne({authorId: authorId}); 
+}
+
+module.exports = {
+    getLike,
+    addLike,
 }

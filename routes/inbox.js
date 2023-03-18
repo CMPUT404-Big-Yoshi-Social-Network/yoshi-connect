@@ -10,6 +10,9 @@ const { Request } = require('../scheme/relations.js');
 // UUID
 const crypto = require('crypto');
 
+// Other routes functions
+const { addLike } = require('./likes.js');
+
 async function createInbox(username, authorId){
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     await Inbox({
@@ -148,13 +151,39 @@ async function postInboxRequest(request, authorId){
 
 async function postInboxLike(like, authorId){
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
+    let author = like.author;
+    console.log(authorId)
+    console.log(inbox);
 
-    inbox.likes.push(like);
+    author = {
+        _id: author.id,
+        host: author.host,
+        displayName: author.displayName,
+        url: author.url,
+        github: author.github, //TODO I don't think we need this but I'll leave it here for later consideration
+        profileImage: author.profileImage
+    };
+
+    //Add a like to the authors post/comment
+    await addLike(like, author);
+
+    //TODO Unliking should also be added
+
+    const inboxLike = {
+        author: author,
+        object: like.object,
+        summary: like.summary
+    }
+
+    inbox.likes.push(inboxLike);
+
     inbox.save();
 }
 
 async function postInboxComment(comment, authorId){
     const inbox = await Inbox.findOne({authorid: authorId}, '_id comments');
+
+    //Add a comment to the authors post
 
     inbox.comments.push(comment);
     inbox.save();
@@ -167,7 +196,9 @@ async function deleteInbox(req, res){
 module.exports = {
     createInbox,
     getInbox,
-    postInbox,
     deleteInbox,
     postInboxPost,
+    postInboxLike,
+    postInboxComment,
+    postInboxRequest,
 }

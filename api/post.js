@@ -144,6 +144,12 @@ router.get('/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
+  
+
+  /*
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+
   if(!req.cookies || !checkExpiry(req.cookies["token"])){
     return res.sendStatus(401);
   }
@@ -169,7 +175,7 @@ router.get('/:postId/likes', async (req, res) => {
     type: "post",
     Id: postId
   }).save();
-
+  */
 })
 
 module.exports = router;

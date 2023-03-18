@@ -96,13 +96,11 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
-    if (!title || !description || !contentType || !content || !visibility) { return [[], 400]; }
-
     let postHistory = await PostHistory.findOne({authorId: authorId});
 
     if(postId != undefined){
         let oldPost = postHistory.posts.id(postId);
-        if(oldPost) return [[], 400]
+        if (oldPost) return [[], 400]
     }
     
     if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
@@ -137,7 +135,7 @@ async function createPost(token, authorId, postId, newPost) {
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
 
-    const savePostPromise = postHistory.save();
+    const savePostPromise = await postHistory.save();
 
     let likes = LikeHistory({
         type: "post",
@@ -152,7 +150,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     await likes;
     await comments;
-    await savePostPromise;
+    savePostPromise;
 
     if (visibility == 'PUBLIC') {
         const publicPost = await PublicPost.findOne().clone();
@@ -490,7 +488,7 @@ async function fetchOtherPosts(req, res) {
                 _id: null,
                 posts_array: {$push: "$posts"}
             }
-        },
+        }
     ]);
 
     if (posts[0] == undefined) {

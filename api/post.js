@@ -28,20 +28,18 @@ const { getAuthor } = require('../routes/author.js');
 
 // Router Setup
 const express = require('express'); 
-const { checkExpiry, authLogin } = require('../routes/auth');
-const { Liked } = require('../scheme/interactions');
 const { getLikes } = require('../routes/likes');
 
 // Router
 const router = express.Router({mergeParams: true});
+
+router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
 
 router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
 
 router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, res); })
 
 router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
-
-router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
 
 router.get('/:postId', async (req, res) => {
   if (req.params.authorId == undefined) { return res.sendStatus(404); }

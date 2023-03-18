@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInbox, deleteInbox} = require('../routes/inbox')
+const { getInbox, postInbox, deleteInbox, postInboxPost} = require('../routes/inbox')
 
 // Router Setup
 const express = require('express'); 
@@ -28,10 +28,30 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.get('/', async (req, res) => { await getInbox(req, res); })
+router.get('/', async (req, res) => { 
+	await getInbox(req, res); 
+})
 
-router.post('/', async (req, res) => { await postInbox(req, res); })
+router.post('/', async (req, res) => {
+	const type = req.body.type;
+	if(type == "post"){
+		postInboxPost(req.body);
+	}
+	if(type == "follow"){
+		postInboxFollow(req.body);
+	}
+	if(type == "like"){
+		postInboxLike(req.body);
+	}
+	if(type == "comment"){
+		postInboxComment(req.body);
+	}
 
-router.delete('/', async (req, res) => { await deleteInbox(req, res); })
+	await postInbox(req, res); 
+})
+
+router.delete('/', async (req, res) => { 
+	await deleteInbox(req, res); 
+})
 
 module.exports = router;

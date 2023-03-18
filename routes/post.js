@@ -136,6 +136,8 @@ async function createPost(token, authorId, postId, newPost) {
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
 
+    const savePostPromise = postHistory.save();
+
     let likes = LikeHistory({
         type: "Post",
         Id: postId,
@@ -147,9 +149,9 @@ async function createPost(token, authorId, postId, newPost) {
         comments: [],
     }).save();
 
-    await postHistory.save();
     await likes;
     await comments;
+    await savePostPromise;
 
     if (visibility == 'PUBLIC') {
         const publicPost = await PublicPost.findOne().clone();
@@ -221,6 +223,10 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
+
+    const likes = await LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
+    const comments = await CommentHistory.findOneAndDelete({postId: postId});
+    
     postHistory.save();
 
     if (post.visibility == "PUBLIC" || post.visibility == "Public") {

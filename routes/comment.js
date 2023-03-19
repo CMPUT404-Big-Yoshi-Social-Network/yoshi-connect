@@ -1,4 +1,38 @@
+/*
+Copyright 2023 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Furthermore it is derived from the Python documentation examples thus
+some of the code is Copyright © 2001-2013 Python Software
+Foundation; All Rights Reserved
+*/
+
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
+
+// Schemas
+const { PostHistory, PublicPost, Inbox } = require('../scheme/post.js');
+const { CommentHistory } = require('../scheme/interactions.js');
+const { Author } = require('../scheme/author.js');
+const {Follower } = require('../scheme/relations.js');
+
+// UUID
+const crypto = require('crypto');
+
+// Additional Functions
+const { authLogin, checkExpiry } = require('./auth.js');
 
 
 async function getComments(authorId, postId) {
@@ -44,28 +78,48 @@ async function getComments(authorId, postId) {
     }   
 }
 
-async function createComment(authorId, postId, newComment, domain) {
-    const postHistory = await PostHistory.findOne({authorId: authorId});
-    const author = await Author.findOne({authorId: authorId});
-    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+async function createComment(token, postId, newComment, domain) {
+    if(await authLogin(token, newComment.author.id)){ return [{}, 401]; }
 
-    var comment = new Comment({
-        author: author,
-        comment: newComment.content,
-        contentType: newComment.contentType,
-        published: new Date().toISOString(),
-        _id: domain + "authors/" + authorId + "/posts/" + postId + "/comments/" + uuid
-    });
+    //verify comment is valid
+    //find comment history for post
+    //push to comment history
 
-    let idx = postHistory.posts.map(obj => obj._id).indexOf(req.body.postId);
+    const type = newComment.type;
+    const author = newComment.Author
+    const comment = newComment.comment
+    const contentType = newComment.contentType;
+    let published = newComment.published;
+    let id = newComment.id;
 
-    if (idx > -1) { 
-        postHistory.posts[idx].comments.push(comment);
-        postHistory.posts[idx].count + 1;
-        postHistory.save();
+    if(!id){
+        //generate new id
+        id = String(crypto.randomUUID()).replace(/-/g, "");
     }
 
-    return comment  
+    if(!published){
+        //generate new date
+        published = new Date().toISOString();
+    }
+
+    let comments = await CommentHistory.findOne({postId: postId});
+    
+    
+    comments.comments.push({
+        author: author,
+        comment: comment,
+        contentType: contentType,
+        published: published
+    })
+
+    await comments.save();
+
+    //if author is object verify it is real
+
+    //if author is string also verify it is real.
+    //After pull relavent details
+
+    //PUsh to comment history    
 }
 
 
@@ -129,4 +183,8 @@ async function editComment(req, res){
     }).clone()
     
     return res.json({ status: success })
+}
+
+module.exports = {
+    createComment
 }

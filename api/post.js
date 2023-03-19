@@ -183,4 +183,16 @@ router.get('/:postId/likes', async (req, res) => {
   */
 })
 
+router.put('/:postId/likes', async (req, res) => {
+  console.log('TODO: PUT Request that adds a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
+})
+
+router.delete('/:postId/likes', async (req, res) => {
+  console.log('TODO: DELETE Request that deletes a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
+})
+
+router.get('/:postId/liked', async (req, res) => {
+  console.log('TODO: GET Request that detects whether a post has already been liked by the viewer (which you can get from token); 200 means liked, 404 not liked etc')
+})
+
 module.exports = router;

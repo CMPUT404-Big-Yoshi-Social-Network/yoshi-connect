@@ -26,31 +26,58 @@ async function createInbox(username, authorId){
     }).save();
 }
 
-async function getInbox(req, res){
-    const authorId = req.params.author_id;
+async function getInbox(authorId, page, size){
 
-    let page = 1;
-    let size = 5;
+    if(page == undefined) { page = 1; }
+    if(size == undefined) { size = 5; }
 
-    if(req.query.page != undefined) { page = req.query.page; }
-    if(req.query.size != undefined) { size = req.query.size; }
+    let posts;
+    //TODO reduce code duplication
+    if(page > 1){
+        posts = await Inbox.aggregate([
+            {
+                $match: {'authorId': authorId}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            },
+        ]);
+    } else if (page == 1) {
+        posts = await Inbox.aggregate([
+            {
+                $match: {'authorId': authorId}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            }
+            
+        ]);
+    } else{
+        return [[], 400];
+    }
 
-    const start_index = (page - 1) * size; 
-    const end_index = page * size;
-
-    let post = await Inbox.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $project: {_id: 1, posts: {$slice: ["$posts", start_index, end_index]}}
-        },
-        {
-            $unwind: "$posts"
-        },
-    ]);
-
-    return res.json(post);
+    return [posts[0].posts_array, 200];
 }
 
 async function postInbox(req, res){

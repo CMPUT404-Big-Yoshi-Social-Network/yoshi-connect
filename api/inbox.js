@@ -28,8 +28,17 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.get('/', async (req, res) => { 
-	await getInbox(req, res); 
+router.get('/', async (req, res) => {
+	const authorId = req.params.authorId;
+	const size = req.query.size;
+	const page = req.query.page;
+	const [posts, status] = await getInbox(authorId, size, page); 
+
+	if(status != 200){
+		return res.sendStatus(status);
+	}
+
+	return res.json(posts);
 })
 
 router.post('/', async (req, res) => {

@@ -44,35 +44,27 @@ function EditPost({viewerId, post}) {
         postId: post._id
     })
     
-    const modifyPost = () => {
+    const modifyPost = (e) => {
         /**
          * Description: Sends a POST request of the updated post conetents 
          * Request: POST    
          * Returns: N/A
          */
-        console.log('Debug: Creating a post')
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/authors/' + post.authorId + '/posts/' + data.postId,
-            headers: {
-            'Content-Type': 'multipart/form-data'
-            },
-            data: {
-                title: data.title,
-                desc: data.desc,
-                contentType: data.contentType,
-                visibility: data.visibility,
-                content: data.content,
-                unlisted: data.unlisted,
-                specifics: data.specifics,
-                image: data.image,
-                postId: data.postId,
-                status: 'Modify'
-            }
+        e.preventDefault()
+        
+        let body = {
+            title: data.title,
+            desc: data.desc,
+            contentType: data.contentType,
+            visibility: data.visibility,
+            content: data.content,
+            unlisted: data.unlisted,
+            specifics: data.specifics,
+            image: data.image,
+            postId: data.postId,
         }
         
-        axios.post('/server/authors/' + post.authorId + '/posts/' + data.postId, config)
+        axios.post('/authors/' + post.authorId + '/posts/' + post._id, body)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }
@@ -106,7 +98,7 @@ function EditPost({viewerId, post}) {
     return (
         post.authorId !== viewerId ? null :
             <div className='editBackground'>
-            <form method='PUT'>
+            <form>
                 <label>
                     Title:
                     <input type="text" name="title" value={data.title || ''} onChange={(e) => {
@@ -170,7 +162,7 @@ function EditPost({viewerId, post}) {
                         <br/>
                         <img src="" style={{maxHeight: "15vh"}} alt="" />
                 </div>
-                <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Author</button>
+                <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Post</button>
             </form>
         </div>
     )

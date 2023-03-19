@@ -29,25 +29,11 @@ import { Button } from 'react-bootstrap';
 import '../login/login.css';
 
 export default function AdminLogin() { 
-    /**
-     * Description: Represents an admin 
-     * Functions:
-     *     - getAdmin(): Varifies admin and redirects to the admin dashboard
-     * Returns: N/A
-     */
-    const url = '/server/admin';
+    const url = '/admin';
     const navigate = useNavigate();
-    const [data, setData] = useState({
-      username: '',
-      password: ''
-    })
+    const [data, setData] = useState({ username: '', password: '' })
 
     const getAdmin = (e) => {
-      /**
-       * Description: Varifies admin and redirects to the admin dashboard
-       * Returns: N/A
-       */
-      console.log('Debug: Getting admin')
       e.preventDefault()
 
       let justLogged =  new Date();
@@ -64,12 +50,16 @@ export default function AdminLogin() {
       }
 
       axios(config)
-      .then((response) => {
-        if ( response.data.status === true) {
-          console.log("Debug: Token saved and going to dashboard.")
-          return navigate('/admin/dashboard/');
-        } 
-      })
+      .then((response) => { navigate('/admin/dashboard/'); })
+      .catch(err => {
+        if (err.response.status === 400) {
+          navigate('/badrequest'); 
+        } else if (err.response.status === 500) {
+          console.log('NEED 500 PAGE!')
+        } else if (err.response.status === 403) {
+          navigate('/forbidden');
+        }
+      });
     }
     return(
       <div className='login'>

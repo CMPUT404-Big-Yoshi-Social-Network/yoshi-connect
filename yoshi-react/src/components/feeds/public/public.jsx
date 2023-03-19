@@ -20,9 +20,9 @@ Foundation; All Rights Reserved
 */
 
 // Functionality 
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import TopNav from '../navs/top/nav.jsx';
@@ -52,77 +52,8 @@ function PublicFeed() {
      *          - Calls getPosts() to get the posts of the current author's following list and also public posts 
      * Returns: N/A
      */
+    const [viewer, setViewerId] = useState('')
     const navigate = useNavigate();
-    const [publicPosts, setPublicPosts] = useState([]);
-    const [viewer, setViewerId] = useState({ viewerId: '' })
-
-    const logOut = useCallback(() => {
-        /**
-         * Description: Sends a POST request in order to log out an author 
-         * Request: POST
-         * Returns: N/A
-         */
-        console.log('Debug: Attempting to log out.')
-
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                message: 'Logging Out'
-            }
-        }
-
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => { console.error(err); });
-    }, [navigate]);
-
-    useEffect(() => {
-        /**
-         * Description: Calls checkExpiry() to check if the token is expired before render 
-         * Returns: N/A
-         */
-        const checkExpiry = () => {
-            /**
-             * Description: Sends a GET request checking if the author has an expired token (if so, they will be logged out and 
-             *              redirected to the Welcome component) 
-             * Request: GET
-             * Returns: N/A
-             */
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-    
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                if (response.data.status === "Expired") {
-                    console.log("Debug: Your token is expired.")
-                    logOut();
-                    navigate('/');
-                } else {
-                    console.log('Debug: Your token is not expired.')
-                }
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); 
-                }
-            });
-        }
-        checkExpiry();
-    }, [logOut, navigate]) 
 
     useEffect(() => {
         /**
@@ -131,67 +62,33 @@ function PublicFeed() {
          */
         const getId = () => {
             /**
-             * Description: Sends a POST request to get the author's id 
+             * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/server/posts/',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    sessionId: localStorage.getItem('sessionId'),
-                    status: 'Fetching current authorId'
-                }
-            }
 
             axios
-            .post('/server/posts/', config)
+            .get('/userinfo/')
             .then((response) => {
                 let viewerId = response.data.authorId;
-                setViewerId({
-                    viewerId: viewerId
-                  })
+                setViewerId(viewerId)
             })
-            .catch(err => { });
-        }
-
-        const getPosts = () => {
-            /**
-             * Description: Sends a POST request to get the current author's followings posts and public (PSA) posts  
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/server/public/posts',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-
-            axios
-            .post('/server/public/posts', config)
-            .then((response) => { setPublicPosts(response.data.publicPosts) })
-            .catch(err => { console.error(err); });
+            .catch(err => { if (err.response.status === 404) { 
+                setViewerId('')
+            }})
         }
         getId();
-        getPosts();
-    }, []);
+    }, [navigate]);
 
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={viewer}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts viewerId={viewer.viewerId} posts={publicPosts}/>
+                    <Posts type={'public'}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

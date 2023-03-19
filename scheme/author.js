@@ -19,22 +19,38 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-@font-face {
-    font-family: "Uni Neue";
-    src: url('../../fonts/UniNeue-Trial-Regular.eot');
-    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
-         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
-         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
-         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
-}
+// Database
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const database = mongoose.connection;
 
-.left-admin-column{
-    left: 0;
-    top: 5em;
-    position: fixed;
-    width: 15%;
-    height: 100%;
-    background-color: #0A0F10;
-    border: #24292F 0.1em solid;
-    font-family: 'Uni Neue', sans-serif;
+const authorScheme = new Schema({
+    _id: String,
+    username: String,
+    password: String,
+    email: String,
+    about: String,
+    pronouns: String,
+    github: String,
+    profileImage: String,
+    admin: false},
+    {versionKey: false
+});
+
+const loginScheme = new Schema({
+    _id: String,
+    authorId: String,
+    username: String,
+    token: String,
+    admin: Boolean,
+    expires: String,},
+    {versionKey: false
+});
+
+const Login = database.model('Login', loginScheme);
+const Author = database.model('Author', authorScheme);
+
+module.exports = {
+    Login,
+    Author
 }

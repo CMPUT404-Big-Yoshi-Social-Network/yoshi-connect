@@ -20,9 +20,9 @@ Foundation; All Rights Reserved
 */
 
 // Functionality 
+import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import React, { useEffect } from "react";
 
 // User Interface 
 import TopNav from '../navs/top/nav.jsx';
@@ -38,74 +38,43 @@ function Messages() {
      *     - logOut(): Logs out an author and sends them to the Welcome component 
      * Returns: N/A
      */
+    const [viewer, setViewer] = useState({ viewerId: '' });
     const navigate = useNavigate();
 
     useEffect(() => {
         /**
-         * Description: Calls checkExpiry() to check if the token is expired before render 
-         * Returns: N/A
-         */
-        checkExpiry();
-     });
-
-    const checkExpiry = () => {
-        /**
-         * Description: Sends a GET request in order to check if the current author's token is expired 
-         * Request: GET
-         * Returns: N/A
-         */
-        let config = { method: 'get', maxBodyLength: Infinity, url: '/feed' }
-
-        axios
-        .get('/server/feed', config)
-        .then((response) => {
-            if (response.data.status === "Expired") {
-                console.log("Debug: Your token is expired.")
-                logOut();
-                navigate('/');
-            }
-            else{console.log('Debug: Your token is not expired.')}
-        })
-        .catch(err => {
-            if (err.response.status === 401) { console.log("Debug: Not authorized."); navigate('/unauthorized'); }
-        });
-    }
-
-    const logOut = () => {
-        /**
-         * Description: Sends a POST request in order to log out the current author and redirect them to the Welcome component 
+         * Description: Before render, checks the author's account details
          * Request: POST
          * Returns: N/A
          */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: { message: 'Logging Out' }
+        const getAuthor = () => {
+            axios
+            .get('/userinfo')
+            .then((response) => {
+                let viewerId = response.data.authorId;
+                setViewer({ viewerId: viewerId })
+            })
+            .catch(err => { 
+                if (err.response.status === 404) { 
+                    setViewer({ viewerId: '' })
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                }
+            });
         }
-
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => { console.error(err) });
-    }
+        getAuthor();
+    }, [navigate])
 
     return (
         <div>
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
                     <div style={{paddingLeft: '1em'}}>
-                        Viewing your messages with X user.
+                        IN CONSTRUCTION
                     </div>
                 </div>
                 <div className='pubColR'>

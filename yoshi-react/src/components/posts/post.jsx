@@ -48,9 +48,12 @@ function Post({viewerId, post}) {
      */
     const postId = post._id;
     const authorId = post.authorId;
-    const url = "/server/authors/" + authorId + "/posts/" + postId;
-    const [numLikes, setNumLikes] = useState(post.likes.length);
-    const numComments = post.comments.length;
+    const url = "/server/authors/" + viewerId + "/posts/" + postId;
+
+    // TEMPORARY
+    const [numLikes, setNumLikes] = useState(0);
+    const numComments = 0;
+
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
@@ -71,7 +74,7 @@ function Post({viewerId, post}) {
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/posts/',
+                url: '/authors/' + authorId + '/posts/' + postId + '/likes',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -79,11 +82,10 @@ function Post({viewerId, post}) {
                     viewerId: viewerId,
                     postId: postId,
                     authorId: authorId,
-                    status: 'Checking if post is already liked'
                 }
             }
             axios
-            .post('/server/posts/', config)
+            .post('/authors/' + authorId + '/posts/' + postId + '/likes', config)
             .then((response) => {
                 if (response.data.status === 'liked') { setLike(true); } else { setLike(false); }
             })
@@ -111,16 +113,11 @@ function Post({viewerId, post}) {
         let config = {
             method: "delete",
             maxBodyLength: "Infinity",
-            url: url,
-            headers: { 'Content-Type': 'application/json' },
-            data: {
-                authorId: authorId,
-                postId: postId,
-                status: "Remove post"
-            }
+            url: '/authors/' + authorId + '/posts/' + postId,
+            headers: { 'Content-Type': 'application/json' }
         };
 
-        axios.delete(url, config).then((response) => {}).catch((error) => { console.log(error); });
+        axios.delete('/authors/' + authorId + '/posts/' + postId, config).then((response) => {}).catch((error) => { console.log(error); });
     }
 
     const addLike = () => {

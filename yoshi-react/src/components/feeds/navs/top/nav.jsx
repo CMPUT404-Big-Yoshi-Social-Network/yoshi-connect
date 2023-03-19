@@ -30,14 +30,8 @@ import { Form } from 'react-bootstrap';
 import Notifications from '../../notifications/notifcation-box';
 import './nav.css'
 
-function TopNav() {
-    /**
-     * Description: Represents the top navigation bar
-     * Returns: N/A
-     */
+function TopNav(props) {
     return (
-        // TODO: Need to Add Search functionality and Notification Functionality
-        // Might need to query notifications and use map (refer to leftNav.jsx
         <Navbar className='topNav'>
             <Navbar.Brand className='topNavBrand' href='/feed'>
                 <img className='topLogo' src='/images/yoshi_connect_logo2.png' width={40} height={40} alt='logo'/>
@@ -48,7 +42,7 @@ function TopNav() {
             </Nav>
             <Nav className='topNavNotif'>
                 <Popup  className='notifPopup' trigger={<img className='notifBell' src='/images/public/icon_notif_bell.png' alt='Notifications' width={30}/>}>
-                    <Notifications/>
+                    <Notifications authorId={props.authorId}/>
                 </Popup>
             </Nav>
         </Navbar>

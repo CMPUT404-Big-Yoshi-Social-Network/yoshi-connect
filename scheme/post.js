@@ -24,40 +24,27 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
-// Password
-const crypto = require('crypto');
-
-const commentScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    commenter: String,
-    comment: String
-})
-
-const likeScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
-    liker: String
-})
-
 const postScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
+    origin: String,
+    source: String,
     title: String,
     description: String,
     contentType: String,
     content: String,
     categories: [String],
     count: Number,
-    likes: [likeScheme],
-    comments: [commentScheme],
+    likes: [{ type: String, ref: 'Like' }],
+    comments: [{ type: String, ref: 'Comment' }],
     published: String,
     visibility: String,
-    specifics: [String],
-    unlisted: Boolean,
-    image: String},
+    postTo: String,
+    unlisted: Boolean,},
     {versionKey: false
 });
 
 const postHistoryScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     authorId: String,
     num_posts: Number,
     posts: [postScheme]},
@@ -65,7 +52,7 @@ const postHistoryScheme = new Schema({
 })
 
 const publicScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     posts: [{
         authorId: String,
         post: postScheme,
@@ -74,16 +61,25 @@ const publicScheme = new Schema({
     {versionKey: false
 })
 
-const PostHistory = database.model('Posts', postHistoryScheme);
-const Post = database.model('Post', postScheme);
-const Like = database.model('Like', likeScheme);
-const Comment = database.model('Comment', commentScheme);
+const inboxScheme = new Schema({
+    _id: String,
+    authorId: String,
+    username: String,
+    posts: [postScheme],
+    likes: [{ type: String, ref: 'Like' }],
+    comments: [{ type: String, ref: 'Comment' }],
+    requests: [{ type: String, ref: 'Request' }]},
+    {versionKey: false
+})
+
+const PostHistory = database.model('PostHistory', postHistoryScheme);
 const PublicPost = database.model('PublicPost', publicScheme);
+const Inbox = database.model('Inbox', inboxScheme); 
+const Post = database.model('Post', postScheme);    
 
 module.exports = {
     PostHistory,
-    Post,
-    Like,
-    Comment,
-    PublicPost
+    PublicPost,
+    Inbox,
+    Post
 }

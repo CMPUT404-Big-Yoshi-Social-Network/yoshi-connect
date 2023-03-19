@@ -20,8 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate } from 'react-router-dom';
-import React, { useEffect } from "react";
+import React from "react";
 
 // Child Component
 import TopNav from '../feeds/topNav';
@@ -38,31 +37,15 @@ function PasswordChange() {
      *     - useEffect(): Before rendering, checks if the author is logged in
      * Returns: N/A
      */
-    const navigate = useNavigate();
-    const checkForAuthor = () => {
-        /**
-         * Description: Checks if the author is logged in to authorize routing
-         * Returns: N/A
-         */
-        const token = localStorage.getItem('token');
-        if (token === null) {
-            console.log("Debug: You are not logged in.")
-            return navigate('/unauthorized');
-        }
-        console.log("Debug: You are logged in.")
-    }
-    useEffect(() => {
-        checkForAuthor();
-    });
     return (
         <div>
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    Viewing Password Change Page.
+                    IN CONSTRUCTION
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

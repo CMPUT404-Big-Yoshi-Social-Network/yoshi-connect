@@ -19,26 +19,25 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Functionality
 import React from "react";
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function ModifyAuthor(props) {
-    /**
-     * Description: Represents an aupdated author 
-     * Functions:
-     *     - modify(): Updates the author in the database
-     * Returns: N/A
-     */
+    const navigate = useNavigate();
     const [data, setData] = useState({
-        newUsername: props.username,
+        newUsername: props.displayname,
         newPassword: props.password,
         newEmail: props.email,
         newAbout: props.about,
         newPronouns: props.pronouns,
-        newAdmin: props.admin
+        newAdmin: props.admin,
+        newProfileImage: props.profileImage,
+        newGitHub: props.github
     })
-    const url = '/server/admin/dashboard';
+    const url = '/admin/dashboard';
 
     const modify = (e) => {
         /**
@@ -47,32 +46,29 @@ function ModifyAuthor(props) {
          * Returns: N/A
          */
         e.preventDefault();
-        console.log('Debug: Attempting to modify an author.');
-        let config = {
-            method: 'put',
-            maxBodyLength: Infinity,
-            url: url,
-            headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            data: {
-                status: 'Modify an Author',
-                newUsername: data.newUsername,
-                newPassword: data.newPassword,
-                newEmail: data.newEmail,
-                newAbout: data.newAbout,
-                newPronouns: data.newPronouns,
-                newAdmin: data.newAdmin,
-                authorId: props._id
-            }
+
+        let body = {
+            status: 'Modify',
+            newUsername: data.newUsername,
+            newPassword: data.newPassword,
+            newEmail: data.newEmail,
+            newAbout: data.newAbout,
+            newPronouns: data.newPronouns,
+            newAdmin: data.newAdmin,
+            authorId: props.id
         }
 
         axios
-        .put(url, config)
-        .then((response) => {
-        })
+        .put(url, body)
+        .then((response) => { })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 404) {
+                navigate('/notfound');
+            } else if (err.response.status === 500) {
+                console.log('NEED A 500 STATUS PAGE')
+            }
         });
     }
 
@@ -135,6 +131,26 @@ function ModifyAuthor(props) {
                         setData({
                         ...data,
                         newAdmin: e.target.value
+                        })
+                    }}/>
+                </label>
+                <br></br>
+                <label>
+                    GitHub:
+                    <input type="admin" name="admin" value={data.newGitHub} onChange={(e) => {
+                        setData({
+                        ...data,
+                        newGitHub: e.target.value
+                        })
+                    }}/>
+                </label>
+                <br></br>
+                <label>
+                    ProfileImage:
+                    <input type="admin" name="admin" value={data.newProfileImage} onChange={(e) => {
+                        setData({
+                        ...data,
+                        newProfileImage: e.target.value
                         })
                     }}/>
                 </label>

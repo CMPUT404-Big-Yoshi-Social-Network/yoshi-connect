@@ -21,7 +21,7 @@ Foundation; All Rights Reserved
 
 // Functionality
 import React, { useEffect, useState } from 'react';
-// import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // Child Component
@@ -38,22 +38,24 @@ function RightNavBar() {
      * Description: Represents the right navigation bar
      * Returns: N/A
      */
-    const [username, setUsername] = useState();
-
-    const getUsername = () => {
-        axios
-        .get('/server/nav')
-        .then((response) => {
-            setUsername(response.data.username)            //console.log('Username:', username);
-        })
-        .catch(err => {
-            setUsername('');
-        });
-    }
+    const [username, setUsername] = useState('');
+    const navigate = useNavigate();
     
     useEffect(() => {
-        getUsername();
-    }, [username])
+        const getId = () => {
+            axios
+            .get('/userinfo/')
+            .then((response) => {
+                let username = response.data.displayname;
+                setUsername(username)
+            })
+            .catch(err => { if (err.response.status === 404) { 
+                setUsername('')
+            } 
+            });
+        }
+        getId();
+    }, [username, navigate])
 
     return (
         <Navbar className="right-column">

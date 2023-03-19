@@ -13,6 +13,9 @@ const crypto = require('crypto');
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
 
+// Additional Functions
+const { authLogin } = require('./auth.js');
+
 async function createInbox(username, authorId){
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     await Inbox({
@@ -214,9 +217,17 @@ async function postInboxComment(comment, authorId){
     inbox.comments.push(comment);
     inbox.save();
 }
-async function deleteInbox(req, res){
-    const responses = await Inbox.updateOne({authorId: req.params.author_id},{$set: {'requests': [], 'likes': [], 'posts': [], 'comments': []}}).clone();
-    return res.sendStatus(200);
+async function deleteInbox(token, authorId){
+    console.log(authLogin(token, authorId));
+    if (! (await authLogin(token, authorId))) { return 401; }
+
+    const responses = await Inbox.updateOne({authorId: authorId},{requests: [], likes: [], posts: [], comments: []}).clone();
+    
+    if(responses.modifiedCount != 1){
+        return 404;
+    }
+
+    return 200;
 }
 
 module.exports = {

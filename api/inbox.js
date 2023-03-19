@@ -61,8 +61,10 @@ router.post('/', async (req, res) => {
 	return res.sendStatus(200);
 })
 
-router.delete('/', async (req, res) => { 
-	await deleteInbox(req, res);
+router.delete('/', async (req, res) => {
+	const status = await deleteInbox(req.cookies.token, req.params.authorId);
+
+	return res.sendStatus(status);
 })
 
 module.exports = router;

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getComments, createComment } = require('../routes/post');
+const { getComments, createComment } = require('../routes/comment');
 const { apiFetchCommentLikes } = require('../routes/post');
 
 // Router Setup
@@ -53,10 +53,9 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const comment = createComment(authorId, postId, req.body, process.env.DOMAIN_NAME);
+  const comment = createComment(req.cookies.token, postId, req.body, process.env.DOMAIN_NAME);
 
   return res.json({
     "type": "comment",

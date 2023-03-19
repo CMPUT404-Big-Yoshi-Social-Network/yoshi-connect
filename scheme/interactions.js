@@ -27,9 +27,18 @@ const database = mongoose.connection;
 const crypto = require('crypto');
 const { authorScheme } = require("./author");
 
+const commentAuthorScheme = new Schema({
+    _id: String,
+    host: String,
+    displayName: String,
+    url: String,
+    github: String,
+    profileImage: String
+})
+
 const commentScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
-    commenter: String,
+    author: authorScheme,
     comment: String,
     contentType: String,
     published: String,

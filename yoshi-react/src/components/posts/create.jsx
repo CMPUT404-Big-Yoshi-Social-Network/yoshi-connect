@@ -176,7 +176,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Message To:</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, postTo: [e.target.value]})
+                            setData({...data, postTo: e.target.value})
                         }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>

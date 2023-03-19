@@ -98,7 +98,7 @@ async function getFriends(id){
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
-    if(!authLogin(token, authorId)) return 401;
+    if(!(await authLogin(token, authorId))) return 401;
 
     const request = await Request.findOne({actorId: authorId, objectId: foreignId});
     if (!request) { return 401; }

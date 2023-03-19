@@ -84,7 +84,7 @@ async function getPost(authorId, postId){
 }
 
 async function createPost(token, authorId, postId, newPost) {
-    if((await authLogin(token, authorId)) == false){ return [[], 401]; }
+    if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
     const title = newPost.title;
     const description = newPost.description;
@@ -249,7 +249,7 @@ async function updatePost(token, authorId, postId, newPost) {
 }
 
 async function deletePost(token, authorId, postId) {
-    if (!authLogin(token, authorId)) { return [{}, 401]; }
+    if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
 

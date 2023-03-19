@@ -217,8 +217,8 @@ async function postInboxComment(comment, authorId){
     inbox.comments.push(comment);
     inbox.save();
 }
+
 async function deleteInbox(token, authorId){
-    console.log(authLogin(token, authorId));
     if (! (await authLogin(token, authorId))) { return 401; }
 
     const responses = await Inbox.updateOne({authorId: authorId},{requests: [], likes: [], posts: [], comments: []}).clone();

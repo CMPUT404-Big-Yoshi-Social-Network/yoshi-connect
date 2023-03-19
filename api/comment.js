@@ -68,6 +68,18 @@ router.post('/', async (req, res) => {
     }) 
 })
 
+router.put('/', async (req, res) => {
+  console.log('TODO: PUT Request that makes a comment on a post by viewer (can get from token) RESPONSE expected to have response.data.numComments')
+})
+
+router.post('/:commentId', async (req, res) => {
+  console.log('TODO: POST request that modifies a comment; body has comment for the new comment content')
+})
+
+router.delete('/:commentId', async (req, res) => {
+  console.log('TODO: DELETE request that deletes a comment from a post')
+})
+
 router.get('/:commentId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;

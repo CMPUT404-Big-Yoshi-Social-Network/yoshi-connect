@@ -47,9 +47,9 @@ const { checkUsername, checkExpiry } = require('./auth.js');
 async function registerAuthor(req, res){
     if (await checkUsername(req) === "In use") { return res.sendStatus(400); }
 
-    const username = req.body.data.username;
-    const email = req.body.data.email;
-    const password = req.body.data.password;
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
     const checkEmail = await Author.findOne({email: email})
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 

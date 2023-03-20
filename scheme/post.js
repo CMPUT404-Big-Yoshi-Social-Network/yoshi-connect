@@ -47,7 +47,17 @@ const postHistoryScheme = new Schema({
     _id: String,
     authorId: String,
     num_posts: Number,
-    posts: [postScheme]},
+    posts: [postScheme],
+    shared: [String]},
+    {versionKey: false
+})
+
+const sharingScheme = new Schema({
+    _id: String,
+    authorId: String,
+    postId: String,
+    numShares: Number,
+    sharedBy: [String]},
     {versionKey: false
 })
 
@@ -75,11 +85,13 @@ const inboxScheme = new Schema({
 const PostHistory = database.model('PostHistory', postHistoryScheme);
 const PublicPost = database.model('PublicPost', publicScheme);
 const Inbox = database.model('Inbox', inboxScheme); 
-const Post = database.model('Post', postScheme);    
+const Post = database.model('Post', postScheme);   
+const Share = database.model('Share', sharingScheme);    
 
 module.exports = {
     PostHistory,
     PublicPost,
     Inbox,
-    Post
+    Post,
+    Share
 }

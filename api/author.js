@@ -36,6 +36,15 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors:
+ *  get:
+ *    description: Fetches a paginated list of Authors (dictated by size and page queries)
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/', async (req, res) => {
 
   let page = req.query.page;
@@ -55,6 +64,15 @@ router.get('/', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /authors/:authorId:
+ *  get:
+ *    description: Fetches a specific Author through authorId param
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/:authorId', async (req, res) => {
   const authorId = req.params.authorId;
   const [author, status] = await getAuthor(authorId);
@@ -64,6 +82,21 @@ router.get('/:authorId', async (req, res) => {
   return res.json(author);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId:
+ *  post:
+ *    description: Updates an existing Author associated with authorId params
+ *    body: {
+ *      authorId, 
+ *      host,
+ *      displayName,
+ *      url
+ *    }
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }
   if (req.body.type !== 'author') { return res.sendStatus(400); }

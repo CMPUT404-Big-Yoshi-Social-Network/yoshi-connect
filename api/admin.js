@@ -23,24 +23,77 @@ Foundation; All Rights Reserved
 const { authAuthor, removeLogin, checkExpiry, checkAdmin } = require('../routes/auth');
 const { addAuthor, modifyAuthor, deleteAuthor } = require('../routes/admin');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /admin:
+ *  post:
+ *    description: Authenticates an potential Author for YoshiConnect
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 
+/**
+ * @openapi
+ * /admin/dashboard:
+ *  get:
+ *    description: Verifies Author has attribute admin=true then redirects the Author to the Admin Dashboard if verified
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/dashboard', async (req, res) => {
   if(!(await checkAdmin(req, res))){ return res.sendStatus(403) }
   if(!req.cookies || await checkExpiry(req.cookies.token)){ return res.sendStatus(401) }
   return res.sendStatus(200)
 })
 
+/**
+ * @openapi
+ * /admin/dashboard:
+ *  post:
+ *    description: Removes the Login document (associated token) to log out the Admin 
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
 
+/**
+ * @openapi
+ * /admin/dashboard:
+ *  delete:
+ *    description: Deletes an Author from YoshiConnect database 
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
 
+/**
+ * @openapi
+ * /admin/dashboard:
+ *  put:
+ *    description: Either Adds an Author to YoshiConnect database or Updates an Author's attributes 
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.put('/dashboard', (req, res) => {
   if (req.body.status == 'Add') {
     addAuthor(req, res);

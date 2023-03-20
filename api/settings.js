@@ -2,6 +2,14 @@
 const { updateAuthor } = require('../routes/author');
 const { removeLogin } = require('../routes/auth');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 //TODO import check expiry

@@ -22,6 +22,14 @@ Foundation; All Rights Reserved
 // Routing Functions 
 const { getInbox, postInbox, deleteInbox} = require('../routes/inbox')
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 

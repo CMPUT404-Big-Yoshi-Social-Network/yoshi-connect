@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import FileBase64 from 'react-file-base64';
 
 // User Interface
 import { Nav } from 'react-bootstrap';
@@ -54,6 +55,8 @@ function CreatePost() {
         postId: ''
     })
     const [isOpen, setIsOpen] = useState(false);
+
+    const [item, setItem] = useState({ image: '' });
 
     useEffect(() => {
         /**
@@ -110,7 +113,18 @@ function CreatePost() {
         }
         
         axios.post('/authors/' + data.authorId + '/posts/', config)
-        .then((response) => { })
+        .then((response) => { 
+            if (item.image != "") {
+                axios.post('/authors/' + data.authorId + '/posts/' + response.postId + "/image", {
+                    method: 'post',
+                    maxBodyLength: Infinity,
+                    url: '/authors/' + data.authorId + '/posts/' + response.postId + "/image",
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    image: item.image
+                }).then((res) => {}).catch((e) => {console.log(e);})  
+            }
+            setItem({ ...item, image: "" })
+        })
         .catch((e) =>{ console.log(e); })
     }
 
@@ -208,9 +222,15 @@ function CreatePost() {
                         </div>
                         
                         <div className={"postMenuInput"}>
-                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={uploadImage}/>
+                        {/* <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={uploadImage}/> */}
+                        <FileBase64
+                                className={"postMenuImageInput"} name={"image"} id={"image"}
+                                type="file"
+                                multiple={false}
+                                onDone={({ base64 }) => setItem({ ...item, image: base64 })}
+                            />
                         <br/>
-                        <img src="" style={{maxHeight: "15vh"}} alt="" />
+                        <img src={item.image} style={{maxHeight: "15vh"}} alt="" />
                         </div>
 
                         <div style={{color:"white", textAlign:"right"}}>

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 const { fetchFriendPosts } = require('../routes/friend');
 
@@ -133,5 +133,15 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/:postId/likes', async (req, res) => { return res.sendStatus(404); })
+
+router.post("/:postId/image", async (req, res) => {
+  const [image, status] = await uploadImage(req.url, req.image);
+
+  if (status == 200) {
+    return res.json(image);
+  } else {
+    return res.sendStatus(status)
+  }
+})
 
 module.exports = router;

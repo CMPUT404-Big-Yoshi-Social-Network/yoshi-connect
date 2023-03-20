@@ -23,7 +23,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
+const { PostHistory, PublicPost, Post, Image } = require('../scheme/post.js');
 
 // UUID
 const crypto = require('crypto');
@@ -41,6 +41,15 @@ async function createPostHistory(author_id){
     })
 
     await new_post_history.save()
+}
+
+async function uploadImage(url, image) {
+    let newImage = new Image ({
+        _id: url, 
+        image: image
+    })
+
+    await newImage.save()
 }
 
 async function getPost(authorId, postId){
@@ -446,5 +455,6 @@ module.exports={
     createPost,
     getPosts,
     fetchMyPosts,
-    fetchOtherPosts
+    fetchOtherPosts,
+    uploadImage
 }

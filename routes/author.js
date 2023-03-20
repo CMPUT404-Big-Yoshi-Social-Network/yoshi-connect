@@ -47,9 +47,9 @@ const { checkUsername, checkExpiry } = require('./auth.js');
 async function registerAuthor(req, res){
     if (await checkUsername(req) === "In use") { return res.sendStatus(400); }
 
-    const username = req.body.data.username;
-    const email = req.body.data.email;
-    const password = req.body.data.password;
+    const username = req.body.username;
+    const email = req.body.email;
+    const password = req.body.password;
     const checkEmail = await Author.findOne({email: email})
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
@@ -65,26 +65,11 @@ async function registerAuthor(req, res){
         pronouns: "",
         github: "",
         profileImage: "",
-        admin: false
+        admin: false,
+        allowed: false
     });
 
     author.save(async (err, author, next) => { if (err) { return res.sendStatus(500); } });
-        
-    let curr = new Date();
-    let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));
-    let token = uidgen.generateSync();
-    let uuidLogin = String(crypto.randomUUID()).replace(/-/g, "");
-
-    let login = new Login({
-        _id: uuidLogin,
-        authorId: author._id,
-        username: username,
-        token: token,
-        admin: false,
-        expires: expiresAt
-    });
-
-    login.save((err, login) => { if (err) { res.sendStatus(500); } })
 
     let uuidPH = String(crypto.randomUUID()).replace(/-/g, "");
     let new_post_history = new PostHistory ({
@@ -102,7 +87,6 @@ async function registerAuthor(req, res){
     await Following({ _id: uuidFollowing, username: username, authorId: author._id, followings: [] }).save();
     await createInbox(author.username, author._id);
 
-    res.setHeader('Set-Cookie', 'token=' + token + '; SameSite=Strict' + '; HttpOnly' + '; Secure')
     return res.sendStatus(200);
 }
 

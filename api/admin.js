@@ -21,7 +21,7 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { authAuthor, removeLogin, checkExpiry, checkAdmin } = require('../routes/auth');
-const { addAuthor, modifyAuthor, deleteAuthor } = require('../routes/admin');
+const { addAuthor, modifyAuthor, deleteAuthor, allowAuthor } = require('../routes/admin');
 
 // Router Setup
 const express = require('express'); 
@@ -46,6 +46,9 @@ router.put('/dashboard', (req, res) => {
     addAuthor(req, res);
   } else if (req.body.status == 'Modify') {
     modifyAuthor(req, res);
+  } else {
+    console.log('Debug: Enabling / Disabling Author')
+    allowAuthor(req, res);
   }
 })
 

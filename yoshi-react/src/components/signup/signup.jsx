@@ -60,7 +60,7 @@ export default function Signup() {
 
     axios
     .post(url, config)
-    .then((response) => { navigate('/feed'); })
+    .then((response) => { console.log('Now you must be approved by an admin.') })
     .catch(err => {
       if (err.response.status === 400) {
         navigate('/badrequest'); 

@@ -58,9 +58,7 @@ function Author(props) {
     }
 
     const allowAuthor = () => {
-        let config = {
-            author: props
-        }
+        let config = props
         axios
         .put(url, config)
         .then((response) => { })

@@ -130,7 +130,7 @@ async function deleteAuthor(req, res){
 }
 
 async function allowAuthor(req, res){
-    const author = await Author.findOne({_id: req.body.author.id}).clone();
+    const author = await Author.findOne({username: req.body.displayname}).clone();
     if (author.allowed) {
         author.allowed = false;
     } else {

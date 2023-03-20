@@ -36,6 +36,15 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /userinfo:
+ *  get:
+ *    description: Fetches the Author's attributes through the use of the cookie token 
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/', async (req,res) => {
     if (!req.cookies.token) { return res.sendStatus(401); }
 

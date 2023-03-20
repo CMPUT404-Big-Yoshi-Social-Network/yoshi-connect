@@ -70,7 +70,7 @@ const inboxLikeScheme = new Schema({
 })
 
 const inboxCommentScheme = new Schema({
-    _id: {type: String, default: crypto.randomUUID},
+    _id: String,
     author: basicAuthorScheme,
     comment: String,
     contentType: String,

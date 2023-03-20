@@ -49,7 +49,7 @@ export default function Signup() {
 
     axios
     .post(url, data)
-    .then((response) => { console.log('Now you must be approved by an admin.') })
+    .then((response) => { alert('Now you must be approved by an admin.') })
     .catch(err => {
       if (err.response.status === 400) {
         navigate('/badrequest'); 

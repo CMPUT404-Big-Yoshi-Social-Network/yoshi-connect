@@ -71,5 +71,4 @@ module.exports = {
     LikeHistory,
     CommentHistory,
     LikedHistory,
-    likeAuthorScheme,
 }

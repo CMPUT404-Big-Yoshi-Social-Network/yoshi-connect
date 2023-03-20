@@ -64,7 +64,7 @@ const publicScheme = new Schema({
 })
 
 const inboxLikeScheme = new Schema({
-    author: likeAuthorScheme,
+    author: basicAuthorScheme,
     object: String,
     summary: String
 })

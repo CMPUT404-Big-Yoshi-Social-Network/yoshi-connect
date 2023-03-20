@@ -37,6 +37,15 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors/:authorId/requests:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
 
@@ -44,6 +53,15 @@ router.get('/', async (req, res) => {
   await getRequests(authorId, res);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/requests/:foreignAuthorId:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -51,6 +69,15 @@ router.get('/:foreignAuthorId', async (req, res) => {
   await getRequest(authorId, foreignId, res);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/requests/:foreignAuthorId:
+ *  put:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.put('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -65,6 +92,15 @@ router.put('/:foreignAuthorId', async (req, res) => {
   })
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/requests/:foreignAuthorId:
+ *  delete:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.delete('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;

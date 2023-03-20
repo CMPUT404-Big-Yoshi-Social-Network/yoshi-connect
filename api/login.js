@@ -36,6 +36,15 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /login:
+ *  post:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 
 module.exports = router;

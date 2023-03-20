@@ -37,6 +37,15 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /profile/:username:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/', async (req,res) => {
     if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
     await getProfile(req, res);

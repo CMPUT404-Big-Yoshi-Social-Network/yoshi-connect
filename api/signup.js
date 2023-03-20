@@ -36,6 +36,15 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /signup:
+ *  post:
+ *    description: Registers an Author in YoshiConnect by sending the document to be enabled or disabled by an Admin Author
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.post('/', async (req, res) => { await registerAuthor(req, res); })
 
 module.exports = router;

@@ -39,14 +39,59 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/public:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/friends-posts:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, res); })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/personal:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/other/:other:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/:postId', async (req, res) => {
   if (req.params.authorId == undefined) { return res.sendStatus(404); }
 
@@ -60,6 +105,15 @@ router.get('/:postId', async (req, res) => {
   return res.json(post);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId:
+ *  post:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -75,6 +129,15 @@ router.post('/:postId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId:
+ *  delete:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -90,6 +153,15 @@ router.delete('/:postId', async (req, res) => {
   } 
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId:
+ *  put:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -105,6 +177,15 @@ router.put('/:postId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   
@@ -125,6 +206,15 @@ router.get('/', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts:
+ *  post:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
@@ -138,7 +228,5 @@ router.post('/', async (req, res) => {
     return res.sendStatus(status); 
   }
 })
-
-router.get('/:postId/likes', async (req, res) => { return res.sendStatus(404); })
 
 module.exports = router;

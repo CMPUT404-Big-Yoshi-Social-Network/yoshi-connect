@@ -40,6 +40,15 @@ const { Author } = require('../scheme/author');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors/:authorId/followings:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
 
@@ -78,6 +87,15 @@ router.get('/', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/followings/:foreignAuthorId:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.delete('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
 

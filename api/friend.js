@@ -40,6 +40,15 @@ const { Author } = require('../scheme/author');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors/:authorId/friends:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const friends = await getFriends(authorId);
@@ -76,6 +85,15 @@ router.get('/', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/friends/:foreignId:
+ *  post:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.post('/:foreignId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
 
@@ -85,6 +103,15 @@ router.post('/:foreignId', async (req, res) => {
   await isFriend(authorId, foreignId, res);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/friends/:foreignId:
+ *  get:
+ *    description: <INSERT>
+ *    responses:
+ *      <INSERT>:
+ *        description: <INSERT>
+ */
 router.get('/:foreignId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;

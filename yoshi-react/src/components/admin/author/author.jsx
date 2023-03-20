@@ -56,6 +56,24 @@ function Author(props) {
             }
         });
     }
+
+    const allowAuthor = () => {
+        let config = {
+            author: props
+        }
+        axios
+        .put(url, config)
+        .then((response) => { })
+        .catch(err => {
+            if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 404) {
+                navigate('/notfound');
+            } else if (err.response.status === 500) {
+                console.log('NEED A 500 STATUS PAGE')
+            }
+        });
+    }
     
     return (
         <div className='author-div' id='author'>
@@ -64,6 +82,8 @@ function Author(props) {
                     { props.displayname }
                     <div className='author-button-div'>
                         <button className='author-buttons' type="button" id='delete' onClick={() => deleteAuthor()}>Delete</button>
+                        <button className='author-buttons' type="button" id='enable' onClick={() => allowAuthor()}>Enable</button>
+                        <button className='author-buttons' type="button" id='disable' onClick={() => allowAuthor()}>Disable</button>
                         <Popup trigger={<button className='author-buttons'>Modify</button>} position="right center">
                             <ModifyAuthor {...props}/>
                         </Popup>

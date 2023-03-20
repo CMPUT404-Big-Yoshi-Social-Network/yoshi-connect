@@ -129,8 +129,20 @@ async function deleteAuthor(req, res){
     }).clone();
 }
 
+async function allowAuthor(req, res){
+    const author = await Author.findOne({_id: req.body.author.id}).clone();
+    if (author.allowed) {
+        author.allowed = false;
+    } else {
+        author.allowed = true;
+    }
+    author.save();
+    return res.sendStatus(200)
+}
+
 module.exports={
     addAuthor,
     modifyAuthor,
-    deleteAuthor
+    deleteAuthor,
+    allowAuthor
 }

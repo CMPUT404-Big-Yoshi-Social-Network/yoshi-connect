@@ -65,7 +65,8 @@ async function registerAuthor(req, res){
         pronouns: "",
         github: "",
         profileImage: "",
-        admin: false
+        admin: false,
+        allowed: false
     });
 
     author.save(async (err, author, next) => { if (err) { return res.sendStatus(500); } });

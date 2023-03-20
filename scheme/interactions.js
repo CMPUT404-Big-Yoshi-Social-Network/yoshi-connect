@@ -25,20 +25,11 @@ const { Schema } = mongoose;
 const database = mongoose.connection;
 
 const crypto = require('crypto');
-const { authorScheme } = require("./author");
-
-const commentAuthorScheme = new Schema({
-    _id: String,
-    host: String,
-    displayName: String,
-    url: String,
-    github: String,
-    profileImage: String
-})
+const { basicAuthorScheme } = require("./author");
 
 const commentScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
-    author: authorScheme,
+    author: basicAuthorScheme,
     comment: String,
     contentType: String,
     published: String,
@@ -51,20 +42,11 @@ const commentHistoryScheme = new Schema({
     {versionKey: false
 })
 
-const likeAuthorScheme = new Schema({
-    _id: String,
-    host: String,
-    displayName: String,
-    url: String,
-    github: String,
-    profileImage: String
-})
-
 const likeHistoryScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     type: String,
     Id: String,
-    likes: [likeAuthorScheme]},
+    likes: [basicAuthorScheme]},
     {versionKey: false
 })
 

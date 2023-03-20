@@ -24,6 +24,15 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
+const basicAuthorScheme = new Schema({
+    _id: String,
+    host: String,
+    displayName: String,
+    url: String,
+    github: String,
+    profileImage: String
+})
+
 const authorScheme = new Schema({
     _id: String,
     username: String,
@@ -54,5 +63,6 @@ module.exports = {
     Login,
     Author,
     authorScheme,
-    loginScheme
+    loginScheme,
+    basicAuthorScheme
 }

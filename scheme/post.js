@@ -21,7 +21,7 @@ Foundation; All Rights Reserved
 
 // Database
 const mongoose = require("mongoose");
-const { authorScheme } = require("./author");
+const { authorScheme, basicAuthorScheme } = require("./author");
 const { likeAuthorScheme} = require("./interactions");
 const { Schema } = mongoose;
 const database = mongoose.connection;
@@ -69,13 +69,22 @@ const inboxLikeScheme = new Schema({
     summary: String
 })
 
+const inboxCommentScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    author: basicAuthorScheme,
+    comment: String,
+    contentType: String,
+    published: String,
+    object: String
+})
+
 const inboxScheme = new Schema({
     _id: String,
     authorId: String,
     username: String,
     posts: [postScheme],
     likes: [inboxLikeScheme],
-    comments: [{ summary: String, author: authorScheme, object: String }],
+    comments: [inboxCommentScheme],
     requests: [{ type: String, ref: 'Request' }]},
     {versionKey: false
 })

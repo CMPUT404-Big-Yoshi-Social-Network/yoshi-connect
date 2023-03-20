@@ -36,11 +36,11 @@ router.get('/', async (req, res) => {
   let size = req.query.size;
 
   if(page == undefined)
-  page = 1;
+    page = 1;
   if(size == undefined)
     size = 5;
 
-  const comments = getComments(authorId, postId);
+  const comments = await getComments(authorId, postId, page, size);
 
   return res.json({
     "type": "comments",
@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const postId = req.params.postId;
 
-  const comment = createComment(req.cookies.token, postId, req.body, process.env.DOMAIN_NAME);
+  const [comment, status] = await createComment(req.cookies.token, postId, req.body, process.env.DOMAIN_NAME);
 
   return res.json({
     "type": "comment",
@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
     "comment": comment.comment,
     "contentType": comment.contentType,
     "published": comment.published,
-    "id": comment._id
+    "id": comment.id
     }) 
 })
 

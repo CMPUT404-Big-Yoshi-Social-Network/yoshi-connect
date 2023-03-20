@@ -174,18 +174,21 @@ async function createPost(token, authorId, postId, newPost) {
             console.log(inbox);
 
             inbox.posts.push(post);
-            promiseList.push(inbox.save());
+            //promiseList.push(inbox.save());
+            await inbox.save();
         }
 
+        /*
         for(let i = 0; i < promiseList.length; i++){
             await promiseList[i];
         }
+        */
     }
     return [await getPost(authorId, postId), 200];
 }
 
 async function updatePost(token, authorId, postId, newPost) {
-    if (!authLogin(token, authorId)) { return [{}, 401]; }
+    if (!(await authLogin(token, authorId))) { return [{}, 401]; }
 
     const title = newPost.title;
     const desc = newPost.description;

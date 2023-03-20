@@ -192,6 +192,8 @@ router.delete('/:postId/likes', async (req, res) => {
 })
 
 router.get('/:postId/liked', async (req, res) => {
+  //TODO we can refactor this endpoint to take multiple posts which will allow us to amortize the amount of time spent searching for public posts
+  //Or we can merge public posts with getting liked posts
   console.log('TODO: GET Request that detects whether a post has already been liked by the viewer (which you can get from token); 200 means liked, 404 not liked etc')
 })
 

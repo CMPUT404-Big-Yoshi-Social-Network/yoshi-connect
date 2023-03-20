@@ -35,58 +35,93 @@ const crypto = require('crypto');
 const { authLogin, checkExpiry } = require('./auth.js');
 
 
-async function getComments(authorId, postId) {
-    // TODO: Paginate
-    const posts = PostHistory.find(
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: '$posts'
-        },
-        {
-            $match: {'_id': postId}
-        },
-        {
-            index: { $indexOfArray: ['_id', postId] }
-        },
-        {
-            $unwind: '$index'
-        },
-        {
-            $set: {
-                "index.comments.published": {
-                    $dateFromString: { dateString: "$index.comments.published" }
+async function getComments(authorId, postId, page, size) {
+    let comments = undefined
+    //TODO Avoid duplicated code by using a list of objects and modifying them before sending
+    if(page > 1){
+        comments = await CommentHistory.aggregate([
+            {
+                $match: {'postId': postId}
+            },
+            {
+                $unwind: '$comments'
+            },
+            {
+                $set: {
+                    "comments.published": {
+                        $dateFromString: { dateString: "$comments.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "comment.published": -1 }
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    comments_array: { $push: "$comments" }
+                }
+            },
+        ]);
+    } else if (page == 1) {
+        comments = await CommentHistory.aggregate([
+            {
+                $match: {'postId': postId}
+            },
+            {
+                $unwind: '$comments'
+            },
+            {
+                $set: {
+                    "comments.published": {
+                        $dateFromString: { dateString: "$comments.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "comments.published": -1 }
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    comments_array: { $push: "$comments" }
                 }
             }
-        },
-        {
-            $sort: { "index.comments.published": -1 }
-        },
-        {
-            $group: {
-                _id: null,
-                post_array: { $push: "$index" }
-            }
-        }
-    )
+        ]);
+    } else{
+        return [[], 400];
+    }
 
-    if (posts[0] != undefined) {
-        return posts[0].post_array.comments;
-    } else {
-        return [];
-    }   
+    return comments[0].comments_array;
 }
 
-async function createComment(token, postId, newComment, domain) {
-    if(await authLogin(token, newComment.author.id)){ return [{}, 401]; }
+async function getComment() {
+
+}
+
+async function createComment(token, authorId, postId, newComment, domain) {
+    if(!(await authLogin(token, newComment.author.id))){ return [{}, 401]; }
 
     //verify comment is valid
     //find comment history for post
     //push to comment history
 
+    //if author is object verify it is real
+
+    //if author is string also verify it is real.
+    //After pull relavent details
+
     const type = newComment.type;
-    const author = newComment.Author
+    const author = newComment.author
     const comment = newComment.comment
     const contentType = newComment.contentType;
     let published = newComment.published;
@@ -102,10 +137,10 @@ async function createComment(token, postId, newComment, domain) {
         published = new Date().toISOString();
     }
 
-    let comments = await CommentHistory.findOne({postId: postId});
-    
+    let comments = await CommentHistory.findOne({postId: postId}); 
     
     comments.comments.push({
+        _id: id,
         author: author,
         comment: comment,
         contentType: contentType,
@@ -114,12 +149,21 @@ async function createComment(token, postId, newComment, domain) {
 
     await comments.save();
 
-    //if author is object verify it is real
-
-    //if author is string also verify it is real.
-    //After pull relavent details
-
-    //PUsh to comment history    
+    //PUsh to comment history
+    //Add to inbox
+    const inbox = Inbox.findOne({authorId: authorId});
+    //TODO FIRST THING TO DO WHEN I GET BACK TO THIS
+    /*
+    inbox.comments.push({
+        author: author,
+        comment: comment,
+        contentType: contentType,
+        published: published,
+        postId: postId,
+        commentId: id
+    })
+    */
+    return [newComment, 200]
 }
 
 
@@ -186,5 +230,7 @@ async function editComment(req, res){
 }
 
 module.exports = {
+    getComments,
+    getComment,
     createComment
 }

@@ -96,6 +96,10 @@ async function authAuthor(req, res) {
     if (!author) { return res.sendStatus(400); }
     req.author = author;
 
+    if (!author.allowed) {
+        return res.sendStatus(401);
+    }
+
     const p_hashed_password = req.author.password;
     if(p_hashed_password == crypto_js.SHA256(password)){
         if(req.cookies.token != null && req.cookies.token != undefined){

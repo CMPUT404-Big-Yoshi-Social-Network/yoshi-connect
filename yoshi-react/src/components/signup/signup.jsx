@@ -46,21 +46,10 @@ export default function Signup() {
      * Returns: N/A
      */
     e.preventDefault()
-  
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Last-Modified': new Date(),
-      },
-      data: data
-    }
 
     axios
-    .post(url, config)
-    .then((response) => { navigate('/feed'); })
+    .post(url, data)
+    .then((response) => { console.log('Now you must be approved by an admin.') })
     .catch(err => {
       if (err.response.status === 400) {
         navigate('/badrequest'); 

@@ -53,7 +53,7 @@ function InNodes() {
         axios
         .get(inUrl, config)
         .then((response) => { 
-            if (response.data.items.length !== 0 && inNodes !== []) {
+            if (response.data.items.length !== 0 && inNodes.length === 0) {
                 let nodes = []
                 for (let i = 0; i < size; i++) {
                     nodes.push(response.data.items[i]);
@@ -103,14 +103,14 @@ function InNodes() {
         });
     }, [inNodes, inNext]);
 
-    const getMore = (url, next, setPage, setNodes, setPrev, setNext, page) => {
-        if (!next) {
-            let updated = page + 1;
-            setPage(updated);
+    const getMore = () => {
+        if (!inNext) {
+            let updated = inPage + 1;
+            setInPage(updated);
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: inUrl,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -119,21 +119,21 @@ function InNodes() {
             }
 
             axios
-            .get(url, config)
+            .get(inUrl, config)
             .then((response) => { 
                 let nodes = []
                 for (let i = 0; i < size; i++) {
                     nodes.push(response.data.items[i]);
                 }
-                setNodes(nodes);
-                setPrev(false);
+                setInNodes(nodes);
+                setInPrev(false);
                 if (response.data.items.length < size) {
-                    setNext(true);
+                    setInNext(true);
                 } 
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    setNodes([]);
+                    setInNodes([]);
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
@@ -141,11 +141,11 @@ function InNodes() {
                 }
             });
         }
-        let updated = page + 2;
+        let updated = inPage + 2;
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: inUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -154,13 +154,13 @@ function InNodes() {
         }
 
         axios
-        .get(url, config)
+        .get(inUrl, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setNext(true); }
+            if (response.data.items.length === 0) { setInNext(true); }
         })
         .catch(err => {
             if (err.response.status === 404) {
-                setNodes([]);
+                setInNodes([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
@@ -169,14 +169,14 @@ function InNodes() {
         });
     }
 
-    const goBack = (url, prev, setPage, setNodes, setNext, setPrev, page) => {
-        if (!prev && prev !== 1) {
-            let updated = page - 1;
-            setPage(updated);
+    const goBack = () => {
+        if (!inPrev && inPage !== 1) {
+            let updated = inPage - 1;
+            setInPage(updated);
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: inUrl,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -185,21 +185,21 @@ function InNodes() {
             }
     
             axios
-            .get(url, config)
+            .get(inUrl, config)
             .then((response) => { 
                 let more = []
                 for (let i = 0; i < size; i++) {
                     more.push(response.data.items[i]);
                 }
-                setNodes(more) 
-                setNext(false)
+                setInNodes(more) 
+                setInNext(false)
                 if (updated === 1) {
-                    setPrev(true)
+                    setInPrev(true)
                 }
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    setNodes([]);
+                    setInNodes([]);
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
@@ -221,8 +221,8 @@ function InNodes() {
                         {Object.keys(inNodes).map((node, idx) => (
                             <Node key={idx} node={inNodes[node]} url={inUrl}/>
                         ))}
-                        <Pagination.Prev disabled={inPrev} onClick={goBack(inUrl, inPrev, setInPage, setInNodes, setInNext, setInPrev, inPage)}/>
-                        <Pagination.Next disabled={inNext} onClick={getMore(inUrl, inNext, setInPage, setInNodes, setInPrev, setInNext, inPage)}/>
+                        <Pagination.Prev disabled={inPrev} onClick={goBack}/>
+                        <Pagination.Next disabled={inNext} onClick={getMore}/>
                     </Pagination>
                 </div>
             }

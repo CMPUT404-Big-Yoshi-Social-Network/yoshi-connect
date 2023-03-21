@@ -53,7 +53,7 @@ function OutNodes() {
         axios
         .get(outUrl, config)
         .then((response) => { 
-            if (response.data.items.length !== 0 && outNodes !== []) {
+            if (response.data.items.length !== 0 && outNodes.length === 0) {
                 let nodes = []
                 for (let i = 0; i < size; i++) {
                     if (response.data.items[i]) {
@@ -105,14 +105,14 @@ function OutNodes() {
         });
     }, [outNodes, outNext]);
 
-    const getMore = (url, next, setPage, setNodes, setPrev, setNext, page) => {
-        if (!next) {
-            let updated = page + 1;
-            setPage(updated);
+    const getMore = () => {
+        if (!outNext) {
+            let updated = outPage + 1;
+            setOutPage(updated);
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: outUrl,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -121,21 +121,21 @@ function OutNodes() {
             }
 
             axios
-            .get(url, config)
+            .get(outUrl, config)
             .then((response) => { 
                 let nodes = []
                 for (let i = 0; i < size; i++) {
                     nodes.push(response.data.items[i]);
                 }
-                setNodes(nodes);
-                setPrev(false);
+                setOutNodes(nodes);
+                setOutPrev(false);
                 if (response.data.items.length < size) {
-                    setNext(true);
+                    setOutNext(true);
                 } 
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    setNodes([]);
+                    setOutNodes([]);
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
@@ -143,11 +143,11 @@ function OutNodes() {
                 }
             });
         }
-        let updated = page + 2;
+        let updated = outPage + 2;
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: outUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -156,13 +156,13 @@ function OutNodes() {
         }
 
         axios
-        .get(url, config)
+        .get(outUrl, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setNext(true); }
+            if (response.data.items.length === 0) { setOutNext(true); }
         })
         .catch(err => {
             if (err.response.status === 404) {
-                setNodes([]);
+                setOutNodes([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
@@ -171,14 +171,14 @@ function OutNodes() {
         });
     }
 
-    const goBack = (url, prev, setPage, setNodes, setNext, setPrev, page) => {
-        if (!prev && prev !== 1) {
-            let updated = page - 1;
-            setPage(updated);
+    const goBack = () => {
+        if (!outPrev && outPage !== 1) {
+            let updated = outPage - 1;
+            setOutPage(updated);
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: outUrl,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -187,21 +187,21 @@ function OutNodes() {
             }
     
             axios
-            .get(url, config)
+            .get(outUrl, config)
             .then((response) => { 
                 let more = []
                 for (let i = 0; i < size; i++) {
                     more.push(response.data.items[i]);
                 }
-                setNodes(more) 
-                setNext(false)
+                setOutNodes(more) 
+                setOutNext(false)
                 if (updated === 1) {
-                    setPrev(true)
+                    setOutPrev(true)
                 }
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    setNodes([]);
+                    setOutNodes([]);
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
@@ -223,8 +223,8 @@ function OutNodes() {
                         {Object.keys(outNodes).map((node, idx) => (
                             <Node key={idx} node={outNodes[node]} url={outUrl}/>
                         ))}
-                        <Pagination.Prev disabled={outPrev} onClick={goBack(outUrl, outPrev, setOutPage, setOutNodes, setOutNext, setOutPrev, outPage)}/>
-                        <Pagination.Next disabled={outNext} onClick={getMore(outUrl, outNext, setOutPage, setOutNodes, setOutPrev, setOutNext, outPage)}/>
+                        <Pagination.Prev disabled={outPrev} onClick={goBack}/>
+                        <Pagination.Next disabled={outNext} onClick={getMore}/>
                     </Pagination>
                 </div>
             }

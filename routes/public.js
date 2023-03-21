@@ -19,8 +19,12 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
+// Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
+
+// UUID
+const crypto = require('crypto');
 
 // Schemas
 const { Login } = require('../scheme/author.js');
@@ -103,6 +107,8 @@ async function fetchPublicPosts(req, res) {
         ]);
     }
 
+    let isPublicExists = true;
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     const publicPost = await PublicPost.find().clone();
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     if (publicPost.length == 0) {
@@ -111,7 +117,10 @@ async function fetchPublicPosts(req, res) {
             posts: [],
             num_posts: 0
         });
-        pp.save(async (err, publicPost, next) => { if (err) { return res.sendStatus(500) } })
+        pp.save(async (err, publicPost, next) => { if (err) { 
+            isPublicExists = false;
+            return res.sendStatus(500) 
+        } })
     }
 
     let publicPosts = await PublicPost.aggregate([
@@ -165,7 +174,7 @@ async function fetchPublicPosts(req, res) {
     // Remove duplicates (https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects)
     allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
 
-    if (allPosts){
+    if (allPosts && isPublicExists){
         return res.json({
             type: "posts",
             items: allPosts

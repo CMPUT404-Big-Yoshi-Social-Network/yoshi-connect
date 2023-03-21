@@ -42,7 +42,8 @@ const authorScheme = new Schema({
     pronouns: String,
     github: String,
     profileImage: String,
-    admin: false},
+    admin: false,
+    allowed: false},
     {versionKey: false
 });
 

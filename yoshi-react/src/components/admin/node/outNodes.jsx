@@ -56,7 +56,9 @@ function OutNodes() {
             if (response.data.items.length !== 0 && outNodes !== []) {
                 let nodes = []
                 for (let i = 0; i < size; i++) {
-                    nodes.push(response.data.items[i]);
+                    if (response.data.items[i]) {
+                        nodes.push(response.data.items[i]);
+                    }
                 }
                 setOutNodes(nodes);
             }
@@ -86,7 +88,11 @@ function OutNodes() {
         axios
         .get(outUrl, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setOutNext(true); }
+            if (response.data.items.length === 0) { 
+                if (!outNext) {
+                    setOutNext(true); 
+                }
+            }
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -97,7 +103,7 @@ function OutNodes() {
                console.log('500 PAGE')
             }
         });
-    }, [outNodes]);
+    }, [outNodes, outNext]);
 
     const getMore = (url, next, setPage, setNodes, setPrev, setNext, page) => {
         if (!next) {

@@ -39,7 +39,6 @@ function InNodes() {
     const [inNext, setInNext] = useState(false);
 
     useEffect(() => {
-        /** Incoming */
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -87,7 +86,11 @@ function InNodes() {
         axios
         .get(inUrl, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setInNext(true); }
+            if (response.data.items.length === 0) { 
+                if (!inNext) {
+                    setInNext(true);    
+                }
+            }
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -98,7 +101,7 @@ function InNodes() {
                console.log('500 PAGE')
             }
         });
-    }, [inNodes]);
+    }, [inNodes, inNext]);
 
     const getMore = (url, next, setPage, setNodes, setPrev, setNext, page) => {
         if (!next) {

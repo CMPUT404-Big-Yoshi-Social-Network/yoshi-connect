@@ -53,6 +53,22 @@ function Node(props) {
             }
         });
     }
+
+    const allowNode = () => {
+        let config = props
+        axios
+        .put(url, config)
+        .then((response) => { })
+        .catch(err => {
+            if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 404) {
+                navigate('/notfound');
+            } else if (err.response.status === 500) {
+                console.log('NEED A 500 STATUS PAGE')
+            }
+        });
+    }
     
     return (
         <div>
@@ -61,6 +77,8 @@ function Node(props) {
                     { props.displayname }
                     <div>
                         <button type="button" id='delete' onClick={() => deleteNode()}>Delete</button>
+                        <button type="button" id='enable' onClick={() => allowNode()}>Enable</button>
+                        <button type="button" id='disable' onClick={() => allowNode()}>Disable</button>
                         <Popup trigger={<button>Modify</button>} position="right center">
                             <ModifyNode {...props}/>
                         </Popup>

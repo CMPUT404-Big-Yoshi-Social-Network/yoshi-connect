@@ -88,6 +88,7 @@ function CreatePost() {
          * Returns: N/A
          */
         console.log('Debug: Creating a post')
+        console.log(item.image)
 
         togglePostMenu();
 
@@ -135,6 +136,7 @@ function CreatePost() {
          * Returns: N/A
          */
         setIsOpen(!isOpen); 
+        setItem({ ...item, image: "" })
     }
 
     // async function uploadImage() {

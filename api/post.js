@@ -147,7 +147,8 @@ router.post("/:postId/image", async (req, res) => {
 router.get("/:postId/image", async (req, res) => { 
   const [image, status] = await getImage(req.originalUrl); 
   return res.json({
-    src: image
+    src: image,
+    status: status
   })
 })
 module.exports = router;

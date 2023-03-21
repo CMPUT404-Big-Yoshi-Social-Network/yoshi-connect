@@ -57,6 +57,7 @@ function Post({viewerId, post}) {
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
+    const [item, setItem] = useState({ image: "" });
 
     useEffect(() => { 
         /**
@@ -69,8 +70,11 @@ function Post({viewerId, post}) {
             axios
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
             .then((res) => {
-                let element = document.querySelector("#image")
-                element.src = res.data.src
+                if (res.data.status === 200) {
+                    let [start, end] = res.data.src.split("base64") 
+                    start = start.split("/")[1]
+                    setItem({ ...item, image: "data:image/" + start + ";base64," + end})
+                }
             })
         }
         getImage();
@@ -218,7 +222,7 @@ function Post({viewerId, post}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "type/plain" ? <p>{ post.content }</p> : post.contentType === "type/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    <img id="image" src="" alt=""/>
+                    <img className={"image"} src={item.image} alt=""/>
 
                     <p>{post.published}</p>
                     <br></br>

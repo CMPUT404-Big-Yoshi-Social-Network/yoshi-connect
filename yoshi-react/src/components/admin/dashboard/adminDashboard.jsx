@@ -30,7 +30,8 @@ import Authors from '../author/authors.jsx';
 import AddAuthor from "../forms/addForm.jsx";
 import InNodes from '../node/inNodes.jsx';
 import OutNodes from '../node/outNodes.jsx';
-import AddNode from "../forms/addNode.jsx";
+import AddInNode from "../forms/addInNode.jsx";
+import AddOutNode from "../forms/addOutNode.jsx";
 import TopAdminNav from '../nav/top/top.jsx';
 import LeftAdminNavBar from '../nav/left/left.jsx';
 import RightAdminNavBar from '../nav/right/right.jsx';
@@ -102,10 +103,13 @@ function AdminDashboard() {
                             <AddAuthor/>
                         </Popup>
                         <div><Authors/></div>
-                        <Popup trigger={<button>Add Node</button>} position="right center">
-                            <AddNode/>
+                        <Popup trigger={<button>Add Incoming Node</button>} position="right center">
+                            <AddInNode/>
                         </Popup>
                         <div><InNodes/></div>
+                        <Popup trigger={<button>Add Outgoing Node</button>} position="right center">
+                            <AddOutNode/>
+                        </Popup>
                         <div><OutNodes/></div>
                     </div>
                 </div>

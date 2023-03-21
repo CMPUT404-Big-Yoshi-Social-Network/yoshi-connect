@@ -25,7 +25,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function AddNode() {
+function AddInNode() {
     const [data, setData] = useState({ username: '', password: '', host: '' })
     const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ function AddNode() {
             host: data.host
         }
         axios
-        .post('/nodes/outgoing', body)
+        .post('/nodes/incoming', body)
         .then((response) => {})
         .catch(err => {
             if (err.response.status === 400) {
@@ -78,10 +78,10 @@ function AddNode() {
                         })
                     }}/>
                 </label>
-                <button type="submit" onClick={addNode}>Create Node</button>
+                <button type="submit" onClick={addNode}>Create Incoming Node</button>
             </form>
         </div>
     )
 }
 
-export default AddNode;
+export default AddInNode;

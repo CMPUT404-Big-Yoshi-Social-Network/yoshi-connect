@@ -44,8 +44,10 @@ const router = express.Router({mergeParams: true});
  *  get:
  *    description: <INSERT>
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      404:
+ *        description: Not Found -- Followers was not found
+ *      200:
+ *        description: OK -- Returns followers as sanitized object with type, id, host, displayname, url, githun, profileImage, email, about, pronouns
  */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
@@ -91,8 +93,10 @@ router.get('/', async (req, res) => {
  *  get:
  *    description: <INSERT>
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      404:
+ *        description: Not Found -- Followers not found in the database
+ *      404:
+ *        description: Not Found -- No followers were found in the database
  */
 router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;

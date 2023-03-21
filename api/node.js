@@ -30,47 +30,47 @@ const router = express.Router({mergeParams: true});
 
 router.get('/incoming', async (req, res) => { 
     // Getting our credentials from other nodes
-    await getCreds(req.cookies.token, 'incoming'); 
+    await getCreds(res, req.cookies.token, 'incoming'); 
 })
 
 router.get('/outgoing', async (req, res) => { 
     // Getting other nodes' credentials from us 
-    await getCreds(req.cookies.token, 'outgoing'); 
+    await getCreds(res, req.cookies.token, 'outgoing'); 
 })
 
 router.get('/incoming/:credId', async (req, res) => { 
     // Getting our credentials from other nodes given the credId
-    await getCred(req.cookies.token, req.params.credId, 'incoming'); 
+    await getCred(res, req.cookies.token, req.params.credId, 'incoming'); 
 })
 
 router.get('/outgoing/:credId', async (req, res) => { 
     // Getting their credentials from us given the credId
-    await getCred(req.cookies.token, req.params.credId, 'outgoing'); 
+    await getCred(res, req.cookies.token, req.params.credId, 'outgoing'); 
 })
 
 router.post('/outgoing', async (req, res) => {
     // Creating credentials for a node 
-    await postCred(token, 'outgoing'); 
+    await postCred(req, res, req.cookies.token, 'outgoing'); 
 })
 
 router.post('/incoming', async (req, res) => {
     // Storing credentials from other nodes 
-    await postCred(token, 'incoming'); 
+    await postCred(req, res, req.cookies.token, 'incoming'); 
 })
 
-router.put('/outgoing', async (req, res) => {
+router.put('/outgoing/:credId', async (req, res) => {
     // Modifying credentials for a node 
-    await putCred(token, 'outgoing'); 
+    await putCred(req, res, req.params.credId, req.cookies.token); 
 })
 
 router.delete('/outgoing/:credId', async (req, res) => { 
     // Deleting credentials for a node given the credId
-    await deleteCred(token, req.params.credId, 'outgoing'); 
+    await deleteCred(req.cookies.token, req.params.credId, 'outgoing'); 
 })
 
 router.delete('/incoming/:credId', async (req, res) => { 
     // Deleting credentials for us (in database)
-    await deleteCred(token, req.params.credId, 'incoming'); 
+    await deleteCred(req.cookies.token, req.params.credId, 'incoming'); 
 })
 
 module.exports = router;

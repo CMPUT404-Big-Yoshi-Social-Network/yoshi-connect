@@ -29,7 +29,11 @@ const { Login } = require('../scheme/author.js');
 // UUID
 const crypto = require('crypto');
 
-async function getCreds(token, type) {
+// Password
+const crypto_js = require('crypto-js');
+
+async function getCreds(res, token, type) {
+	// TODO: Paging
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -38,10 +42,21 @@ async function getCreds(token, type) {
 	}
 	const login = await Login.findOne({token: token}).close();
 	if (!login.admin) { return res.sendStatus(403); }
-	return await coll.findOne({displayName: login.username}).clone();
+	const items = await coll.find().clone();
+	if (items) {
+		return res.json({
+			type: 'nodes',
+			items: nodes
+		});
+	} else {
+		return res.json({
+			type: 'nodes',
+			items: []
+		})
+	}
 }
 
-async function getCred(token, credId, type) {
+async function getCred(res, token, credId, type) {
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -50,10 +65,21 @@ async function getCred(token, credId, type) {
 	}
 	const login = await Login.findOne({token: token}).close();
 	if (!login.admin) { return res.sendStatus(403); }
-	return await coll.findOne({_id: credId}).clone();
+	const node = await coll.findOne({_id: credId}).clone();
+	if (node) {
+		return res.json({
+			type: 'node',
+			node: node
+		});
+	} else {
+		return res.json({
+			type: 'node',
+			node: null
+		})
+	}
 }
 
-async function postCred(token, type) {
+async function postCred(req, res, token, type) {
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -62,9 +88,21 @@ async function postCred(token, type) {
 	}
 	const login = await Login.findOne({token: token}).close();
 	if (!login.admin) { return res.sendStatus(403); }
+	let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+	const node = new coll({
+		_id: uuid,
+		displayName: req.body.username,
+		url: req.body.host,
+		password: crypto_js.SHA256(req.body.password)
+	})
+	await node.save();
+	return res.json({
+		type: 'node',
+		node: node
+	})
 }
 
-async function putCred(token, type) {
+async function putCred(req, res, credId, token) {
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -73,6 +111,16 @@ async function putCred(token, type) {
 	}
 	const login = await Login.findOne({token: token}).close();
 	if (!login.admin) { return res.sendStatus(403); }
+	const node = await coll.findOne({_id: credId}).clone();
+	if (!node) { res.sendStatus(404); }
+	node.displayName = req.body.newUsername
+	node.password = crypto_js.SHA256(req.body.newPassword)
+	node.url = req.body.newHost
+	await node.save();
+	return res.json({
+		type: 'node',
+		node: node
+	})
 }
 
 async function deleteCred(token, credId, type) {
@@ -84,6 +132,10 @@ async function deleteCred(token, credId, type) {
 	}
 	const login = await Login.findOne({token: token}).close();
 	if (!login.admin) { return res.sendStatus(403); }
+	coll.deleteOne({_id: credId}, function(err, login) {
+		if (err) throw res.sendStatus(500);
+		return res.sendStatus(204)
+	})
 }
 
 module.exports = {

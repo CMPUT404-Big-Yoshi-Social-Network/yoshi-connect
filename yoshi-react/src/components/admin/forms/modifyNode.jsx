@@ -32,7 +32,7 @@ function ModifyNode(props) {
         newPassword: props.password,
         newHost: props.host
     })
-    const url = '/node/outgoing';
+    const url = '/node/outgoing/';
 
     const modify = (e) => {
         /**
@@ -49,7 +49,7 @@ function ModifyNode(props) {
         }
 
         axios
-        .put(url, body)
+        .put(url + props._id, body)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 400) {

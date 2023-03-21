@@ -49,13 +49,18 @@ router.get('/outgoing/:credId', async (req, res) => {
 })
 
 router.post('/outgoing', async (req, res) => {
-    // Creating credentials from a node 
+    // Creating credentials for a node 
     await postCred(token); 
 })
 
 router.post('/incoming', async (req, res) => {
     // Storing credentials from other nodes 
     await postCred(token); 
+})
+
+router.put('/outgoing', async (req, res) => {
+    // Modifying credentials for a node 
+    await putCred(token); 
 })
 
 router.delete('/outgoing/:credId', async (req, res) => { 

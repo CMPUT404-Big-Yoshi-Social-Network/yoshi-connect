@@ -52,7 +52,7 @@ function AddNode() {
     
     return (
         <div id='add'>
-            <form method='PUT'>
+            <form method='POST'>
                 <label>
                     Username:
                     <input type="username" name="username" onChange={(e) => {

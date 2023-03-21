@@ -32,7 +32,7 @@ function ModifyNode(props) {
         newPassword: props.password,
         newHost: props.host
     })
-    const url = '/admin/dashboard';
+    const url = '/node/outgoing';
 
     const modify = (e) => {
         /**
@@ -43,7 +43,6 @@ function ModifyNode(props) {
         e.preventDefault();
 
         let body = {
-            status: 'Modify',
             newUsername: data.newUsername,
             newPassword: data.newPassword,
             newHost: data.newHost

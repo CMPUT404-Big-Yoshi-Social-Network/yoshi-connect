@@ -28,6 +28,8 @@ import Popup from 'reactjs-popup';
 // Child Component
 import Authors from '../author/authors.jsx';
 import AddAuthor from "../forms/addForm.jsx";
+import Nodes from '../node/nodes.jsx';
+import NodeCreator from "../forms/addNode.jsx";
 import TopAdminNav from '../nav/top/top.jsx';
 import LeftAdminNavBar from '../nav/left/left.jsx';
 import RightAdminNavBar from '../nav/right/right.jsx';
@@ -98,6 +100,10 @@ function AdminDashboard() {
                             <AddAuthor/>
                         </Popup>
                         <div><Authors/></div>
+                        <Popup trigger={<button>Add Node</button>} position="right center">
+                            <NodeCreator/>
+                        </Popup>
+                        <div><Nodes/></div>
                     </div>
                 </div>
                 <div className='adminColR'>

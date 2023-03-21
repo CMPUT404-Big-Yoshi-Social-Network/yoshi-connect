@@ -25,7 +25,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function addNode() {
+function AddNode() {
     const url = '/admin/dashboard';
     const [data, setData] = useState({ username: '', password: '', host: '' })
     const navigate = useNavigate();

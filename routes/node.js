@@ -33,23 +33,48 @@ const crypto = require('crypto');
 const { authLogin } = require('./auth.js');
 
 async function getCreds(token, type) {
-
+	let coll = null
+	if (type == 'incoming') {
+		coll = IncomingCredentials;
+	} else if (type == 'outgoing') {
+		coll = OutgoingCredentials;
+	}
 }
 
 async function getCred(token, credId, type) {
-
+	let coll = null
+	if (type == 'incoming') {
+		coll = IncomingCredentials;
+	} else if (type == 'outgoing') {
+		coll = OutgoingCredentials;
+	}
 }
 
 async function postCred(token, type) {
-
+	let coll = null
+	if (type == 'incoming') {
+		coll = IncomingCredentials;
+	} else if (type == 'outgoing') {
+		coll = OutgoingCredentials;
+	}
 }
 
 async function putCred(token, type) {
-
+	let coll = null
+	if (type == 'incoming') {
+		coll = IncomingCredentials;
+	} else if (type == 'outgoing') {
+		coll = OutgoingCredentials;
+	}
 }
 
 async function deleteCred(token, credId, type) {
-
+	let coll = null
+	if (type == 'incoming') {
+		coll = IncomingCredentials;
+	} else if (type == 'outgoing') {
+		coll = OutgoingCredentials;
+	}
 }
 
 module.exports = {

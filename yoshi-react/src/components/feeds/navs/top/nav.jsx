@@ -39,7 +39,7 @@ function TopNav(props) {
     const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
     const size = 5;
-    const url = '/authors/';
+    const url = '/authors/username/';
     const navigate = useNavigate();
     const [prev, setPrev] = useState(true);
     const [next, setNext] = useState(false);

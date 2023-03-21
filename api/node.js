@@ -28,24 +28,45 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.get('/', async (req, res) => { 
-    await getCreds(req, res); 
+router.get('/incoming', async (req, res) => { 
+    await getCreds(req.cookies.token); 
 })
 
-router.get('/:credId', async (req, res) => { 
-    await getCred(token, req.params.credId); 
+
+router.get('/outgoing', async (req, res) => { 
+    await getCreds(req.cookies.token); 
 })
 
-router.post('/', async (req, res) => {
+router.get('/incoming/:credId', async (req, res) => { 
+    await getCred(req.cookies.token, req.params.credId); 
+})
+
+router.get('/outgoing/:credId', async (req, res) => { 
+    await getCred(req.cookies.token, req.params.credId); 
+})
+
+router.post('/outgoing', async (req, res) => {
     await postCred(token); 
 })
 
-router.delete('/:credId', async (req, res) => { 
+router.post('/incoming', async (req, res) => {
+    await postCred(token); 
+})
+
+router.delete('/outgoing/:credId', async (req, res) => { 
+    await deleteCred(token, req.params.credId); 
+})
+
+router.delete('/incoming/:credId', async (req, res) => { 
     await deleteCred(token, req.params.credId); 
 })
 
 //Later
-router.post('/', async (req, res) => {
+router.post('/outgoing', async (req, res) => {
+    await authAuthor(req, res); 
+})
+
+router.post('/incoming', async (req, res) => {
     await authAuthor(req, res); 
 })
 

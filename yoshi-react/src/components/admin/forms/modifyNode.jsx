@@ -25,12 +25,12 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-function ModifyNode(props) {
+function ModifyNode({node, url}) {
     const navigate = useNavigate();
     const [data, setData] = useState({
-        newUsername: props.displayName,
-        newPassword: props.password,
-        newHost: props.host
+        newUsername: node.displayName,
+        newPassword: node.password,
+        newHost: node.host
     })
 
     const modify = (e) => {
@@ -48,7 +48,7 @@ function ModifyNode(props) {
         }
 
         axios
-        .put('/nodes/outgoing/' + props._id, body)
+        .put(url + node.id, body)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 400) {

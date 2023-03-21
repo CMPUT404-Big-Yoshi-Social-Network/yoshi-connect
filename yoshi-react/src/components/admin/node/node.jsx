@@ -28,18 +28,17 @@ import { useNavigate } from 'react-router-dom';
 // Child Componet
 import ModifyNode from "../forms/modifyNode.jsx";
 
-function Node(props) {
-    const url = '/admin/dashboard';
+function Node({node, url}) {
     const navigate = useNavigate();
 
-    const deleteNode = () => {
+    const deleteNode = (url) => {
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/json' },
             data: {
-                node: props
+                node: node
             }
         }
         axios
@@ -54,7 +53,7 @@ function Node(props) {
         });
     }
 
-    const allowNode = () => {
+    const allowNode = (url) => {
         let config = props
         axios
         .put(url, config)
@@ -72,15 +71,15 @@ function Node(props) {
     
     return (
         <div>
-            { props.displayName === undefined ? null : 
+            { node.displayName === undefined ? null : 
                 <div>
-                    { props.displayName }
+                    { node.displayName }
                     <div>
-                        <button type="button" id='delete' onClick={() => deleteNode()}>Delete</button>
-                        <button type="button" id='enable' onClick={() => allowNode()}>Enable</button>
-                        <button type="button" id='disable' onClick={() => allowNode()}>Disable</button>
+                        <button type="button" id='delete' onClick={() => deleteNode(url)}>Delete</button>
+                        <button type="button" id='enable' onClick={() => allowNode(url)}>Enable</button>
+                        <button type="button" id='disable' onClick={() => allowNode(url)}>Disable</button>
                         <Popup trigger={<button>Modify</button>} position="right center">
-                            <ModifyNode {...props}/>
+                            <ModifyNode node={...node} url={url}/>
                         </Popup>
                     </div>
                 </div>

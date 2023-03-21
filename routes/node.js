@@ -33,14 +33,13 @@ const crypto = require('crypto');
 const crypto_js = require('crypto-js');
 
 async function getCreds(res, page, size, token, type) {
-	// TODO: Paging
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
-	const login = await Login.findOne({token: token}).close();
+	const login = await Login.findOne({token: token}).clone();
 	if (!login.admin) { return res.sendStatus(403); }
 	let items = undefined;
 
@@ -79,7 +78,7 @@ async function getCred(res, token, credId, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
-	const login = await Login.findOne({token: token}).close();
+	const login = await Login.findOne({token: token}).clone();
 	if (!login.admin) { return res.sendStatus(403); }
 	const node = await coll.findOne({_id: credId}).clone();
 	if (node) {
@@ -102,7 +101,7 @@ async function postCred(req, res, token, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
-	const login = await Login.findOne({token: token}).close();
+	const login = await Login.findOne({token: token}).clone();
 	if (!login.admin) { return res.sendStatus(403); }
 	let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 	const node = new coll({
@@ -125,7 +124,7 @@ async function putCred(req, res, credId, token, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
-	const login = await Login.findOne({token: token}).close();
+	const login = await Login.findOne({token: token}).clone();
 	if (!login.admin) { return res.sendStatus(403); }
 	const node = await coll.findOne({_id: credId}).clone();
 	if (!node) { res.sendStatus(404); }
@@ -146,7 +145,7 @@ async function deleteCred(token, credId, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
-	const login = await Login.findOne({token: token}).close();
+	const login = await Login.findOne({token: token}).clone();
 	if (!login.admin) { return res.sendStatus(403); }
 	coll.deleteOne({_id: credId}, function(err, login) {
 		if (err) throw res.sendStatus(500);

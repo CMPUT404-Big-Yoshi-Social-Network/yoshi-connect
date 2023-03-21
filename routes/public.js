@@ -104,8 +104,10 @@ async function fetchPublicPosts(req, res) {
     }
 
     const publicPost = await PublicPost.find().clone();
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     if (publicPost.length == 0) {
         let pp = new PublicPost({
+            _id: uuid,
             posts: [],
             num_posts: 0
         });

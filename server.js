@@ -79,7 +79,7 @@ app.use("/authors/:authorId/friends", friends);
 app.use("/authors/:authorId/requests", requests);
 app.use("/api-docs", apiDocs);
 app.use("/userinfo", userinfo);
-app.user("/node", node);
+app.user("/nodes", node);
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 

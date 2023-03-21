@@ -32,7 +32,7 @@ const crypto = require('crypto');
 // Password
 const crypto_js = require('crypto-js');
 
-async function getCreds(res, token, type) {
+async function getCreds(res, page, size, token, type) {
 	// TODO: Paging
 	let coll = null
 	if (type == 'incoming') {
@@ -42,18 +42,34 @@ async function getCreds(res, token, type) {
 	}
 	const login = await Login.findOne({token: token}).close();
 	if (!login.admin) { return res.sendStatus(403); }
-	const items = await coll.find().clone();
-	if (items) {
-		return res.json({
-			type: 'nodes',
-			items: nodes
-		});
-	} else {
-		return res.json({
-			type: 'nodes',
-			items: []
-		})
-	}
+	let items = undefined;
+
+    if (page > 1) { 
+        items = await coll.find().skip((page-1) * size).limit(size); 
+    } else if (page == 1) {
+        items = await coll.find().limit(size);
+    } else {
+        return [[], 400];
+    }
+
+    if (!items) { return [[], 500]; }
+    
+    let sanitizedItems = [];
+
+    for(let i = 0; i < items.length; i++){
+        const item = items[i];
+        sanitizedItems.push({
+                "type": "node",
+                "id" : process.env.DOMAIN_NAME + "nodes/" + item._id,
+                "host": process.env.DOMAIN_NAME,
+                "displayName": item.displayName,
+                "url":  process.env.DOMAIN_NAME + "nodes/" + item._id
+        })
+    }
+    return res.json({
+		'type': 'nodes',
+		items: items
+	})
 }
 
 async function getCred(res, token, credId, type) {
@@ -102,7 +118,7 @@ async function postCred(req, res, token, type) {
 	})
 }
 
-async function putCred(req, res, credId, token) {
+async function putCred(req, res, credId, token, type) {
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -138,10 +154,28 @@ async function deleteCred(token, credId, type) {
 	})
 }
 
+async function allowNode(res, credId, type){
+	let coll = null
+	if (type == 'incoming') {
+		coll = IncomingCredentials;
+	} else if (type == 'outgoing') {
+		coll = OutgoingCredentials;
+	}
+    const node = await coll.findOne({_id: credId}).clone();
+    if (node.allowed) {
+        author.allowed = false;
+    } else {
+        node.allowed = true;
+    }
+    node.save();
+    return res.sendStatus(200)
+}
+
 module.exports = {
 	getCreds,
 	getCred,
 	postCred,
 	putCred,
-	deleteCred
+	deleteCred,
+	allowNode
 }

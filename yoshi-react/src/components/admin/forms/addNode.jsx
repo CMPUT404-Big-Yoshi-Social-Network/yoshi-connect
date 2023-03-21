@@ -26,20 +26,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function AddNode() {
-    const url = '/admin/dashboard';
     const [data, setData] = useState({ username: '', password: '', host: '' })
     const navigate = useNavigate();
 
     const addNode = async (e) => {
         e.preventDefault();
         let body = {
-            status: 'Add',
             username: data.username,
             password: data.password,
             host: data.host
         }
         axios
-        .post('/node/outgoing', body)
+        .post('/nodes/outgoing', body)
         .then((response) => {})
         .catch(err => {
             if (err.response.status === 400) {

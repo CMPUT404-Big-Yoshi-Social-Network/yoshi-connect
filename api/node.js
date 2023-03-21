@@ -19,9 +19,6 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */  
 
-// Routing Functions 
-const { authAuthor } = require('../routes/auth');
-
 // Router Setup
 const express = require('express'); 
 
@@ -30,12 +27,22 @@ const router = express.Router({mergeParams: true});
 
 router.get('/incoming', async (req, res) => { 
     // Getting our credentials from other nodes
-    await getCreds(res, req.cookies.token, 'incoming'); 
+    let page = req.query.page;
+    let size = req.query.size;
+  
+    if (page == undefined) page = 1;
+    if (size == undefined) size = 5;
+    await getCreds(res, page, size, req.cookies.token, 'incoming'); 
 })
 
 router.get('/outgoing', async (req, res) => { 
     // Getting other nodes' credentials from us 
-    await getCreds(res, req.cookies.token, 'outgoing'); 
+    let page = req.query.page;
+    let size = req.query.size;
+  
+    if (page == undefined) page = 1;
+    if (size == undefined) size = 5;
+    await getCreds(res, page, size, req.cookies.token, 'outgoing'); 
 })
 
 router.get('/incoming/:credId', async (req, res) => { 
@@ -60,7 +67,19 @@ router.post('/incoming', async (req, res) => {
 
 router.put('/outgoing/:credId', async (req, res) => {
     // Modifying credentials for a node 
-    await putCred(req, res, req.params.credId, req.cookies.token); 
+    if (req.body.status == 'modify') {
+        await putCred(req, res, req.params.credId, req.cookies.token, 'outgoing'); 
+    } else {
+        await allowNode(res, req.params.credId, 'outgoing');
+    }
+})
+
+router.put('/incoming/:credId', async (req, res) => {
+    if (req.body.status == 'modify') {
+        await putCred(req, res, req.params.credId, req.cookies.token, 'incoming'); 
+    } else {
+        await allowNode(res, req.params.credId, 'incoming');
+    }
 })
 
 router.delete('/outgoing/:credId', async (req, res) => { 

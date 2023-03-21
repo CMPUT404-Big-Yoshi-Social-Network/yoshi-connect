@@ -39,7 +39,7 @@ function Node(props) {
             url: url,
             headers: { 'Content-Type': 'application/json' },
             data: {
-                author: props
+                node: props
             }
         }
         axios

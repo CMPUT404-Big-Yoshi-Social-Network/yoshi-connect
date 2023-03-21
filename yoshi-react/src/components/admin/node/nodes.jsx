@@ -32,7 +32,7 @@ function Nodes() {
     const size = 5;
     const navigate = useNavigate();
 
-    const inUrl = '/nodes/ingoing';
+    const inUrl = '/nodes/incoming';
     const [inNodes, setInNodes] = useState([]);
     const [inPage, setInPage] = useState(1);
     const [inPrev, setInPrev] = useState(true);
@@ -91,24 +91,22 @@ function Nodes() {
         axios
         .get(outUrl, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setOutNodes(true); }
+            if (response.data.items.length === 0) { setOutNext(true); }
         })
         .catch(err => {
             if (err.response.status === 404) {
-                if (outNodes === undefined || outNodes.length === 0) {
-                    setOutNodes([]);
-                } else {
-                    setOutNodes(outNodes);
-                }
+                console.log('No more.')
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
                 navigate('500 PAGE')
             }
         });
+    }, [navigate, outPage]);
 
-        /** Ingoing */
-        config = {
+    useEffect(() => {
+        /** Incoming */
+        let config = {
             method: 'get',
             maxBodyLength: Infinity,
             url: inUrl,
@@ -138,7 +136,7 @@ function Nodes() {
             }
         });
 
-        updated = inPage + 1;
+        let updated = inPage + 1;
         config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -153,22 +151,18 @@ function Nodes() {
         axios
         .get(inUrl, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setInNodes(true); }
+            if (response.data.items.length === 0) { setInNext(true); }
         })
         .catch(err => {
             if (err.response.status === 404) {
-                if (inNodes === undefined || inNodes.length === 0) {
-                    setInNodes([]);
-                } else {
-                    setInNodes(outNodes);
-                }
+                console.log('No more.')
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
                 navigate('500 PAGE')
             }
         });
-    }, [setOutNodes, setInNodes, inUrl, outUrl, navigate, inPage, outPage, size, inNodes, outNodes]);
+    }, [navigate, inPage]);
 
     const getMore = (url, next, setPage, setNodes, setPrev, setNext, page) => {
         if (!next) {
@@ -279,7 +273,7 @@ function Nodes() {
     return (
         <div>
             <h3>Outgoing Nodes</h3>
-            { outNodes === undefined || outNodes.length === 0 ? 
+            { outNodes === undefined && outNodes.length === 0 ? 
                 <div>
                     <h4>No outgoing nodes to show.</h4>
                 </div> :
@@ -293,8 +287,8 @@ function Nodes() {
                     </Pagination>
                 </div>
             }
-            <h3>Ingoing Nodes</h3>
-            { inNodes === undefined || inNodes.length === 0 ? 
+            <h3>Incoming Nodes</h3>
+            { inNodes === undefined && inNodes.length === 0 ? 
                 <div>
                     <h4>No incoming nodes to show.</h4>
                 </div> :

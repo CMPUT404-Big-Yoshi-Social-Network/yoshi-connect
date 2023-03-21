@@ -53,7 +53,7 @@ function OutNodes() {
         axios
         .get(outUrl, config)
         .then((response) => { 
-            if (response.data.items.length !== 0) {
+            if (response.data.items.length !== 0 && outNodes !== []) {
                 let nodes = []
                 for (let i = 0; i < size; i++) {
                     nodes.push(response.data.items[i]);
@@ -97,7 +97,7 @@ function OutNodes() {
                console.log('500 PAGE')
             }
         });
-    }, []);
+    }, [outNodes]);
 
     const getMore = (url, next, setPage, setNodes, setPrev, setNext, page) => {
         if (!next) {

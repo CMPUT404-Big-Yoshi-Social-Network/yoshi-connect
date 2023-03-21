@@ -38,8 +38,8 @@ const incomingCredentialsScheme = new Schema({
     password: String
 });
 
-const OutgoingCredentials = database.model('incred', outgoingCredentialScheme);
-const IncomingCredentials = database.model('outcred', incomingCredentialsScheme);
+const OutgoingCredentials = database.model('outcred', outgoingCredentialScheme);
+const IncomingCredentials = database.model('incred', incomingCredentialsScheme);
 
 module.exports = {
     OutgoingCredentials,

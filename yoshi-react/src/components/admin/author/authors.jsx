@@ -52,11 +52,13 @@ function Authors() {
         axios
         .get(url, config)
         .then((response) => { 
-            let authors = []
-            for (let i = 0; i < size; i++) {
-                authors.push(response.data.items[i]);
+            if (response.data.items.length !== 0) {
+                let authors = []
+                for (let i = 0; i < size; i++) {
+                    authors.push(response.data.items[i]);
+                }
+                setAuthors(authors);
             }
-            setAuthors(authors);
         })
         .catch(err => {
             if (err.response.status === 404) {

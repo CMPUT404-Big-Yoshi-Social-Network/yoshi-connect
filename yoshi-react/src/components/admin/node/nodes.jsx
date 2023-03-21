@@ -52,7 +52,7 @@ function Nodes() {
             url: outUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
-                page: outPage,
+                page: 1,
                 size: size
             }
         }
@@ -68,15 +68,15 @@ function Nodes() {
         })
         .catch(err => {
             if (err.response.status === 404) {
-                setOutNodes([]);
+                console.log('Nothing.')
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('Unauthorized.')
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+               console.log('500 PAGE')
             }
         });
 
-        let updated = outPage + 1;
+        let updated = 2;
         config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -97,12 +97,12 @@ function Nodes() {
             if (err.response.status === 404) {
                 console.log('No more.')
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('Unauthorized.')
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+               console.log('500 PAGE')
             }
         });
-    }, [navigate, outPage]);
+    }, []);
 
     useEffect(() => {
         /** Incoming */
@@ -112,7 +112,7 @@ function Nodes() {
             url: inUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
-                page: inPage,
+                page: 1,
                 size: size
             }
         }
@@ -128,15 +128,15 @@ function Nodes() {
         })
         .catch(err => {
             if (err.response.status === 404) {
-                setInNodes([]);
+                console.log('Nothing.')
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('Unauthorized.')
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+               console.log('500 PAGE')
             }
         });
 
-        let updated = inPage + 1;
+        let updated = 2;
         config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -157,12 +157,12 @@ function Nodes() {
             if (err.response.status === 404) {
                 console.log('No more.')
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('Unauthorized.')
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+               console.log('500 PAGE')
             }
         });
-    }, [navigate, inPage]);
+    }, []);
 
     const getMore = (url, next, setPage, setNodes, setPrev, setNext, page) => {
         if (!next) {

@@ -116,7 +116,8 @@ async function postCred(req, res, token, type) {
 		_id: uuid,
 		displayName: req.body.username,
 		url: req.body.host,
-		password: crypto_js.SHA256(req.body.password)
+		password: crypto_js.SHA256(req.body.password),
+		allowed: false
 	})
 	await node.save();
 	return res.json({
@@ -170,7 +171,7 @@ async function allowNode(res, credId, type){
 	}
     const node = await coll.findOne({_id: credId}).clone();
     if (node.allowed) {
-        author.allowed = false;
+        node.allowed = false;
     } else {
         node.allowed = true;
     }

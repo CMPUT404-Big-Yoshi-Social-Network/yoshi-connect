@@ -42,7 +42,7 @@ function Node({node, url}) {
             }
         }
         axios
-        .delete(url, config)
+        .delete(url + '/' + node._id, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 404) {
@@ -56,7 +56,7 @@ function Node({node, url}) {
     const allowNode = (url) => {
         let config = node
         axios
-        .put(url, config)
+        .put(url + '/' + node._id, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 400) {

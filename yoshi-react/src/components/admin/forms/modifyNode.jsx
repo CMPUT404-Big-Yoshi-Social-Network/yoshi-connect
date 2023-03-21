@@ -44,11 +44,12 @@ function ModifyNode({node, url}) {
         let body = {
             newUsername: data.newUsername,
             newPassword: data.newPassword,
-            newHost: data.newHost
+            newHost: data.newHost,
+            status: 'modify'
         }
 
         axios
-        .put(url + node.id, body)
+        .put(url + '/' + node._id, body)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 400) {

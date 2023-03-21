@@ -61,13 +61,4 @@ router.delete('/incoming/:credId', async (req, res) => {
     await deleteCred(token, req.params.credId); 
 })
 
-//Later
-router.post('/outgoing', async (req, res) => {
-    await authAuthor(req, res); 
-})
-
-router.post('/incoming', async (req, res) => {
-    await authAuthor(req, res); 
-})
-
 module.exports = router;

@@ -30,7 +30,7 @@ function ModifyNode({node, url}) {
     const [data, setData] = useState({
         newUsername: node.displayName,
         newPassword: node.password,
-        newHost: node.host
+        newHost: node.url
     })
 
     const modify = (e) => {
@@ -85,7 +85,7 @@ function ModifyNode({node, url}) {
                 </label>
                 <br></br>
                 <label>
-                    About:
+                    Host:
                     <input type="host" name="host" value={data.newHost} onChange={(e) => {
                         setData({
                         ...data,

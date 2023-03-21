@@ -71,7 +71,7 @@ function Node({node, url}) {
     
     return (
         <div>
-            { node.displayName === undefined ? null : 
+            { node !== undefined && node.displayName === undefined ? null : 
                 <div>
                     { node.displayName }
                     <div>

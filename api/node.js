@@ -60,7 +60,6 @@ router.get('/outgoing/:credId', async (req, res) => {
 
 router.post('/outgoing', async (req, res) => {
     // Creating credentials for a node 
-    console.log('ere')
     await postCred(req, res, req.cookies.token, 'outgoing'); 
 })
 

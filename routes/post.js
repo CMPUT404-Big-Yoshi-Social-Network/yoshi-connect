@@ -44,12 +44,27 @@ async function createPostHistory(author_id){
 }
 
 async function uploadImage(url, image) {
+    let buffer = new Buffer.from(image, 'base64')
     let newImage = new Image ({
-        _id: url, 
-        image: image
+        _id: url,  
+        image: buffer
     })
 
     await newImage.save()
+    return [newImage, 200]
+}
+
+async function getImage(url) {
+    let image = await Image.aggregate([
+        {
+            $match: {'url': url}
+        }
+    ])
+    
+    if (image.length == 0) { return [{}, 404]; }
+
+    image = image[0].image;
+    return [image, 200];
 }
 
 async function getPost(authorId, postId){
@@ -72,7 +87,7 @@ async function getPost(authorId, postId){
     post = {
         "type": "post",
         "title" : post.title,
-        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
         "source": post.source,
         "origin": post.origin,
         "description": post.description,
@@ -456,5 +471,6 @@ module.exports={
     getPosts,
     fetchMyPosts,
     fetchOtherPosts,
-    uploadImage
+    uploadImage,
+    getImage
 }

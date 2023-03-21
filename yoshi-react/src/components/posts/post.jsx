@@ -65,6 +65,26 @@ function Post({viewerId, post}) {
          * Returns: N/A
          */
         console.log('Debug: Checking if the viewer has already liked the post')
+        const getImage = () => {
+            let config = {
+                method: "get",
+                maxBodyLength: Infinity,
+                url: "/authors/" + authorId + "/posts/" + postId + "/image",
+                headers: {
+                    'Content-Type': 'application/json'
+                }           
+            }
+            axios
+            .get("/authors/" + authorId + "/posts/" + postId + "/image", config)
+            .then((res) => {
+                if (res.data.status == 200) {
+                    const image = document.querySelector("img[id=postId+'image'");
+                    image.src = res.data.image
+                }
+            })
+        }
+        getImage();
+
         const hasLiked = () => {
             /**
              * Description: Sends a POST request to check if the viewerId has already liked the post (by cross-referencing the postId)
@@ -208,7 +228,7 @@ function Post({viewerId, post}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "type/plain" ? <p>{ post.content }</p> : post.contentType === "type/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { post.image === ""? null : <a href={post.image} target="_blank"  rel="noreferrer noopener"><img src={post.image} alt=""/></a> }
+                    { post.image === ""? null : <img id={postId + "image"} src="" alt=""/> }
 
                     <p>{post.published}</p>
                     <br></br>

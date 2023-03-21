@@ -115,10 +115,12 @@ function CreatePost() {
         axios.post('/authors/' + data.authorId + '/posts/', config)
         .then((response) => { 
             if (item.image != "") {
-                axios.post('/authors/' + data.authorId + '/posts/' + response.postId + "/image", {
+                console.log(response.data[0])
+                const id = response.data[0].id.split('/')[6]
+                axios.post('/authors/' + data.authorId + '/posts/' + id + "/image", {
                     method: 'post',
                     maxBodyLength: Infinity,
-                    url: '/authors/' + data.authorId + '/posts/' + response.postId + "/image",
+                    url: '/authors/' + data.authorId + '/posts/' + id + "/image",
                     headers: { 'Content-Type': 'multipart/form-data' },
                     image: item.image
                 }).then((res) => {}).catch((e) => {console.log(e);})  

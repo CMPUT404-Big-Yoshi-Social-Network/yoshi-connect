@@ -29,6 +29,7 @@ mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
+
 // App Setup
 const express = require('express');
 const app = express();
@@ -54,6 +55,7 @@ const setting = require('./api/settings');
 const userinfo = require('./api/userinfo');
 
 // App Uses
+app.use(express.json({limit: '10mb'}));
 app.use(express.static(path.resolve(__dirname + '/yoshi-react/build'))); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());

@@ -74,7 +74,8 @@ const inboxScheme = new Schema({
 
 const imageScheme = new Schema({
     _id: String, 
-    image: String
+    image: Buffer},
+    {versionKey: false
 })
 
 const PostHistory = database.model('PostHistory', postHistoryScheme);

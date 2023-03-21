@@ -30,47 +30,47 @@ const router = express.Router({mergeParams: true});
 
 router.get('/incoming', async (req, res) => { 
     // Getting our credentials from other nodes
-    await getCreds(req.cookies.token); 
+    await getCreds(req.cookies.token, 'incoming'); 
 })
 
 router.get('/outgoing', async (req, res) => { 
     // Getting other nodes' credentials from us 
-    await getCreds(req.cookies.token); 
+    await getCreds(req.cookies.token, 'outgoing'); 
 })
 
 router.get('/incoming/:credId', async (req, res) => { 
     // Getting our credentials from other nodes given the credId
-    await getCred(req.cookies.token, req.params.credId); 
+    await getCred(req.cookies.token, req.params.credId, 'incoming'); 
 })
 
 router.get('/outgoing/:credId', async (req, res) => { 
     // Getting their credentials from us given the credId
-    await getCred(req.cookies.token, req.params.credId); 
+    await getCred(req.cookies.token, req.params.credId, 'outgoing'); 
 })
 
 router.post('/outgoing', async (req, res) => {
     // Creating credentials for a node 
-    await postCred(token); 
+    await postCred(token, 'outgoing'); 
 })
 
 router.post('/incoming', async (req, res) => {
     // Storing credentials from other nodes 
-    await postCred(token); 
+    await postCred(token, 'incoming'); 
 })
 
 router.put('/outgoing', async (req, res) => {
     // Modifying credentials for a node 
-    await putCred(token); 
+    await putCred(token, 'outgoing'); 
 })
 
 router.delete('/outgoing/:credId', async (req, res) => { 
     // Deleting credentials for a node given the credId
-    await deleteCred(token, req.params.credId); 
+    await deleteCred(token, req.params.credId, 'outgoing'); 
 })
 
 router.delete('/incoming/:credId', async (req, res) => { 
     // Deleting credentials for us (in database)
-    await deleteCred(token, req.params.credId); 
+    await deleteCred(token, req.params.credId, 'incoming'); 
 })
 
 module.exports = router;

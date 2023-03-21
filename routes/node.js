@@ -32,19 +32,23 @@ const crypto = require('crypto');
 // Additional Functions
 const { authLogin } = require('./auth.js');
 
-async function getCreds(token) {
+async function getCreds(token, type) {
 
 }
 
-async function getCred(token, credId) {
+async function getCred(token, credId, type) {
 
 }
 
-async function postCred(token) {
+async function postCred(token, type) {
 
 }
 
-async function deleteCred() {
+async function putCred(token, type) {
+
+}
+
+async function deleteCred(token, credId, type) {
 
 }
 
@@ -52,5 +56,6 @@ module.exports = {
 	getCreds,
 	getCred,
 	postCred,
+	putCred,
 	deleteCred
 }

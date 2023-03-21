@@ -28,7 +28,7 @@ import Pagination from 'react-bootstrap/Pagination';
 // Child Component
 import Node from './node.jsx';
 
-function Nodes() {
+function InNodes() {
     const size = 5;
     const navigate = useNavigate();
 
@@ -225,4 +225,4 @@ function Nodes() {
     )
 }
 
-export default Nodes;
+export default InNodes;

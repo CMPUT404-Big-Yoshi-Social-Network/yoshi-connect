@@ -56,7 +56,7 @@ function CreatePost() {
     })
     const [isOpen, setIsOpen] = useState(false);
 
-    const [item, setItem] = useState({ image: '' });
+    const [item, setItem] = useState({ image: "" });
 
     useEffect(() => {
         /**
@@ -114,8 +114,7 @@ function CreatePost() {
         
         axios.post('/authors/' + data.authorId + '/posts/', config)
         .then((response) => { 
-            if (item.image != "") {
-                console.log(response.data[0])
+            if (item.image !== "") {
                 const id = response.data[0].id.split('/')[6]
                 axios.post('/authors/' + data.authorId + '/posts/' + id + "/image", {
                     method: 'post',
@@ -138,29 +137,29 @@ function CreatePost() {
         setIsOpen(!isOpen); 
     }
 
-    async function uploadImage() {
-        /**
-         * Description: Uses Cloudinary in order to display images 
-         * Request: POST
-         * Returns: N/A
-         */
-        const formData = new FormData();
-        const preview = document.querySelector("img[src=''");
-        const file = document.querySelector("input[type=file]").files[0];
+    // async function uploadImage() {
+    //     /**
+    //      * Description: Uses Cloudinary in order to display images 
+    //      * Request: POST
+    //      * Returns: N/A
+    //      */
+    //     const formData = new FormData();
+    //     const preview = document.querySelector("img[src=''");
+    //     const file = document.querySelector("input[type=file]").files[0];
 
-        formData.append("file", file);
-        formData.append("upload_preset", "biumvy2g");
+    //     formData.append("file", file);
+    //     formData.append("upload_preset", "biumvy2g");
       
-        const res = await fetch(
-          `https://api.cloudinary.com/v1_1/di9yhzyxv/image/upload`,
-          { method: "POST", body: formData }
-        );
+    //     const res = await fetch(
+    //       `https://api.cloudinary.com/v1_1/di9yhzyxv/image/upload`,
+    //       { method: "POST", body: formData }
+    //     );
 
-        const img = await res.json();
+    //     const img = await res.json();
 
-        data.image = img.secure_url;
-        preview.src = img.secure_url;
-      }
+    //     data.image = img.secure_url;
+    //     preview.src = img.secure_url;
+    //   }
 
     return (
         <>

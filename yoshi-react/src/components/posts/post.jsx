@@ -66,23 +66,11 @@ function Post({viewerId, post}) {
          */
         console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
-            /*
-            let config = {
-                method: "get",
-                maxBodyLength: Infinity,
-                url: "/authors/" + authorId + "/posts/" + postId + "/image",
-                headers: {
-                    'Content-Type': 'application/json'
-                }           
-            }
-            */
             axios
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
             .then((res) => {
-                if (res.data.status == 200) {
-                    const image = document.querySelector("img[id=postId+'image'");
-                    image.src = res.data.image
-                }
+                let element = document.querySelector("#image")
+                element.src = res.data.src
             })
         }
         getImage();
@@ -230,7 +218,7 @@ function Post({viewerId, post}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "type/plain" ? <p>{ post.content }</p> : post.contentType === "type/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { post.image === ""? null : <img id={postId + "image"} src="" alt=""/> }
+                    <img id="image" src="" alt=""/>
 
                     <p>{post.published}</p>
                     <br></br>

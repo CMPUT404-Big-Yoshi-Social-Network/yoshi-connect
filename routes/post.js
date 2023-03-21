@@ -47,7 +47,7 @@ async function uploadImage(url, image) {
     let buffer = new Buffer.from(image, 'base64')
     let newImage = new Image ({
         _id: url,  
-        image: buffer
+        src: buffer
     })
 
     await newImage.save()
@@ -56,10 +56,8 @@ async function uploadImage(url, image) {
 
 async function getImage(url) {
     let image = await Image.findOne({_id: url});
-    
     if (!image) { return [{}, 404]; }
-    console.log(image[1])
-    return [image, 200];
+    return [image.src.toString('base64'), 200];
 }
 
 async function getPost(authorId, postId){

@@ -42,8 +42,10 @@ const router = express.Router({mergeParams: true});
  *  get:
  *    description: Fetches a paginated list of Authors (dictated by size and page queries)
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      500:
+ *        description: Internal Serevr Error -- Getting authors failed server-side
+ *      400:
+ *        description: Bad Request -- Server cannot process getting authors
  */
 router.get('/', async (req, res) => {
 
@@ -70,8 +72,10 @@ router.get('/', async (req, res) => {
  *  get:
  *    description: Fetches a specific Author through authorId param
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      404:
+ *        description: Not Found -- Authour was not found in the database
+ *      500:
+ *        description: Internal Server Error -- A server-side error occured when getting the author
  */
 router.get('/:authorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -94,8 +98,18 @@ router.get('/:authorId', async (req, res) => {
  *      url
  *    }
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      401:
+ *        description: Unauthorized -- Author token is not authorized
+ *      400:
+ *        description: Bad Request -- Author body type was not processed
+ *      400:
+ *        description: Bad Request -- Author ID, host, username, or url did not match
+ *      200:
+ *        description: OK -- Author was succesfully sent, json file contains authorId, host, username, url
+ *      404:
+ *        description: Not Found -- Author was not found
+ *      401:
+ *        description: Unauthorized -- Authour is not authernticated
  */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }

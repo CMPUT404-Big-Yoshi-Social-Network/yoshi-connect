@@ -22,6 +22,9 @@ Foundation; All Rights Reserved
 // Router Setup
 const express = require('express'); 
 
+// Routing Functions 
+const { getCreds, getCred, postCred, putCred, allowNode, deleteCred } = require('../routes/node');
+
 // Router
 const router = express.Router({mergeParams: true});
 

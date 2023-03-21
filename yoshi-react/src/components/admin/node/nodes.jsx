@@ -32,7 +32,7 @@ function Nodes() {
     const [nodes, setNodes] = useState([]);
     const [page, setPage] = useState(1);
     const size = 5;
-    const url = '/nodes';
+    const url = '/nodes/outgoing';
     const navigate = useNavigate();
     const [prev, setPrev] = useState(true);
     const [next, setNext] = useState(false);

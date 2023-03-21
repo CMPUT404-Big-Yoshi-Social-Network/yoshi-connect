@@ -38,72 +38,6 @@ function Nodes() {
     const [inPrev, setInPrev] = useState(true);
     const [inNext, setInNext] = useState(false);
 
-    const outUrl = '/nodes/outgoing';
-    const [outNodes, setOutNodes] = useState([]);
-    const [outPage, setOutPage] = useState(1);
-    const [outPrev, setOutPrev] = useState(true);
-    const [outNext, setOutNext] = useState(false);
-
-    useEffect(() => {
-        /** Outgoing */
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: outUrl,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            params: {
-                page: 1,
-                size: size
-            }
-        }
-
-        axios
-        .get(outUrl, config)
-        .then((response) => { 
-            let nodes = []
-            for (let i = 0; i < size; i++) {
-                nodes.push(response.data.items[i]);
-            }
-            setOutNodes(nodes);
-        })
-        .catch(err => {
-            if (err.response.status === 404) {
-                console.log('Nothing.')
-            } else if (err.response.status === 401) {
-                console.log('Unauthorized.')
-            } else if (err.response.status === 500) {
-               console.log('500 PAGE')
-            }
-        });
-
-        let updated = 2;
-        config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: outUrl,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            params: {
-                page: updated,
-                size: size
-            }
-        }
-
-        axios
-        .get(outUrl, config)
-        .then((response) => { 
-            if (response.data.items.length === 0) { setOutNext(true); }
-        })
-        .catch(err => {
-            if (err.response.status === 404) {
-                console.log('No more.')
-            } else if (err.response.status === 401) {
-                console.log('Unauthorized.')
-            } else if (err.response.status === 500) {
-               console.log('500 PAGE')
-            }
-        });
-    }, []);
-
     useEffect(() => {
         /** Incoming */
         let config = {
@@ -272,21 +206,6 @@ function Nodes() {
 
     return (
         <div>
-            <h3>Outgoing Nodes</h3>
-            { outNodes === undefined && outNodes.length === 0 ? 
-                <div>
-                    <h4>No outgoing nodes to show.</h4>
-                </div> :
-                <div>
-                    <Pagination>
-                        {Object.keys(outNodes).map((node, idx) => (
-                            <Node key={idx} node={outNodes[node]} url={outUrl}/>
-                        ))}
-                        <Pagination.Prev disabled={outPrev} onClick={goBack(outUrl, outPrev, setOutPage, setOutNodes, setOutNext, setOutPrev, outPage)}/>
-                        <Pagination.Next disabled={outNext} onClick={getMore(outUrl, outNext, setOutPage, setOutNodes, setOutPrev, setOutNext, outPage)}/>
-                    </Pagination>
-                </div>
-            }
             <h3>Incoming Nodes</h3>
             { inNodes === undefined && inNodes.length === 0 ? 
                 <div>

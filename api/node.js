@@ -29,45 +29,43 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 router.get('/incoming', async (req, res) => { 
+    // Getting our credentials from other nodes
     await getCreds(req.cookies.token); 
 })
 
-
 router.get('/outgoing', async (req, res) => { 
+    // Getting other nodes' credentials from us 
     await getCreds(req.cookies.token); 
 })
 
 router.get('/incoming/:credId', async (req, res) => { 
+    // Getting our credentials from other nodes given the credId
     await getCred(req.cookies.token, req.params.credId); 
 })
 
 router.get('/outgoing/:credId', async (req, res) => { 
+    // Getting their credentials from us given the credId
     await getCred(req.cookies.token, req.params.credId); 
 })
 
 router.post('/outgoing', async (req, res) => {
+    // Creating credentials from a node 
     await postCred(token); 
 })
 
 router.post('/incoming', async (req, res) => {
+    // Storing credentials from other nodes 
     await postCred(token); 
 })
 
 router.delete('/outgoing/:credId', async (req, res) => { 
+    // Deleting credentials for a node given the credId
     await deleteCred(token, req.params.credId); 
 })
 
 router.delete('/incoming/:credId', async (req, res) => { 
+    // Deleting credentials for us (in database)
     await deleteCred(token, req.params.credId); 
-})
-
-//Later
-router.post('/outgoing', async (req, res) => {
-    await authAuthor(req, res); 
-})
-
-router.post('/incoming', async (req, res) => {
-    await authAuthor(req, res); 
 })
 
 module.exports = router;

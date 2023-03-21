@@ -39,7 +39,7 @@ function AddNode() {
             host: data.host
         }
         axios
-        .put(url, body)
+        .post('/node/outgoing', body)
         .then((response) => {})
         .catch(err => {
             if (err.response.status === 400) {

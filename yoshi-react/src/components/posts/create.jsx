@@ -117,8 +117,8 @@ function CreatePost() {
         .then((response) => { 
             if (item.image !== "") {
                 const id = response.data[0].id.split('/')[6]
-                axios.post('/authors/' + data.authorId + '/posts/' + id + "/image", {
-                    method: 'post',
+                axios.put('/authors/' + data.authorId + '/posts/' + id + "/image", {
+                    method: 'put',
                     maxBodyLength: Infinity,
                     url: '/authors/' + data.authorId + '/posts/' + id + "/image",
                     headers: { 'Content-Type': 'multipart/form-data' },

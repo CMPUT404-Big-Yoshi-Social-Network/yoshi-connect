@@ -54,6 +54,15 @@ async function uploadImage(url, image) {
     return [newImage, 200]
 }
 
+async function editImage(url, src) {
+    let image = await Image.findOne({_id: url});
+    if (!image) { return [{}, 404]; }
+    let buffer = new Buffer.from(src, 'base64')
+    image.src = buffer;
+    await image.save()
+    return [image, 200]
+}
+
 async function getImage(url) {
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
@@ -465,5 +474,6 @@ module.exports={
     fetchMyPosts,
     fetchOtherPosts,
     uploadImage,
-    getImage
+    getImage,
+    editImage
 }

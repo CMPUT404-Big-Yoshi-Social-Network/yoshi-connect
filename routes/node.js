@@ -24,13 +24,10 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { OutgoingCredentials, IncomingCredentials } = require('../scheme/server.js');
-
+const { Login } = require('../scheme/author.js');
 
 // UUID
 const crypto = require('crypto');
-
-// Additional Functions
-const { authLogin } = require('./auth.js');
 
 async function getCreds(token, type) {
 	let coll = null
@@ -39,6 +36,9 @@ async function getCreds(token, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
+	const login = await Login.findOne({token: token}).close();
+	if (!login.admin) { return res.sendStatus(403); }
+	return await coll.findOne({displayName: login.username}).clone();
 }
 
 async function getCred(token, credId, type) {
@@ -48,6 +48,9 @@ async function getCred(token, credId, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
+	const login = await Login.findOne({token: token}).close();
+	if (!login.admin) { return res.sendStatus(403); }
+	return await coll.findOne({_id: credId}).clone();
 }
 
 async function postCred(token, type) {
@@ -57,6 +60,8 @@ async function postCred(token, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
+	const login = await Login.findOne({token: token}).close();
+	if (!login.admin) { return res.sendStatus(403); }
 }
 
 async function putCred(token, type) {
@@ -66,6 +71,8 @@ async function putCred(token, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
+	const login = await Login.findOne({token: token}).close();
+	if (!login.admin) { return res.sendStatus(403); }
 }
 
 async function deleteCred(token, credId, type) {
@@ -75,6 +82,8 @@ async function deleteCred(token, credId, type) {
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
+	const login = await Login.findOne({token: token}).close();
+	if (!login.admin) { return res.sendStatus(403); }
 }
 
 module.exports = {

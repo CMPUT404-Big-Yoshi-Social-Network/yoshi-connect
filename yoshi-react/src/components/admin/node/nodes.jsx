@@ -52,7 +52,7 @@ function Nodes() {
             url: outUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
-                page: page,
+                page: outPage,
                 size: size
             }
         }
@@ -114,7 +114,7 @@ function Nodes() {
             url: inUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
-                page: page,
+                page: inPage,
                 size: size
             }
         }
@@ -170,7 +170,7 @@ function Nodes() {
         });
     }, [setOutNodes, setInNodes, inUrl, outUrl, navigate, inPage, outPage, size, inNodes, outNodes]);
 
-    const getMore = (url, next, setPage, setNodes, setPrev, setNext) => {
+    const getMore = (url, next, setPage, setNodes, setPrev, setNext, page) => {
         if (!next) {
             let updated = page + 1;
             setPage(updated);
@@ -236,7 +236,7 @@ function Nodes() {
         });
     }
 
-    const goBack = (url, prev, setPage, setNodes, setNext, setPrev) => {
+    const goBack = (url, prev, setPage, setNodes, setNext, setPrev, page) => {
         if (!prev && prev !== 1) {
             let updated = page - 1;
             setPage(updated);
@@ -286,10 +286,10 @@ function Nodes() {
                 <div>
                     <Pagination>
                         {Object.keys(outNodes).map((node, idx) => (
-                            <Node key={idx} node={...outNodes[node]} url={outUrl}/>
+                            <Node key={idx} node={outNodes[node]} url={outUrl}/>
                         ))}
-                        <Pagination.Prev disabled={outPrev} onClick={goBack(outUrl, outPrev, setOutPage, setOutNodes, setOutNext, setOutPrev)}/>
-                        <Pagination.Next disabled={outNext} onClick={getMore(outUrl, outNext, setOutPage, setOutNodes, setOutPrev, setOutNext)}/>
+                        <Pagination.Prev disabled={outPrev} onClick={goBack(outUrl, outPrev, setOutPage, setOutNodes, setOutNext, setOutPrev, outPage)}/>
+                        <Pagination.Next disabled={outNext} onClick={getMore(outUrl, outNext, setOutPage, setOutNodes, setOutPrev, setOutNext, outPage)}/>
                     </Pagination>
                 </div>
             }
@@ -301,10 +301,10 @@ function Nodes() {
                 <div>
                     <Pagination>
                         {Object.keys(inNodes).map((node, idx) => (
-                            <Node key={idx} node={...inNodes[node]} url={inUrl}/>
+                            <Node key={idx} node={inNodes[node]} url={inUrl}/>
                         ))}
-                        <Pagination.Prev disabled={inPrev} onClick={goBack(inUrl, inPrev, setInPage, setInNodes, setInNext, setInPrev)}/>
-                        <Pagination.Next disabled={inNext} onClick={getMore(inUrl, inNext, setInPage, setInNodes, setInPrev, setInNext)}/>
+                        <Pagination.Prev disabled={inPrev} onClick={goBack(inUrl, inPrev, setInPage, setInNodes, setInNext, setInPrev, inPage)}/>
+                        <Pagination.Next disabled={inNext} onClick={getMore(inUrl, inNext, setInPage, setInNodes, setInPrev, setInNext, inPage)}/>
                     </Pagination>
                 </div>
             }

@@ -54,7 +54,7 @@ function Node({node, url}) {
     }
 
     const allowNode = (url) => {
-        let config = props
+        let config = node
         axios
         .put(url, config)
         .then((response) => { })
@@ -79,7 +79,7 @@ function Node({node, url}) {
                         <button type="button" id='enable' onClick={() => allowNode(url)}>Enable</button>
                         <button type="button" id='disable' onClick={() => allowNode(url)}>Disable</button>
                         <Popup trigger={<button>Modify</button>} position="right center">
-                            <ModifyNode node={...node} url={url}/>
+                            <ModifyNode node={node} url={url}/>
                         </Popup>
                     </div>
                 </div>

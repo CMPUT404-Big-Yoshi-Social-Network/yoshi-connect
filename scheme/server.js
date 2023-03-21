@@ -28,14 +28,18 @@ const outgoingCredentialScheme = new Schema({
     _id: String,
     displayName: String,
     url: String,
-    password: String
+    password: String,
+    allowed: Boolean},
+    {versionKey: false
 })
 
 const incomingCredentialsScheme = new Schema({
     _id: String,
     dispalyName: String,
     url: String,
-    password: String
+    password: String,
+    allowed: Boolean},
+    {versionKey: false
 });
 
 const OutgoingCredentials = database.model('outcred', outgoingCredentialScheme);

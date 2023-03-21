@@ -53,11 +53,13 @@ function OutNodes() {
         axios
         .get(outUrl, config)
         .then((response) => { 
-            let nodes = []
-            for (let i = 0; i < size; i++) {
-                nodes.push(response.data.items[i]);
+            if (response.data.items.length !== 0) {
+                let nodes = []
+                for (let i = 0; i < size; i++) {
+                    nodes.push(response.data.items[i]);
+                }
+                setOutNodes(nodes);
             }
-            setOutNodes(nodes);
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -206,7 +208,7 @@ function OutNodes() {
     return (
         <div>
             <h3>Outgoing Nodes</h3>
-            { outNodes === undefined && outNodes.length === 0 ? 
+            { outNodes === undefined || outNodes.length === 0 ? 
                 <div>
                     <h4>No outgoing nodes to show.</h4>
                 </div> :

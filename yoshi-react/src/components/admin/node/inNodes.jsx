@@ -54,11 +54,13 @@ function InNodes() {
         axios
         .get(inUrl, config)
         .then((response) => { 
-            let nodes = []
-            for (let i = 0; i < size; i++) {
-                nodes.push(response.data.items[i]);
+            if (response.data.items.length !== 0) {
+                let nodes = []
+                for (let i = 0; i < size; i++) {
+                    nodes.push(response.data.items[i]);
+                }
+                setInNodes(nodes);
             }
-            setInNodes(nodes);
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -207,7 +209,7 @@ function InNodes() {
     return (
         <div>
             <h3>Incoming Nodes</h3>
-            { inNodes === undefined && inNodes.length === 0 ? 
+            { inNodes === undefined || inNodes.length === 0 ? 
                 <div>
                     <h4>No incoming nodes to show.</h4>
                 </div> :

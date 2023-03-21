@@ -75,9 +75,9 @@ function Author(props) {
     
     return (
         <div className='author-div' id='author'>
-            { props.displayname === undefined ? null : 
+            { props.displayName === undefined ? null : 
                 <div>
-                    { props.displayname }
+                    { props.displayName }
                     <div className='author-button-div'>
                         <button className='author-buttons' type="button" id='delete' onClick={() => deleteAuthor()}>Delete</button>
                         <button className='author-buttons' type="button" id='enable' onClick={() => allowAuthor()}>Enable</button>

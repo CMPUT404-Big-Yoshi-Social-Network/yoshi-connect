@@ -72,9 +72,9 @@ function Node(props) {
     
     return (
         <div>
-            { props.displayname === undefined ? null : 
+            { props.displayName === undefined ? null : 
                 <div>
-                    { props.displayname }
+                    { props.displayName }
                     <div>
                         <button type="button" id='delete' onClick={() => deleteNode()}>Delete</button>
                         <button type="button" id='enable' onClick={() => allowNode()}>Enable</button>

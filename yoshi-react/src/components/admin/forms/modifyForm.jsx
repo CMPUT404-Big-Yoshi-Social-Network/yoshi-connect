@@ -28,7 +28,7 @@ import { useNavigate } from 'react-router-dom';
 function ModifyAuthor(props) {
     const navigate = useNavigate();
     const [data, setData] = useState({
-        newUsername: props.displayname,
+        newUsername: props.displayName,
         newPassword: props.password,
         newEmail: props.email,
         newAbout: props.about,

@@ -144,6 +144,6 @@ router.post("/:postId/image", async (req, res) => {
   }
 })
 
-router.get("/:postId/image", async (req, res) => { await getImage(req, res); })
-
+router.get("/:postId/image", async (req, res) => { 
+  await getImage(req.originalUrl); })
 module.exports = router;

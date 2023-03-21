@@ -66,6 +66,7 @@ function Post({viewerId, post}) {
          */
         console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
+            /*
             let config = {
                 method: "get",
                 maxBodyLength: Infinity,
@@ -74,8 +75,9 @@ function Post({viewerId, post}) {
                     'Content-Type': 'application/json'
                 }           
             }
+            */
             axios
-            .get("/authors/" + authorId + "/posts/" + postId + "/image", config)
+            .get("/authors/" + authorId + "/posts/" + postId + "/image")
             .then((res) => {
                 if (res.data.status == 200) {
                     const image = document.querySelector("img[id=postId+'image'");

@@ -55,15 +55,10 @@ async function uploadImage(url, image) {
 }
 
 async function getImage(url) {
-    let image = await Image.aggregate([
-        {
-            $match: {'url': url}
-        }
-    ])
+    let image = await Image.findOne({_id: url});
     
-    if (image.length == 0) { return [{}, 404]; }
-
-    image = image[0].image;
+    if (!image) { return [{}, 404]; }
+    console.log(image[1])
     return [image, 200];
 }
 

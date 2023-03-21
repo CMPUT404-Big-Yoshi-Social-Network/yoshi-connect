@@ -39,7 +39,7 @@ function TopNav(props) {
     const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
     const size = 5;
-    const url = '/authors'; // REFACTOR
+    const url = '/authors/';
     const navigate = useNavigate();
     const [prev, setPrev] = useState(true);
     const [next, setNext] = useState(false);
@@ -51,7 +51,7 @@ function TopNav(props) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: url + newAuthor.newSearch,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: page,
@@ -60,7 +60,7 @@ function TopNav(props) {
         }
 
         axios
-        .get(url, config)
+        .get(url + newAuthor.newSearch, config)
         .then((response) => { 
             if (response.data.items.length !== 0 && authors.length === 0) {
                 let authors = []
@@ -84,7 +84,7 @@ function TopNav(props) {
         config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: url + newAuthor.newSearch,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -93,7 +93,7 @@ function TopNav(props) {
         }
 
         axios
-        .get(url, config)
+        .get(url + newAuthor.newSearch, config)
         .then((response) => { 
             if (response.data.items.length === 0) { 
                 if (!next) {
@@ -123,7 +123,7 @@ function TopNav(props) {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: url + newAuthor.newSearch,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -132,7 +132,7 @@ function TopNav(props) {
             }
 
             axios
-            .get(url, config)
+            .get(url + newAuthor.newSearch, config)
             .then((response) => { 
                 let authors = []
                 for (let i = 0; i < size; i++) {
@@ -158,7 +158,7 @@ function TopNav(props) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: url + newAuthor.newSearch,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -167,7 +167,7 @@ function TopNav(props) {
         }
 
         axios
-        .get(url, config)
+        .get(url + newAuthor.newSearch, config)
         .then((response) => { 
             if (response.data.items.length === 0) { setNext(true); }
         })
@@ -189,7 +189,7 @@ function TopNav(props) {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: url + newAuthor.newSearch,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -198,7 +198,7 @@ function TopNav(props) {
             }
     
             axios
-            .get(url, config)
+            .get(url + newAuthor.newSearch, config)
             .then((response) => { 
                 let more = []
                 for (let i = 0; i < size; i++) {

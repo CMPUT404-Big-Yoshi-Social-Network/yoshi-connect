@@ -19,29 +19,38 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Database
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
-const database = mongoose.connection;
+mongoose.set('strictQuery', true);
 
-const outgoingCredentialScheme = new Schema({
-    _id: String,
-    displayName: String,
-    url: String,
-    password: String
-})
+// Schemas
+const { OutgoingCredentials, IncomingCredentials } = require('../scheme/server.js');
 
-const incomingCredentialsScheme = new Schema({
-    _id: String,
-    dispalyName: String,
-    url: String,
-    password: String
-});
 
-const OutgoingCredentials = database.model('incred', outgoingCredentialScheme);
-const IncomingCredentials = database.model('outcred', incomingCredentialsScheme);
+// UUID
+const crypto = require('crypto');
+
+// Additional Functions
+const { authLogin } = require('./auth.js');
+
+async function getCreds(token) {
+
+}
+
+async function getCred(token, credId) {
+
+}
+
+async function postCred(token) {
+
+}
+
+async function deleteCred() {
+
+}
 
 module.exports = {
-    OutgoingCredentials,
-    IncomingCredentials
+	getCreds,
+	getCred,
+	postCred,
+	deleteCred
 }

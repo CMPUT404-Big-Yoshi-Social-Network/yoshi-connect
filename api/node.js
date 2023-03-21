@@ -17,31 +17,36 @@ limitations under the License.
 Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
-*/
+*/  
 
-// Database
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
-const database = mongoose.connection;
+// Routing Functions 
+const { authAuthor } = require('../routes/auth');
 
-const outgoingCredentialScheme = new Schema({
-    _id: String,
-    displayName: String,
-    url: String,
-    password: String
+// Router Setup
+const express = require('express'); 
+
+// Router
+const router = express.Router({mergeParams: true});
+
+router.get('/', async (req, res) => { 
+    await getCreds(req, res); 
 })
 
-const incomingCredentialsScheme = new Schema({
-    _id: String,
-    dispalyName: String,
-    url: String,
-    password: String
-});
+router.get('/:credId', async (req, res) => { 
+    await getCred(token, req.params.credId); 
+})
 
-const OutgoingCredentials = database.model('incred', outgoingCredentialScheme);
-const IncomingCredentials = database.model('outcred', incomingCredentialsScheme);
+router.post('/', async (req, res) => {
+    await postCred(token); 
+})
 
-module.exports = {
-    OutgoingCredentials,
-    IncomingCredentials
-}
+router.delete('/:credId', async (req, res) => { 
+    await deleteCred(token, req.params.credId); 
+})
+
+//Later
+router.post('/', async (req, res) => {
+    await authAuthor(req, res); 
+})
+
+module.exports = router;

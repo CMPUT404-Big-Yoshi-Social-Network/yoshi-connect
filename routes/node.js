@@ -48,10 +48,18 @@ async function getCreds(res, page, size, token, type) {
     } else if (page == 1) {
         items = await coll.find().limit(size);
     } else {
-        return [[], 400];
+		return res.json({
+			'type': 'nodes',
+			items: []
+		})
     }
 
-    if (!items) { return [[], 500]; }
+    if (!items || items.length == 0) { 
+		return res.json({
+			'type': 'nodes',
+			items: []
+		})
+	}
     
     let sanitizedItems = [];
 

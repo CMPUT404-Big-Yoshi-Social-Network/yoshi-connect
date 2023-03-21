@@ -25,7 +25,7 @@ import React from "react";
 function Follow(props) {
     return (
         <div id='follow'>
-            { props.displayname }
+            { props.displayName }
         </div>
     )
 }

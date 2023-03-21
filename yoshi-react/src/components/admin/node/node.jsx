@@ -26,16 +26,13 @@ import Popup from 'reactjs-popup';
 import { useNavigate } from 'react-router-dom';
 
 // Child Componet
-import ModifyAuthor from "../forms/modifyForm.jsx";
+import ModifyNode from "../forms/modifyNode.jsx";
 
-// Styling
-import './author.css';
-
-function Author(props) {
+function Node(props) {
     const url = '/admin/dashboard';
     const navigate = useNavigate();
 
-    const deleteAuthor = () => {
+    const deleteNode = () => {
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
@@ -57,7 +54,7 @@ function Author(props) {
         });
     }
 
-    const allowAuthor = () => {
+    const allowNode = () => {
         let config = props
         axios
         .put(url, config)
@@ -74,16 +71,16 @@ function Author(props) {
     }
     
     return (
-        <div className='author-div' id='author'>
+        <div>
             { props.displayName === undefined ? null : 
                 <div>
                     { props.displayName }
-                    <div className='author-button-div'>
-                        <button className='author-buttons' type="button" id='delete' onClick={() => deleteAuthor()}>Delete</button>
-                        <button className='author-buttons' type="button" id='enable' onClick={() => allowAuthor()}>Enable</button>
-                        <button className='author-buttons' type="button" id='disable' onClick={() => allowAuthor()}>Disable</button>
-                        <Popup trigger={<button className='author-buttons'>Modify</button>} position="right center">
-                            <ModifyAuthor {...props}/>
+                    <div>
+                        <button type="button" id='delete' onClick={() => deleteNode()}>Delete</button>
+                        <button type="button" id='enable' onClick={() => allowNode()}>Enable</button>
+                        <button type="button" id='disable' onClick={() => allowNode()}>Disable</button>
+                        <Popup trigger={<button>Modify</button>} position="right center">
+                            <ModifyNode {...props}/>
                         </Popup>
                     </div>
                 </div>
@@ -92,4 +89,4 @@ function Author(props) {
     )
 }
 
-export default Author;
+export default Node;

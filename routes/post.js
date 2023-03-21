@@ -191,7 +191,7 @@ async function updatePost(token, authorId, postId, newPost) {
     if (!(await authLogin(token, authorId))) { return [{}, 401]; }
 
     const title = newPost.title;
-    const desc = newPost.description;
+    const desc = newPost.desc;
     const contentType = newPost.contentType;
     const content = newPost.content;
     const categories = newPost.categories;

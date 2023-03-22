@@ -29,7 +29,11 @@ import './create.css';
 
 function EditPost({viewerId, post}) {
 
-    const [item, setItem] = useState({ image: "" });
+    const [item, setItem] = useState({ 
+        type: "",
+        base64: "",
+        size: 0,
+     });
 
     useEffect(() => { 
         console.log('Debug: Checking if the viewer has already liked the post')
@@ -162,11 +166,14 @@ function EditPost({viewerId, post}) {
                                 className={"postMenuImageInput"} name={"image"} id={"image"}
                                 type="file"
                                 multiple={false}
-                                onDone={({ base64 }) => setItem({ ...item, image: base64 })}
+                                onDone={({ base64, size, type }) => setItem({ ...item, image: base64, size: size, type: type })}
                             />
                         <br/>
                         <img src={item.image} style={{maxHeight: "15vh"}} alt="" />
                 </div>
+                <div style={{color:"white", textAlign:"right"}}>
+                            {item.size} of 10MB
+                        </div>
                 <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Post</button>
             </form>
         </div>

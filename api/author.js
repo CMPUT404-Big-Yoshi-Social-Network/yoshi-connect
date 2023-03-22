@@ -25,6 +25,9 @@ const { getAuthor, updateAuthor, getAuthors, fetchMyPosts } = require('../routes
 // Router Setup
 const express = require('express'); 
 
+// Schemas
+const { Author } = require('../scheme/author');
+
 // Router
 const router = express.Router({mergeParams: true});
 
@@ -58,7 +61,23 @@ router.get('/:authorId', async (req, res) => {
 
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  console.log('Here')
+  const author = await Author.findOne({username: username});
+  if (!author) return res.sendStatus(404)
+
+  return res.json({
+    "type": 'author',
+    "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+    "authorId" : author._id,
+    "host": process.env.DOMAIN_NAME,
+    "displayname": author.username,
+    "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
+    "github": "",
+    "profileImage": "",
+    "email": author.email, 
+    "about": author.about,
+    "pronouns": author.pronouns
+  })
+
 })
 
 router.post('/:authorId', async (req, res) => {

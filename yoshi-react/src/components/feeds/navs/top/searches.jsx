@@ -67,9 +67,9 @@ function SearchOutcomes({url}) {
             if (err.response.status === 404) {
                 setAuthors([]);
             } else if (err.response.status === 401) {
-                return false
+                console.log('401')
             } else if (err.response.status === 500) {
-                return false
+                console.log('500')
             }
         });
 
@@ -102,12 +102,11 @@ function SearchOutcomes({url}) {
                     setAuthors(authors);
                 }
             } else if (err.response.status === 401) {
-                return false
+                console.log('401')
             } else if (err.response.status === 500) {
-                return false
+                console.log('500')
             }
         });
-        return true;
     }, [setFindings, authors, next, page, url])
 
     const getMore = () => {

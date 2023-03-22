@@ -444,6 +444,13 @@ async function fetchMyPosts(req, res) {
         },
     ]);
 
+    if (posts[0] == undefined) {
+        return res.json({
+            type: "posts",
+            items: []
+        })        
+    }
+
     return res.json({
         type: "posts",
         items: posts[0].posts_array

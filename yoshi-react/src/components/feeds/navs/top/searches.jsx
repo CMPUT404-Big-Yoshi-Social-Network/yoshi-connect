@@ -57,7 +57,7 @@ function SearchOutcomes({url}) {
         .then((response) => { 
             if (response.data.items.length !== 0 && authors.length === 0) {
                 let authors = []
-                for (let i = 0; i < size; i++) {
+                for (let i = 0; i < response.data.items.length; i++) {
                     authors.push(response.data.items[i]);
                 }
                 setAuthors(authors);
@@ -222,10 +222,12 @@ function SearchOutcomes({url}) {
                     {Object.keys(authors).map((author, idx) => (
                         <SearchCard key={idx} {...authors[author]}/>
                     ))}
-                    <Pagination>
-                        <Pagination.Prev disabled={prev} onClick={goBack}/>
-                        <Pagination.Next disabled={next} onClick={getMore}/>
-                    </Pagination>
+                    <div>
+                        <Pagination>
+                            <Pagination.Prev disabled={prev} onClick={goBack}/>
+                            <Pagination.Next disabled={next} onClick={getMore}/>
+                        </Pagination>
+                    </div>
                 </div> :
                 null
             }   

@@ -61,14 +61,14 @@ router.get('/:authorId', async (req, res) => {
 
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  const authors = await Author.find({username: username});
+  const authors = await Author.find({username: username}).clone();
   if (!authors) { 
     return res.sendStatus(404)
   }
 
   return res.json({
     "type": 'authors',
-    "authors": authors
+    "items": authors
   })
 
 })

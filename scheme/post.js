@@ -74,7 +74,7 @@ const inboxScheme = new Schema({
 
 const imageScheme = new Schema({
     _id: String, 
-    src: Buffer},
+    src: String},
     {versionKey: false
 })
 

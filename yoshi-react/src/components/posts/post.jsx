@@ -71,9 +71,8 @@ function Post({viewerId, post}) {
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
             .then((res) => {
                 if (res.data.status === 200) {
-                    let [start, end] = res.data.src.split("base64") 
-                    start = start.split("/")[1]
-                    setItem({ ...item, image: "data:image/" + start + ";base64," + end})
+                    console.log(res.data.src)
+                    setItem({ ...item, image: res.data.src})
                 }
             })
         }

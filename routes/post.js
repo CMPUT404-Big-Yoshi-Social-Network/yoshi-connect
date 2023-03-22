@@ -44,12 +44,11 @@ async function createPostHistory(author_id){
 }
 
 async function uploadImage(url, image) {
-    let buffer = new Buffer.from(image, 'base64')
     let newImage = new Image ({
         _id: url,  
-        src: buffer
+        src: image
     })
-
+    console.log(image)
     await newImage.save()
     return [newImage, 200]
 }
@@ -57,8 +56,8 @@ async function uploadImage(url, image) {
 async function editImage(url, src) {
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
-    let buffer = new Buffer.from(src, 'base64')
-    image.src = buffer;
+    // let buffer = new Buffer.from(src, 'base64')
+    image.src = src;
     await image.save()
     return [image, 200]
 }

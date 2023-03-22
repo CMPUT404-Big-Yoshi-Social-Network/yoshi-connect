@@ -108,11 +108,8 @@ async function getComment() {
 
 }
 
-async function createComment(token, authorId, postId, newComment, domain) {
-    if(!(await authLogin(token, newComment.author.id))){ return [{}, 401]; }
-
-    const type = newComment.type;
-    if(type != "comment"){
+async function createComment(token, authorId, postId, newComment) {
+    if(newComment == undefined){
         return [{}, 400];
     }
 
@@ -122,10 +119,35 @@ async function createComment(token, authorId, postId, newComment, domain) {
         if(authorObject == undefined){
             return [{}, 400];
         }
+
+        author = {
+            type: "author",
+            id: process.env.DOMAIN_NAME + "authors/" + authorObject._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: authorObject.username,
+            url: process.env.DOMAIN_NAME + "authors/" + authorObject._id,
+            github: authorObject.github,
+            profileImage: authorObject.profileImage 
+        }
     }
     if((typeof author) != "object"){
         return [{}, 400];
     }
+
+
+    let senderId = author.id.split('/');
+    senderId = senderId[senderId.length - 1];
+
+    if(process.env.DOMAIN_NAME = author.host){
+        if(! (await authLogin(token, senderId))) {return [{}, 401]}
+    }
+
+    const type = newComment.type;
+    if(type != "comment"){
+        return [{}, 400];
+    }
+
+    
     const comment = newComment.comment;
     const contentType = newComment.contentType;
     let published = newComment.published;
@@ -142,6 +164,7 @@ async function createComment(token, authorId, postId, newComment, domain) {
     }
 
     let comments = await CommentHistory.findOne({postId: postId}); 
+    author._id = author.id;
     comments.comments.push({
         _id: id,
         author: author,
@@ -151,7 +174,6 @@ async function createComment(token, authorId, postId, newComment, domain) {
     });
     await comments.save();
     
-    author._id = author.id;
     const inbox = await Inbox.findOne({authorId: authorId});
     inbox.comments.push({
         _id: id,

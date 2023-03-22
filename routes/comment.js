@@ -143,13 +143,14 @@ async function createComment(token, authorId, postId, newComment) {
     }
 
     const type = newComment.type;
-    if(type != "comment"){
+    const comment = newComment.comment;
+    const contentType = newComment.contentType;
+    if(type != "comment" || !comment || !contentType ){
         return [{}, 400];
     }
 
     
-    const comment = newComment.comment;
-    const contentType = newComment.contentType;
+    
     let published = newComment.published;
     if(!published){
         published = new Date().toISOString();
@@ -157,10 +158,6 @@ async function createComment(token, authorId, postId, newComment) {
     let id = newComment.id;
     if(!id){
         id = String(crypto.randomUUID()).replace(/-/g, "");
-    }
-
-    if(!comment || !contentType){
-        return [{}, 400];
     }
 
     let comments = await CommentHistory.findOne({postId: postId}); 

@@ -112,7 +112,7 @@ async function createComment(token, authorId, postId, newComment) {
     if(newComment == undefined){
         return [{}, 400];
     }
-
+    
     let author = newComment.author;
     if((typeof author) == "string"){
         let authorObject = await Author.findOne({_id: author});

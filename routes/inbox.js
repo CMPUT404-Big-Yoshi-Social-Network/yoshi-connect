@@ -12,6 +12,7 @@ const crypto = require('crypto');
 
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
+const {createComment} = require('./comment.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
@@ -244,8 +245,7 @@ async function postInboxLike(like, authorId){
     inbox.save();
 }
 
-async function postInboxComment(authorId, newComment){
-    newComment.object;
+async function postInboxComment(newComment, authorId){
     createComment(undefined, authorId, newComment.object, newComment)
 }
 

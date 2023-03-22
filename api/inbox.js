@@ -20,11 +20,11 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInboxLike, deleteInbox, postInboxPost} = require('../routes/inbox')
+const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, postInboxRequest} = require('../routes/inbox')
 
 // Router Setup
 const express = require('express'); 
-const { ServerCredentials } = require('../scheme/server');
+const { IncomingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
 
 // Router
@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
 		if(scheme === "Basic") {
 			const credential = Buffer.from(data, 'base64').toString('ascii');
 			const [serverName, password] = credential.split(":");
-			if( await ServerCredentials.findOne({cred: credential})) {
+			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
 				authorized = true;
 			}
 		}
@@ -87,7 +87,7 @@ router.post('/', async (req, res) => {
 	const type = req.body.type;
 	if(type === "post"){
 		//For other servers to send their authors posts to us
-		await postInboxPost(req.body);
+		await postInboxPost(req.body, req.params.authorId);
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
 		await postInboxLike(req.body, req.params.authorId);
 	}
 	else if(type === "comment"){
-		await postInboxComment(req.body);
+		await postInboxComment(req.body, req.params.authorId);
 	}
 	else{
 		res.sendStatus(400);

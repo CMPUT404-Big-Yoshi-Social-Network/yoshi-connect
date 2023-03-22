@@ -111,59 +111,56 @@ async function getComment() {
 async function createComment(token, authorId, postId, newComment, domain) {
     if(!(await authLogin(token, newComment.author.id))){ return [{}, 401]; }
 
-    //verify comment is valid
-    //find comment history for post
-    //push to comment history
-
-    //if author is object verify it is real
-
-    //if author is string also verify it is real.
-    //After pull relavent details
-
     const type = newComment.type;
-    const author = newComment.author
-    const comment = newComment.comment
+    if(type != "comment"){
+        return [{}, 400];
+    }
+
+    let author = newComment.author;
+    if((typeof author) == "string"){
+        let authorObject = await Author.findOne({_id: author});
+        if(authorObject == undefined){
+            return [{}, 400];
+        }
+    }
+    if((typeof author) != "object"){
+        return [{}, 400];
+    }
+    const comment = newComment.comment;
     const contentType = newComment.contentType;
     let published = newComment.published;
+    if(!published){
+        published = new Date().toISOString();
+    }
     let id = newComment.id;
-
     if(!id){
-        //generate new id
         id = String(crypto.randomUUID()).replace(/-/g, "");
     }
 
-    if(!published){
-        //generate new date
-        published = new Date().toISOString();
-    }
-
     let comments = await CommentHistory.findOne({postId: postId}); 
-    
     comments.comments.push({
         _id: id,
         author: author,
         comment: comment,
         contentType: contentType,
-        published: published
-    })
-
+        published: published,
+    });
     await comments.save();
-
-    //PUsh to comment history
-    //Add to inbox
-    const inbox = Inbox.findOne({authorId: authorId});
-    //TODO FIRST THING TO DO WHEN I GET BACK TO THIS
-    /*
+    
+    author._id = author.id;
+    const inbox = await Inbox.findOne({authorId: authorId});
     inbox.comments.push({
+        _id: id,
         author: author,
         comment: comment,
         contentType: contentType,
         published: published,
-        postId: postId,
-        commentId: id
-    })
-    */
-    return [newComment, 200]
+        object: postId,
+    });
+    await inbox.save();
+    delete author._id;
+    
+    return [newComment, 200];
 }
 
 

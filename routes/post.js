@@ -295,7 +295,7 @@ async function getPosts(page, size, author) {
     if(page > 1){
         posts = await PostHistory.aggregate([
             {
-                $match: {'authorId': author.id}
+                $match: {'authorId': author.authorId}
             },
             {
                 $unwind: '$posts'
@@ -336,7 +336,7 @@ async function getPosts(page, size, author) {
     } else if (page == 1) {
         posts = await PostHistory.aggregate([
             {
-                $match: {'authorId': author.id}
+                $match: {'authorId': author.authorId}
             },
             {
                 $unwind: '$posts'
@@ -386,7 +386,7 @@ async function getPosts(page, size, author) {
         let sanitized_posts = {
             "type": "post",
             "tite'": post.title,
-            "id": post._id,
+            "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id,
             "source": post.source,
             "origin": post.origin,
             "description": post.description,
@@ -394,9 +394,9 @@ async function getPosts(page, size, author) {
             "content": post.content,
             "author": author,
             "categories": post.categories,
-            "count": post.comments.length,
-            "comments": "",
-            "likeCount": post.likes.length,
+            "count": post.count,
+            "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
+            "likeCount": post.likes_count,
             "likes": "",
             "published": post.published,
             "visibility": post.visibility,

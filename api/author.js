@@ -61,21 +61,14 @@ router.get('/:authorId', async (req, res) => {
 
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  const author = await Author.findOne({username: username});
-  if (!author) return res.sendStatus(404)
+  const authors = await Author.find({username: username});
+  if (!authors) { 
+    return res.sendStatus(404)
+  }
 
   return res.json({
-    "type": 'author',
-    "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
-    "authorId" : author._id,
-    "host": process.env.DOMAIN_NAME,
-    "displayname": author.username,
-    "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
-    "github": "",
-    "profileImage": "",
-    "email": author.email, 
-    "about": author.about,
-    "pronouns": author.pronouns
+    "type": 'authors',
+    "authors": authors
   })
 
 })

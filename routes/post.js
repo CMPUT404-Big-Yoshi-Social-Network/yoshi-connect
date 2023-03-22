@@ -48,7 +48,6 @@ async function uploadImage(url, image) {
         _id: url,  
         src: image
     })
-    console.log(image)
     await newImage.save()
     return [newImage, 200]
 }

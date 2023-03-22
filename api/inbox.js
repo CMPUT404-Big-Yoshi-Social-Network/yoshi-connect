@@ -31,10 +31,7 @@ const { authLogin } = require('../routes/auth');
 const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
-	const authorId = req.params.authorId;
-	const size = req.query.size;
-	const page = req.query.page;
-	const [posts, status] = await getInbox(authorId, size, page); 
+	const [posts, status] = await getInbox(req.cookies.token, req.params.authorId, req.query.size, req.query.page); 
 
 	if(status != 200){
 		return res.sendStatus(status);
@@ -62,6 +59,11 @@ router.post('/', async (req, res) => {
 
 	if(req.cookies.token && !authorized){
 		let authorId;
+		const token = req.cookies.token;
+		if(!token){
+			return res.sendStatus(401);
+		}
+
 		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
 			authorId = req.body.author.id;
 		}
@@ -72,7 +74,6 @@ router.post('/', async (req, res) => {
 			return res.sendStatus(400);
 		}
 
-		const token = req.cookies.token;
 		if(authLogin(token, authorId)){
 			authorized = true;
 		}
@@ -84,20 +85,22 @@ router.post('/', async (req, res) => {
 	}
 
 	const type = req.body.type;
-	
-	if(type == "post"){
+	if(type === "post"){
 		//For other servers to send their authors posts to us
 		await postInboxPost(req.body);
 	}
-	if(type == "follow"){
+	else if(type === "follow"){
 		//For local/remote authors to server 
 		await postInboxFollow(req.body);
 	}
-	if(type == "like"){
+	else if(type === "like"){
 		await postInboxLike(req.body, req.params.authorId);
 	}
-	if(type == "comment"){
+	else if(type === "comment"){
 		await postInboxComment(req.body);
+	}
+	else{
+		res.sendStatus(400);
 	}
 	return res.sendStatus(200);
 })

@@ -22,12 +22,16 @@ Foundation; All Rights Reserved
 // Functionality
 import React from "react";
 
-function Follow(props) {
+function SearchCard({outcome}) {
     return (
-        <div id='follow'>
-            { props.displayName }
+        <div>
+            { outcome.displayname === undefined ? null : 
+                <div>
+                    { outcome.displayname }
+                </div>
+            }
         </div>
     )
 }
 
-export default Follow;
+export default SearchCard;

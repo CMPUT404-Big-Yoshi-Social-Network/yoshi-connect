@@ -52,11 +52,13 @@ function Authors() {
         axios
         .get(url, config)
         .then((response) => { 
-            let authors = []
-            for (let i = 0; i < size; i++) {
-                authors.push(response.data.items[i]);
+            if (response.data.items.length !== 0 && authors.length === 0) {
+                let authors = []
+                for (let i = 0; i < size; i++) {
+                    authors.push(response.data.items[i]);
+                }
+                setAuthors(authors);
             }
-            setAuthors(authors);
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -83,7 +85,11 @@ function Authors() {
         axios
         .get(url, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setNext(true); }
+            if (response.data.items.length === 0) { 
+                if (!next) {
+                    setNext(true); 
+                }
+            }
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -98,7 +104,7 @@ function Authors() {
                 navigate('500 PAGE')
             }
         });
-    }, [setAuthors, url, navigate, page, size, authors]);
+    }, [authors, next, navigate, page]);
 
     const getMore = () => {
         if (!next) {

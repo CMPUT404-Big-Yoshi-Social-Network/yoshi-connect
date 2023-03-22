@@ -24,6 +24,8 @@ const { getInbox, postInboxLike, deleteInbox, postInboxPost} = require('../route
 
 // Router Setup
 const express = require('express'); 
+const { ServerCredentials } = require('../scheme/server');
+const { authLogin } = require('../routes/auth');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -42,6 +44,45 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
+
+	let authorized = false;
+	//If req.headers.authorization is set then process it
+	if(req.headers.authorization){
+		const authHeader = req.headers.authorization;
+
+		const [scheme, data] = authHeader.split(" ");
+		if(scheme === "Basic") {
+			const credential = Buffer.from(data, 'base64').toString('ascii');
+			const [serverName, password] = credential.split(":");
+			if( await ServerCredentials.findOne({cred: credential})) {
+				authorized = true;
+			}
+		}
+	}
+
+	if(req.cookies.token && !authorized){
+		let authorId;
+		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
+			authorId = req.body.author.id;
+		}
+		else if(req.body.type == "follow"){
+			authorId = req.body.actor.id;
+		}
+		else{
+			return res.sendStatus(400);
+		}
+
+		const token = req.cookies.token;
+		if(authLogin(token, authorId)){
+			authorized = true;
+		}
+	}
+
+	if(!authorized){
+		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
+		return res.sendStatus(401);
+	}
+
 	const type = req.body.type;
 	
 	if(type == "post"){

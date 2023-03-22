@@ -69,7 +69,7 @@ function Settings() {
             axios
             .get('/userinfo', config)
             .then((response) => {
-                let username = response.data.displayname;
+                let username = response.data.displayName;
                 let email = response.data.email;
                 let viewerId = response.data.authorId;
                 setNewAuthor({ newUsername: username })

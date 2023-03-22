@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const postId = req.params.postId;
 
-  const [comment, status] = await createComment(req.cookies.token, postId, req.body, process.env.DOMAIN_NAME);
+  const [comment, status] = await createComment(req.cookies.token, req.body.author.id, postId, req.body, process.env.DOMAIN_NAME);
 
   return res.json({
     "type": "comment",

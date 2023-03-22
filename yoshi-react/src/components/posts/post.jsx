@@ -71,7 +71,6 @@ function Post({viewerId, post}) {
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
             .then((res) => {
                 if (res.data.status === 200) {
-                    console.log(res.data.src)
                     setItem({ ...item, image: res.data.src})
                 }
             })

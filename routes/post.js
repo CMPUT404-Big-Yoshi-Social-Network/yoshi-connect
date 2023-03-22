@@ -56,7 +56,6 @@ async function uploadImage(url, image) {
 async function editImage(url, src) {
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
-    // let buffer = new Buffer.from(src, 'base64')
     image.src = src;
     await image.save()
     return [image, 200]
@@ -65,7 +64,7 @@ async function editImage(url, src) {
 async function getImage(url) {
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
-    return [image.src.toString('base64'), 200];
+    return [image.src, 200];
 }
 
 async function getPost(authorId, postId){

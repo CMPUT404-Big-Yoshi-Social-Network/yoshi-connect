@@ -56,6 +56,11 @@ router.get('/:authorId', async (req, res) => {
   return res.json(author);
 })
 
+router.get('/search/:username', async (req, res) => {
+  const username = req.params.username;
+  console.log('Here')
+})
+
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }
   if (req.body.type !== 'author') { return res.sendStatus(400); }

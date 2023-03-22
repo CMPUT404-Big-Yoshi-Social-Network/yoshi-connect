@@ -162,7 +162,8 @@ async function createPost(token, authorId, postId, newPost) {
         await publicPost.save();
     }
 
-    //If unlisted don't send 
+    //TODO make this faster
+    //if not unlisted send to all followers 
     if(unlisted === "false"){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){

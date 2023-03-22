@@ -24,6 +24,8 @@ const express = require('express');
 
 // Routing Functions 
 const { getCreds, getCred, postCred, putCred, allowNode, deleteCred } = require('../routes/node');
+const { OutgoingCredentials } = require('../scheme/server');
+const https = require('https');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -46,6 +48,40 @@ router.get('/outgoing', async (req, res) => {
     if (page == undefined) page = 1;
     if (size == undefined) size = 5;
     await getCreds(res, page, size, req.cookies.token, 'outgoing'); 
+})
+
+router.get('/outgoing/authors', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let authors = '';
+
+    var config = {
+        host: outgoings[0].url + '/authors',
+        path: '/outgoing/authors',
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    var httpGet = https.request(config, function (res) {
+        res.setEncoding('utf8');
+        res.on('data', (chunk) => {
+            authors += chunk;
+        });
+        res.on('end', function() {
+            let obj = JSON.parse(output);
+            onResult(res.statusCode, obj);
+        })
+    });
+
+    httpGet.on('error', (err) => {
+        console.log(err)
+      });
+    
+    httpGet.end();
+
+    console.log(authors)
 })
 
 router.get('/incoming/:credId', async (req, res) => { 

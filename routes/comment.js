@@ -137,6 +137,10 @@ async function createComment(token, authorId, postId, newComment, domain) {
         id = String(crypto.randomUUID()).replace(/-/g, "");
     }
 
+    if(!comment || !contentType){
+        return [{}, 400];
+    }
+
     let comments = await CommentHistory.findOne({postId: postId}); 
     comments.comments.push({
         _id: id,
@@ -159,7 +163,7 @@ async function createComment(token, authorId, postId, newComment, domain) {
     });
     await inbox.save();
     delete author._id;
-    
+
     return [newComment, 200];
 }
 

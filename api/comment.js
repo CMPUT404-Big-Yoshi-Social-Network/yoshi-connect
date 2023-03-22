@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
     "comment": comment.comment,
     "contentType": comment.contentType,
     "published": comment.published,
-    "id": comment.id
+    "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments/" + comment.id
     }) 
 })
 

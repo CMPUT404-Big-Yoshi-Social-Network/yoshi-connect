@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // User Interface
 import './nav.css'
@@ -34,7 +34,6 @@ function SearchOutcomes({url}) {
     const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
     const size = 5;
-    const url = url;
     const navigate = useNavigate();
     const [prev, setPrev] = useState(true);
     const [next, setNext] = useState(false);
@@ -109,7 +108,7 @@ function SearchOutcomes({url}) {
             }
         });
         return true;
-    })
+    }, [setFindings, authors, next, page, url])
 
     const getMore = () => {
         if (!next) {

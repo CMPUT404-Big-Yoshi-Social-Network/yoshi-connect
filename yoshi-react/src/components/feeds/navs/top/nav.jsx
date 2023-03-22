@@ -29,19 +29,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import { Form } from 'react-bootstrap';
 import Notifications from '../../notifications/notifcation-box';
 import './nav.css'
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import SearchOutcomes from './searches';
 
 function TopNav(props) {
-    const [searchOutcomes, setSearchOutcomes] = useState(false);
-    const [authors, setAuthors] = useState([]);
-    const [page, setPage] = useState(1);
-    const size = 5;
-    const url = '/authors/search/';
-    const navigate = useNavigate();
-    const [prev, setPrev] = useState(true);
-    const [next, setNext] = useState(false);
     const [newAuthor, setNewAuthor] = useState({newSearch: ''})
 
     return (
@@ -53,7 +43,7 @@ function TopNav(props) {
             <Nav className='topNavSearch'>
                 <Form.Control type="search" placeholder="Search" className="topSearch" onChange={(e) => {setNewAuthor({...newAuthor, newSearch: e.target.value})}}/>
                         <Popup trigger={<button>Search</button>} position="right center">
-                            <SearchOutcomes/>     
+                            <SearchOutcomes url={'/authors/search/' + newAuthor.newSearch}/>     
                         </Popup> 
 
             </Nav>

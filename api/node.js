@@ -139,7 +139,7 @@ router.get('/outgoing/posts', async (req, res) => {
     for (let i = 0; i < outgoings.length; i++) {
         var config = {
             host: outgoings[i].url,
-            url: outgoings[i].url + '/authors',
+            url: outgoings[i].url + '/posts',
             method: 'GET',
             headers: {
                 'Authorization': outgoings[i].auth,
@@ -175,7 +175,7 @@ router.get('/outgoing/authors/:authorId/followers', async (req, res) => {
     for (let i = 0; i < outgoings.length; i++) {
         var config = {
             host: outgoings[i].url,
-            url: outgoings[i].url + '/authors' + req.params.authorId,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/followers',
             method: 'GET',
             headers: {
                 'Authorization': outgoings[i].auth,
@@ -200,6 +200,37 @@ router.get('/outgoing/authors/:authorId/followers', async (req, res) => {
         'type': 'followers',
         items: followers
     })
+})
+
+router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let follower = null;
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/followers/' + req.params.foreignId,
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            if (!res.data) {
+                follower = res.data;              
+            }
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This is not the correct server that has this Author follower.')
+            }
+        })    
+    }
+    return res.json(follower)
 })
 
 /** Incoming Stuff */

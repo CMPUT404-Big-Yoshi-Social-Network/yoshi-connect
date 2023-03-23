@@ -58,7 +58,7 @@ function CreatePost() {
 
     const [item, setItem] = useState({ 
         type: "",
-        base64: "",
+        image: "",
         size: 0,
      });
 
@@ -85,7 +85,7 @@ function CreatePost() {
         getId();
     }, []);
     
-    const savePost = () => {
+    const savePost = async () => {
         /**
          * Description: Saves a newly created post by sending a PUT request with accompanying data representing the post
          * Request: PUT
@@ -115,22 +115,25 @@ function CreatePost() {
                 image: data.image
             }
         }
+
+        let link = { postId: "" }
         
-        axios.post('/authors/' + data.authorId + '/posts/', config)
+        await axios.post('/authors/' + data.authorId + '/posts/', config)
         .then((response) => { 
-            if (item.image !== "") {
-                const id = response.data[0].id.split('/')[6]
-                axios.put('/authors/' + data.authorId + '/posts/' + id + "/image", {
-                    method: 'put',
-                    maxBodyLength: Infinity,
-                    url: '/authors/' + data.authorId + '/posts/' + id + "/image",
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    image: item.base64
-                }).then((res) => {}).catch((e) => {console.log(e);})  
-            }
-            setItem({ ...item, image: "" })
+            link.postId = response.data[0].id.split('/')[6];
         })
         .catch((e) =>{ console.log(e); })
+
+        if (item.image !== "") {
+            axios.put('/authors/' + data.authorId + '/posts/' + link.postId + "/image", {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url: '/authors/' + data.authorId + '/posts/' + link.postId + "/image",
+                headers: { 'Content-Type': 'multipart/form-data' },
+                image: item.image
+            }).then((res) => {}).catch((e) => { console.log(e); })  
+        }
+        setItem({ ...item, image: "" })
     }
 
     const togglePostMenu = () => { 

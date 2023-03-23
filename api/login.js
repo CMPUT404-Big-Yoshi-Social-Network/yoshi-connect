@@ -40,10 +40,20 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /login:
  *  post:
- *    description: <INSERT>
+ *    description: Authenticates Author 
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      400:
+ *        description: Bad Request -- did not specify username and/or password
+ * 		404: 
+ * 		  description: Not Found -- could not find an Author to authenticate 
+ * 		500: 
+ * 		  description: Internal Server Error -- unable to delete currently existing Login document (unable to update the Login document)
+ * 		500: 
+ * 		  description: Internal Server Error -- password from request and encrypted password in database not equal to each other 
+ * 		500: 
+ * 		  description: Internal Server Error -- unable to save Login document for newly authenticated Author 
+ * 		403: 
+ * 		  description: Forbidden -- unable to Login as user as user is trying to login as an admin but is not an admin 
  */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 

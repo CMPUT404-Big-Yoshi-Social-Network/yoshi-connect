@@ -37,6 +37,7 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
+// TODO: Waiting for refactor 
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -44,7 +45,7 @@ router.get('/', async (req, res) => {
   let size = req.query.size;
 
   if(page == undefined)
-  page = 1;
+    page = 1;
   if(size == undefined)
     size = 5;
 
@@ -60,6 +61,7 @@ router.get('/', async (req, res) => {
     })
 })
 
+// TODO: Waiting for refactor 
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -76,6 +78,7 @@ router.post('/', async (req, res) => {
     }) 
 })
 
+// TODO: Waiting for refactor 
 router.get('/:commentId/likes', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;

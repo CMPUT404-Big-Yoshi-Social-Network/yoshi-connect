@@ -36,37 +36,13 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-/**
- * @openapi
- * /authors/:author_id/inbox:
- *  get:
- *    description: <INSERT>
- *    responses:
- *      <INSERT>:
- *        description: <INSERT>
- */
+// TODO: Waiting for Refactor
 router.get('/', async (req, res) => { await getInbox(req, res); })
 
-/**
- * @openapi
- * /authors/:author_id/inbox:
- *  post:
- *    description: <INSERT>
- *    responses:
- *      <INSERT>:
- *        description: <INSERT>
- */
+// TODO: Waiting for Refactor
 router.post('/', async (req, res) => { await postInbox(req, res); })
 
-/**
- * @openapi
- * /authors/:author_id/inbox:
- *  delete:
- *    description: <INSERT>
- *    responses:
- *      <INSERT>:
- *        description: <INSERT>
- */
+// TODO: Waiting for Refactor
 router.delete('/', async (req, res) => { await deleteInbox(req, res); })
 
 module.exports = router;

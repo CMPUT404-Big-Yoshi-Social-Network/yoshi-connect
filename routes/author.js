@@ -139,7 +139,7 @@ async function getAuthor(authorId){
         "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
         "authorId" : author._id,
         "host": process.env.DOMAIN_NAME,
-        "displayname": author.username,
+        "displayName": author.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
         "github": "",
         "profileImage": "",

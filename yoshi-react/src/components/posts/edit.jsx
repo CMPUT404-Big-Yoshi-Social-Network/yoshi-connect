@@ -33,6 +33,7 @@ function EditPost({viewerId, post}) {
         type: "",
         base64: "",
         size: 0,
+        exist: false
      });
 
     useEffect(() => { 
@@ -42,7 +43,7 @@ function EditPost({viewerId, post}) {
             .get("/authors/" + post.authorId + "/posts/" + post._id + "/image")
             .then((res) => {
                 if (res.data.status === 200) {
-                    setItem({ ...item, image: res.data.src})
+                    setItem({ ...item, image: res.data.src, exist: true})
                 }
             })
         }
@@ -90,13 +91,25 @@ function EditPost({viewerId, post}) {
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
 
-        axios.post('/authors/' + post.authorId + '/posts/' + post._id + "/image", {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/authors/' + post.authorId + '/posts/' + post._id + "/image",
-            headers: { 'Content-Type': 'multipart/form-data' },
-            image: item.image
-        }).then((res) => {}).catch((e) => {console.log(e);})
+        if (item.exist) {
+            axios.post('/authors/' + post.authorId + '/posts/' + post._id + "/image", {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/authors/' + post.authorId + '/posts/' + post._id + "/image",
+                headers: { 'Content-Type': 'multipart/form-data' },
+                image: item.image
+            }).then((res) => {}).catch((e) => {console.log(e);})
+        } else {
+            axios.put('/authors/' + post.authorId + '/posts/' + post._id + "/image", {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/authors/' + post.authorId + '/posts/' + post._id + "/image",
+                headers: { 'Content-Type': 'multipart/form-data' },
+                image: item.image
+            }).then((res) => {}).catch((e) => {console.log(e);})
+        }
+
+        
     }
 
     return (
@@ -164,7 +177,7 @@ function EditPost({viewerId, post}) {
                 <div className={"postMenuInput"}>
                         <FileBase64
                                 className={"postMenuImageInput"} name={"image"} id={"image"}
-                                type="file"
+                                type="image"
                                 multiple={false}
                                 onDone={({ base64, size, type }) => setItem({ ...item, image: base64, size: size, type: type })}
                             />
@@ -172,8 +185,8 @@ function EditPost({viewerId, post}) {
                         <img src={item.image} style={{maxHeight: "15vh"}} alt="" />
                 </div>
                 <div style={{color:"white", textAlign:"right"}}>
-                            {item.size} of 10MB
-                        </div>
+                    {item.size} of 10MB
+                </div>
                 <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Post</button>
             </form>
         </div>

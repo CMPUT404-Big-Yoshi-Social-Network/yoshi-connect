@@ -137,8 +137,10 @@ router.get('/:foreignAuthorId', async (req, res) => {
  *  put:
  *    description: <INSERT>
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      401:
+ *        description: Unauthorized -- 
+ *      400:
+ *        description: Bad Request --
  */
 router.put('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }

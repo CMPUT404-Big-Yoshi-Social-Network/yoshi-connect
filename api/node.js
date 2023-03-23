@@ -73,7 +73,7 @@ router.get('/outgoing/authors', async (req, res) => {
             authors = authors.concat(items);
         })
         .catch( error => {
-            console.log('Error happened.')
+            console.log(error);
         })
     
     }
@@ -86,27 +86,37 @@ router.get('/outgoing/authors', async (req, res) => {
 router.get('/outgoing/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
-    let authors = '';
+    let posts = [];
 
-    var config = {
-        host: outgoings[0].url,
-        url: outgoings[0].url + 'authors',
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-
-    await axios.request(config)
-    .then( res => {
-        authors = res.data;
-    })
-    .catch( error => {
-        console.log(error);
-    })
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors',
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            },
+            params: {
+                page: req.body.page,
+                size: req.body.size
+            }
+        };
     
-    console.log(authors);
-    return res.sendStatus(200);
+        await axios.request(config)
+        .then( res => {
+            let items = res.data.items
+            posts = posts.concat(items);
+        })
+        .catch( error => {
+            console.log(error);
+        })
+    }
+    
+    return res.json({
+        'type': 'posts',
+        items: posts
+    })
 })
 
 router.get('/incoming/:credId', async (req, res) => { 

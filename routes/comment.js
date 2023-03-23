@@ -35,7 +35,7 @@ const crypto = require('crypto');
 const { authLogin, checkExpiry } = require('./auth.js');
 
 
-async function getComments(authorId, postId, page, size) {
+async function getComments(postId, authorId, page, size) {
     let comments = undefined
     //TODO Avoid duplicated code by using a list of objects and modifying them before sending
     if(page > 1){
@@ -98,10 +98,37 @@ async function getComments(authorId, postId, page, size) {
             }
         ]);
     } else{
-        return [[], 400];
+        return [{}, 404];
     }
 
-    return comments[0].comments_array;
+    if(!comments || !comments[0] || !comments[0].comments_array){
+        return [{}, 404];
+    }
+
+    comments = comments[0].comments_array;
+    for(let i = 0; i < comments.length; i++){
+        comment = comments[i];
+        let author = comment.author;
+        author = {
+            type: "author",
+            id: author._id,
+            url: author.url,
+            host: author.host,
+            displayName: author.displayName,
+            github: author.github,
+            profileImage: author.profileImage
+        }
+        comments[i] = {
+            type: "comments",
+            author: author,
+            comment: comment.comment,
+            contentType: comment.contentType,
+            published: comment.published,
+            id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id,
+        }
+    }
+
+    return [comments, 200];
 }
 
 async function getComment() {

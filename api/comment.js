@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Routing Functions 
 const { getComments, createComment } = require('../routes/comment');
 const { apiFetchCommentLikes } = require('../routes/post');
+const { getAuthor } = require('../routes/author');
 
 // Router Setup
 const express = require('express'); 
@@ -40,7 +41,17 @@ router.get('/', async (req, res) => {
   if(size == undefined)
     size = 5;
 
-  const comments = await getComments(authorId, postId, page, size);
+  const [author, authorStatus] = await getAuthor(authorId);
+
+  if(authorStatus != 200){
+    return res.sendStatus(authorStatus);
+  }
+
+  const [comments, commentStatus] = await getComments(postId, authorId, page, size);
+
+  if(commentStatus != 200){
+    return res.sendStatus(commentStatus);
+  }
 
   return res.json({
     "type": "comments",

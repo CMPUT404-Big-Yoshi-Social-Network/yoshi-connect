@@ -43,9 +43,11 @@ const router = express.Router({mergeParams: true});
  *    description: Fetches a paginated list of Authors (dictated by size and page queries)
  *    responses:
  *      500:
- *        description: Internal Serevr Error -- Getting authors failed server-side
+ *        description: Internal Serevr Error -- unable to fetch Authors from database
  *      400:
- *        description: Bad Request -- Server cannot process getting authors
+ *        description: Bad Request -- incorrect paging requested from the user
+ *      200: 
+ *        description: OK -- successfully fetched and sanitized authors from the database 
  */
 router.get('/', async (req, res) => {
 
@@ -70,12 +72,14 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId:
  *  get:
- *    description: Fetches a specific Author through authorId param
+ *    description: Fetches a specific Author using authorId params
  *    responses:
  *      404:
  *        description: Not Found -- Authour was not found in the database
  *      500:
- *        description: Internal Server Error -- A server-side error occured when getting the author
+ *        description: Internal Server Error -- server experienced 'server failure'
+ *      200: 
+ *        description: OK -- successfully fetched and sanitized the Author from the database
  */
 router.get('/:authorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -90,26 +94,26 @@ router.get('/:authorId', async (req, res) => {
  * @openapi
  * /authors/:authorId:
  *  post:
- *    description: Updates an existing Author associated with authorId params
- *    body: {
- *      authorId, 
- *      host,
- *      displayName,
- *      url
- *    }
+ *    description: Updates an existing Author with authorId params
+ *    body: 
+ *      - authorId: String
+ *      - host: String
+ *      - displayName: String
+ *      - url: String
+ *      - type: String
  *    responses:
  *      401:
- *        description: Unauthorized -- Author token is not authorized
+ *        description: Unauthorized -- Author does not have an associated token 
  *      400:
- *        description: Bad Request -- Author body type was not processed
+ *        description: Bad Request -- req.body.type != 'author'
  *      400:
- *        description: Bad Request -- Author ID, host, username, or url did not match
+ *        description: Bad Request -- authorId, host, username are undefined
  *      200:
- *        description: OK -- Author was succesfully sent, json file contains authorId, host, username, url
+ *        description: OK -- Author was succesfully sent, JSON sent with sanitized and updated Author
  *      404:
  *        description: Not Found -- Author was not found
  *      401:
- *        description: Unauthorized -- Authour is not authernticated
+ *        description: Unauthorized -- Author is not authenticated
  */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }

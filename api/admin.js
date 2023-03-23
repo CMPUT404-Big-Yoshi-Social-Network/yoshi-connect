@@ -41,22 +41,22 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /admin: 
  *  post:
- *    description: Authenticates an potential Author for YoshiConnect
+ *    description: Authenticates a potential Author for YoshiConnect
  *    responses:
  *      400:
  *        description: Bad Request -- Invalid username or password
  *      400:
  *        description: Bad Request -- Author was not found in the database
  *      500:
- *        description: Internal Server Error -- deleting login token encountered a server-side error 
+ *        description: Internal Server Error -- unable to delete login token from database
  *      403:
- *        description: Forbidden -- Not admin author was denied access
+ *        description: Forbidden -- Author was not an admin
  *      200:
  *        description: OK -- Login as author was successful and cached
  *      500:
- *        description: Internal Server Error -- 
+ *        description: Internal Server Error -- password sent from request is not the same as the encrypted password in database
  *      500:
- *        description: Internal Server Error --
+ *        description: Internal Server Error -- unable to authenticate Author
  */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 
@@ -67,11 +67,11 @@ router.post('/', async (req, res) => { await authAuthor(req, res); })
  *    description: Verifies Author has attribute admin=true then redirects the Author to the Admin Dashboard if verified
  *    responses:
  *      403:
- *        description: Forbidden -- If admin is not authenticated, access is not granted
+ *        description: Forbidden -- if Admin is not authenticated, access is not granted
  *      401:
- *        description: Unauthorized -- Admin token expired and was not granted authorizatiin 
+ *        description: Unauthorized -- Admin token expired and was not granted authorization 
  *      200:
- *        description: OK -- Admin was successfully authenticated
+ *        description: OK -- admin was successfully authenticated
  */
 router.get('/dashboard', async (req, res) => {
   if(!(await checkAdmin(req, res))){ return res.sendStatus(403) }
@@ -86,11 +86,11 @@ router.get('/dashboard', async (req, res) => {
  *    description: Removes the Login document (associated token) to log out the Admin 
  *    responses:
  *      500:
- *        description: Internal Server Error -- Logining in with token failed server-side
+ *        description: Internal Server Error -- deleting Login document was unsuccessful 
  *      200:
- *        description: OK -- Login token was successfully deleted 
+ *        description: OK -- Login document was successfully deleted 
  *      401:
- *        description: Unauthorized -- Token is undefined, login token never existed and user access is unauthorized  
+ *        description: Unauthorized -- Token is undefined, Login document never existed and user access is unauthorized  
  */
 router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
 
@@ -103,9 +103,9 @@ router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
  *      404:
  *        description: Not Found -- Author was not found
  *      500:
- *        description: Internal Server Error -- Loging author in failed server-side
+ *        description: Internal Server Error -- deleting Login document for Author was unsuccessful
  *      204:
- *        description: No Content -- No author data found, author was successfully deleted
+ *        description: No Content -- No Author data found, Author was successfully deleted
  */
 router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
 
@@ -113,12 +113,16 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  * @openapi
  * /admin/dashboard:
  *  put:
- *    description: Either Adds an Author to YoshiConnect database or Updates an Author's attributes 
- *      - ADD: Requests an add smth to add author to database
- *      - MODIFY: Requests a modify smth to modify existing author in database
+ *    description: Adds an Author to YoshiConnect database or updates an Author's attributes 
+ *      - Add: Requests to add a new Author to the database
+ *      - Modify: Requests to modify an existing Author in the database
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      400:
+ *        description: Bad Request -- Author already exists, username and/or password taken, Admin did not fill all cells (username, password, email)
+ *      500: 
+ *        description: Internal Server Error -- unable to save the Author into the database, unable to find Login document for Author
+ *      404: 
+ *        description: Not Found -- cannot find an Author to modify 
  */
 router.put('/dashboard', (req, res) => {
   if (req.body.status == 'Add') {

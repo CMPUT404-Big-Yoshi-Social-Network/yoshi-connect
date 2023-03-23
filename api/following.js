@@ -44,10 +44,14 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /authors/:authorId/followings:
  *  get:
- *    description: <INSERT>
+ *    description: Fetches the followings list for Author associated with authorId 
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      401:
+ *        description: Unauthorized -- no associated cookies or Login token expired 
+ *      404: 
+ *        description: Not Found -- Author associated with authorId does not have a followings list 
+ *      200: 
+ *        description: OK -- successfully fetches and sanitizes followings list associated with authorId 
  */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
@@ -55,7 +59,7 @@ router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const followings = await getFollowings(authorId);
 
-  if (followings == 404 || followings == 404) { return res.sendStatus(404); }
+  if (followings == 404 || followings == undefined) { return res.sendStatus(404); }
 
   sanitizedObjects = [];
   for (let i = 0; i < followings.length; i++) {
@@ -91,10 +95,12 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId/followings/:foreignAuthorId:
  *  get:
- *    description: <INSERT>
+ *    description: deletes a specific Author associated with foreignAuthorId contained in Author followings list associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      401:
+ *        description: Unauthorized -- no associated cookies or Login token expired 
+ *      204: 
+ *        description: No Content -- following foreign Author was deleted from followings list associated with authorId 
  */
 router.delete('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }

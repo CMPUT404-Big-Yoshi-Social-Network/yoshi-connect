@@ -117,7 +117,8 @@ async function postCred(req, res, token, type) {
 		displayName: req.body.username,
 		url: req.body.host,
 		password: crypto_js.SHA256(req.body.password),
-		allowed: false
+		allowed: false,
+		auth: req.body.auth
 	})
 	await node.save();
 	return res.json({

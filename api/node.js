@@ -52,8 +52,38 @@ router.get('/outgoing', async (req, res) => {
 })
 
 router.get('/outgoing/authors', async (req, res) => {
-    //const outgoings = await OutgoingCredentials.find().clone();
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let authors = [];
 
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors',
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            let items = res.data.items
+            authors = authors.concat(items);
+        })
+        .catch( error => {
+            console.log('Error happened.')
+        })
+    
+    }
+    return res.json({
+        'type': 'authors',
+        items: authors
+    })
+})
+
+router.get('/outgoing/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
     let authors = '';
@@ -69,7 +99,6 @@ router.get('/outgoing/authors', async (req, res) => {
 
     await axios.request(config)
     .then( res => {
-        //console.log(res.data);
         authors = res.data;
     })
     .catch( error => {

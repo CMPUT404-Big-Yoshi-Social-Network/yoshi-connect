@@ -26,7 +26,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function AddOutNode() {
-    const [data, setData] = useState({ username: '', password: '', host: '' })
+    const [data, setData] = useState({ username: '', password: '', host: '', auth: '' })
     const navigate = useNavigate();
 
     const addNode = async (e) => {
@@ -34,7 +34,8 @@ function AddOutNode() {
         let body = {
             username: data.username,
             password: data.password,
-            host: data.host
+            host: data.host,
+            auth: data.auth
         }
         axios
         .post('/nodes/outgoing', body)
@@ -75,6 +76,15 @@ function AddOutNode() {
                         setData({
                         ...data,
                         host: e.target.value
+                        })
+                    }}/>
+                </label>
+                <label>
+                    Auth:
+                    <input type="text" name="auth" onChange={(e) => {
+                        setData({
+                        ...data,
+                        auth: e.target.value
                         })
                     }}/>
                 </label>

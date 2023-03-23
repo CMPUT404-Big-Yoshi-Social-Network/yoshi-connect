@@ -167,7 +167,40 @@ router.get('/outgoing/posts', async (req, res) => {
     })
 })
 
+router.get('/outgoing/authors/:authorId/followers', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let followers = [];
 
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId,
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            if (!res.data) {
+                let items = res.data.items
+                followers = items;                
+            }
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This is not the correct server that has this Author follower list.')
+            }
+        })    
+    }
+    return res.json({
+        'type': 'followers',
+        items: followers
+    })
+})
 
 /** Incoming Stuff */
 router.get('/incoming', async (req, res) => { 

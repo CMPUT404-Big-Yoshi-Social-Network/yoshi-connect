@@ -31,16 +31,7 @@ const axios = require('axios');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.get('/incoming', async (req, res) => { 
-    // Getting our credentials from other nodes
-    let page = req.query.page;
-    let size = req.query.size;
-  
-    if (page == undefined) page = 1;
-    if (size == undefined) size = 5;
-    await getCreds(res, page, size, req.cookies.token, 'incoming'); 
-})
-
+/** Outgoing Stuff */
 router.get('/outgoing', async (req, res) => { 
     // Getting other nodes' credentials from us 
     let page = req.query.page;
@@ -51,6 +42,31 @@ router.get('/outgoing', async (req, res) => {
     await getCreds(res, page, size, req.cookies.token, 'outgoing'); 
 })
 
+router.get('/outgoing/:credId', async (req, res) => { 
+    // Getting their credentials from us given the credId
+    await getCred(res, req.cookies.token, req.params.credId, 'outgoing'); 
+})
+
+router.put('/outgoing/:credId', async (req, res) => {
+    // Modifying credentials for a node 
+    if (req.body.status == 'modify') {
+        await putCred(req, res, req.params.credId, req.cookies.token, 'outgoing'); 
+    } else {
+        await allowNode(res, req.params.credId, 'outgoing');
+    }
+})
+
+router.post('/outgoing', async (req, res) => {
+    // Creating credentials for a node 
+    await postCred(req, res, req.cookies.token, 'outgoing'); 
+})
+
+router.delete('/outgoing/:credId', async (req, res) => { 
+    // Deleting credentials for a node given the credId
+    await deleteCred(req.cookies.token, req.params.credId, 'outgoing'); 
+})
+
+/** Communication with Remote */
 router.get('/outgoing/authors', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -83,6 +99,38 @@ router.get('/outgoing/authors', async (req, res) => {
     })
 })
 
+router.get('/outgoing/authors/:authorId', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let author = null;
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId,
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            if (!res.data) {
+                author = res.data;
+            }
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This server does not have this author.')
+            }
+        })
+    
+    }
+    return res.json(author)
+})
+
 router.get('/outgoing/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -98,8 +146,8 @@ router.get('/outgoing/posts', async (req, res) => {
                 'Content-Type': 'application/json'
             },
             params: {
-                page: req.body.page,
-                size: req.body.size
+                page: req.query.page,
+                size: req.query.size
             }
         };
     
@@ -119,33 +167,27 @@ router.get('/outgoing/posts', async (req, res) => {
     })
 })
 
+
+
+/** Incoming Stuff */
+router.get('/incoming', async (req, res) => { 
+    // Getting our credentials from other nodes
+    let page = req.query.page;
+    let size = req.query.size;
+  
+    if (page == undefined) page = 1;
+    if (size == undefined) size = 5;
+    await getCreds(res, page, size, req.cookies.token, 'incoming'); 
+})
+
 router.get('/incoming/:credId', async (req, res) => { 
     // Getting our credentials from other nodes given the credId
     await getCred(res, req.cookies.token, req.params.credId, 'incoming'); 
 })
 
-router.get('/outgoing/:credId', async (req, res) => { 
-    // Getting their credentials from us given the credId
-    await getCred(res, req.cookies.token, req.params.credId, 'outgoing'); 
-})
-
-router.post('/outgoing', async (req, res) => {
-    // Creating credentials for a node 
-    await postCred(req, res, req.cookies.token, 'outgoing'); 
-})
-
 router.post('/incoming', async (req, res) => {
     // Storing credentials from other nodes 
     await postCred(req, res, req.cookies.token, 'incoming'); 
-})
-
-router.put('/outgoing/:credId', async (req, res) => {
-    // Modifying credentials for a node 
-    if (req.body.status == 'modify') {
-        await putCred(req, res, req.params.credId, req.cookies.token, 'outgoing'); 
-    } else {
-        await allowNode(res, req.params.credId, 'outgoing');
-    }
 })
 
 router.put('/incoming/:credId', async (req, res) => {
@@ -154,11 +196,6 @@ router.put('/incoming/:credId', async (req, res) => {
     } else {
         await allowNode(res, req.params.credId, 'incoming');
     }
-})
-
-router.delete('/outgoing/:credId', async (req, res) => { 
-    // Deleting credentials for a node given the credId
-    await deleteCred(req.cookies.token, req.params.credId, 'outgoing'); 
 })
 
 router.delete('/incoming/:credId', async (req, res) => { 

@@ -20,12 +20,13 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getComments, createComment } = require('../routes/comment');
+const { getComments, createComment, getComment } = require('../routes/comment');
 const { apiFetchCommentLikes } = require('../routes/post');
 const { getAuthor } = require('../routes/author');
 
 // Router Setup
 const express = require('express'); 
+const { PostHistory } = require('../scheme/post');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -41,10 +42,15 @@ router.get('/', async (req, res) => {
   if(size == undefined)
     size = 5;
 
-  const [author, authorStatus] = await getAuthor(authorId);
+  const postHistory = await PostHistory.findOne({authorId: authorId});
 
-  if(authorStatus != 200){
-    return res.sendStatus(authorStatus);
+  if(!postHistory){
+    return res.sendStatus(404);
+  }
+
+  let post = postHistory.posts.id(postId);
+  if(!post){
+    return res.sendStatus(404);
   }
 
   const [comments, commentStatus] = await getComments(postId, authorId, page, size);
@@ -61,6 +67,15 @@ router.get('/', async (req, res) => {
     "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
     "comments": comments
     })
+})
+
+router.get('/:commentId', async (req, res) => {
+  const [comment, status] = await getComment( req.params.authorId, req.params.postId, req.params.commentId);
+  if(status != 200){
+    return res.sendStatus(status);
+  }
+
+  return res.json(comment);
 })
 
 router.post('/', async (req, res) => {

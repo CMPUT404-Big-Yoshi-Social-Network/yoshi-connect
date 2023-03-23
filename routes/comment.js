@@ -131,8 +131,28 @@ async function getComments(postId, authorId, page, size) {
     return [comments, 200];
 }
 
-async function getComment() {
+async function getComment(authorId, postId, commentId, token) {
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+    const commentHistory = await CommentHistory.findOne({postId: postId});
 
+    if(!postHistory || !commentHistory){
+        return [{}, 404];
+    }
+
+    //TODO check visibility
+
+    const comment = commentHistory.comments.id(commentId);
+
+    let sanitizedComment = {
+        type: "comment",
+        author: comment.author,
+        comment: comment.comment,
+        contentType: comment.contentType,
+        published: comment.published,
+        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id
+    }
+
+    return [sanitizedComment, 200];
 }
 
 async function createComment(token, authorId, postId, newComment) {

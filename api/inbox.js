@@ -85,24 +85,50 @@ router.post('/', async (req, res) => {
 	}
 
 	const type = req.body.type;
+	let response, status;
 	if(type === "post"){
 		//For other servers to send their authors posts to us
-		await postInboxPost(req.body, req.params.authorId);
+		[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
-		await postInboxFollow(req.body);
+		[response, status] = await postInboxFollow(req.body);
 	}
 	else if(type === "like"){
-		await postInboxLike(req.body, req.params.authorId);
+		[response, status] = await postInboxLike(req.body, req.params.authorId);
 	}
 	else if(type === "comment"){
-		await postInboxComment(req.body, req.params.authorId);
+		[response, status] = await postInboxComment(req.body, req.params.authorId);
 	}
 	else{
 		res.sendStatus(400);
 	}
-	return res.sendStatus(200);
+
+	if(status != 200){
+		return res.sendStatus(status);
+	}
+
+	if(type === "post"){
+		[response, status] = await postInboxPost(req.body, req.params.authorId);
+	}
+	else if(type === "follow"){
+		[response, status] = await postInboxFollow(req.body);
+	}
+	else if(type === "like"){
+		[response, status] = await postInboxLike(req.body, req.params.authorId);
+	}
+	else if(type === "comment"){
+		response = {
+			type: "comment",
+			author: response.author,
+			comment: response.comment,
+			contentType: response.contentType,
+			published: response.published,
+			id: response._id
+		}
+	}
+
+	return res.json(response);
 })
 
 router.delete('/', async (req, res) => {

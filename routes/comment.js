@@ -24,7 +24,7 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { PostHistory, PublicPost, Inbox } = require('../scheme/post.js');
-const { CommentHistory } = require('../scheme/interactions.js');
+const { CommentHistory, LikeHistory } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 const {Follower } = require('../scheme/relations.js');
 
@@ -98,11 +98,11 @@ async function getComments(postId, authorId, page, size) {
             }
         ]);
     } else{
-        return [{}, 404];
+        return [[], 404];
     }
 
     if(!comments || !comments[0] || !comments[0].comments_array){
-        return [{}, 404];
+        return [[], 404];
     }
 
     comments = comments[0].comments_array;
@@ -219,6 +219,23 @@ async function createComment(token, authorId, postId, newComment) {
     });
     await comments.save();
     
+    let like = new LikeHistory({
+        type: "comment",
+        Id: id,
+        likes: []
+    });
+
+    await like.save();
+
+    inboxComment = {
+        _id: id,
+        author: author,
+        comment: comment,
+        contentType: contentType,
+        published: published,
+        object: postId,
+    };
+
     const inbox = await Inbox.findOne({authorId: authorId});
     inbox.comments.push({
         _id: id,
@@ -231,7 +248,7 @@ async function createComment(token, authorId, postId, newComment) {
     await inbox.save();
     delete author._id;
 
-    return [comment, 200];
+    return [inboxComment, 200];
 }
 
 

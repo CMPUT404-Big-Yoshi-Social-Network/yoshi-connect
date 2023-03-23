@@ -58,6 +58,7 @@ async function getLikes(authorId, postId, commentId, type){
         let liker = likes[i];
 
         let author = {
+            "type": "author",
             "id": liker._id,
             "host": liker.host,
             "displayName": liker.displayName,
@@ -69,7 +70,7 @@ async function getLikes(authorId, postId, commentId, type){
         let sanitizedLike = {
             "@context": "https://www.w3.org/ns/activitystreams",
             summary: liker.displayName + " likes your post",
-            type: "like",
+            type: "Like",
             author: author,
             object: process.env.DOMAIN_NAME + object 
         };
@@ -77,7 +78,7 @@ async function getLikes(authorId, postId, commentId, type){
         sanitizedLikes.push(sanitizedLike);
     }
 
-    return [{sanitizedLikes}, 200];
+    return [sanitizedLikes, 200];
 }
 
 async function addLike(like, authorId, postId){
@@ -107,7 +108,7 @@ async function addLike(like, authorId, postId){
         comment.likeCount++;
         await commentHistory.save();
     }
-    if(objectType == "posts"){
+    else if(objectType == "posts"){
         //Add a like to a post document
         likes = await LikeHistory.findOne({type: "post", Id: Id}).clone();
         let postHistory = await PostHistory.findOne({authorId: authorId});

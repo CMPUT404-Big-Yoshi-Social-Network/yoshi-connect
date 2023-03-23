@@ -257,7 +257,7 @@ async function postInboxComment(newComment, recieverAuthorId){
     author._id = author.id
     const commentContent = newComment.comment;
     const contentType = newComment.contentType;
-    const published = new Date().toISOString();;
+    const published = new Date().toISOString();
     if(!type || !commentContent || !contentType){
         return [{}, 400];
     }

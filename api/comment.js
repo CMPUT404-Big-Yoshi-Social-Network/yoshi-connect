@@ -23,6 +23,7 @@ Foundation; All Rights Reserved
 const { getComments, createComment, getComment } = require('../routes/comment');
 const { apiFetchCommentLikes } = require('../routes/post');
 const { getAuthor } = require('../routes/author');
+const { getLikes } = require('../routes/likes');
 
 // Router Setup
 const express = require('express'); 
@@ -55,7 +56,7 @@ router.get('/', async (req, res) => {
 
   const [comments, commentStatus] = await getComments(postId, authorId, page, size);
 
-  if(commentStatus != 200){
+  if(commentStatus != 200 && commentStatus != 404){
     return res.sendStatus(commentStatus);
   }
 
@@ -93,7 +94,7 @@ router.post('/', async (req, res) => {
     "comment": comment.comment,
     "contentType": comment.contentType,
     "published": comment.published,
-    "id": process.env.DOMAIN_NAME + "/authors/" + req.params.authorId + "/posts/" + req.params.postId + "/comments/" + comment.id
+    "id": process.env.DOMAIN_NAME + "/authors/" + req.params.authorId + "/posts/" + req.params.postId + "/comments/" + comment._id
     }) 
 })
 
@@ -119,7 +120,7 @@ router.get('/:commentId/likes', async (req, res) => {
   if (page == undefined) { page = 1; }
   if(size == undefined) { size = 5; }
 
-  const likes = apiFetchCommentLikes(authorId, postId, commentId); 
+  const [likes, status] = await getLikes(authorId, postId, commentId, "comment"); 
 
   return res.json({
     "type": "likes",

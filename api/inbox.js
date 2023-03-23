@@ -110,13 +110,10 @@ router.post('/', async (req, res) => {
 	}
 
 	if(type === "post"){
-		[response, status] = await postInboxPost(req.body, req.params.authorId);
+		//[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
 	else if(type === "follow"){
-		[response, status] = await postInboxFollow(req.body);
-	}
-	else if(type === "like"){
-		[response, status] = await postInboxLike(req.body, req.params.authorId);
+		
 	}
 	else if(type === "comment"){
 		response = {

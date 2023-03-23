@@ -41,9 +41,9 @@ async function createPostHistory(author_id){
         authorId: author_id,
         num_posts: 0,
         posts: []
-    })
+    });
 
-    await new_post_history.save()
+    await new_post_history.save();
 }
 
 async function getPost(postId, author){

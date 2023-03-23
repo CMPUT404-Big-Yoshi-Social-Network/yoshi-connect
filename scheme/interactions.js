@@ -31,6 +31,7 @@ const commentScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     author: basicAuthorScheme,
     comment: String,
+    likeCount: Number,
     contentType: String,
     published: String,
 })
@@ -38,7 +39,6 @@ const commentScheme = new Schema({
 const commentHistoryScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     postId: String,
-    likeCount: Number,
     comments: [commentScheme]},
     {versionKey: false
 })

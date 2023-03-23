@@ -139,13 +139,6 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/:postId/likes', async (req, res) => {
-  //TODO: This endpoint is incorrect shift code over to sending like post
-  //check expiry
-  //check authLogin
-  //know that author is not the owner of the post and are logged in
-  //add like to post
-  //add liked to authors history
-
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
@@ -155,38 +148,10 @@ router.get('/:postId/likes', async (req, res) => {
     return res.sendStatus(status)
   }
 
-  return res.json(likes);
-
-  /*
-  const authorId = req.params.authorId;
-  const postId = req.params.postId;
-
-  if(!req.cookies || !checkExpiry(req.cookies["token"])){
-    return res.sendStatus(401);
-  }
-  if(authLogin(req.cookies["token"], authorId)){
-    return res.sendStatus(400);
-  }
-
-  const likeHistory = await Like.findOne({type: "post", Id: postId});
-  for(let i = 0; i < likeHistory.likes.length; i++){
-    like = likeHistory.liked[i];
-    if(like.liker == authorId){
-      return res.sendStatus(400);
-    }
-  }
-  likeHistory.likes.push({
-    liker: authorId
-  }).save();
-
-
-  const likedHistory = await Liked.findOne({authorId: authorId});
-
-  likedHistory.liked.push({
-    type: "post",
-    Id: postId
-  }).save();
-  */
+  return res.json({
+    type: "likes",
+    items: likes
+  });
 })
 
 router.put('/:postId/likes', async (req, res) => {

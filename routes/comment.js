@@ -230,7 +230,7 @@ async function createComment(token, authorId, postId, newComment) {
     await inbox.save();
     delete author._id;
 
-    return [newComment, 200];
+    return [comment, 200];
 }
 
 

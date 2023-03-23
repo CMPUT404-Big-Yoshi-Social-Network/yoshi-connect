@@ -297,7 +297,15 @@ async function postInboxComment(newComment, recieverAuthorId){
     commentHistory.comments.push(comment);
     await commentHistory.save();
 
-    comment._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId
+    comment._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId;
+    comment.object = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
+
+    const inbox = await Inbox.findOne({authorId: recieverAuthorId});
+
+    inbox.comments.push(comment);
+    await inbox.save();
+
+    delete comment.author._id;
 
     return [comment, 200];
 }

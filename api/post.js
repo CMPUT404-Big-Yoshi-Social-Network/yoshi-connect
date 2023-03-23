@@ -47,9 +47,15 @@ router.get('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  let [post, status] = await getPost(authorId, postId);
+  let [author, authorStatus] = await getAuthor(authorId)
 
-  if (status != 200) { return res.sendStatus(status); }
+  if(authorStatus != 200){
+    return res.sendStatus(authorStatus);
+  }
+
+  let [post, postStatus] = await getPost(postId, author);
+
+  if (postStatus != 200) { return res.sendStatus(postStatus); }
 
   return res.json(post);
 })

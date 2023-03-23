@@ -66,7 +66,7 @@ async function getPost(postId, author){
     post = {
         "type": "post",
         "title" : post.title,
-        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/" + postId,
+        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
         "source": post.source,
         "origin": post.origin,
         "description": post.description,

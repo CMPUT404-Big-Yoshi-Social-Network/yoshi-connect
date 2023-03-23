@@ -24,7 +24,7 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { PostHistory, PublicPost } = require('../scheme/post.js');
-const { LikeHistory, LikedHistory } = require('../scheme/interactions.js');
+const { LikeHistory, LikedHistory, CommentHistory } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 
 // UUID
@@ -80,10 +80,11 @@ async function getLikes(authorId, postId, commentId, type){
     return [{sanitizedLikes}, 200];
 }
 
-async function addLike(like, author){
+async function addLike(like, authorId, postId){
     const type = like.type;
     const summary = like.summary;
     let object = like.object;
+    const author = like.author;
 
     if(!type || !summary || !object){
         return [{}, 400];
@@ -99,13 +100,24 @@ async function addLike(like, author){
     let likes;
     if(objectType == "comments"){
         //Add a like to a comment document
+        let postId = object[object.length - 3];
         likes = await LikeHistory.findOne({type: "comment", Id: Id}).clone();
+        let commentHistory = await CommentHistory.findOne({postId: postId});
+        let comment = commentHistory.comments.id(Id);
+        comment.likeCount++;
+        await commentHistory.save();
     }
     if(objectType == "posts"){
         //Add a like to a post document
         likes = await LikeHistory.findOne({type: "post", Id: Id}).clone();
+        let postHistory = await PostHistory.findOne({authorId: authorId});
+        let post = postHistory.posts.id(Id);
+        post.like_count++;
+        await postHistory.save();
     }
     else{ return [{}, 400]; }
+
+    
 
     likes.likes.push(author);
     await likes.save();

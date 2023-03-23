@@ -65,7 +65,8 @@ router.post('/', async (req, res) => {
 		}
 
 		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
-			authorId = req.body.author.id;
+			authorId = req.body.author.id.split("/");
+			authorId = authorId[authorId.length - 1];
 		}
 		else if(req.body.type == "follow"){
 			authorId = req.body.actor.id;
@@ -74,7 +75,7 @@ router.post('/', async (req, res) => {
 			return res.sendStatus(400);
 		}
 
-		if(authLogin(token, authorId)){
+		if( await authLogin(token, authorId)){
 			authorized = true;
 		}
 	}

@@ -208,7 +208,7 @@ async function postInboxRequest(request, authorId){
 async function postInboxLike(like, authorId){
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
-    if(validateAuthorObject(author)){
+    if(!validateAuthorObject(author)){
         return [{}, 400];
     }
 
@@ -222,9 +222,9 @@ async function postInboxLike(like, authorId){
     };
 
     //Add a like to the authors post/comment
-    await addLike(like, author);
+    await addLike(like, authorId);
     await addLiked(author._id, like.object);
-
+    
     //TODO Unliking should also be added
 
     const inboxLike = {

@@ -212,6 +212,7 @@ async function createComment(token, authorId, postId, newComment) {
     comments.comments.push({
         _id: id,
         author: author,
+        likeCount: 0,
         comment: comment,
         contentType: contentType,
         published: published,

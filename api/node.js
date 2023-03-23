@@ -335,7 +335,7 @@ router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) 
     return res.json(follower)
 })
 
-router.post('/outgoing/authors/:authorId/inbox', async (req, res) => {
+router.post('/outgoing/authors/:authorId/inbox/like', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
 
     for (let i = 0; i < outgoings.length; i++) {
@@ -364,6 +364,139 @@ router.post('/outgoing/authors/:authorId/inbox', async (req, res) => {
     }
     return res.sendStatus(200);
 })
+
+router.get('/outgoing/authors/:authorId/posts/:postId/likes', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let likes = [];
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/posts/' + req.params.postId + '/likes',
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            if (!res.data) {
+                let items = res.data.items
+                likes = items;                
+            }
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This is not the correct server that has this Author like list.')
+            }
+        })    
+    }
+    return res.json({
+        'type': 'likes',
+        items: likes
+    })
+})
+
+router.get('/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let likes = [];
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/posts/' + req.params.postId + '/comments' + req.params.commentId + '/likes',
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            if (!res.data) {
+                let items = res.data.items
+                likes = items;                
+            }
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This is not the correct server that has this Author like list.')
+            }
+        })    
+    }
+    return res.json({
+        'type': 'likes',
+        items: likes
+    })
+})
+
+router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let liked = null;
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/liked',
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            if (!res.data) {
+                liked = res.data;
+            }
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This server does not have this liked object.')
+            }
+        })
+    
+    }
+    return res.json(liked)
+})
+
+router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/inbox',
+            method: 'POST',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                type: req.params.type,
+                item: req.body.item
+            }
+        };
+
+        await axios.request(config)
+        .then( res => { })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: Adding an object (post, follow, like) to inbox.')
+            } 
+        })
+    
+    }
+    return res.sendStatus(200);
+})
+
 
 /** Incoming Stuff */
 router.get('/incoming', async (req, res) => { 

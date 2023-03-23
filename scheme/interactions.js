@@ -24,31 +24,51 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
+const crypto = require('crypto');
+const { basicAuthorScheme } = require("./author");
+
 const commentScheme = new Schema({
-    _id: String,
-    commenter: String,
-    comment: String
+    _id: {type: String, default: crypto.randomUUID},
+    author: basicAuthorScheme,
+    comment: String,
+    contentType: String,
+    published: String,
 })
 
-const likeScheme = new Schema({
-    _id: String,
-    liker: String
+const commentHistoryScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    postId: String,
+    comments: [commentScheme]},
+    {versionKey: false
+})
+
+const likeHistoryScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
+    type: String,
+    Id: String,
+    likes: [basicAuthorScheme]},
+    {versionKey: false
 })
 
 const likedScheme = new Schema({
     _id: String,
+    type: String,
+})
+
+const likedHistoryScheme = new Schema({
+    _id: {type: String, default: crypto.randomUUID},
     authorId: String,
-    liked: [likeScheme],
-    num_posts: Number},
+    liked: [likedScheme],
+    numObjects: Number},
     {versionKey: false
 })
 
-const Like = database.model('Like', likeScheme);
-const Comment = database.model('Comment', commentScheme);
-const Liked = database.model('Liked', likedScheme);
+const LikeHistory = database.model('Like', likeHistoryScheme);
+const CommentHistory = database.model('Comment', commentHistoryScheme);
+const LikedHistory = database.model('Liked', likedHistoryScheme);
 
 module.exports = {
-    Like,
-    Comment,
-    Liked
+    LikeHistory,
+    CommentHistory,
+    LikedHistory,
 }

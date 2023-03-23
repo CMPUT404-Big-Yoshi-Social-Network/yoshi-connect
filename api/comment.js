@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getComments, createComment } = require('../routes/post');
+const { getComments, createComment } = require('../routes/comment');
 const { apiFetchCommentLikes } = require('../routes/post');
 
 // Router Setup
@@ -36,11 +36,11 @@ router.get('/', async (req, res) => {
   let size = req.query.size;
 
   if(page == undefined)
-  page = 1;
+    page = 1;
   if(size == undefined)
     size = 5;
 
-  const comments = getComments(authorId, postId);
+  const comments = await getComments(authorId, postId, page, size);
 
   return res.json({
     "type": "comments",
@@ -53,10 +53,9 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  const comment = createComment(authorId, postId, req.body, process.env.DOMAIN_NAME);
+  const [comment, status] = await createComment(req.cookies.token, postId, req.body, process.env.DOMAIN_NAME);
 
   return res.json({
     "type": "comment",
@@ -64,8 +63,20 @@ router.post('/', async (req, res) => {
     "comment": comment.comment,
     "contentType": comment.contentType,
     "published": comment.published,
-    "id": comment._id
+    "id": comment.id
     }) 
+})
+
+router.put('/', async (req, res) => {
+  console.log('TODO: PUT Request that makes a comment on a post by viewer (can get from token) RESPONSE expected to have response.data.numComments')
+})
+
+router.post('/:commentId', async (req, res) => {
+  console.log('TODO: POST request that modifies a comment; body has comment for the new comment content')
+})
+
+router.delete('/:commentId', async (req, res) => {
+  console.log('TODO: DELETE request that deletes a comment from a post')
 })
 
 router.get('/:commentId/likes', async (req, res) => {

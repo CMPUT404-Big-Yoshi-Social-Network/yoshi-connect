@@ -95,25 +95,17 @@ function CreatePost() {
 
         togglePostMenu();
 
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/authors/' + data.authorId + '/posts/',
-            headers: {
-            'Content-Type': 'multipart/form-data'
-            },
-            data: {
-                title: data.title,
-                desc: data.desc,
-                contentType: data.contentType,
-                visibility: data.visibility,
-                content: data.content,
-                likes: data.likes,
-                comments: data.comments,
-                unlisted: data.unlisted,
-                postTo: data.postTo,
-                image: data.image
-            }
+        let body = {
+            title: data.title,
+            desc: data.desc,
+            contentType: data.contentType,
+            visibility: data.visibility,
+            content: data.content,
+            likes: data.likes,
+            comments: data.comments,
+            unlisted: data.unlisted,
+            postTo: data.postTo,
+            image: data.image
         }
 
         let link = { postId: "" }
@@ -183,7 +175,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Message To:</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, postTo: [e.target.value]})
+                            setData({...data, postTo: e.target.value})
                         }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>

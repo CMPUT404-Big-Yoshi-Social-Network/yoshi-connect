@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 require('dotenv').config();
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect-2-yoshi-harder"}).catch(err => console.log(err));
 
 // Parser
 const bodyParser = require('body-parser');
@@ -53,6 +53,7 @@ const inbox = require('./api/inbox');
 const post = require('./api/post');
 const setting = require('./api/settings');
 const userinfo = require('./api/userinfo');
+const node = require('./api/node');
 
 // App Uses
 app.use(express.json({limit: '10mb'}));
@@ -67,7 +68,7 @@ app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 app.use("/authors", author);
 app.use("/authors/:authorId/posts/:postId/comments", comment);
 app.use("/authors/:authorId/friends", friend);
-app.use("/authors/:author_id/inbox", inbox);
+app.use("/authors/:authorId/inbox", inbox);
 app.use("/authors/:authorId/posts", post);
 app.use("/settings", setting);
 app.use("/signup", signup);
@@ -80,6 +81,7 @@ app.use("/authors/:authorId/friends", friends);
 app.use("/authors/:authorId/requests", requests);
 app.use("/api-docs", apiDocs);
 app.use("/userinfo", userinfo);
+app.use("/nodes", node);
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 

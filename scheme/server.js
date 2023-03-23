@@ -19,15 +19,35 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality
-import React from "react";
+// Database
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const database = mongoose.connection;
 
-function Follow(props) {
-    return (
-        <div id='follow'>
-            { props.displayName }
-        </div>
-    )
+const outgoingCredentialScheme = new Schema({
+    _id: String,
+    displayName: String,
+    url: String,
+    password: String,
+    allowed: Boolean,
+    auth: String},
+    {versionKey: false
+})
+
+const incomingCredentialsScheme = new Schema({
+    _id: String,
+    dispalyName: String,
+    url: String,
+    password: String,
+    allowed: Boolean,
+    auth: String},
+    {versionKey: false
+});
+
+const OutgoingCredentials = database.model('outcred', outgoingCredentialScheme);
+const IncomingCredentials = database.model('incred', incomingCredentialsScheme);
+
+module.exports = {
+    OutgoingCredentials,
+    IncomingCredentials
 }
-
-export default Follow;

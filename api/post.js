@@ -28,9 +28,12 @@ const { getAuthor } = require('../routes/author.js');
 
 // Router Setup
 const express = require('express'); 
+const { getLikes } = require('../routes/likes');
 
 // Router
 const router = express.Router({mergeParams: true});
+
+router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
 
 router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
 
@@ -38,17 +41,21 @@ router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, r
 
 router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
 
-router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
-
 router.get('/:postId', async (req, res) => {
   if (req.params.authorId == undefined) { return res.sendStatus(404); }
 
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  let [post, status] = await getPost(authorId, postId);
+  let [author, authorStatus] = await getAuthor(authorId)
 
-  if (status != 200) { return res.sendStatus(status); }
+  if(authorStatus != 200){
+    return res.sendStatus(authorStatus);
+  }
+
+  let [post, postStatus] = await getPost(postId, author);
+
+  if (postStatus != 200) { return res.sendStatus(postStatus); }
 
   return res.json(post);
 })
@@ -123,16 +130,78 @@ router.post('/', async (req, res) => {
 
   if (!req.cookies.token) { return res.sendStatus(401); }
 
-  const [post, status] = await createPost(req.cookies.token, authorId, undefined, req.body.data);
+  const [post, status] = await createPost(req.cookies.token, authorId, undefined, req.body);
 
   if (status == 200) {
     return res.json(post);
-  } else {
-    return res.sendStatus(status); 
   }
+  return res.sendStatus(status); 
 })
 
-router.get('/:postId/likes', async (req, res) => { return res.sendStatus(404); })
+router.get('/:postId/likes', async (req, res) => {
+  //TODO: This endpoint is incorrect shift code over to sending like post
+  //check expiry
+  //check authLogin
+  //know that author is not the owner of the post and are logged in
+  //add like to post
+  //add liked to authors history
+
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+
+  const [likes, status] = await getLikes(authorId, postId, null, "post");
+
+  if(status != 200){
+    return res.sendStatus(status)
+  }
+
+  return res.json(likes);
+
+  /*
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+
+  if(!req.cookies || !checkExpiry(req.cookies["token"])){
+    return res.sendStatus(401);
+  }
+  if(authLogin(req.cookies["token"], authorId)){
+    return res.sendStatus(400);
+  }
+
+  const likeHistory = await Like.findOne({type: "post", Id: postId});
+  for(let i = 0; i < likeHistory.likes.length; i++){
+    like = likeHistory.liked[i];
+    if(like.liker == authorId){
+      return res.sendStatus(400);
+    }
+  }
+  likeHistory.likes.push({
+    liker: authorId
+  }).save();
+
+
+  const likedHistory = await Liked.findOne({authorId: authorId});
+
+  likedHistory.liked.push({
+    type: "post",
+    Id: postId
+  }).save();
+  */
+})
+
+router.put('/:postId/likes', async (req, res) => {
+  console.log('TODO: PUT Request that adds a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
+})
+
+router.delete('/:postId/likes', async (req, res) => {
+  console.log('TODO: DELETE Request that deletes a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
+})
+
+router.get('/:postId/liked', async (req, res) => {
+  //TODO we can refactor this endpoint to take multiple posts which will allow us to amortize the amount of time spent searching for public posts
+  //Or we can merge public posts with getting liked posts
+  console.log('TODO: GET Request that detects whether a post has already been liked by the viewer (which you can get from token); 200 means liked, 404 not liked etc')
+})
 
 router.post("/:postId/image", async (req, res) => {  
   const [image, status] = await editImage(req.body.url, req.body.image);

@@ -131,6 +131,70 @@ router.get('/outgoing/authors/:authorId', async (req, res) => {
     return res.json(author)
 })
 
+router.get('/outgoing/authors/:authorId/posts/:postId', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let post = null;
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/posts/' + req.params.postId,
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            if (!res.data) {
+                post = res.data;
+            }
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This server does not have this post.')
+            }
+        })
+    
+    }
+    return res.json(post)
+})
+
+router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let image = null;
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/posts/' + req.params.postId + '/image',
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            if (!res.data) {
+                image = res.data;
+            }
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This server does not have this post.')
+            }
+        })
+    
+    }
+    return res.json(image)
+})
+
 router.get('/outgoing/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -164,6 +228,44 @@ router.get('/outgoing/posts', async (req, res) => {
     return res.json({
         'type': 'posts',
         items: posts
+    })
+})
+
+router.get('/outgoing/authors/:authorId/posts/:postId/comments', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let comments = [];
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/posts/' + req.params.postId + '/comments',
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            },
+            params: {
+                page: req.query.page,
+                size: req.query.size
+            }
+        };
+
+        await axios.request(config)
+        .then( res => {
+            let items = res.data.items
+            comments = comments.concat(items);
+        })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: This server does not have this post.')
+            }
+        })
+    
+    }
+    return res.json({
+        'type': 'comments', 
+        items: comments
     })
 })
 
@@ -231,6 +333,36 @@ router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) 
         })    
     }
     return res.json(follower)
+})
+
+router.post('/outgoing/authors/:authorId/inbox', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/authors' + req.params.authorId + '/inbox',
+            method: 'POST',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                type: 'like',
+                like: req.body.like
+            }
+        };
+
+        await axios.request(config)
+        .then( res => { })
+        .catch( error => {
+            if (error.response.status == 404) {
+                console.log('Debug: Like cannot be sent to inbox since Author does not exist in this server.')
+            } 
+        })
+    
+    }
+    return res.sendStatus(200);
 })
 
 /** Incoming Stuff */

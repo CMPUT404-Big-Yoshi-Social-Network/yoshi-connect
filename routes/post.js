@@ -46,10 +46,10 @@ async function createPostHistory(author_id){
     await new_post_history.save()
 }
 
-async function getPost(authorId, postId){
+async function getPost(postId, author){
     let post = await PostHistory.aggregate([
         {
-            $match: {'authorId': authorId}
+            $match: {'authorId': author.authorId}
         },
         {
             $unwind: "$posts"
@@ -66,12 +66,12 @@ async function getPost(authorId, postId){
     post = {
         "type": "post",
         "title" : post.title,
-        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/" + postId,
         "source": post.source,
         "origin": post.origin,
         "description": post.description,
         "contentType": post.contentType,
-        "author": post.author, 
+        "author": author, 
         "categories": post.categories,
         "count": post.count,
         "comments": post.comments,

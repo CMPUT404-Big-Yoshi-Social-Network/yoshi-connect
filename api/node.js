@@ -25,7 +25,6 @@ const express = require('express');
 // Routing Functions 
 const { getCreds, getCred, postCred, putCred, allowNode, deleteCred } = require('../routes/node');
 const { OutgoingCredentials } = require('../scheme/server');
-const http = require('http');
 const axios = require('axios');
 
 // Router

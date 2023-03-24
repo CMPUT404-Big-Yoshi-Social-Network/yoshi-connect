@@ -30,6 +30,8 @@ const crypto = require('crypto');
 const { Login } = require('../scheme/author.js');
 const { Following } = require('../scheme/relations.js');
 const { PostHistory, PublicPost } = require('../scheme/post.js');
+const { OutgoingCredentials } = require('../scheme/server');
+const axios = require('axios');
 
 async function fetchPublicPosts(req, res) {
     // TODO: Paging
@@ -158,6 +160,36 @@ async function fetchPublicPosts(req, res) {
             }
         }  
     ]);
+
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    // TODO: WORKING ON THIS WIP
+    let fposts = [];
+
+    for (let i = 0; i < outgoings.length; i++) {
+        var config = {
+            host: outgoings[i].url,
+            url: outgoings[i].url + '/posts',
+            method: 'GET',
+            headers: {
+                'Authorization': outgoings[i].auth,
+                'Content-Type': 'application/json'
+            },
+            params: {
+                page: req.query.page,
+                size: req.query.size
+            }
+        };
+    
+        await axios.request(config)
+        .then( res => {
+            let items = res.data.items
+            fposts = fposts.concat(items);
+        })
+        .catch( error => {
+            console.log(error);
+        })
+    }
 
     let allPosts = null;
     if (publicPosts[0] != undefined && posts != undefined) {

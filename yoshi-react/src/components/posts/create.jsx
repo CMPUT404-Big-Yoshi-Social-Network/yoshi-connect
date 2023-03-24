@@ -43,7 +43,7 @@ function CreatePost() {
     const [data, setData] = useState({
         title: "",
         desc: "",
-        contentType: "type/plain",
+        contentType: "text/plain",
         visibility: "Public",
         content: "",
         likes: [],
@@ -154,8 +154,8 @@ function CreatePost() {
                         <label><p style={{color:"white"}}>Unlisted</p></label>
                         <select className={"postMenuDropDown"} id={"contentType"} name={"contentType"}onChange={(e) => {
                             setData({...data, contentType: e.target.value})}}>
-                            <option value={"plaintext"}>PLAIN TEXT</option>
-                            <option value={"markdown"}>MARKDOWN</option>
+                            <option value={"text/plain"}>PLAIN TEXT</option>
+                            <option value={"text/markdown"}>MARKDOWN</option>
                         </select>
 
                         <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} onChange={(e) => {

@@ -43,20 +43,18 @@ function Requests(props) {
     const url = '/authors/' + props.authorId + '/inbox/requests';
 
     useEffect(() => {
-        /**
-         * Description: Before render, checks the author ID and sends the username
-         * Request: POST
-         * Returns: N/A
-         */
-        console.log('Debug: Fetching all the requests for this user')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
             url: url,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: page,
+                size: size
+            }
         }
         axios
-        .get(url, config)
+        .get(url)
         .then((response) => {
             if (response.data.items.length !== 0) {
                 setRequests(response.data.items)
@@ -72,7 +70,7 @@ function Requests(props) {
 
         let updated = page + 1;
         config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -96,14 +94,14 @@ function Requests(props) {
                 setRequests(requests);
             }
         });
-    }, [setRequests, url, props, navigate, page, size, requests]);
+    }, [navigate, page, requests, url]);
 
     const getMore = () => {
         if (!seeMore) {
             let updated = page + 1;
             setPage(updated);
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
                 url: '/authors/' + props.authorId + '/inbox/requests',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -137,7 +135,7 @@ function Requests(props) {
         }
         let updated = page + 2;
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
             url: '/authors/' + props.authorId + '/inbox/requests',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

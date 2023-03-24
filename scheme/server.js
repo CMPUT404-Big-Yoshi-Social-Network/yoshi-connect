@@ -29,7 +29,8 @@ const outgoingCredentialScheme = new Schema({
     displayName: String,
     url: String,
     password: String,
-    allowed: Boolean},
+    allowed: Boolean,
+    auth: String},
     {versionKey: false
 })
 
@@ -38,7 +39,8 @@ const incomingCredentialsScheme = new Schema({
     dispalyName: String,
     url: String,
     password: String,
-    allowed: Boolean},
+    allowed: Boolean,
+    auth: String},
     {versionKey: false
 });
 

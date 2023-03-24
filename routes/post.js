@@ -23,10 +23,11 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Inbox } = require('../scheme/post.js');
+const { PostHistory, PublicPost, Post, Image } = require('../scheme/post.js');
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 const {Follower} = require('../scheme/relations.js');
+
 
 // UUID
 const crypto = require('crypto');
@@ -44,6 +45,29 @@ async function createPostHistory(author_id){
     });
 
     await new_post_history.save();
+}
+
+async function uploadImage(url, image) {
+    let newImage = new Image ({
+        _id: url,  
+        src: image
+    })
+    await newImage.save()
+    return [newImage, 200]
+}
+
+async function editImage(url, src) {
+    let image = await Image.findOne({_id: url});
+    if (!image) { return [{}, 404]; }
+    image.src = src;
+    await image.save()
+    return [image, 200]
+}
+
+async function getImage(url) {
+    let image = await Image.findOne({_id: url});
+    if (!image) { return [{}, 404]; }
+    return [image.src, 200];
 }
 
 async function getPost(postId, author){
@@ -514,5 +538,8 @@ module.exports={
     createPost,
     getPosts,
     fetchMyPosts,
-    fetchOtherPosts
+    fetchOtherPosts,
+    uploadImage,
+    getImage,
+    editImage
 }

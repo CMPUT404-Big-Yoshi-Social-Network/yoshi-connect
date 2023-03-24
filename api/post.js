@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, getImage, editImage } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 const { fetchFriendPosts } = require('../routes/friend');
 
@@ -168,4 +168,31 @@ router.get('/:postId/liked', async (req, res) => {
   console.log('TODO: GET Request that detects whether a post has already been liked by the viewer (which you can get from token); 200 means liked, 404 not liked etc')
 })
 
+router.post("/:postId/image", async (req, res) => {  
+  const [image, status] = await editImage(req.body.url, req.body.image);
+
+  if (status == 200) {
+    return res.json(image);
+  } else {
+    return res.sendStatus(status)
+  }
+})
+
+router.put("/:postId/image", async (req, res) => {  
+  const [image, status] = await uploadImage(req.body.url, req.body.image);
+
+  if (status == 200) {
+    return res.json(image);
+  } else {
+    return res.sendStatus(status)
+  }
+})
+
+router.get("/:postId/image", async (req, res) => { 
+  const [image, status] = await getImage(req.originalUrl); 
+  return res.json({
+    src: image,
+    status: status
+  })
+})
 module.exports = router;

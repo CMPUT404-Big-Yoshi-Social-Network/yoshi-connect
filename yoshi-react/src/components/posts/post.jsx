@@ -45,10 +45,29 @@ function Post({viewerId, post}) {
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
+    const [item, setItem] = useState({ image: "" });
 
     const navigate = useNavigate();
 
     useEffect(() => { 
+        
+        console.log('Debug: Checking if the viewer has already liked the post')
+        const getImage = () => {
+            axios
+            .get("/authors/" + authorId + "/posts/" + postId + "/image")
+            .then((res) => {
+                if (res.data.status === 200) {
+                    setItem({ ...item, image: res.data.src})
+                }
+            })
+        }
+        getImage();
+
+        /**
+         * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
+         * Request: POST
+         * Returns: N/A
+         */
         const hasLiked = () => {
             axios
             .get('/authors/' + authorId + '/posts/' + postId + '/liked')
@@ -139,7 +158,7 @@ function Post({viewerId, post}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "type/plain" ? <p>{ post.content }</p> : post.contentType === "type/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { post.image === ""? null : <a href={post.image} target="_blank"  rel="noreferrer noopener"><img src={post.image} alt=""/></a> }
+                    <img className={"image"} src={item.image} alt=""/>
 
                     <p>{post.published}</p>
                     <br></br>

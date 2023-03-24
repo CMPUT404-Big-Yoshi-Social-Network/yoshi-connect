@@ -41,10 +41,14 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /profile/:username:
  *  get:
- *    description: <INSERT>
+ *    description: Checks for authenticated token to get the author profile
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *     401:
+ *        description: Unauthorized -- Token for profile was not authenticated
+*      404:
+ *        description: Not Found -- Login token expired
+*      404:
+ *        description: Not Found -- Author was not found
  */
 router.get('/', async (req,res) => {
     if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }

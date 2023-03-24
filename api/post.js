@@ -43,10 +43,12 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /authors/:authorId/posts/public:
  *  get:
- *    description: <INSERT>
+ *    description: Gets the posts associated with authorId 
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      500:
+ *        description: Internal Server Error -- Unable to save public post in database
+ *      200:
+ *        description: OK -- Returns JSON with type and items (all posts)
  */
 router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
 
@@ -54,10 +56,10 @@ router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
  * @openapi
  * /authors/:authorId/posts/friends-posts:
  *  get:
- *    description: <INSERT>
+ *    description: Gets the friend's posts associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      200:
+ *        description: Returns either an empty array is the post is undefined, otherwise the friend (authorId) 
  */
 router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, res); })
 
@@ -65,10 +67,10 @@ router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, r
  * @openapi
  * /authors/:authorId/posts/personal:
  *  get:
- *    description: <INSERT>
+ *    description: Gets the posts associated with authorId for the Author themselves
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      200:
+ *        description: Returns JSON with the type and the post object
  */
 router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
 
@@ -76,10 +78,10 @@ router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
  * @openapi
  * /authors/:authorId/posts/other/:other:
  *  get:
- *    description: <INSERT>
+ *    description: Gets the posts associated with other for the Author associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      200:
+ *        description: Returns JSON with either an empty array if the post is undefined, otherwise the post object
  */
 router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
 
@@ -87,10 +89,14 @@ router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  get:
- *    description: <INSERT>
+ *    description: Gets the posts associated with postId for the Author associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      404:
+ *        description: Not Found -- Author ID was not found
+ *      404:
+ *        description: Not Found -- Post associated with Author was not found
+ *      200:
+ *        description: OK -- Returns Authour's post 
  */
 router.get('/:postId', async (req, res) => {
   if (req.params.authorId == undefined) { return res.sendStatus(404); }
@@ -109,10 +115,18 @@ router.get('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  post:
- *    description: <INSERT>
+ *    description: Gets the posts associated with postId for the Author associated with authorId to update the post
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      500:
+ *        description: Internal Server Error -- Unable to fetch post history from database
+ *      404:
+ *        description: Not Found -- Post was not found
+ *      200:
+ *        description: Ok -- Returns the updated post object
+ *      200:
+ *        description: Ok -- Returns JSON of the post object 
  */
 router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;

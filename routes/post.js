@@ -320,7 +320,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
+                    'posts.visibility': {$in : ["Public"]}
                 }
             },
             {
@@ -362,7 +362,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
+                    'posts.visibility': {$in : ["Public"]}
                 }
             },
             {
@@ -398,7 +398,7 @@ async function getPosts(page, size, author) {
         const post = posts[i];
         let sanitized_posts = {
             "type": "post",
-            "tite'": post.title,
+            "title": post.title,
             "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id,
             "source": post.source,
             "origin": post.origin,

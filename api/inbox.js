@@ -24,6 +24,14 @@ const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, p
 const { sendRequest, deleteRequest, getRequests, getRequest } = require('../routes/request');
 const { checkExpiry } = require('../routes/auth');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 const { IncomingCredentials } = require('../scheme/server');

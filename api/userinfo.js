@@ -22,12 +22,37 @@ Foundation; All Rights Reserved
 // Routing Functions 
 const { getUserInfo } = require('../routes/userinfo');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /userinfo:
+ *  get:
+ *    description: Fetches the Author's attributes through the use of the cookie token 
+ *    tags:
+ *      - userinfo
+ *    responses:
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      200:
+ *        description: OK -- Author was fetched from database, Returns the sanitized Author, Returns JSON with Author's attributes
+ *      500:
+ *        description: Internal Server Error -- Unable to fetch Author from  database
+ *      404:
+ *        description: Not Found -- Authour was not found
+ */
 router.get('/', async (req,res) => {
     if (!req.cookies.token) { return res.sendStatus(401); }
 

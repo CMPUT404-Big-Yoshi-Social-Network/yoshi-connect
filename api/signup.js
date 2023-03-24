@@ -22,12 +22,35 @@ Foundation; All Rights Reserved
 // Routing Functions 
 const { registerAuthor } = require('../routes/author');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /signup:
+ *  post:
+ *    description: Registers an Author in YoshiConnect by sending the document to be enabled or disabled by an Admin Author
+ *    tags:
+ *      - signup
+ *    responses:
+ *      400:
+ *        description: Bad Request -- Username is already taken, no 'username', 'email', or 'password' was given, or invalid email
+ *      500:
+ *        description: Internal Server Error -- Unable to save object in database
+ *      200:
+ *        description: OK -- Author regristration was successful, authour added to the database
+ */
 router.post('/', async (req, res) => { await registerAuthor(req, res); })
 
 module.exports = router;

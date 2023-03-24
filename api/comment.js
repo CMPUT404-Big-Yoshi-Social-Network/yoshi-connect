@@ -25,6 +25,14 @@ const { apiFetchCommentLikes } = require('../routes/post');
 const { getAuthor } = require('../routes/author');
 const { getLikes } = require('../routes/likes');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 const { PostHistory } = require('../scheme/post');
@@ -32,6 +40,7 @@ const { PostHistory } = require('../scheme/post');
 // Router
 const router = express.Router({mergeParams: true});
 
+// TODO: Waiting for refactor 
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;

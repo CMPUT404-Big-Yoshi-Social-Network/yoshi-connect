@@ -22,12 +22,35 @@ Foundation; All Rights Reserved
 // Routing Functions 
 const { authAuthor } = require('../routes/auth');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /login:
+ *  post:
+ *    summary: Authenticates Author 
+ *    responses:
+ *      400:
+ *        description: Bad Request -- did not specify username and/or password
+ *      404:
+ *        description: Not Found -- could not find an Author to authenticate 
+ *      500: 
+ *        description: Internal Server Error -- Unable to save or delete currently existing Login document (unable to update the Login document) and password from request and encrypted password in database not equal to each other
+ *      403:
+ *        description: Forbidden -- unable to Login as user as user is trying to login as an admin but is not an admin 
+ */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 
 module.exports = router;

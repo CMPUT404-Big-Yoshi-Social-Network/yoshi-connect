@@ -85,7 +85,15 @@ const inboxScheme = new Schema({
     posts: [postScheme],
     likes: [inboxLikeScheme],
     comments: [inboxCommentScheme],
-    requests: [{ type: String, ref: 'Request' }]},
+    requests: [{
+        _id: String,
+        goal: String,
+        summary: String,
+        actor: String,
+        actorId: String,
+        objectId: String,
+        object: String
+    }]},
     {versionKey: false
 })
 

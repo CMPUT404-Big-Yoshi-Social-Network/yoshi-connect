@@ -107,17 +107,17 @@ async function sendRequest(authorId, foreignId, res) {
 
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
-    const request = new Request({
+    const request = {
         _id: uuid,
-        type: type,
+        goal: type,
         summary: summary,
         actor: actor.username,
         actorId: actor._id,
         objectId: object._id,
         object: object.username
-    });
+    }
 
-    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
+    const inbox = await Inbox.findOne({authorId: foreignId});
     inbox.requests.push(request);
     inbox.save();
 

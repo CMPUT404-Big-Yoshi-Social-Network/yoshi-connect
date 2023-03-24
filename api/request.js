@@ -41,10 +41,12 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /authors/:authorId/requests:
  *  get:
- *    description: <INSERT>
+ *    description: Checks for authenticated author token to get the request
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *     401:
+ *        description: Unauthorized -- Token for request was not authenticated
+*      200:
+ *        description: OK -- Returns JSON with the request type and items (requests)
  */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
@@ -57,10 +59,12 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId/requests/:foreignAuthorId:
  *  get:
- *    description: <INSERT>
+ *    description: Gets a request associated with foreignAuthorId for the Author associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      404:
+ *        description: Not Found -- Request was not found by the server
+*       200:
+ *        description: OK -- Returns JSON with the request object
  */
 router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -73,10 +77,12 @@ router.get('/:foreignAuthorId', async (req, res) => {
  * @openapi
  * /authors/:authorId/requests/:foreignAuthorId:
  *  put:
- *    description: <INSERT>
+ *    description: Sends the request associated with foreignAuthorId for the Author associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      400:
+ *        description: Bad Request -- Server can't process the client information 
+ *      200:
+ *        description: OK -- Returns author's information
  */
 router.put('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -96,10 +102,12 @@ router.put('/:foreignAuthorId', async (req, res) => {
  * @openapi
  * /authors/:authorId/requests/:foreignAuthorId:
  *  delete:
- *    description: <INSERT>
+ *    description: Deletes the request associated with foreignAuthorId for the Author associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      500:
+ *        description: Internal Serever Error -- Unable to fetch and delete the Request from the database
+*       200:
+ *        description: OK -- Returns JSON of deleted Request object which contains the type, summary, actor, and object details
  */
 router.delete('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;

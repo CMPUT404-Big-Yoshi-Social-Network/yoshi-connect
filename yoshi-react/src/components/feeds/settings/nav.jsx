@@ -38,6 +38,7 @@ function SettingsNav() {
      * Returns: N/A
      */
     const navigate = useNavigate();
+    
     const LogOut = () => {
         /**
          * Description: Logs the user out
@@ -47,7 +48,7 @@ function SettingsNav() {
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/server/feed',
+            url: '/settings/logout',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -56,13 +57,14 @@ function SettingsNav() {
             }
         }
         axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
+        .post('/settings/logout', config)
+        .then((response) => { navigate("/"); })
         .catch(err => {
-          console.error(err);
+            if (err.response.status === 500) {
+                console.log('500 PAGE');
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized')
+            }
         });
     }
     return (

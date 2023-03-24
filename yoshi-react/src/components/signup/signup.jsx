@@ -38,6 +38,8 @@ export default function Signup() {
   const navigate = useNavigate();
   const [data, setData] = useState({ username: '', email: '', password: '' })
   const [error, setError] = useState(false);
+  const url = '/signup';
+
 
   const getAccount = async (e) => {
     /**
@@ -49,31 +51,17 @@ export default function Signup() {
       if (data.email.length === 0 || data.username.length === 0 || data.password.length === 0){
         setError(true)
       }
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: '/server/signup',
-      headers: {
-        'Content-Type': 'application/json',
-        'Last-Modified': new Date(),
-      },
-      data: data
-    }
 
-    axios(config)
-    .then((response) => {
-      console.log("Debug: Token received.");
-      if (response.data.status) {
-        console.log("Debug: SessionId saved locally.");
-        window.localStorage.setItem('sessionId', response.data.sessionId);
-        console.log("Debug: Going to public feed.");
-        navigate('/feed');
-      }
-      else {
+    axios
+    .post(url, data)
+    .then((response) => { alert('Now you must be approved by an admin.') })
+    .catch(err => {
+      if (err.response.status === 400) {
         setError(true);
+      } else if (err.response.status === 500) {
+        navigate('/servererror');
       }
-    })
-    .catch(err => { console.error(err); });
+    });
   }
 
   return(

@@ -20,9 +20,9 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // Child Component
 import TopNav from '../navs/top/nav.jsx';
@@ -50,37 +50,8 @@ function Settings() {
         newPassword: '',
         newEmail: ''
     })
-    useEffect(() => {
-        /**
-         * Description: Before render, checks if the author is logged in to authorize routing
-         * Request: GET
-         * Returns: N/A
-         */
-        const checkExpiry = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                if (response.data.status === "Expired") {
-                    console.log("Debug: Your token is expired.")
-                    LogOut();
-                    navigate('/');
-                }
-                else{console.log('Debug: Your token is not expired.')}
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); // 401 Not Found
-                }
-            });
-        }
-        checkExpiry();
-    })
+    const [viewer, setViewer] = useState('')
+    
     useEffect(() => {
         /**
          * Description: Before render, checks the author's account details
@@ -89,55 +60,34 @@ function Settings() {
          */
         const getAuthor = () => {
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
-                url: '/server/settings/',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    status: 'Get Author'
-                }
+                url: '/userinfo',
+                headers: { 'Content-Type': 'application/json' }
             }
+
             axios
-            .post('/server/settings/', config)
+            .get('/userinfo', config)
             .then((response) => {
-                setNewAuthor({
-                    newUsername: response.data.username,
-                    newEmail: response.data.email
-                })
+                let username = response.data.displayName;
+                let email = response.data.email;
+                let viewerId = response.data.authorId;
+                setNewAuthor({ newUsername: username })
+                setNewAuthor({ newEmail: email })
+                setViewer(viewerId)
             })
-            .catch(err => { });
+            .catch(err => { 
+                if (err.response.status === 404) { 
+                    setNewAuthor({ newUsername: '' })
+                    setNewAuthor({ newEmail: '' })
+                    setViewer({ viewerId: '' })
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                }
+            });
         }
         getAuthor();
-    }, [])
-    const LogOut = () => {
-        /**
-         * Description: Logs the author out
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                message: 'Logging Out'
-            }
-        }
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }
+    }, [navigate])
     const modify = (e) => {
         /**
          * Description: Updates the new author's account details
@@ -149,25 +99,31 @@ function Settings() {
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/server/settings',
+            url: '/settings',
             headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: {
-                status: 'Modify an Author',
-                newUsername: newAuthor.newUsername,
-                newPassword: newAuthor.newPassword,
-                newEmail: newAuthor.newEmail
+                id: viewer,
+                username: newAuthor.newUsername,
+                password: newAuthor.newPassword,
+                email: newAuthor.newEmail
             }
         }
 
         axios
-        .put('/server/settings', config)
-        .then((response) => {
-            console.log('Debug: Author has been updated!')
-        })
+        .put('/settings', config)
+        .then((response) => { })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 404) {
+                alert('No Author to update.');
+            } else if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 500) {
+                console.log('500 PAGE')
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized')
+            }
         });
     }
     return (
@@ -175,7 +131,7 @@ function Settings() {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
                     <div className='settingColM'>
@@ -187,9 +143,8 @@ function Settings() {
                                 <Form.Group className="account-details-a">
                                     <p>Username</p>
                                         <Form.Control
-                                            //href={`/users/${username}`}>{username} 
                                             name="username"
-                                            value={newAuthor.newUsername}
+                                            defaultValue={newAuthor.newUsername}
                                             autoComplete="off"
                                             onChange={(e) => {setNewAuthor({...newAuthor, newUsername: e.target.value})}}
                                             type="text" className='account-details-box'/>
@@ -198,7 +153,7 @@ function Settings() {
                                     <p>Email</p>
                                     <Form.Control
                                         name="email"
-                                        value={newAuthor.newEmail}
+                                        defaultValue={newAuthor.newEmail}
                                         onChange={(e) => {setNewAuthor({...newAuthor, newEmail: e.target.value})}}
                                         type="email" className='account-details-box'/>
                                 </Form.Group>

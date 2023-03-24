@@ -22,11 +22,13 @@ Foundation; All Rights Reserved
 // Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import Pagination from 'react-bootstrap/Pagination';
 
 // Child Component
 import Request from './request.jsx';
 
-function Requests() {
+function Requests(props) {
     /**
      * Description: Represents all the requests
      * Functions:
@@ -34,39 +36,151 @@ function Requests() {
      * Returns: N/A
      */
     const [requests, setRequests] = useState([]);
+    const navigate = useNavigate();
+    const [seeMore, setSeeMore] = useState(false);
+    const [page, setPage] = useState(1);
+    const size = 5;
+    const url = '/authors/' + props.authorId + '/inbox/requests';
+
     useEffect(() => {
-        /**
-         * Description: Before render, checks the author ID and sends the username
-         * Request: POST
-         * Returns: N/A
-         */
-        console.log('Debug: Fetching all the requests for this user')
         let config = {
-            method: 'post',
+            method: 'get',
             maxBodyLength: Infinity,
-            url: '/server/requests',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                status: 'Fetching Requests'
+            url: url,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: page,
+                size: size
             }
         }
         axios
-        .post('/server/requests', config)
+        .get(url)
         .then((response) => {
-            setRequests(response.data.requests)
+            if (response.data.items.length !== 0) {
+                setRequests(response.data.items)
+            }
         })
         .catch(err => {
-            console.error(err);
+            if (err.response.status === 404) { 
+                setRequests([]);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            }
         });
-    }, [setRequests]);
+
+        let updated = page + 1;
+        config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: url,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
+            }
+        }
+
+        axios
+        .get(url, config)
+        .then((response) => { 
+            if (response.data.items.length === 0) { setSeeMore(true); }
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                setRequests(requests);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                setRequests(requests);
+            }
+        });
+    }, [navigate, page, requests, url]);
+
+    const getMore = () => {
+        if (!seeMore) {
+            let updated = page + 1;
+            setPage(updated);
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/authors/' + props.authorId + '/inbox/requests',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
+            }
+
+            axios
+            .get('/authors/' + props.authorId + '/inbox/requests', config)
+            .then((response) => { 
+                let more = []
+                for (let i = 0; i < size; i++) {
+                    more.push(response.data.items[i]);
+                }
+                setRequests(requests.concat(more));
+                if (response.data.items.length < size) {
+                    setSeeMore(true);
+                } 
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setRequests(requests);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    navigate('500 PAGE')
+                }
+            });
+        }
+        let updated = page + 2;
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: '/authors/' + props.authorId + '/inbox/requests',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: updated,
+                size: size
+            }
+        }
+
+        axios
+        .get('/authors/' + props.authorId + '/inbox/requests', config)
+        .then((response) => { 
+            if (response.data.items.length === 0) { setSeeMore(true); }
+        })
+        .catch(err => {
+            if (err.response.status === 404) {
+                setRequests(requests);
+            } else if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 500) {
+                navigate('500 PAGE')
+            }
+        });
+    }
+
     return (
         <div>
             <h4>Friend Requests</h4>
-            {Object.keys(requests).map((request, idx) => (
-                <Request key={idx} {...requests[request]}/>
-            ))}
+            { requests === undefined || requests.length === 0 ? 
+                <div>
+                    <h4>No requests.</h4>
+                </div> : 
+                <div> 
+                    <Pagination>
+                        {Object.keys(requests).map((request, idx) => (
+                            <Request key={idx} {...requests[request]}/>
+                        ))}
+                        { seeMore ? null : 
+                            <div>
+                                <Pagination.Item onClick={getMore}>See More</Pagination.Item>
+                            </div>
+                        }
+                    </Pagination>  
+                </div>
+            }
         </div>
     )
 }

@@ -57,7 +57,7 @@ export default function Login() {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: '/server/login',
+        url: '/login',
         headers: {
           'Content-Type': 'application/json',
           'Last-Modified': justLogged
@@ -66,19 +66,14 @@ export default function Login() {
       }
 
       axios(config)
-      .then((response) => {
-        console.log(response.data.status);
-        if (response.data.status) {
-          console.log("Debug: SessionId saved locally.");
-          localStorage['sessionId'] = response.data.sessionId;
-
-          console.log("Debug: Going to public feed.")
-          navigate('/feed');
-        }
-        else {
+      .then((response) => { navigate('/feed'); })
+      .catch(err => {
+        if (err.response.status === 400) {
           setError(true);
+        } else if (err.response.status === 500) {
+          navigate('/servererror');
         }
-      })
+      });
     }
     return(
       <div className='login'>

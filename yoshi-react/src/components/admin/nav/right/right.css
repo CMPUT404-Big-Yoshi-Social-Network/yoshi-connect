@@ -1,0 +1,83 @@
+/*
+Copyright 2023 Kezziah Camille Ayuno, Alinn Martinez, Tommy Sandanasamy, Allan Ma, Omar Niazie
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Furthermore it is derived from the Python documentation examples thus
+some of the code is Copyright © 2001-2013 Python Software
+Foundation; All Rights Reserved
+*/
+
+@font-face {
+    font-family: "Uni Neue";
+    src: url('../../../../fonts/UniNeue-Trial-Regular.eot');
+    src: url('../../../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
+         url('../../../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
+         url('../../../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
+         url('../../../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+}
+
+.right-admin-column{
+    top: 0;
+    right: 1;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: #0A0F10;
+    border: #24292F 0.1em solid;
+    padding: 1em;
+    font-family: 'Uni Neue', sans-serif;
+}
+
+.rn-admdiv{
+    padding: 1em 0em;
+}
+
+.rn-admdash, .rn-admadmins, .rn-admuser, .rn-admserver, .rn-user, .rn-admnodes{
+    padding-left: 1em;
+    text-decoration: none;
+    color: white;
+}
+.rn-admdash:hover, .rn-admadmins:hover, .rn-admuser:hover, .rn-admserver:hover, .rn-user:hover, .rn-admnodes:hover{
+    text-decoration: none;
+    color: #d2f364;
+}
+
+.rn-admCogImg{
+    position: fixed;
+    margin: 1em 1em;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.goto-user-dashboard{
+    display: inline-block;
+    position: fixed;
+    color: black;
+    font-size: 18px;
+    margin-bottom: 1em;
+    bottom: 0;
+    right: 1;
+    background-color: #A7E7F8;
+    border: #A7E7F8;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
+}
+.goto-user-dashboard:hover{
+    background-color: #735DFA;
+    color: white;
+}

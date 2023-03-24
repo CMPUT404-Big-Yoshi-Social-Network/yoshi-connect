@@ -53,43 +53,13 @@ function Profile() {
         person: null,
         viewer: null,
         viewed: null,
+        viewedId: null,
         viewerId: null
     })
     const [requestButton, setRequestButton] = useState('Add');
-    const [posts, setPosts] = useState([]);
+    const [otherUrl, setOtherUrl] = useState([]);
     const navigate = useNavigate();
     let exists = useRef(null);
-    useEffect(() => {
-        /**
-         * Description: Before render, checks if the author is logged in to redirect to the main feed
-         * Request: GET
-         * Returns: N/A
-         */
-        const checkExpiry = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                if (response.data.status === "Expired") {
-                    console.log("Debug: Your token is expired.")
-                    LogOut();
-                    navigate('/');
-                }
-                else{console.log('Debug: Your token is not expired.')}
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); // 401 Not Found
-                }
-            });
-        }
-        checkExpiry();
-    })
     useEffect(() => {
         /**
          * Description: Get the account details of the author
@@ -99,7 +69,10 @@ function Profile() {
         let person = '';
         let viewer = '';
         let viewed = '';
-        console.log('Debug: Getting account details')
+        let viewedId = '';
+        let viewerId = '';
+        let otherUrl = '';
+
         const isRealProfile = () => {
             /**
              * Description: Checks if the author account exists
@@ -107,20 +80,25 @@ function Profile() {
              * Returns: N/A
              */
             axios
-            .get('/server/users/' + username)
+            .get('/profile/' + username)
             .then((response) => {
                 console.log('Debug: Profile Exists.')
                 person = response.data.personal
                 viewer = response.data.viewer
                 viewed = response.data.viewed
+                viewedId = response.data.viewedId
+                viewerId = response.data.viewerId
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
                 setPersonal(prevViewer => ({...prevViewer, viewer}))
-                setPersonal(prevViewing => ({...prevViewing, viewed}))
-                getPosts(person, viewer, viewed);
+                setPersonal(prevViewed => ({...prevViewed, viewed}))
+                setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
+                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+
+                otherUrl = 'other/' + viewedId;
+                setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    console.log("Debug: Profile does not exist.");
                     navigate('/notfound'); 
                 }
                 else if (err.response.status === 401) {
@@ -130,62 +108,6 @@ function Profile() {
             });
         }
         isRealProfile();
-        const getId = () => {
-            /**
-             * Description: Gets the author's ID and sets their viewer ID for posts
-             * Request: POST
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/server/posts/',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    sessionId: localStorage.getItem('sessionId'),
-                    status: 'Fetching current authorId'
-                }
-            }
-            axios
-            .post('/server/posts/', config)
-            .then((response) => {
-                let viewerId = response.data.authorId;
-                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
-            })
-            .catch(err => { });
-        }
-        getId();
-        console.log('Debug: Getting posts')
-        const getPosts = (person, viewer, viewed) => {
-            /**
-             * Description: Checks if the author account exists
-             * Request: GET
-             * Returns: N/A
-             */
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/server/users/posts',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    personal: person,
-                    viewed: viewed,
-                    viewer: viewer
-                }
-            }
-            axios
-            .post('/server/users/posts', config)
-            .then((response) => {
-                setPosts(response.data.posts)
-            })
-            .catch(err => {
-                console.error(err);
-            });
-        }
     }, [navigate, username])
     useEffect(() => {
         /**
@@ -193,34 +115,24 @@ function Profile() {
          * Request: POST
          * Returns: N/A
          */
-        if (!personal.person) { 
+        if (!personal.person && personal.viewerId != null && personal.viewedId != null) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
-                method: 'post',
+                method: 'get',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Does Request Exist'
                 }
             }
             axios
-            .post('/server/users/' + username, config)
-            .then((response) => {
-                if (response.data.status === 'Successful') {
-                    console.log('Debug: Friend Request Exists.')
-                    exists.current = true;
-                } else {
-                    console.log('Debug: Friend Request does not exist.')
-                    exists.current = false;
-                }
+            .get('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
+            .then((response) => { 
+                exists.current = true; 
+                setRequestButton('Sent');
             })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 404) { exists.current = false; }
             });
         }
     }, [username, exists, personal]);
@@ -229,133 +141,99 @@ function Profile() {
          * Description: Checks if the author is a follower or a friend
          * Request: POST
          * Returns: N/A
+         * REFACTOR: CHECK 
          */
-        if (!exists.current && !personal.person) {
+        if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
             console.log('See if they are followers or friends.');
             let config = {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
-                headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    viewed: personal.viewed,
-                    viewer: personal.viewer,
-                    status: 'Friends or Follows'
-                }
+                url: '/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             }
             axios
-            .post('/server/users/' + username, config)
+            .post('/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status === 'Friends') {
-                    console.log('Debug: They are friends.')
                     setRequestButton('Unfriend');
                 } else if (response.data.status === 'Follows') {
-                    console.log('Debug: They are follows.')
                     setRequestButton('Unfollow');
+                } else if (response.data.status === 'Strangers') {
+                    setRequestButton('Add');
                 }
             })
             .catch(err => {
-            console.error(err);
+                if (err.response.status === 500) { console.log('500 PAGE') }
             });
         }
-    }, [username, personal, exists, setRequestButton, requestButton])
+    }, [username, personal, exists, requestButton])
+
     const SendRequest = () => {
-        /**
-         * Description: Handles sending and deleting a friend request, unfriending, and unfollowing
-         * Request: PUT, DELETE
-         * Returns: N/A
-         */
         if (requestButton === "Add") {
             setRequestButton('Sent');
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Save Request'
                 }
             }
             axios
-            .put('/server/users/' + username, config)
-            .then((response) => {
-                console.log('Debug: Friend request sent!')
-            })
+            .put('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
+            .then((response) => { })
             .catch(err => {
-              console.error(err);
+              if (err.response.status === 401) {
+                navigate('/unauthorized')
+              } else if (err.response.status === 400) {
+                navigate('/badrequest');
+              }
             });
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
-            let config = {
-                method: 'delete',
-                maxBodyLength: Infinity,
-                url: '/server/users/' + username,
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Delete Request'
-                }
-            }
             axios
-            .delete('/server/users/' + username, config)
-            .then((response) => {
-                console.log('Debug: Friend request deleted!')
-            })
+            .delete('/authors/' + personal.viewerId + 'inbox/requests/' + personal.viewedId)
+            .then((response) => { })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                  } else if (err.response.status === 400) {
+                    navigate('/badrequest');
+                  } else if (err.response.status === 500) {
+                    console.log('500 PAGE')
+                  }
             });
         } else if (requestButton === 'Unfriend') {
             console.log('Debug: We want to unfriend.')
-            let config = {
-                method: 'put',
-                maxBodyLength: Infinity,
-                url: '/server/users/' + username,
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Unfriending'
-                }
-            }
             axios
-            .put('/server/users/' + username, config)
+            .delete('/authors/' + personal.viewerId + '/followings/' + personal.viewedId)
             .then((response) => {
                 if (response.data.status) {
-                    console.log('Debug: Friend is unfriended.')
+                    console.log('Debug: Follow is unfriended.')
                     setRequestButton('Add');
                 }
             })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                  } else if (err.response.status === 400) {
+                    navigate('/badrequest');
+                  } else if (err.response.status === 500) {
+                    console.log('500 PAGE')
+                  }
             });
         } else if (requestButton === "Unfollow") {
             console.log('Debug: We want to unfollow.')
             let config = {
-                method: 'put',
+                method: 'delete',
                 maxBodyLength: Infinity,
-                url: '/server/users/' + username,
+                url: '/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                data: {
-                    receiver: personal.viewed,
-                    sender: personal.viewer,
-                    status: 'Unfollowing'
                 }
             }
             axios
-            .put('/server/users/' + username, config)
+            .delete('/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
             .then((response) => {
                 if (response.data.status) {
                     console.log('Debug: Follow is unfollowed.')
@@ -363,62 +241,38 @@ function Profile() {
                 }
             })
             .catch(err => {
-              console.error(err);
+                if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                  } else if (err.response.status === 400) {
+                    navigate('/badrequest');
+                  } else if (err.response.status === 500) {
+                    console.log('500 PAGE')
+                  }
             });
         }
     }
-    const LogOut = () => {
-        /**
-         * Description: Logs the author out 
-         * Request: POST
-         * Returns: N/A
-         */
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/server/feed',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-                message: 'Logging Out'
-            }
-        }
-        axios
-        .post('/server/feed', config)
-        .then((response) => {
-            localStorage['sessionId'] = "";
-            navigate("/");
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    }
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={personal.viewerId}/>
             <div className='profRow'>
                 <div className='pubColL'>
-                    <LeftNavBar/>
+                    <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
                     <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    <Posts viewerId={personal.viewerId} posts={posts}/>   
+                    { personal.person ? 
+                        <Posts type={'personal'}/> : 
+                        <Posts type={otherUrl}/> 
+                    }   
                 </div>
                 <div className='profColR'>
                     <RightNavBar/>
                 </div>
             </div>
         </div>
-            /* <h1>{username}'s Profile</h1>
-            { personal.person ? null : 
-                <button type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
-            <h2>Posts</h2>
-            <Posts viewerId={personal.viewerId} posts={posts}/>   
-        </div>  */
     )
 }
 

@@ -23,15 +23,9 @@ Foundation; All Rights Reserved
 import React from "react";
 
 function Friend(props) {
-    /**
-     * Description: Represents a friend 
-     * Arguments: 
-     *     - props: Author object representing a friend of current author 
-     * Returns: N/A
-     */
     return (
         <div id='friend'>
-            { props.username }
+            { props.displayName }
         </div>
     )
 }

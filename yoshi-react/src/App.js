@@ -33,12 +33,12 @@ import Signup from "./components/signup/signup.jsx";
 
 // Admin 
 import AdminLogin from "./components/admin/admin.jsx";
-import AdminDashboard from "./components/admin/adminDashboard.jsx";
+import AdminDashboard from "./components/admin/dashboard/adminDashboard.jsx";
 
 // Feeds
 // import Feed from "./components/feeds/feed/feed.jsx";
 import PublicFeed from "./components/feeds/public/public.jsx";
-import FriendFeed from "./components/feeds/friends/friendFeed.jsx";
+import FriendFeed from "./components/feeds/friends/feed.jsx";
 import Messages from "./components/feeds/messages/messages.jsx";
 
 // Author Specifics
@@ -49,7 +49,7 @@ import Settings from './components/feeds/settings/settings.jsx';
 import Errors from './components/user-error/errors.jsx';
 
 // API Docs
-import ApiDocs from "./components/api-docs/api-docs.jsx";
+import ApiDocs from "./components/apiDocs/apiDocs.jsx";
 
 const router = createBrowserRouter([
   {

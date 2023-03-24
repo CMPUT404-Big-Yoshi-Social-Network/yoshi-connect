@@ -45,7 +45,7 @@ function Post({viewerId, post}) {
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
-    const [item, setItem] = useState({ image: "" });
+    const [item, setItem] = useState("");
 
     const navigate = useNavigate();
 
@@ -55,12 +55,14 @@ function Post({viewerId, post}) {
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
             .then((res) => {
                 if (res.data.status === 200) {
-                    setItem({ ...item, image: res.data.src})
+                    setItem(res.data.src)
+                } else {
+                    setItem('')
                 }
             })
         }
         getImage();
-    }, [authorId, postId, item])
+    }, [authorId, postId])
 
     useEffect(() => {
                 /**
@@ -158,7 +160,7 @@ function Post({viewerId, post}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "type/plain" ? <p>{ post.content }</p> : post.contentType === "type/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    <img className={"image"} src={item.image} alt=""/>
+                    <img className={"image"} src={item} alt=""/>
 
                     <p>{post.published}</p>
                     <br></br>

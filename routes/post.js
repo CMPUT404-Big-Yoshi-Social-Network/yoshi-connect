@@ -23,7 +23,11 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
+const { PostHistory, PublicPost, Post, Image } = require('../scheme/post.js');
+const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
+const { Author } = require('../scheme/author.js');
+const {Follower} = require('../scheme/relations.js');
+
 
 // UUID
 const crypto = require('crypto');
@@ -38,15 +42,38 @@ async function createPostHistory(author_id){
         authorId: author_id,
         num_posts: 0,
         posts: []
-    })
+    });
 
-    await new_post_history.save()
+    await new_post_history.save();
 }
 
-async function getPost(authorId, postId){
+async function uploadImage(url, image) {
+    let newImage = new Image ({
+        _id: url,  
+        src: image
+    })
+    await newImage.save()
+    return [newImage, 200]
+}
+
+async function editImage(url, src) {
+    let image = await Image.findOne({_id: url});
+    if (!image) { return [{}, 404]; }
+    image.src = src;
+    await image.save()
+    return [image, 200]
+}
+
+async function getImage(url) {
+    let image = await Image.findOne({_id: url});
+    if (!image) { return [{}, 404]; }
+    return [image.src, 200];
+}
+
+async function getPost(postId, author){
     let post = await PostHistory.aggregate([
         {
-            $match: {'authorId': authorId}
+            $match: {'authorId': author.authorId}
         },
         {
             $unwind: "$posts"
@@ -63,12 +90,12 @@ async function getPost(authorId, postId){
     post = {
         "type": "post",
         "title" : post.title,
-        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
         "source": post.source,
         "origin": post.origin,
         "description": post.description,
         "contentType": post.contentType,
-        "author": post.author, 
+        "author": author, 
         "categories": post.categories,
         "count": post.count,
         "comments": post.comments,
@@ -81,10 +108,10 @@ async function getPost(authorId, postId){
 }
 
 async function createPost(token, authorId, postId, newPost) {
-    if((await authLogin(token, authorId)) == false){ return [[], 401]; }
+    if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
     const title = newPost.title;
-    const desc = newPost.desc;
+    const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
     const categories = [''];
@@ -93,13 +120,11 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
-    if (!title || !desc || !contentType || !content || !visibility) { return [[], 400]; }
-
     let postHistory = await PostHistory.findOne({authorId: authorId});
 
     if(postId != undefined){
         let oldPost = postHistory.posts.id(postId);
-        if(oldPost) return [[], 400]
+        if (oldPost) return [[], 400]
     }
     
     if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
@@ -112,27 +137,44 @@ async function createPost(token, authorId, postId, newPost) {
         postHistory = await PostHistory.findOne({authorId: authorId});
     }
 
-    let post = new Post({
+    let post = {
         _id: postId,
         title: title,
         source: source,
         origin: origin,
-        description: desc,
+        description: description,
         contentType: contentType,
         content: content,
         authorId: authorId,
         categories: categories,
         count: 0,
-        likes: [],
-        comments: [],
+        like_count: 0,
+        comment_count: 0,
         published: published,
         visibility: visibility,
         unlisted: unlisted,
         postTo: postTo
-    });
+    };
+
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
-    await postHistory.save();
+
+    const savePostPromise = await postHistory.save();
+
+    let likes = LikeHistory({
+        type: "post",
+        Id: postId,
+        likes: [],
+    }).save();
+
+    let comments = CommentHistory({
+        postId: postId,
+        comments: [],
+    }).save();
+
+    await likes;
+    await comments;
+    savePostPromise;
 
     if (visibility == 'Public') {
         const publicPost = await PublicPost.findOne().clone();
@@ -143,11 +185,27 @@ async function createPost(token, authorId, postId, newPost) {
         publicPost.num_posts = publicPost.num_posts + 1;
         await publicPost.save();
     }
+
+    //TODO make this faster
+    //if not unlisted send to all followers 
+    if(unlisted === "false"){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            console.log(follower);
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+            console.log(inbox);
+
+            inbox.posts.push(post);
+            await inbox.save();
+        }
+    }
     return [await getPost(authorId, postId), 200];
 }
 
 async function updatePost(token, authorId, postId, newPost) {
-    if (!authLogin(token, authorId)) { return [{}, 401]; }
+    if (!(await authLogin(token, authorId))) { return [{}, 401]; }
 
     const title = newPost.title;
     const desc = newPost.desc;
@@ -163,8 +221,6 @@ async function updatePost(token, authorId, postId, newPost) {
 
     let post = postHistory.posts.id(postId);
 
-    if (!post) { return [{}, 404]; }
-
     post.title = title;
     post.description = desc;
     post.contentType = contentType;
@@ -174,7 +230,6 @@ async function updatePost(token, authorId, postId, newPost) {
     post.categories = categories;
     await postHistory.save()
 
-    //TODO Remove possiblity of visibility being "public"?
     if(post.visibility == "PUBLIC" || post.visibility == "Public"){
         let publicPosts = await PublicPost.findOne().clone();
 
@@ -188,11 +243,30 @@ async function updatePost(token, authorId, postId, newPost) {
         }
     }
 
+    if(unlisted === "false"){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        let promiseList = [];
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            console.log(follower);
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+            console.log(inbox);
+
+            inbox.posts.push(post);
+            promiseList.push(inbox.save());
+        }
+
+        for(let i = 0; i < promiseList.length; i++){
+            await promiseList[i];
+        }
+    }
+
     return [await getPost(authorId, postId), 200];
 }
 
 async function deletePost(token, authorId, postId) {
-    if (!authLogin(token, authorId)) { return [{}, 401]; }
+    if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
 
@@ -204,6 +278,10 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
+
+    const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
+    const comments = CommentHistory.findOneAndDelete({postId: postId});
+    
     postHistory.save();
 
     if (post.visibility == "PUBLIC" || post.visibility == "Public") {
@@ -219,6 +297,9 @@ async function deletePost(token, authorId, postId) {
         await publicPost.save();
     }
 
+    await likes;
+    await comments;
+
     return [post, 200]; 
 }
 
@@ -227,7 +308,7 @@ async function getPosts(page, size, author) {
     if(page > 1){
         posts = await PostHistory.aggregate([
             {
-                $match: {'authorId': author.id}
+                $match: {'authorId': author.authorId}
             },
             {
                 $unwind: '$posts'
@@ -239,7 +320,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
+                    'posts.visibility': {$in : ["Public"]}
                 }
             },
             {
@@ -268,7 +349,7 @@ async function getPosts(page, size, author) {
     } else if (page == 1) {
         posts = await PostHistory.aggregate([
             {
-                $match: {'authorId': author.id}
+                $match: {'authorId': author.authorId}
             },
             {
                 $unwind: '$posts'
@@ -281,7 +362,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
+                    'posts.visibility': {$in : ["Public"]}
                 }
             },
             {
@@ -317,8 +398,8 @@ async function getPosts(page, size, author) {
         const post = posts[i];
         let sanitized_posts = {
             "type": "post",
-            "tite'": post.title,
-            "id": post._id,
+            "title'": post.title,
+            "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id,
             "source": post.source,
             "origin": post.origin,
             "description": post.description,
@@ -326,9 +407,9 @@ async function getPosts(page, size, author) {
             "content": post.content,
             "author": author,
             "categories": post.categories,
-            "count": post.comments.length,
-            "comments": "",
-            "likeCount": post.likes.length,
+            "count": post.count,
+            "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
+            "likeCount": post.likes_count,
             "likes": "",
             "published": post.published,
             "visibility": post.visibility,
@@ -375,6 +456,13 @@ async function fetchMyPosts(req, res) {
             }
         },
     ]);
+
+    if (posts[0] == undefined) {
+        return res.json({
+            type: "posts",
+            items: []
+        })        
+    }
 
     return res.json({
         type: "posts",
@@ -423,7 +511,7 @@ async function fetchOtherPosts(req, res) {
                 _id: null,
                 posts_array: {$push: "$posts"}
             }
-        },
+        }
     ]);
 
     if (posts[0] == undefined) {
@@ -446,5 +534,8 @@ module.exports={
     createPost,
     getPosts,
     fetchMyPosts,
-    fetchOtherPosts
+    fetchOtherPosts,
+    uploadImage,
+    getImage,
+    editImage
 }

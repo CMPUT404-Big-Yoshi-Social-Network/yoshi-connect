@@ -33,6 +33,9 @@ const openapiSpecification = swaggerJsdoc(options);
 // Router Setup
 const express = require('express'); 
 
+// Schemas
+const { Author } = require('../scheme/author');
+
 // Router
 const router = express.Router({mergeParams: true});
 
@@ -132,6 +135,20 @@ router.post('/:authorId', async (req, res) => {
 
   if (status == 200) { return res.json(author) }
   if (status == 404 || status == 401) { return res.sendStatus(status); }
+})
+
+router.get('/search/:username', async (req, res) => {
+  const username = req.params.username;
+  const authors = await Author.find({username: username}).clone();
+  if (!authors) { 
+    return res.sendStatus(404)
+  }
+
+  return res.json({
+    "type": 'authors',
+    "items": authors
+  })
+
 })
 
 module.exports = router;

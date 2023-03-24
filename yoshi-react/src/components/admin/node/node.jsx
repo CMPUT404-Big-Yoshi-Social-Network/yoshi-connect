@@ -26,27 +26,23 @@ import Popup from 'reactjs-popup';
 import { useNavigate } from 'react-router-dom';
 
 // Child Componet
-import ModifyAuthor from "../forms/modifyForm.jsx";
+import ModifyNode from "../forms/modifyNode.jsx";
 
-// Styling
-import './author.css';
-
-function Author(props) {
-    const url = '/admin/dashboard';
+function Node({node, url}) {
     const navigate = useNavigate();
 
-    const deleteAuthor = () => {
+    const deleteNode = (url) => {
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/json' },
             data: {
-                author: props
+                node: node
             }
         }
         axios
-        .delete(url, config)
+        .delete(url + '/' + node._id, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 404) {
@@ -57,10 +53,10 @@ function Author(props) {
         });
     }
 
-    const allowAuthor = () => {
-        let config = props
+    const allowNode = (url) => {
+        let config = node
         axios
-        .put(url, config)
+        .put(url + '/' + node._id, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 400) {
@@ -74,16 +70,16 @@ function Author(props) {
     }
     
     return (
-        <div className='author-div' id='author'>
-            { props.displayname === undefined ? null : 
+        <div>
+            { node === undefined ? null : 
                 <div>
-                    { props.displayname }
-                    <div className='author-button-div'>
-                        <button className='author-buttons' type="button" id='delete' onClick={() => deleteAuthor()}>Delete</button>
-                        <button className='author-buttons' type="button" id='enable' onClick={() => allowAuthor()}>Enable</button>
-                        <button className='author-buttons' type="button" id='disable' onClick={() => allowAuthor()}>Disable</button>
-                        <Popup trigger={<button className='author-buttons'>Modify</button>} position="right center">
-                            <ModifyAuthor {...props}/>
+                    { node.displayName }
+                    <div>
+                        <button type="button" id='delete' onClick={() => deleteNode(url)}>Delete</button>
+                        <button type="button" id='enable' onClick={() => allowNode(url)}>Enable</button>
+                        <button type="button" id='disable' onClick={() => allowNode(url)}>Disable</button>
+                        <Popup trigger={<button>Modify</button>} position="right center">
+                            <ModifyNode node={node} url={url}/>
                         </Popup>
                     </div>
                 </div>
@@ -92,4 +88,4 @@ function Author(props) {
     )
 }
 
-export default Author;
+export default Node;

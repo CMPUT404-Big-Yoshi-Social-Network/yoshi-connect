@@ -96,13 +96,17 @@ async function authAuthor(req, res) {
     if (!author) { return res.sendStatus(404); }
     req.author = author;
 
+    if (!author.allowed) {
+        return res.sendStatus(401);
+    }
+
     const p_hashed_password = req.author.password;
     if(p_hashed_password == crypto_js.SHA256(password)){
         if(req.cookies.token != null && req.cookies.token != undefined){
-            await Login.deleteOne({token: req.cookies.token}, function(err, login) { if (err) { res.sendStatus(500); } }).clone()
+            await Login.deleteOne({token: req.cookies.token}, function(err, login) { if (err) { return res.sendStatus(500); } }).clone()
         }
 
-        if (req.baseUrl == '/admin') { if (!req.author.admin) { return res.sendStatus(403) } }
+        if (req.baseUrl == '/admin') { if (!req.author.admin) { return res.sendStatus(403); } }
 
         let curr = new Date();
         let expiresAt = new Date(curr.getTime() + (1440 * 60 * 1000));

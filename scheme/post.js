@@ -21,6 +21,8 @@ Foundation; All Rights Reserved
 
 // Database
 const mongoose = require("mongoose");
+const { authorScheme, basicAuthorScheme } = require("./author");
+const { likeAuthorScheme} = require("./interactions");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
@@ -34,8 +36,8 @@ const postScheme = new Schema({
     content: String,
     categories: [String],
     count: Number,
-    likes: [{ type: String, ref: 'Like' }],
-    comments: [{ type: String, ref: 'Comment' }],
+    like_count: Number,
+    comment_count: Number,
     published: String,
     visibility: String,
     postTo: String,
@@ -61,25 +63,75 @@ const publicScheme = new Schema({
     {versionKey: false
 })
 
+const inboxLikeScheme = new Schema({
+    author: basicAuthorScheme,
+    object: String,
+    summary: String
+})
+
+const inboxCommentScheme = new Schema({
+    _id: String,
+    author: basicAuthorScheme,
+    comment: String,
+    contentType: String,
+    published: String,
+    object: String
+})
+
+inboxPostScheme = new Schema({
+        _id: String,
+        origin: String,
+        source: String,
+        title: String,
+        description: String,
+        contentType: String,
+        content: String,
+        categories: [String],
+        author: basicAuthorScheme,
+        count: Number,
+        like_count: Number,
+        comment_count: Number,
+        published: String,
+        visibility: String,
+        postTo: String,
+        unlisted: Boolean,},
+        {versionKey: false
+})
+
 const inboxScheme = new Schema({
     _id: String,
     authorId: String,
     username: String,
-    posts: [postScheme],
-    likes: [{ type: String, ref: 'Like' }],
-    comments: [{ type: String, ref: 'Comment' }],
-    requests: [{ type: String, ref: 'Request' }]},
+    posts: [inboxPostScheme],
+    likes: [inboxLikeScheme],
+    comments: [inboxCommentScheme],
+    requests: [{
+        _id: String,
+        goal: String,
+        summary: String,
+        actor: String,
+        actorId: String,
+        objectId: String,
+        object: String
+    }]},
     {versionKey: false
 })
 
-const PostHistory = database.model('PostHistory', postHistoryScheme);
+
+const imageScheme = new Schema({
+    _id: String, 
+    src: String},
+    {versionKey: false
+})
+const PostHistory = database.model('Post', postHistoryScheme);
 const PublicPost = database.model('PublicPost', publicScheme);
 const Inbox = database.model('Inbox', inboxScheme); 
-const Post = database.model('Post', postScheme);    
+const Image = database.model("Image", imageScheme)   
+
 
 module.exports = {
     PostHistory,
     PublicPost,
     Inbox,
-    Post
+    Image
 }

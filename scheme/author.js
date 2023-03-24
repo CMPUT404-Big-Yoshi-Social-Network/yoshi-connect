@@ -24,6 +24,15 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
+const basicAuthorScheme = new Schema({
+    _id: String,
+    host: String,
+    displayName: String,
+    url: String,
+    github: String,
+    profileImage: String
+})
+
 const authorScheme = new Schema({
     _id: String,
     username: String,
@@ -33,7 +42,8 @@ const authorScheme = new Schema({
     pronouns: String,
     github: String,
     profileImage: String,
-    admin: false},
+    admin: false,
+    allowed: false},
     {versionKey: false
 });
 
@@ -52,5 +62,8 @@ const Author = database.model('Author', authorScheme);
 
 module.exports = {
     Login,
-    Author
+    Author,
+    authorScheme,
+    loginScheme,
+    basicAuthorScheme
 }

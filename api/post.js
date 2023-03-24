@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, getImage, editImage } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 const { fetchFriendPosts } = require('../routes/friend');
 const { getAuthor } = require('../routes/author.js');
@@ -35,6 +35,7 @@ const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
+const { getLikes } = require('../routes/likes');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -112,9 +113,15 @@ router.get('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  let [post, status] = await getPost(authorId, postId);
+  let [author, authorStatus] = await getAuthor(authorId)
 
-  if (status != 200) { return res.sendStatus(status); }
+  if(authorStatus != 200){
+    return res.sendStatus(authorStatus);
+  }
+
+  let [post, postStatus] = await getPost(postId, author);
+
+  if (postStatus != 200) { return res.sendStatus(postStatus); }
 
   return res.json(post);
 })
@@ -270,13 +277,70 @@ router.post('/', async (req, res) => {
 
   if (!req.cookies.token) { return res.sendStatus(401); }
 
-  const [post, status] = await createPost(req.cookies.token, authorId, undefined, req.body.data);
+  const [post, status] = await createPost(req.cookies.token, authorId, undefined, req.body);
 
   if (status == 200) {
     return res.json(post);
-  } else {
-    return res.sendStatus(status); 
   }
+  return res.sendStatus(status); 
+})
+
+router.get('/:postId/likes', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+
+  const [likes, status] = await getLikes(authorId, postId, null, "post");
+
+  if(status != 200){
+    return res.sendStatus(status)
+  }
+
+  return res.json({
+    type: "likes",
+    items: likes
+  });
+})
+
+router.put('/:postId/likes', async (req, res) => {
+  console.log('TODO: PUT Request that adds a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
+})
+
+router.delete('/:postId/likes', async (req, res) => {
+  console.log('TODO: DELETE Request that deletes a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
+})
+
+router.get('/:postId/liked', async (req, res) => {
+  //TODO we can refactor this endpoint to take multiple posts which will allow us to amortize the amount of time spent searching for public posts
+  //Or we can merge public posts with getting liked posts
+  console.log('TODO: GET Request that detects whether a post has already been liked by the viewer (which you can get from token); 200 means liked, 404 not liked etc')
+})
+
+router.post("/:postId/image", async (req, res) => {  
+  const [image, status] = await editImage(req.body.url, req.body.image);
+
+  if (status == 200) {
+    return res.json(image);
+  } else {
+    return res.sendStatus(status)
+  }
+})
+
+router.put("/:postId/image", async (req, res) => {  
+  const [image, status] = await uploadImage(req.body.url, req.body.image);
+
+  if (status == 200) {
+    return res.json(image);
+  } else {
+    return res.sendStatus(status)
+  }
+})
+
+router.get("/:postId/image", async (req, res) => { 
+  const [image, status] = await getImage(req.originalUrl); 
+  return res.json({
+    src: image,
+    status: status
+  })
 })
 
 module.exports = router;

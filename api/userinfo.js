@@ -45,15 +45,11 @@ const router = express.Router({mergeParams: true});
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
  *      200:
- *        description: OK -- Author was fetched from database
+ *        description: OK -- Author was fetched from database, Returns the sanitized Author, Returns JSON with Author's attributes
  *      500:
  *        description: Internal Server Error -- Unable to fetch Author from  database
  *      404:
  *        description: Not Found -- Authour was not found
- *      200:
- *        description: OK -- Returns the sanitized Author
- *      200:
- *        description: OK -- Returns JSON with Author's attributes
  */
 router.get('/', async (req,res) => {
     if (!req.cookies.token) { return res.sendStatus(401); }

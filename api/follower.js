@@ -96,9 +96,7 @@ router.get('/', async (req, res) => {
  *    description: Fetches a specific Author using foreignAuthorId params associated by authorId params 
  *    responses:
  *      404:
- *        description: Not Found -- could not find any followers for Author associated with authorId
- *      404:
- *        description: Not Found -- could not find the foreign Author following the Author associated with authorId
+ *        description: Not Found -- could not find any followers for Author associated with authorId or could not find the foreign Author following the Author associated with authorId
  */
 router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;

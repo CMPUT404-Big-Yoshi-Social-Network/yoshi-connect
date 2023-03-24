@@ -43,10 +43,10 @@ const router = express.Router({mergeParams: true});
  *  get:
  *    description: Checks for authenticated author token to get the request
  *    responses:
- *     401:
- *        description: Unauthorized -- Token for request was not authenticated
-*      200:
- *        description: OK -- Returns JSON with the request type and items (requests)
+ *      401:
+ *         description: Unauthorized -- Token for request was not authenticated
+ *      200:
+ *         description: OK -- Returns JSON with the request type and items (requests)
  */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
@@ -63,7 +63,7 @@ router.get('/', async (req, res) => {
  *    responses:
  *      404:
  *        description: Not Found -- Request was not found by the server
-*       200:
+ *      200:
  *        description: OK -- Returns JSON with the request object
  */
 router.get('/:foreignAuthorId', async (req, res) => {
@@ -106,7 +106,7 @@ router.put('/:foreignAuthorId', async (req, res) => {
  *    responses:
  *      500:
  *        description: Internal Serever Error -- Unable to fetch and delete the Request from the database
-*       200:
+ *      200:
  *        description: OK -- Returns JSON of deleted Request object which contains the type, summary, actor, and object details
  */
 router.delete('/:foreignAuthorId', async (req, res) => {

@@ -91,12 +91,12 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId/friends/:foreignId:
  *  post:
- *    description: Checks if the Author associated with foreignId is true friends with Author associated with authorId 
+ *    summary: Checks if the Author associated with foreignId is true friends with Author associated with authorId 
  *    responses:
  *      401:
  *        description: Unauthorized -- no associated cookies or Login token expired 
  *      200: 
- *        description: OK -- returns JSON of sanitized 'relation' object which as an associated status stating their relation: 'Friends', 'Strangers', 'Follows'
+ *        description: OK -- returns JSON of sanitized "relation" object which as an associated status stating their relation, "Friends", "Strangers", "Follows
  */
 router.post('/:foreignId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }

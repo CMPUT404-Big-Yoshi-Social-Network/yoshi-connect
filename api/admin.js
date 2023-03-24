@@ -39,24 +39,20 @@ const router = express.Router({mergeParams: true});
 
 /**
  * @openapi
- * /admin: 
+ * /admin:
  *  post:
- *    description: Authenticates a potential Author for YoshiConnect
+ *    summary: Authenticates a potential Author for YoshiConnect
+ *    tags:
+ *      - admin
  *    responses:
  *      400:
- *        description: Bad Request -- Invalid username or password
- *      400:
- *        description: Bad Request -- Author was not found in the database
+ *        description: Bad Request -- Invalid username or password or author does not exist
  *      500:
- *        description: Internal Server Error -- unable to delete login token from database
+ *        description: Internal Server Error -- Unable to authenticate Author or Unable to delete login token from database or password is incorrect
  *      403:
  *        description: Forbidden -- Author was not an admin
  *      200:
  *        description: OK -- Login as author was successful and cached
- *      500:
- *        description: Internal Server Error -- password sent from request is not the same as the encrypted password in database
- *      500:
- *        description: Internal Server Error -- unable to authenticate Author
  */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 
@@ -64,7 +60,7 @@ router.post('/', async (req, res) => { await authAuthor(req, res); })
  * @openapi
  * /admin/dashboard:
  *  get:
- *    description: Verifies Author has attribute admin=true then redirects the Author to the Admin Dashboard if verified
+ *    summary: Verifies Author has attribute admin=true then redirects the Author to the Admin Dashboard if verified
  *    responses:
  *      403:
  *        description: Forbidden -- if Admin is not authenticated, access is not granted
@@ -83,7 +79,7 @@ router.get('/dashboard', async (req, res) => {
  * @openapi
  * /admin/dashboard:
  *  post:
- *    description: Removes the Login document (associated token) to log out the Admin 
+ *    summary: Removes the Login document (associated token) to log out the Admin 
  *    responses:
  *      500:
  *        description: Internal Server Error -- deleting Login document was unsuccessful 
@@ -98,7 +94,7 @@ router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
  * @openapi
  * /admin/dashboard:
  *  delete:
- *    description: Deletes an Author from YoshiConnect database 
+ *    summary: Deletes an Author from YoshiConnect database 
  *    responses:
  *      404:
  *        description: Not Found -- Author was not found
@@ -113,9 +109,7 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  * @openapi
  * /admin/dashboard:
  *  put:
- *    description: Adds an Author to YoshiConnect database or updates an Author's attributes 
- *      - Add: Requests to add a new Author to the database
- *      - Modify: Requests to modify an existing Author in the database
+ *    summary: Adds an Author to YoshiConnect database or updates an Author's attributes
  *    responses:
  *      400:
  *        description: Bad Request -- Author already exists, username and/or password taken, Admin did not fill all cells (username, password, email)

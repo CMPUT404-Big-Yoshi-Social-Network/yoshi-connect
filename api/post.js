@@ -92,9 +92,7 @@ router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res
  *    description: Gets the posts associated with postId for the Author associated with authorId
  *    responses:
  *      404:
- *        description: Not Found -- Author ID was not found
- *      404:
- *        description: Not Found -- Post associated with Author was not found
+ *        description: Not Found -- Author ID was not found or Post associated with Author was not found
  *      200:
  *        description: OK -- Returns Authour's post 
  */
@@ -124,9 +122,7 @@ router.get('/:postId', async (req, res) => {
  *      404:
  *        description: Not Found -- Post was not found
  *      200:
- *        description: Ok -- Returns the updated post object
- *      200:
- *        description: Ok -- Returns JSON of the post object 
+ *        description: Ok -- Returns a JSON of the updated post object
  */
 router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -182,9 +178,7 @@ router.delete('/:postId', async (req, res) => {
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
  *      400:
- *        description: Bad Request -- The fields 'title', 'desc', 'content', or 'visibility' were not given
- *      400:
- *        description: Bad Request -- Post ID is already in use
+ *        description: Bad Request -- The fields 'title', 'desc', 'content', or 'visibility' were not given or the post already exists
  *      200:
  *        description: Ok -- Returns JSON the newly created post object
  */
@@ -211,16 +205,12 @@ router.put('/:postId', async (req, res) => {
  *    responses:
  *      500:
  *        description: Internal Server Error -- Unable to fetch Author from database
- *      200:
- *        description: OK -- Returns Author
  *      404:
  *        description: Not Found -- Author was not found
- *      200:
- *        description: Ok -- Returns the sanitized Author
  *      400:
  *        description: Bad Request -- Post history details did not match 
  *      200:
- *        description: OK -- Returns JSON with type and post objects
+ *        description: OK -- Returns JSON with type and post objects from the author
  */
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
@@ -251,9 +241,7 @@ router.get('/', async (req, res) => {
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
  *      400:
- *        description: Bad Request -- The fields 'title', 'desc', 'content', or 'visibility' were not given
- *      400:
- *        description: Bad Request -- Post ID is already in use
+ *        description: Bad Request -- The fields 'title', 'desc', 'content', or 'visibility' were not given or Post ID is already in use
  *      200:
  *        description: Ok -- Returns JSON the newly created post object
  */

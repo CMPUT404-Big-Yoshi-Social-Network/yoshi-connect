@@ -105,15 +105,11 @@ router.get('/:authorId', async (req, res) => {
  *      401:
  *        description: Unauthorized -- Author does not have an associated token 
  *      400:
- *        description: Bad Request -- req.body.type != 'author'
- *      400:
- *        description: Bad Request -- authorId, host, username are undefined
+ *        description: Bad Request -- type, authorId, host, username are incorrect
  *      200:
  *        description: OK -- Author was succesfully sent, JSON sent with sanitized and updated Author
  *      404:
  *        description: Not Found -- Author was not found
- *      401:
- *        description: Unauthorized -- Author is not authenticated
  */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }

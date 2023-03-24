@@ -318,6 +318,5 @@ module.exports = {
     deleteInbox,
     postInboxPost,
     postInboxLike,
-    postInboxComment,
-    postInboxRequest,
+    postInboxComment
 }

@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemes
-const { Post, Inbox } = require('../scheme/post.js');
-const { Like, Comment } = require('../scheme/interactions.js');
+const { Post, Inbox, PostHistory } = require('../scheme/post.js');
+const { Like, Comment, CommentHistory } = require('../scheme/interactions.js');
 const { Request } = require('../scheme/relations.js');
 
 // UUID
@@ -12,24 +12,16 @@ const crypto = require('crypto');
 
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
+const { createComment } = require('./comment.js');
+const { validateAuthorObject } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
 
-async function createInbox(username, authorId){
-    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-    await Inbox({
-        _id: uuid,
-        authorId: authorId,
-        username: username,
-        posts: [],
-        likes:[],
-        comments: [],
-        requests: []
-    }).save();
-}
-
-async function getInbox(authorId, page, size){
+async function getInbox(token, authorId, page, size){
+    if( ! (await authLogin(token, authorId))){
+        return [{}, 401];
+    }
 
     if(page == undefined) { page = 1; }
     if(size == undefined) { size = 5; }
@@ -165,23 +157,51 @@ async function postInbox(req, res){
     }
 }
 
-async function postInboxPost(post, authorId){
-    const inbox = await Inbox.findOne({authorId: authorId}, '_id posts');
+async function postInboxPost(post, recieverAuthorId){
+    const type = post.type;
+    const title = post.title;
+    const id = post.id;
+    const source = post.source;
+    const origin = post.origin;
+    const description = post.description;
+    const contentType = post.contentType;
+    const content = post.content;
+    const authorType = post.author.type;
+    const authorId = post.author.id;
+    const authorHost = post.author.host;
+    const authorDisplayName = post.author.displayName;
+    const authorUrl = post.author.url;
+    const authorGithub = post.author.github;
+    const authorProfileImage = post.author.profileImage;
+    const categories = post.categories;
+    const count = post.count;
+    const published = post.published;
+    const postTo = post.postTo // Need to discuss wherther other teams will follow this
+    //Used to mark if this is a private message or a follower post.
+    const visibility = post.visibility;
+    const unlisted = post.unlisted;
+
+    if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||
+        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || !count || 
+        !published || !visibility || !unlisted)
+    {
+        return [{}, 400];
+    }
+
+    const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
 
     inbox.posts.push(post);
-    inbox.save();
-}
+    await inbox.save();
 
-async function postInboxRequest(request, authorId){
-    const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
-
-    inbox.requests.push(request);
-    inbox.save();
+    return [post, 200]
 }
 
 async function postInboxLike(like, authorId){
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
+    if(!validateAuthorObject(author)){
+        return [{}, 400];
+    }
 
     author = {
         _id: author.id,
@@ -193,9 +213,9 @@ async function postInboxLike(like, authorId){
     };
 
     //Add a like to the authors post/comment
-    await addLike(like, author);
+    await addLike(like, authorId);
     await addLiked(author._id, like.object);
-
+    
     //TODO Unliking should also be added
 
     const inboxLike = {
@@ -207,15 +227,78 @@ async function postInboxLike(like, authorId){
     inbox.likes.push(inboxLike);
 
     inbox.save();
+
+    return [like, 200];
 }
 
-async function postInboxComment(comment, authorId){
-    const inbox = await Inbox.findOne({authorid: authorId}, '_id comments');
+async function postInboxComment(newComment, recieverAuthorId){
+    if(!newComment){
+        return [{}, 400];
+    }
+    let id = newComment.id;
+    let object = newComment.object;
+    if(!id && !object){
+        return [{}, 400];
+    }
+    const type = newComment.type;
+    const author = newComment.author;
+    if(!validateAuthorObject(author)){
+        return [{}, 500];
+    }
+    author._id = author.id
+    const commentContent = newComment.comment;
+    const contentType = newComment.contentType;
+    const published = new Date().toISOString();
+    if(!type || !commentContent || !contentType){
+        return [{}, 400];
+    }
 
-    //Add a comment to the authors post
+    let commentId;
+    let postId;
+    let authorId;
+    if(object){
+        object = object.split("/");
+        commentId = String(crypto.randomUUID()).replace(/-/g, "");
+        postId = object[object.length - 1]; 
+        authorId = object[object.length - 3];
+    }
+    else{
+        id = id.split("/");
+        commentId = id[id.length - 1];
+        postId = id[id.length - 3];
+        authorId = id[id.length - 5];
+    }
+
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+    const post = postHistory.posts.id(postId);
+    if(!post){ return [{}, 404]; }
+
+    const commentHistory = await CommentHistory.findOne({postId: postId});
+    if(!commentHistory){ return [{}, 500]; }
+    if(commentHistory.comments.id(commentId)){ return [{}, 400]; }
+
+    let comment = {
+        _id: commentId,
+        author: author,
+        comment: commentContent,
+        contentType: contentType,
+        published: published,
+    }
+
+    commentHistory.comments.push(comment);
+    await commentHistory.save();
+
+    comment._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId;
+    comment.object = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
+
+    const inbox = await Inbox.findOne({authorId: recieverAuthorId});
 
     inbox.comments.push(comment);
-    inbox.save();
+    await inbox.save();
+
+    delete comment.author._id;
+
+    return [comment, 200];
 }
 
 async function deleteInbox(token, authorId){
@@ -231,11 +314,9 @@ async function deleteInbox(token, authorId){
 }
 
 module.exports = {
-    createInbox,
     getInbox,
     deleteInbox,
     postInboxPost,
     postInboxLike,
-    postInboxComment,
-    postInboxRequest,
+    postInboxComment
 }

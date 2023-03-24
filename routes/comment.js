@@ -24,7 +24,7 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { PostHistory, PublicPost, Inbox } = require('../scheme/post.js');
-const { CommentHistory } = require('../scheme/interactions.js');
+const { CommentHistory, LikeHistory } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 const {Follower } = require('../scheme/relations.js');
 
@@ -35,7 +35,7 @@ const crypto = require('crypto');
 const { authLogin, checkExpiry } = require('./auth.js');
 
 
-async function getComments(authorId, postId, page, size) {
+async function getComments(postId, authorId, page, size) {
     let comments = undefined
     //TODO Avoid duplicated code by using a list of objects and modifying them before sending
     if(page > 1){
@@ -98,72 +98,157 @@ async function getComments(authorId, postId, page, size) {
             }
         ]);
     } else{
-        return [[], 400];
+        return [[], 404];
     }
 
-    return comments[0].comments_array;
+    if(!comments || !comments[0] || !comments[0].comments_array){
+        return [[], 404];
+    }
+
+    comments = comments[0].comments_array;
+    for(let i = 0; i < comments.length; i++){
+        comment = comments[i];
+        let author = comment.author;
+        author = {
+            type: "author",
+            id: author._id,
+            url: author.url,
+            host: author.host,
+            displayName: author.displayName,
+            github: author.github,
+            profileImage: author.profileImage
+        }
+        comments[i] = {
+            type: "comments",
+            author: author,
+            comment: comment.comment,
+            contentType: comment.contentType,
+            published: comment.published,
+            id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id,
+        }
+    }
+
+    return [comments, 200];
 }
 
-async function getComment() {
+async function getComment(authorId, postId, commentId, token) {
+    const postHistory = await PostHistory.findOne({authorId: authorId});
+    const commentHistory = await CommentHistory.findOne({postId: postId});
 
+    if(!postHistory || !commentHistory){
+        return [{}, 404];
+    }
+
+    //TODO check visibility
+
+    const comment = commentHistory.comments.id(commentId);
+
+    let sanitizedComment = {
+        type: "comment",
+        author: comment.author,
+        comment: comment.comment,
+        contentType: comment.contentType,
+        published: comment.published,
+        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id
+    }
+
+    return [sanitizedComment, 200];
 }
 
-async function createComment(token, authorId, postId, newComment, domain) {
-    if(!(await authLogin(token, newComment.author.id))){ return [{}, 401]; }
+async function createComment(token, authorId, postId, newComment) {
+    if(newComment == undefined){
+        return [{}, 400];
+    }
+    
+    let author = newComment.author;
+    if((typeof author) == "string"){
+        let authorObject = await Author.findOne({_id: author});
+        if(authorObject == undefined){
+            return [{}, 400];
+        }
 
-    //verify comment is valid
-    //find comment history for post
-    //push to comment history
+        author = {
+            type: "author",
+            id: process.env.DOMAIN_NAME + "authors/" + authorObject._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: authorObject.username,
+            url: process.env.DOMAIN_NAME + "authors/" + authorObject._id,
+            github: authorObject.github,
+            profileImage: authorObject.profileImage 
+        }
+    }
+    if((typeof author) != "object"){
+        return [{}, 400];
+    }
 
-    //if author is object verify it is real
 
-    //if author is string also verify it is real.
-    //After pull relavent details
+    let senderId = author.id.split('/');
+    senderId = senderId[senderId.length - 1];
+
+    if(process.env.DOMAIN_NAME = author.host){
+        if(! (await authLogin(token, senderId))) {return [{}, 401]}
+    }
 
     const type = newComment.type;
-    const author = newComment.author
-    const comment = newComment.comment
+    const comment = newComment.comment;
     const contentType = newComment.contentType;
-    let published = newComment.published;
-    let id = newComment.id;
+    if(type != "comment" || !comment || !contentType ){
+        return [{}, 400];
+    }
 
+    
+    
+    let published = newComment.published;
+    if(!published){
+        published = new Date().toISOString();
+    }
+    let id = newComment.id;
     if(!id){
-        //generate new id
         id = String(crypto.randomUUID()).replace(/-/g, "");
     }
 
-    if(!published){
-        //generate new date
-        published = new Date().toISOString();
-    }
-
     let comments = await CommentHistory.findOne({postId: postId}); 
-    
+    author._id = author.id;
     comments.comments.push({
+        _id: id,
+        author: author,
+        likeCount: 0,
+        comment: comment,
+        contentType: contentType,
+        published: published,
+    });
+    await comments.save();
+    
+    let like = new LikeHistory({
+        type: "comment",
+        Id: id,
+        likes: []
+    });
+
+    await like.save();
+
+    inboxComment = {
         _id: id,
         author: author,
         comment: comment,
         contentType: contentType,
-        published: published
-    })
+        published: published,
+        object: postId,
+    };
 
-    await comments.save();
-
-    //PUsh to comment history
-    //Add to inbox
-    const inbox = Inbox.findOne({authorId: authorId});
-    //TODO FIRST THING TO DO WHEN I GET BACK TO THIS
-    /*
+    const inbox = await Inbox.findOne({authorId: authorId});
     inbox.comments.push({
+        _id: id,
         author: author,
         comment: comment,
         contentType: contentType,
         published: published,
-        postId: postId,
-        commentId: id
-    })
-    */
-    return [newComment, 200]
+        object: postId,
+    });
+    await inbox.save();
+    delete author._id;
+
+    return [inboxComment, 200];
 }
 
 

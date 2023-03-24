@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 require('dotenv').config();
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect-3-yoshi-harderer"}).catch(err => console.log(err));
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 // Parser
 const bodyParser = require('body-parser');
@@ -43,7 +43,6 @@ const followers = require('./api/follower');
 const followings = require('./api/following');
 const profile = require('./api/profile');
 const friends = require('./api/friend');
-const requests = require('./api/request');
 const apiDocs = require('./api/swagger');
 const author = require('./api/author');
 const comment = require('./api/comment');
@@ -76,7 +75,6 @@ app.use("/authors/:authorId/followers", followers);
 app.use("/authors/:authorId/followings", followings);
 app.use("/profile/:username", profile);
 app.use("/authors/:authorId/friends", friends);
-app.use("/authors/:authorId/requests", requests);
 app.use("/api-docs", apiDocs);
 app.use("/userinfo", userinfo);
 app.use("/nodes", node);

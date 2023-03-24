@@ -20,27 +20,40 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInboxLike, deleteInbox, postInboxPost} = require('../routes/inbox')
+const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, postInboxRequest} = require('../routes/inbox')
+const { sendRequest, deleteRequest, getRequests, getRequest } = require('../routes/request');
+const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
 const express = require('express'); 
-const { ServerCredentials } = require('../scheme/server');
+const { IncomingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
 
 // Router
 const router = express.Router({mergeParams: true});
 
 router.get('/', async (req, res) => {
-	const authorId = req.params.authorId;
-	const size = req.query.size;
-	const page = req.query.page;
-	const [posts, status] = await getInbox(authorId, size, page); 
+	const [posts, status] = await getInbox(req.cookies.token, req.params.authorId, req.query.size, req.query.page); 
 
 	if(status != 200){
 		return res.sendStatus(status);
 	}
 
 	return res.json(posts);
+})
+
+router.get('/requests', async (req, res) => {
+	if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
+  
+	const authorId = req.params.authorId;
+	await getRequests(authorId, res);
+})
+
+router.delete('/requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	await deleteRequest(authorId, foreignId, res);
 })
 
 router.post('/', async (req, res) => {
@@ -54,7 +67,7 @@ router.post('/', async (req, res) => {
 		if(scheme === "Basic") {
 			const credential = Buffer.from(data, 'base64').toString('ascii');
 			const [serverName, password] = credential.split(":");
-			if( await ServerCredentials.findOne({cred: credential})) {
+			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
 				authorized = true;
 			}
 		}
@@ -62,8 +75,14 @@ router.post('/', async (req, res) => {
 
 	if(req.cookies.token && !authorized){
 		let authorId;
+		const token = req.cookies.token;
+		if(!token){
+			return res.sendStatus(401);
+		}
+
 		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
-			authorId = req.body.author.id;
+			authorId = req.body.author.id.split("/");
+			authorId = authorId[authorId.length - 1];
 		}
 		else if(req.body.type == "follow"){
 			authorId = req.body.actor.id;
@@ -72,8 +91,7 @@ router.post('/', async (req, res) => {
 			return res.sendStatus(400);
 		}
 
-		const token = req.cookies.token;
-		if(authLogin(token, authorId)){
+		if( await authLogin(token, authorId)){
 			authorized = true;
 		}
 	}
@@ -84,22 +102,75 @@ router.post('/', async (req, res) => {
 	}
 
 	const type = req.body.type;
-	
-	if(type == "post"){
+	let response, status;
+	if(type === "post"){
 		//For other servers to send their authors posts to us
-		await postInboxPost(req.body);
+		[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	if(type == "follow"){
+	else if(type === "follow"){
 		//For local/remote authors to server 
-		await postInboxFollow(req.body);
+		[response, status] = await postInboxFollow(req.body);
 	}
-	if(type == "like"){
-		await postInboxLike(req.body, req.params.authorId);
+	else if(type === "like"){
+		[response, status] = await postInboxLike(req.body, req.params.authorId);
 	}
-	if(type == "comment"){
-		await postInboxComment(req.body);
+	else if(type === "comment"){
+		[response, status] = await postInboxComment(req.body, req.params.authorId);
 	}
-	return res.sendStatus(200);
+	else{
+		res.sendStatus(400);
+	}
+
+	if(status != 200){
+		return res.sendStatus(status);
+	}
+
+	if(type === "post"){
+		//[response, status] = await postInboxPost(req.body, req.params.authorId);
+	}
+	else if(type === "follow"){
+		
+	}
+	else if(type === "comment"){
+		response = {
+			type: "comment",
+			author: response.author,
+			comment: response.comment,
+			contentType: response.contentType,
+			published: response.published,
+			id: response._id
+		}
+	}
+
+	return res.json(response);
+})
+
+router.put('/requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	const request = await sendRequest(authorId, foreignId, res);
+  
+	return res.json({
+	  "type": request.type,
+	  "summary": request.summary,
+	  "actor": request.actor,
+	  "object": request.object
+	})
+})
+
+router.get('/requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	const request = await getRequest(authorId, foreignId);
+  
+	return res.json({
+	  "type": request.type,
+	  "summary": request.summary,
+	  "actor": request.actor,
+	  "object": request.object
+	})
 })
 
 router.delete('/', async (req, res) => {

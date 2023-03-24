@@ -31,6 +31,7 @@ const commentScheme = new Schema({
     _id: {type: String, default: crypto.randomUUID},
     author: basicAuthorScheme,
     comment: String,
+    likeCount: Number,
     contentType: String,
     published: String,
 })
@@ -71,4 +72,5 @@ module.exports = {
     LikeHistory,
     CommentHistory,
     LikedHistory,
+    
 }

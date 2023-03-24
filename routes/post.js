@@ -41,9 +41,9 @@ async function createPostHistory(author_id){
         authorId: author_id,
         num_posts: 0,
         posts: []
-    })
+    });
 
-    await new_post_history.save()
+    await new_post_history.save();
 }
 
 async function getPost(postId, author){
@@ -66,7 +66,7 @@ async function getPost(postId, author){
     post = {
         "type": "post",
         "title" : post.title,
-        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/" + postId,
+        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
         "source": post.source,
         "origin": post.origin,
         "description": post.description,
@@ -162,10 +162,10 @@ async function createPost(token, authorId, postId, newPost) {
         await publicPost.save();
     }
 
-    //If unlisted don't send 
+    //TODO make this faster
+    //if not unlisted send to all followers 
     if(unlisted === "false"){
         const followers = await Follower.findOne({authorId: authorId}).clone();
-        let promiseList = [];
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;
             console.log(follower);
@@ -174,15 +174,8 @@ async function createPost(token, authorId, postId, newPost) {
             console.log(inbox);
 
             inbox.posts.push(post);
-            //promiseList.push(inbox.save());
             await inbox.save();
         }
-
-        /*
-        for(let i = 0; i < promiseList.length; i++){
-            await promiseList[i];
-        }
-        */
     }
     return [await getPost(authorId, postId), 200];
 }

@@ -29,6 +29,7 @@ const crypto = require('crypto');
 // Schemas
 const { Author } = require('../scheme/author.js');
 const { Request, Follower, Following } = require('../scheme/relations.js');
+const { Inbox } = require('../scheme/post.js');
 
 async function senderAdded(authorId, foreignId, req, res) {
     let success = true;
@@ -115,7 +116,10 @@ async function sendRequest(authorId, foreignId, res) {
         objectId: object._id,
         object: object.username
     });
-    request.save(async (err, request, next) => { if (err) { return 400; } });
+
+    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
+    inbox.requests.push(request);
+    inbox.save();
 
     return {
         type: type,
@@ -145,12 +149,15 @@ async function deleteRequest(authorId, foreignId, res) {
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
 
+    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
+
     if (!actor && !object) { return 500 }
 
     let summary = '';
-
-    const request = await Request.findOneAndDelete({senderId: actor._id, receiverId: object._id}); 
-    if (!request) { return 500 }
+    let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
+    const request = inbox.requests[idx]
+    inbox.requests.splice(idx, 1);
+    inbox.save();
     summary = actor.username + " wants to undo " + request.type + " request to " + object.username;  
 
     return res.json({
@@ -178,25 +185,17 @@ async function deleteRequest(authorId, foreignId, res) {
 }
 
 async function getRequests(authorId, res) {
-    let rqs = [];
-    await Request.find({objectId: authorId}, function(err, requests){
-        if (!requests) { 
-            rqs = []; 
-        } else {
-            rqs = requests;
-        }
-    }).clone()
+    const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
     return res.json({
         "type": 'requests',
-        items: rqs
+        items: inbox.requests
     })
 }
 
-async function getRequest(authorId, foreignId, res) {
-    await Request.findOne({actorId: authorId, objectId: foreignId}, function(err, request){
-        if (!request) { return res.sendStatus(404); }
-        return res.json(request)
-    }).clone()
+async function getRequest(authorId, foreignId) {
+    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
+    let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
+    return inbox.requests[idx];
 }
 
 module.exports={

@@ -20,11 +20,14 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getComments, createComment } = require('../routes/comment');
+const { getComments, createComment, getComment } = require('../routes/comment');
 const { apiFetchCommentLikes } = require('../routes/post');
+const { getAuthor } = require('../routes/author');
+const { getLikes } = require('../routes/likes');
 
 // Router Setup
 const express = require('express'); 
+const { PostHistory } = require('../scheme/post');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -40,7 +43,22 @@ router.get('/', async (req, res) => {
   if(size == undefined)
     size = 5;
 
-  const comments = await getComments(authorId, postId, page, size);
+  const postHistory = await PostHistory.findOne({authorId: authorId});
+
+  if(!postHistory){
+    return res.sendStatus(404);
+  }
+
+  let post = postHistory.posts.id(postId);
+  if(!post){
+    return res.sendStatus(404);
+  }
+
+  const [comments, commentStatus] = await getComments(postId, authorId, page, size);
+
+  if(commentStatus != 200 && commentStatus != 404){
+    return res.sendStatus(commentStatus);
+  }
 
   return res.json({
     "type": "comments",
@@ -52,10 +70,23 @@ router.get('/', async (req, res) => {
     })
 })
 
+router.get('/:commentId', async (req, res) => {
+  const [comment, status] = await getComment( req.params.authorId, req.params.postId, req.params.commentId);
+  if(status != 200){
+    return res.sendStatus(status);
+  }
+
+  return res.json(comment);
+})
+
 router.post('/', async (req, res) => {
   const postId = req.params.postId;
 
-  const [comment, status] = await createComment(req.cookies.token, postId, req.body, process.env.DOMAIN_NAME);
+  const [comment, status] = await createComment(req.cookies.token, req.params.authorId, postId, req.body, process.env.DOMAIN_NAME);
+
+  if(status != 200){
+    return res.sendStatus(status);
+  }
 
   return res.json({
     "type": "comment",
@@ -63,7 +94,7 @@ router.post('/', async (req, res) => {
     "comment": comment.comment,
     "contentType": comment.contentType,
     "published": comment.published,
-    "id": comment.id
+    "id": process.env.DOMAIN_NAME + "/authors/" + req.params.authorId + "/posts/" + req.params.postId + "/comments/" + comment._id
     }) 
 })
 
@@ -89,7 +120,7 @@ router.get('/:commentId/likes', async (req, res) => {
   if (page == undefined) { page = 1; }
   if(size == undefined) { size = 5; }
 
-  const likes = apiFetchCommentLikes(authorId, postId, commentId); 
+  const [likes, status] = await getLikes(authorId, postId, commentId, "comment"); 
 
   return res.json({
     "type": "likes",

@@ -50,8 +50,6 @@ function Post({viewerId, post}) {
     const navigate = useNavigate();
 
     useEffect(() => { 
-        
-        console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
             axios
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
@@ -62,8 +60,10 @@ function Post({viewerId, post}) {
             })
         }
         getImage();
+    }, [authorId, postId, item])
 
-        /**
+    useEffect(() => {
+                /**
          * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
          * Request: POST
          * Returns: N/A
@@ -75,7 +75,7 @@ function Post({viewerId, post}) {
             .catch(err => { setLike(false) });
         }
         hasLiked();
-    }, [authorId, postId, viewerId, item])
+    }, [authorId, postId])
 
     const toggleComments = () => { setShowComment(!showComment); }
 

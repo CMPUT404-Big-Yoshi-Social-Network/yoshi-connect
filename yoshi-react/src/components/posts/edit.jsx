@@ -48,7 +48,7 @@ function EditPost({viewerId, post}) {
             })
         }
         getImage();
-    }, [post])
+    }, [post, item])
 
     /**
      * Description: Sends a POST request to get the post content and handles the content update of that post 

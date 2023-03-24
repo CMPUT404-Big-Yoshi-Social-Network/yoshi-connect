@@ -75,7 +75,7 @@ function Post({viewerId, post}) {
             .catch(err => { setLike(false) });
         }
         hasLiked();
-    }, [authorId, postId, viewerId])
+    }, [authorId, postId, viewerId, item])
 
     const toggleComments = () => { setShowComment(!showComment); }
 

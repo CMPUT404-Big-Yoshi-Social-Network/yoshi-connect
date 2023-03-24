@@ -22,7 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import FileBase from 'react-file-base64';
+import FileBase64 from 'react-file-base64';
 
 // User Interface
 import { Nav } from 'react-bootstrap';
@@ -199,7 +199,7 @@ function CreatePost() {
                         </div>
                         
                         <div className={"postMenuInput"}>
-                        <FileBase
+                        <FileBase64
                                 className={"postMenuImageInput"} name={"image"} id={"image"}
                                 type="file"
                                 multiple={false}

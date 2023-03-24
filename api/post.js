@@ -147,10 +147,16 @@ router.post('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  delete:
- *    description: <INSERT>
+ *    description: Gets the posts associated with postId for the Author associated with authorId to delete the post
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      500:
+ *        description: Internal Server Error -- Unable to fetch post history from database
+ *      404:
+ *        description: Not Found -- Post was not found
+ *      200:
+ *        description: Ok -- Returns JSON of the deleted post object
  */
 router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -171,10 +177,16 @@ router.delete('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  put:
- *    description: <INSERT>
+ *    description: Gets the posts associated with postId for the Author associated with authorId to create a post
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      400:
+ *        description: Bad Request -- The fields 'title', 'desc', 'content', or 'visibility' were not given
+ *      400:
+ *        description: Bad Request -- Post ID is already in use
+ *      200:
+ *        description: Ok -- Returns JSON the newly created post object
  */
 router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;

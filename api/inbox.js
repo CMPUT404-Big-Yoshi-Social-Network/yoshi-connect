@@ -49,7 +49,7 @@ router.get('/requests', async (req, res) => {
 	await getRequests(authorId, res);
 })
 
-router.delete('requests/:foreignAuthorId', async (req, res) => {
+router.delete('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
   
@@ -145,7 +145,7 @@ router.post('/', async (req, res) => {
 	return res.json(response);
 })
 
-router.put('requests/:foreignAuthorId', async (req, res) => {
+router.put('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
   
@@ -159,7 +159,7 @@ router.put('requests/:foreignAuthorId', async (req, res) => {
 	})
 })
 
-router.get('requests/:foreignAuthorId', async (req, res) => {
+router.get('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
   

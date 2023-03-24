@@ -36,29 +36,32 @@ async function senderAdded(authorId, foreignId, req, res) {
 
     const actor = await Author.findOne({_id: authorId});
     const object = await Author.findOne({_id: foreignId});
+    let uuidFollow = String(crypto.randomUUID()).replace(/-/g, "");
+    let uuidF = String(crypto.randomUUID()).replace(/-/g, "");
 
     await Following.findOne({authorId: authorId}, async function(err, following){
         if (following) {
-            following.followings.push({authorId: foreignId, username: object.username});
+            following.followings.push({_id: uuidFollow, authorId: foreignId, username: object.username});
             await following.save();
         } else {
             let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
-            var following = new Following({
+            var following = {
                 _id: uuidFollowing,
                 username: actor.username,
                 authorId: authorId,
                 followings: [{
+                    _id: uuidFollow,
                     username: object.username,
                     authorId: foreignId
                 }]
-            });
+            };
             following.save(async (err, following, next) => { if (err) { success = false; } })
         }
     }).clone()
 
     await Follower.findOne({authorId: foreignId}, async function(err, follower){
         if (follower) {
-            follower.followers.push({username: actor.username, authorId: authorId});
+            follower.followers.push({_id: uuidF, username: actor.username, authorId: authorId});
             await follower.save();
         } else {
             let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
@@ -67,6 +70,7 @@ async function senderAdded(authorId, foreignId, req, res) {
                 username: object.username,
                 authorId: foreignId,
                 followers: [{
+                    _id: uuidF,
                     username: actor.username,
                     authorId: authorId
                 }]

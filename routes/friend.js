@@ -25,7 +25,7 @@ mongoose.set('strictQuery', true);
 
 // Schemas
 const { Follower, Following, Request } = require('../scheme/relations.js');
-const { PostHistory } = require('../scheme/post.js');
+const { PostHistory, Inbox } = require('../scheme/post.js');
 
 // Additional Functions
 const { senderAdded } = require('./request.js');
@@ -98,10 +98,9 @@ async function getFriends(id){
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
-    if(!(await authLogin(token, authorId))) return 401;
-
-    const request = await Request.findOne({actorId: authorId, objectId: foreignId});
-    if (!request) { return 401; }
+    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
+    let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
+    if (idx <= -1) { return 404; } 
 
     await senderAdded(authorId, foreignId, req, res);
 }

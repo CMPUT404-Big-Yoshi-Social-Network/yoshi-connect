@@ -108,11 +108,8 @@ router.put('/:foreignAuthorId', async (req, res) => {
 
   const follower = await addFollower(req.cookies.token, authorId, foreignId, req.body, req, res);
 
-  if (follower == 401) { 
-    return res.sendStatus(401); 
-  }
-  else if (follower == 400) {
-    return res.sendStatus(400);
+  if (follower == 400 || follower == 404 || follower == 401) {
+    return res.sendStatus(follower);
   }
 })
 

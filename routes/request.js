@@ -192,10 +192,10 @@ async function getRequests(authorId, res) {
     })
 }
 
-async function getRequest(authorId, foreignId, res) {
+async function getRequest(authorId, foreignId) {
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
-    return res.json(inbox.requests[idx]);
+    return inbox.requests[idx];
 }
 
 module.exports={

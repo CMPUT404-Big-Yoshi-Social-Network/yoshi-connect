@@ -163,7 +163,7 @@ router.get('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
   
-	const request = await getRequest(authorId, foreignId, res);
+	const request = await getRequest(authorId, foreignId);
   
 	return res.json({
 	  "type": request.type,

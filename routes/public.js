@@ -165,22 +165,18 @@ async function fetchPublicPosts(req, res) {
     
     // TODO: WORKING ON THIS WIP
     let fposts = [];
-
-    for (let i = 0; i < outgoings.length; i++) {
+    /*
+    for (let i = 0; i < 1; i++) {
         var config = {
             host: outgoings[i].url,
-            url: outgoings[i].url + '/posts',
+            url: outgoings[i].url + "/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts",
             method: 'GET',
             headers: {
                 'Authorization': outgoings[i].auth,
                 'Content-Type': 'application/json'
-            },
-            params: {
-                page: req.query.page,
-                size: req.query.size
             }
         };
-    
+        console.log(config)
         await axios.request(config)
         .then( res => {
             let items = res.data.items
@@ -190,6 +186,13 @@ async function fetchPublicPosts(req, res) {
             console.log(error);
         })
     }
+    */
+    let response = await axios.get('http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts', {
+        headers: {
+            'Authorization': 'Basic eW9zaGk6eW9zaGkxMjM=',
+            'Content-Type': 'application/json'
+        }
+    })
 
     let allPosts = null;
     if (publicPosts[0] != undefined && posts != undefined) {
@@ -204,6 +207,11 @@ async function fetchPublicPosts(req, res) {
 
     // Remove duplicates (https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects)
     allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
+
+    /*WIP*/
+    for(let i = 0; i < response.data.items.length; i++){
+        allPosts.push(response.data.items[i]);
+    }
 
     if (allPosts && isPublicExists){
         return res.json({

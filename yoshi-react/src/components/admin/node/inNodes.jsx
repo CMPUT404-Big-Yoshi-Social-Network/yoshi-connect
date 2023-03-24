@@ -94,14 +94,14 @@ function InNodes() {
         })
         .catch(err => {
             if (err.response.status === 404) {
-                console.log('No more.')
+                setInNodes([]);
             } else if (err.response.status === 401) {
-                console.log('Unauthorized.')
+                navigate('/unauthorized');
             } else if (err.response.status === 500) {
-               console.log('500 PAGE')
+                navigate('500 PAGE')
             }
         });
-    }, [inNodes, inNext]);
+    }, [inNodes, inNext, navigate]);
 
     const getMore = () => {
         if (!inNext) {

@@ -38,7 +38,6 @@ function OutNodes() {
     const [outNext, setOutNext] = useState(false);
 
     useEffect(() => {
-        /** Outgoing */
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -65,11 +64,11 @@ function OutNodes() {
         })
         .catch(err => {
             if (err.response.status === 404) {
-                console.log('Nothing.')
+                setOutNodes([]);
             } else if (err.response.status === 401) {
-                console.log('Unauthorized.')
+                navigate('/unauthorized');
             } else if (err.response.status === 500) {
-               console.log('500 PAGE')
+                navigate('500 PAGE')
             }
         });
 
@@ -96,14 +95,14 @@ function OutNodes() {
         })
         .catch(err => {
             if (err.response.status === 404) {
-                console.log('No more.')
+                setOutNodes([]);
             } else if (err.response.status === 401) {
-                console.log('Unauthorized.')
+                navigate('/unauthorized');
             } else if (err.response.status === 500) {
-               console.log('500 PAGE')
+                navigate('500 PAGE')
             }
         });
-    }, [outNodes, outNext]);
+    }, [outNodes, outNext, navigate]);
 
     const getMore = () => {
         if (!outNext) {

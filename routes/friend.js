@@ -98,16 +98,9 @@ async function getFriends(id){
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
-<<<<<<< HEAD
-    if(!authLogin(token, authorId)) return 401;
-
-    const request = await Request.findOne({actorId: authorId, objectId: foreignId});
-    if (!request) { return 404; }
-=======
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
     if (idx <= -1) { return 404; } 
->>>>>>> 96be32c27cd2729ebd5606f800d644c17d7d2b87
 
     await senderAdded(authorId, foreignId, req, res);
 }

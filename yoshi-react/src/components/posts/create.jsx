@@ -112,7 +112,9 @@ function CreatePost() {
         
         await axios.post('/authors/' + data.authorId + '/posts/', body)
         .then((response) => { 
-            link.postId = response.data[0].id.split('/')[6];
+            if (response.data[1] === 200) {
+                link.postId = response.data[0].id.split('/')[6];
+            }
         })
         .catch((e) =>{ console.log(e); })
 

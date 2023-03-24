@@ -221,8 +221,6 @@ async function updatePost(token, authorId, postId, newPost) {
 
     let post = postHistory.posts.id(postId);
 
-    if (!post) { return [{}, 404]; }
-
     post.title = title;
     post.description = desc;
     post.contentType = contentType;
@@ -232,7 +230,6 @@ async function updatePost(token, authorId, postId, newPost) {
     post.categories = categories;
     await postHistory.save()
 
-    //TODO Remove possiblity of visibility being "public"?
     if(post.visibility == "PUBLIC" || post.visibility == "Public"){
         let publicPosts = await PublicPost.findOne().clone();
 

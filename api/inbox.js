@@ -21,6 +21,8 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, postInboxRequest} = require('../routes/inbox')
+const { sendRequest, deleteRequest, getRequests, getRequest } = require('../routes/request');
+const { checkExpiry } = require('../routes/auth');
 
 // Router Setup
 const express = require('express'); 
@@ -38,6 +40,20 @@ router.get('/', async (req, res) => {
 	}
 
 	return res.json(posts);
+})
+
+router.get('/requests', async (req, res) => {
+	if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
+  
+	const authorId = req.params.authorId;
+	await getRequests(authorId, res);
+})
+
+router.delete('requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	await deleteRequest(authorId, foreignId, res);
 })
 
 router.post('/', async (req, res) => {
@@ -127,6 +143,34 @@ router.post('/', async (req, res) => {
 	}
 
 	return res.json(response);
+})
+
+router.put('requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	const request = await sendRequest(authorId, foreignId, res);
+  
+	return res.json({
+	  "type": request.type,
+	  "summary": request.summary,
+	  "actor": request.actor,
+	  "object": request.object
+	})
+})
+
+router.get('requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	const request = await getRequest(authorId, foreignId, res);
+  
+	return res.json({
+	  "type": request.type,
+	  "summary": request.summary,
+	  "actor": request.actor,
+	  "object": request.object
+	})
 })
 
 router.delete('/', async (req, res) => {

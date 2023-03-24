@@ -29,6 +29,7 @@ const crypto = require('crypto');
 // Schemas
 const { Author } = require('../scheme/author.js');
 const { Request, Follower, Following } = require('../scheme/relations.js');
+const { Inbox } = require('../scheme/post.js');
 
 async function senderAdded(authorId, foreignId, req, res) {
     let success = true;
@@ -115,7 +116,10 @@ async function sendRequest(authorId, foreignId, res) {
         objectId: object._id,
         object: object.username
     });
-    request.save(async (err, request, next) => { if (err) { return 400; } });
+
+    const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
+    inbox.requests.push(request);
+    inbox.save();
 
     return {
         type: type,

@@ -18,8 +18,6 @@ const { validateAuthorObject } = require('./author.js');
 // Additional Functions
 const { authLogin } = require('./auth.js');
 
-
-
 async function getInbox(token, authorId, page, size){
     if( ! (await authLogin(token, authorId))){
         return [{}, 401];
@@ -196,13 +194,6 @@ async function postInboxPost(post, recieverAuthorId){
     await inbox.save();
 
     return [post, 200]
-}
-
-async function postInboxRequest(request, authorId){
-    const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
-
-    inbox.requests.push(request);
-    inbox.save();
 }
 
 async function postInboxLike(like, authorId){

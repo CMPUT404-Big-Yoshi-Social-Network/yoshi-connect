@@ -120,7 +120,7 @@ function Profile() {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }

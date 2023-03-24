@@ -95,11 +95,12 @@ router.post('/', async (req, res) => {
 		}
 	}
 
+	/*
 	if(!authorized){
 		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
 		return res.sendStatus(401);
 	}
-
+	*/
 	const type = req.body.type;
 	let response, status;
 	if(type === "post"){

@@ -22,7 +22,7 @@ Foundation; All Rights Reserved
 // Functionality 
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
-import FileBase from 'react-file-base64';
+import FileBase64 from 'react-file-base64';
 
 // Styling
 import './create.css';
@@ -175,7 +175,7 @@ function EditPost({viewerId, post}) {
                 </select>
                 <br/>
                 <div className={"postMenuInput"}>
-                        <FileBase
+                        <FileBase64
                                 className={"postMenuImageInput"} name={"image"} id={"image"}
                                 type="image"
                                 multiple={false}

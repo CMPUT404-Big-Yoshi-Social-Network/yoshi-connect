@@ -24,12 +24,35 @@ const { getFollowers, addFollower, deleteFollower } = require('../routes/friend'
 const { Author} = require('../scheme/author');
 const { checkExpiry } = require('../routes/auth');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors/:authorId/followers:
+ *  get:
+ *    description: Fetches the followers for a specific Author using the authorId params
+ *    tags:
+ *      - follower
+ *    responses:
+ *      404:
+ *        description: Not Found -- could not find any followers for the specific Author
+ *      200:
+ *        description: OK -- returns followers as sanitized object with type, id, host, displayname, url, github, profileImage, email, about, pronouns
+ *      401: 
+ *        description: Unauthorized -- Author does not have associated Login token or Login token has expired 
+ */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
   
@@ -68,6 +91,17 @@ router.get('/', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/followers/:foreignAuthorId:
+ *  get:
+ *    description: Fetches a specific Author using foreignAuthorId params associated by authorId params 
+ *    tags:
+ *      - follower
+ *    responses:
+ *      404:
+ *        description: Not Found -- could not find any followers for Author associated with authorId or could not find the foreign Author following the Author associated with authorId
+ */
 router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
@@ -101,6 +135,21 @@ router.get('/:foreignAuthorId', async (req, res) => {
   return res.sendStatus(404);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/followers/:foreignAuthorId:
+ *  put:
+ *    description: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
+ *    tags:
+ *      - follower
+ *    responses:
+ *      401:
+ *        description: Unauthorized -- no associated cookies, Login token had expired, authorId was not authenticated 
+ *      404: 
+ *        description: Bad Request -- unable to find a request object from the foreignAuthorId to the authorId
+ *      200: 
+ *        description: OK -- successfully added follower to the follower document for Author associated with authorId
+ */
 router.put('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
   const authorId = req.params.authorId;
@@ -113,6 +162,23 @@ router.put('/:foreignAuthorId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/followers/:foreignAuthorId:
+ *  delete:
+ *    description: deleting follower associated with foreignAuthorId from Author followers list associated authorId 
+ *    tags:
+ *      - follower
+ *    body: 
+ *      - type: String
+ *    responses:
+ *      401:
+ *        description: Unauthorized -- no associated cookies or Login token has expired 
+ *      400: 
+ *        description: Bad Request -- no type specified or req.body.type != 'follower' 
+ *      204: 
+ *        description: No Content -- follower was successfully deleted from Author follower list 
+ */
 router.delete('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
   if (req.body.type == undefined || req.body.type != "follower") { return res.sendStatus(400) }

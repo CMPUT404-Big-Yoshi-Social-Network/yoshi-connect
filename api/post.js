@@ -23,8 +23,15 @@ Foundation; All Rights Reserved
 const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, getImage, editImage } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 const { fetchFriendPosts } = require('../routes/friend');
-
 const { getAuthor } = require('../routes/author.js');
+
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
@@ -33,14 +40,73 @@ const { getLikes } = require('../routes/likes');
 // Router
 const router = express.Router({mergeParams: true});
 
-router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
-
+/**
+ * @openapi
+ * /authors/:authorId/posts/public:
+ *  get:
+ *    summary: Gets the posts associated with authorId 
+ *    tags:
+ *      - post 
+ *    responses:
+ *      500:
+ *        description: Internal Server Error -- Unable to save public post in database
+ *      200:
+ *        description: OK -- Returns JSON with type and items (all posts)
+ */
 router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/friends-posts:
+ *  get:
+ *    summary: Gets the friend's posts associated with authorId
+ *    tags:
+ *      - following 
+ *    responses:
+ *      200:
+ *        description: Returns either an empty array is the post is undefined, otherwise the friend (authorId) 
+ */
 router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, res); })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/personal:
+ *  get:
+ *    summary: Gets the posts associated with authorId for the Author themselves
+ *    tags:
+ *      - following 
+ *    responses:
+ *      200:
+ *        description: Returns JSON with the type and the post object
+ */
 router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/other/:other:
+ *  get:
+ *    summary: Gets the posts associated with other for the Author associated with authorId
+ *    tags:
+ *      - post 
+ *    responses:
+ *      200:
+ *        description: Returns JSON with either an empty array if the post is undefined, otherwise the post object
+ */
+router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
+
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId:
+ *  get:
+ *    summary: Gets the posts associated with postId for the Author associated with authorId
+ *    tags:
+ *      - post 
+ *    responses:
+ *      404:
+ *        description: Not Found -- Author ID was not found or Post associated with Author was not found
+ *      200:
+ *        description: OK -- Returns Authour's post 
+ */
 router.get('/:postId', async (req, res) => {
   if (req.params.authorId == undefined) { return res.sendStatus(404); }
 
@@ -60,6 +126,23 @@ router.get('/:postId', async (req, res) => {
   return res.json(post);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId:
+ *  post:
+ *    summary: Sends the posts associated with postId for the Author associated with authorId to update the post
+ *    tags:
+ *      - post 
+ *    responses:
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      500:
+ *        description: Internal Server Error -- Unable to fetch post history from database
+ *      404:
+ *        description: Not Found -- Post was not found
+ *      200:
+ *        description: Ok -- Returns a JSON of the updated post object
+ */
 router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -75,6 +158,23 @@ router.post('/:postId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId:
+ *  delete:
+ *    summary: Deletes the posts associated with postId for the Author associated with authorId to delete the post
+ *    tags:
+ *      - post 
+ *    responses:
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      500:
+ *        description: Internal Server Error -- Unable to fetch post history from database
+ *      404:
+ *        description: Not Found -- Post was not found
+ *      200:
+ *        description: Ok -- Returns JSON of the deleted post object
+ */
 router.delete('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -90,6 +190,21 @@ router.delete('/:postId', async (req, res) => {
   } 
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId:
+ *  put:
+ *    summary: Puts the posts associated with postId for the Author associated with authorId to create a post
+ *    tags:
+ *      - post 
+ *    responses:
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      400:
+ *        description: Bad Request -- The fields 'title', 'desc', 'content', or 'visibility' were not given or the post already exists
+ *      200:
+ *        description: Ok -- Returns JSON the newly created post object
+ */
 router.put('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
@@ -105,6 +220,23 @@ router.put('/:postId', async (req, res) => {
   }
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts:
+ *  get:
+ *    summary: Gets the posts associated with authorId
+ *    tags:
+ *      - post 
+ *    responses:
+ *      500:
+ *        description: Internal Server Error -- Unable to fetch Author from database
+ *      404:
+ *        description: Not Found -- Author was not found
+ *      400:
+ *        description: Bad Request -- Post history details did not match 
+ *      200:
+ *        description: OK -- Returns JSON with type and post objects from the author
+ */
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   
@@ -125,6 +257,21 @@ router.get('/', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts:
+ *  post:
+ *    summary: Sends the posts associated with authorId
+ *    tags:
+ *      - post 
+ *    responses:
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      400:
+ *        description: Bad Request -- The fields 'title', 'desc', 'content', or 'visibility' were not given or Post ID is already in use
+ *      200:
+ *        description: Ok -- Returns JSON the newly created post object
+ */
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;
 
@@ -195,4 +342,5 @@ router.get("/:postId/image", async (req, res) => {
     status: status
   })
 })
+
 module.exports = router;

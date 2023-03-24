@@ -320,7 +320,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
+                    'posts.visibility': {$in : ["Public"]}
                 }
             },
             {
@@ -362,7 +362,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
+                    'posts.visibility': {$in : ["Public"]}
                 }
             },
             {

@@ -30,9 +30,11 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 
+
 // App Setup
 const express = require('express');
 const app = express();
+var cors = require('cors');
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 
@@ -61,6 +63,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors());
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Routing

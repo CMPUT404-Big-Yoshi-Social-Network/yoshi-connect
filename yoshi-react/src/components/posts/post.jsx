@@ -36,6 +36,7 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post}) {
+    console.log(post)
     const postId = post._id;
     const authorId = post.authorId;
 

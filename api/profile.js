@@ -23,12 +23,33 @@ Foundation; All Rights Reserved
 const { checkExpiry } = require('../routes/auth');
 const { getProfile } = require('../routes/author');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /profile/:username:
+ *  get:
+ *    description: Checks for authenticated token to get the author profile
+ *    tags:
+ *      - profile
+ *    responses:
+ *     401:
+ *        description: Unauthorized -- Token for profile was not authenticated
+ *     404:
+ *        description: Not Found -- Login token expired or author was not found
+ */
 router.get('/', async (req,res) => {
     if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
     await getProfile(req, res);

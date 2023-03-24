@@ -23,6 +23,14 @@ Foundation; All Rights Reserved
 const { getFriends, isFriend } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 
@@ -32,6 +40,19 @@ const { Author } = require('../scheme/author');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors/:authorId/friends:
+ *  get:
+ *    description: Fetches friends list associated with authorId 
+ *    tags:
+ *      - friend
+ *    responses:
+ *      404:
+ *        description: Not Found -- no friends list associated with authorId 
+ *      200: 
+ *        description: OK -- fetches and sanitizes friends list successfully 
+ */
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
   const friends = await getFriends(authorId);
@@ -68,6 +89,19 @@ router.get('/', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/friends/:foreignId:
+ *  post:
+ *    summary: Checks if the Author associated with foreignId is true friends with Author associated with authorId 
+ *    tags:
+ *      - friend
+ *    responses:
+ *      401:
+ *        description: Unauthorized -- no associated cookies or Login token expired 
+ *      200: 
+ *        description: OK -- returns JSON of sanitized "relation" object which as an associated status stating their relation, "Friends", "Strangers", "Follows
+ */
 router.post('/:foreignId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
 
@@ -75,13 +109,6 @@ router.post('/:foreignId', async (req, res) => {
   const foreignId = req.params.foreignId;
 
   await isFriend(authorId, foreignId, res);
-})
-
-router.get('/:foreignId', async (req, res) => {
-  const authorId = req.params.authorId;
-  const foreignId = req.params.foreignId;
-
-  isFriend(authorId, foreignId);
 })
 
 module.exports = router;

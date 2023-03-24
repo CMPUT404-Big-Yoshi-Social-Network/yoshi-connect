@@ -33,7 +33,21 @@ const options = {
     },
     apis: [
         './server.js',
-        './openAPI/components.js'
+        './openAPI/components.js',
+        './api/admin.js',
+        './api/author.js',
+        './api/comment.js',
+        './api/follower.js',
+        './api/following.js',
+        './api/friend.js',
+        './api/inbox.js',
+        './api/login.js',
+        './api/post.js',
+        './api/profile.js',
+        './api/request.js',
+        './api/settings.js',
+        './api/signup.js',
+        './api/userinfo.js',
     ],
 };
 

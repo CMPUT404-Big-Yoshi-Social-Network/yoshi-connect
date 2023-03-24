@@ -43,6 +43,8 @@ const router = express.Router({mergeParams: true});
  * /authors/:authorId/followers:
  *  get:
  *    description: Fetches the followers for a specific Author using the authorId params
+ *    tags:
+ *      - follower
  *    responses:
  *      404:
  *        description: Not Found -- could not find any followers for the specific Author
@@ -94,6 +96,8 @@ router.get('/', async (req, res) => {
  * /authors/:authorId/followers/:foreignAuthorId:
  *  get:
  *    description: Fetches a specific Author using foreignAuthorId params associated by authorId params 
+ *    tags:
+ *      - follower
  *    responses:
  *      404:
  *        description: Not Found -- could not find any followers for Author associated with authorId or could not find the foreign Author following the Author associated with authorId
@@ -136,6 +140,8 @@ router.get('/:foreignAuthorId', async (req, res) => {
  * /authors/:authorId/followers/:foreignAuthorId:
  *  put:
  *    description: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
+ *    tags:
+ *      - follower
  *    responses:
  *      401:
  *        description: Unauthorized -- no associated cookies, Login token had expired, authorId was not authenticated 
@@ -164,6 +170,8 @@ router.put('/:foreignAuthorId', async (req, res) => {
  * /authors/:authorId/followers/:foreignAuthorId:
  *  delete:
  *    description: deleting follower associated with foreignAuthorId from Author followers list associated authorId 
+ *    tags:
+ *      - follower
  *    body: 
  *      - type: String
  *    responses:

@@ -45,6 +45,8 @@ const router = express.Router({mergeParams: true});
  * /authors/:authorId/friends:
  *  get:
  *    description: Fetches friends list associated with authorId 
+ *    tags:
+ *      - friend
  *    responses:
  *      404:
  *        description: Not Found -- no friends list associated with authorId 
@@ -92,6 +94,8 @@ router.get('/', async (req, res) => {
  * /authors/:authorId/friends/:foreignId:
  *  post:
  *    summary: Checks if the Author associated with foreignId is true friends with Author associated with authorId 
+ *    tags:
+ *      - friend
  *    responses:
  *      401:
  *        description: Unauthorized -- no associated cookies or Login token expired 

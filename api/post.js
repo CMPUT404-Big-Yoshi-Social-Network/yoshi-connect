@@ -43,7 +43,9 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /authors/:authorId/posts/public:
  *  get:
- *    description: Gets the posts associated with authorId 
+ *    summary: Gets the posts associated with authorId 
+ *    tags:
+ *      - post 
  *    responses:
  *      500:
  *        description: Internal Server Error -- Unable to save public post in database
@@ -56,7 +58,9 @@ router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
  * @openapi
  * /authors/:authorId/posts/friends-posts:
  *  get:
- *    description: Gets the friend's posts associated with authorId
+ *    summary: Gets the friend's posts associated with authorId
+ *    tags:
+ *      - following 
  *    responses:
  *      200:
  *        description: Returns either an empty array is the post is undefined, otherwise the friend (authorId) 
@@ -67,7 +71,9 @@ router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, r
  * @openapi
  * /authors/:authorId/posts/personal:
  *  get:
- *    description: Gets the posts associated with authorId for the Author themselves
+ *    summary: Gets the posts associated with authorId for the Author themselves
+ *    tags:
+ *      - following 
  *    responses:
  *      200:
  *        description: Returns JSON with the type and the post object
@@ -78,7 +84,9 @@ router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
  * @openapi
  * /authors/:authorId/posts/other/:other:
  *  get:
- *    description: Gets the posts associated with other for the Author associated with authorId
+ *    summary: Gets the posts associated with other for the Author associated with authorId
+ *    tags:
+ *      - post 
  *    responses:
  *      200:
  *        description: Returns JSON with either an empty array if the post is undefined, otherwise the post object
@@ -89,7 +97,9 @@ router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  get:
- *    description: Gets the posts associated with postId for the Author associated with authorId
+ *    summary: Gets the posts associated with postId for the Author associated with authorId
+ *    tags:
+ *      - post 
  *    responses:
  *      404:
  *        description: Not Found -- Author ID was not found or Post associated with Author was not found
@@ -113,7 +123,9 @@ router.get('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  post:
- *    description: Sends the posts associated with postId for the Author associated with authorId to update the post
+ *    summary: Sends the posts associated with postId for the Author associated with authorId to update the post
+ *    tags:
+ *      - post 
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -143,7 +155,9 @@ router.post('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  delete:
- *    description: Deletes the posts associated with postId for the Author associated with authorId to delete the post
+ *    summary: Deletes the posts associated with postId for the Author associated with authorId to delete the post
+ *    tags:
+ *      - post 
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -173,7 +187,9 @@ router.delete('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  put:
- *    description: Puts the posts associated with postId for the Author associated with authorId to create a post
+ *    summary: Puts the posts associated with postId for the Author associated with authorId to create a post
+ *    tags:
+ *      - post 
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -201,7 +217,9 @@ router.put('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts:
  *  get:
- *    description: Gets the posts associated with authorId
+ *    summary: Gets the posts associated with authorId
+ *    tags:
+ *      - post 
  *    responses:
  *      500:
  *        description: Internal Server Error -- Unable to fetch Author from database
@@ -236,7 +254,9 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts:
  *  post:
-*    description: Sends the posts associated with authorId
+ *    summary: Sends the posts associated with authorId
+ *    tags:
+ *      - post 
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated

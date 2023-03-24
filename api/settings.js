@@ -21,6 +21,8 @@ const router = express.Router({mergeParams: true});
  * /settings/logout:
  *  post:
  *    description: Removes login document (associated token) and logs out current Author 
+ *    tags:
+ *      - settings
  *    responses:
  *      500:
  *        description: Internal Server Error -- Unable to delete login token from database
@@ -36,6 +38,8 @@ router.post('/logout', async (req, res) => { removeLogin(req, res); })
  * /settings:
  *  post:
  *    description: Modifies an current Author's attributes 
+ *    tags:
+ *      - settings
  *    responses:
  *      401:
  *        description: Unauthourized -- Author's token is not authenticated 

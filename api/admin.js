@@ -61,6 +61,8 @@ router.post('/', async (req, res) => { await authAuthor(req, res); })
  * /admin/dashboard:
  *  get:
  *    summary: Verifies Author has attribute admin=true then redirects the Author to the Admin Dashboard if verified
+ *    tags:
+ *      - admin
  *    responses:
  *      403:
  *        description: Forbidden -- if Admin is not authenticated, access is not granted
@@ -80,6 +82,8 @@ router.get('/dashboard', async (req, res) => {
  * /admin/dashboard:
  *  post:
  *    summary: Removes the Login document (associated token) to log out the Admin 
+ *    tags:
+ *      - admin
  *    responses:
  *      500:
  *        description: Internal Server Error -- deleting Login document was unsuccessful 
@@ -95,6 +99,8 @@ router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
  * /admin/dashboard:
  *  delete:
  *    summary: Deletes an Author from YoshiConnect database 
+ *    tags:
+ *      - admin
  *    responses:
  *      404:
  *        description: Not Found -- Author was not found
@@ -110,6 +116,8 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  * /admin/dashboard:
  *  put:
  *    summary: Adds an Author to YoshiConnect database or updates an Author's attributes
+ *    tags:
+ *      - admin
  *    responses:
  *      400:
  *        description: Bad Request -- Author already exists, username and/or password taken, Admin did not fill all cells (username, password, email)

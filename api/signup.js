@@ -41,6 +41,8 @@ const router = express.Router({mergeParams: true});
  * /signup:
  *  post:
  *    description: Registers an Author in YoshiConnect by sending the document to be enabled or disabled by an Admin Author
+ *    tags:
+ *      - signup
  *    responses:
  *      400:
  *        description: Bad Request -- Username is already taken, no 'username', 'email', or 'password' was given, or invalid email

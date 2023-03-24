@@ -44,7 +44,9 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /authors/:authorId/followings:
  *  get:
- *    description: Fetches the followings list for Author associated with authorId 
+ *    description: Fetches the followings list for Author associated with authorId
+ *    tags:
+ *      - following 
  *    responses:
  *      401:
  *        description: Unauthorized -- no associated cookies or Login token expired 
@@ -95,7 +97,9 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId/followings/:foreignAuthorId:
  *  get:
- *    description: deletes a specific Author associated with foreignAuthorId contained in Author followings list associated with authorId
+ *    description: deletes a specific Author associated with foreignAuthorId contained in Author followings list associated with authorIdi
+ *    tags:
+ *      - following 
  *    responses:
  *      401:
  *        description: Unauthorized -- no associated cookies or Login token expired 

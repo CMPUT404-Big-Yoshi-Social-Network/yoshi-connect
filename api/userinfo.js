@@ -41,6 +41,8 @@ const router = express.Router({mergeParams: true});
  * /userinfo:
  *  get:
  *    description: Fetches the Author's attributes through the use of the cookie token 
+ *    tags:
+ *      - userinfo
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated

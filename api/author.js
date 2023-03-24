@@ -41,6 +41,8 @@ const router = express.Router({mergeParams: true});
  * /authors:
  *  get:
  *    description: Fetches a paginated list of Authors (dictated by size and page queries)
+ *    tags:
+ *      - author
  *    responses:
  *      500:
  *        description: Internal Serevr Error -- unable to fetch Authors from database
@@ -73,6 +75,8 @@ router.get('/', async (req, res) => {
  * /authors/:authorId:
  *  get:
  *    description: Fetches a specific Author using authorId params
+ *    tags:
+ *      - author
  *    responses:
  *      404:
  *        description: Not Found -- Authour was not found in the database
@@ -95,6 +99,8 @@ router.get('/:authorId', async (req, res) => {
  * /authors/:authorId:
  *  post:
  *    description: Updates an existing Author with authorId params
+ *    tags:
+ *      - author
  *    body: 
  *      - authorId: String
  *      - host: String

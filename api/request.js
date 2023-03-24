@@ -42,6 +42,8 @@ const router = express.Router({mergeParams: true});
  * /authors/:authorId/requests:
  *  get:
  *    description: Checks for authenticated author token to get the request
+ *    tags:
+ *      - request
  *    responses:
  *      401:
  *         description: Unauthorized -- Token for request was not authenticated
@@ -60,6 +62,8 @@ router.get('/', async (req, res) => {
  * /authors/:authorId/requests/:foreignAuthorId:
  *  get:
  *    description: Gets a request associated with foreignAuthorId for the Author associated with authorId
+ *    tags:
+ *      - request 
  *    responses:
  *      404:
  *        description: Not Found -- Request was not found by the server
@@ -78,6 +82,8 @@ router.get('/:foreignAuthorId', async (req, res) => {
  * /authors/:authorId/requests/:foreignAuthorId:
  *  put:
  *    description: Sends the request associated with foreignAuthorId for the Author associated with authorId
+ *    tags:
+ *      - request 
  *    responses:
  *      400:
  *        description: Bad Request -- Server can't process the client information 
@@ -103,6 +109,8 @@ router.put('/:foreignAuthorId', async (req, res) => {
  * /authors/:authorId/requests/:foreignAuthorId:
  *  delete:
  *    description: Deletes the request associated with foreignAuthorId for the Author associated with authorId
+ *    tags:
+ *      - request 
  *    responses:
  *      500:
  *        description: Internal Serever Error -- Unable to fetch and delete the Request from the database

@@ -42,8 +42,20 @@ const router = express.Router({mergeParams: true});
  *  post:
  *    description: Registers an Author in YoshiConnect by sending the document to be enabled or disabled by an Admin Author
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      400:
+ *        description: Bad Request -- Username is already taken
+ *      400:
+ *        description: Bad Request -- No 'username', 'email', or 'password' was given
+ *      400:
+ *        description: Bad Request -- Invalid email
+ *      500:
+ *        description: Internal Server Error -- Unable to save author in database
+ *      500:
+ *        description: Internal Server Error -- Unable to save login details in database
+ *      500:
+ *        description: Internal Server Error -- Unable to save post history details in database
+ *      200:
+ *        description: OK -- Author regristration was successful, authour added to the database
  */
 router.post('/', async (req, res) => { await registerAuthor(req, res); })
 

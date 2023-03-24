@@ -176,7 +176,7 @@ async function createPost(token, authorId, postId, newPost) {
     await comments;
     savePostPromise;
 
-    if (visibility == 'PUBLIC') {
+    if (visibility == 'Public') {
         const publicPost = await PublicPost.findOne().clone();
         publicPost.posts.push({
             authorId: authorId,
@@ -305,7 +305,6 @@ async function deletePost(token, authorId, postId) {
 
 async function getPosts(page, size, author) {
     let posts = undefined
-    //TODO Avoid duplicated code by using a list of objects and modifying them before sending
     if(page > 1){
         posts = await PostHistory.aggregate([
             {

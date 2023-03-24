@@ -115,7 +115,7 @@ router.get('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  post:
- *    description: Gets the posts associated with postId for the Author associated with authorId to update the post
+ *    description: Sends the posts associated with postId for the Author associated with authorId to update the post
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -147,7 +147,7 @@ router.post('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  delete:
- *    description: Gets the posts associated with postId for the Author associated with authorId to delete the post
+ *    description: Deletes the posts associated with postId for the Author associated with authorId to delete the post
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -177,7 +177,7 @@ router.delete('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId:
  *  put:
- *    description: Gets the posts associated with postId for the Author associated with authorId to create a post
+ *    description: Puts the posts associated with postId for the Author associated with authorId to create a post
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -207,10 +207,20 @@ router.put('/:postId', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts:
  *  get:
- *    description: <INSERT>
+ *    description: Gets the posts associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      500:
+ *        description: Internal Server Error -- Unable to fetch Author from database
+ *      200:
+ *        description: OK -- Returns Author
+ *      404:
+ *        description: Not Found -- Author was not found
+ *      200:
+ *        description: Ok -- Returns the sanitized Author
+ *      400:
+ *        description: Bad Request -- Post history details did not match 
+ *      200:
+ *        description: OK -- Returns JSON with type and post objects
  */
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
@@ -236,10 +246,16 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts:
  *  post:
- *    description: <INSERT>
+*    description: Sends the posts associated with authorId
  *    responses:
- *      <INSERT>:
- *        description: <INSERT>
+ *      401:
+ *        description: Unauthorized -- Author token is not authenticated
+ *      400:
+ *        description: Bad Request -- The fields 'title', 'desc', 'content', or 'visibility' were not given
+ *      400:
+ *        description: Bad Request -- Post ID is already in use
+ *      200:
+ *        description: Ok -- Returns JSON the newly created post object
  */
 router.post('/', async (req, res) => {
   const authorId = req.params.authorId;

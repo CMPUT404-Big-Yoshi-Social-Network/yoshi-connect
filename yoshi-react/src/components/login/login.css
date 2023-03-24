@@ -37,6 +37,9 @@ Foundation; All Rights Reserved
     font-weight: 500;
     font-size: 20px;
 }
+.login-error{
+    color: #CE3426;
+}
 .login-text p{
     /* margin-left: 20.1em; */
     font-family: 'Signika', sans-serif;
@@ -71,4 +74,5 @@ Foundation; All Rights Reserved
 .login-button:hover{
     background-color: #A7E7F8;
     color: black;
+    cursor: pointer;
 }

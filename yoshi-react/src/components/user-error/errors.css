@@ -20,50 +20,30 @@ Foundation; All Rights Reserved
 */
 
 @import url('https://fonts.googleapis.com/css2?family=Signika:wght@300;400;500&display=swap');
-
-.signup{
-    color: white;
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
+@font-face {
     font-family: "Uni Neue";
+    src: url('../../fonts/UniNeue-Trial-Regular.eot');
+    src: url('../../fonts/UniNeue-Trial-Regular.eot') format('embedded-opentype'),
+         url('../../fonts/UniNeue-Trial-Regular.woff2') format('woff2'),
+         url('../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
+         url('../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
+}
+
+.errors{
     text-align: center;
-    margin-top: 10em;
 }
-.signup-hello{
-    font-size: 25px; 
+.errors h1{
+    font-size: 100pt;
+    font-family: 'Uni Neue';
 }
-.signup-card h3{
-    color: #7cdcf7;
+.errors h2{
+    margin-top: -2em;
+    font-size: 30pt;
     font-family: 'Signika', sans-serif;
     font-weight: 500;
-    font-size: 20px;
 }
-.signup-a p{
-    font-family: 'Signika', sans-serif;
-    font-weight: 300;
-    font-size: 18px;
-}
-.signup-box{
-    background-image: radial-gradient(circle, #050125, #090D0E);
-    color: white;
-    width: 15%;
-    border: #4A5460 0.2em solid;
-    border-radius: .5em;
-    padding: .5em;
-}
-.signup-button{
-    color: white;
-    font-size: 18px;
-    margin: 0em 2em;
-    background-color: #735DFA;
-    border: #735DFA;
-    border-radius: 0.50em;
-    padding: .4em 1.5em;
-    text-decoration: none;
-}
-.signup-button:hover{
-    background-color: #A7E7F8;
-    color: black;
-}
-
-.signup-error{
-    color: #CE3426;
+.errors h3{
+    font-size: 18pt;
+    font-family: 'DM Sans', sans-serif;
 }

@@ -89,6 +89,7 @@ async function authAuthor(req, res) {
     const username = req.body.username;
     const password = req.body.password;
 
+
     if(!username || !password){ return res.sendStatus(400); }
 
     const author = await Author.findOne({username: req.body.username});

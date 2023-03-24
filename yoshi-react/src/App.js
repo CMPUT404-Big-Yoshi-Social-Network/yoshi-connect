@@ -36,6 +36,7 @@ import AdminLogin from "./components/admin/admin.jsx";
 import AdminDashboard from "./components/admin/dashboard/adminDashboard.jsx";
 
 // Feeds
+// import Feed from "./components/feeds/feed/feed.jsx";
 import PublicFeed from "./components/feeds/public/public.jsx";
 import FriendFeed from "./components/feeds/friends/feed.jsx";
 import Messages from "./components/feeds/messages/messages.jsx";
@@ -45,10 +46,7 @@ import Profile from "./components/feeds/profile/profile.jsx";
 import Settings from './components/feeds/settings/settings.jsx';
 
 // Errors
-import PageNotFound from "./components/userError/404/404.jsx";
-import UserForbidden from "./components/userError/403/403.jsx";
-import UserUnauthorized from "./components/userError/401/401.jsx";
-import BadRequest from './components/userError/400/400.jsx';
+import Errors from './components/user-error/errors.jsx';
 
 // API Docs
 import ApiDocs from "./components/apiDocs/apiDocs.jsx";
@@ -92,15 +90,15 @@ const router = createBrowserRouter([
   },
   {
     path: '/forbidden/', 
-    element: <UserForbidden/>   
+    element: <Errors/>   
   },
   {
     path: '/unauthorized/', 
-    element: <UserUnauthorized/>   
+    element: <Errors/>    
   },
   {
     path: '/badrequest/', 
-    element: <BadRequest/>   
+    element: <Errors/>    
   },
   {
     path: '/settings/', 
@@ -112,7 +110,11 @@ const router = createBrowserRouter([
   },
   {
     path: '*' || '/notfound/', 
-    element: <PageNotFound/>   
+    element: <Errors/>     
+  },
+  {
+    path: '/servererror/',
+    element: <Errors/>
   }
 ])
   

@@ -20,24 +20,27 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import axios from 'axios';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+
+// User Interface
+import './nav.css'
 import { useNavigate } from 'react-router-dom';
+import SearchCard from './search.jsx';
+import axios from 'axios';
 import Pagination from 'react-bootstrap/Pagination';
 
-// Child Component
-import Author from './author.jsx';
-
-function Authors() {
+function SearchOutcomes({url}) {
+    const [findings, setFindings] = useState(false);
     const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
     const size = 5;
-    const url = '/authors';
     const navigate = useNavigate();
     const [prev, setPrev] = useState(true);
     const [next, setNext] = useState(false);
 
     useEffect(() => {
+        setFindings(true);
+
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -54,7 +57,7 @@ function Authors() {
         .then((response) => { 
             if (response.data.items.length !== 0 && authors.length === 0) {
                 let authors = []
-                for (let i = 0; i < size; i++) {
+                for (let i = 0; i < response.data.items.length; i++) {
                     authors.push(response.data.items[i]);
                 }
                 setAuthors(authors);
@@ -64,9 +67,9 @@ function Authors() {
             if (err.response.status === 404) {
                 setAuthors([]);
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('401')
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+                console.log('500')
             }
         });
 
@@ -99,12 +102,12 @@ function Authors() {
                     setAuthors(authors);
                 }
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('401')
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+                console.log('500')
             }
         });
-    }, [authors, next, navigate, page]);
+    }, [setFindings, authors, next, page, url])
 
     const getMore = () => {
         if (!next) {
@@ -214,23 +217,23 @@ function Authors() {
 
     return (
         <div>
-            <h3>Authors</h3>
-            { authors === undefined || authors.length === 0 ? 
+            { findings ? 
                 <div>
-                    <h4>No authors to show.</h4>
+                    {Object.keys(authors).map((author, idx) => (
+                        <SearchCard key={idx} {...authors[author]}/>
+                    ))}
+                    <div>
+                        <Pagination>
+                            <Pagination.Prev disabled={prev} onClick={goBack}/>
+                            <Pagination.Next disabled={next} onClick={getMore}/>
+                        </Pagination>
+                    </div>
                 </div> :
-                <div>
-                    <Pagination>
-                        {Object.keys(authors).map((author, idx) => (
-                            <Author key={idx} {...authors[author]}/>
-                        ))}
-                        <Pagination.Prev disabled={prev} onClick={goBack}/>
-                        <Pagination.Next disabled={next} onClick={getMore}/>
-                    </Pagination>
-                </div>
-            }
-        </div>
+                null
+            }   
+        </div>     
     )
 }
 
-export default Authors;
+export default SearchOutcomes;
+

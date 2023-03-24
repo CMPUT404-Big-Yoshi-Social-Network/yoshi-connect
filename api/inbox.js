@@ -20,18 +20,92 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInbox, deleteInbox} = require('../routes/inbox')
+const { getInbox, postInboxLike, deleteInbox, postInboxPost} = require('../routes/inbox')
 
 // Router Setup
 const express = require('express'); 
+const { ServerCredentials } = require('../scheme/server');
+const { authLogin } = require('../routes/auth');
 
 // Router
 const router = express.Router({mergeParams: true});
 
-router.get('/', async (req, res) => { await getInbox(req, res); })
+router.get('/', async (req, res) => {
+	const authorId = req.params.authorId;
+	const size = req.query.size;
+	const page = req.query.page;
+	const [posts, status] = await getInbox(authorId, size, page); 
 
-router.post('/', async (req, res) => { await postInbox(req, res); })
+	if(status != 200){
+		return res.sendStatus(status);
+	}
 
-router.delete('/', async (req, res) => { await deleteInbox(req, res); })
+	return res.json(posts);
+})
+
+router.post('/', async (req, res) => {
+
+	let authorized = false;
+	//If req.headers.authorization is set then process it
+	if(req.headers.authorization){
+		const authHeader = req.headers.authorization;
+
+		const [scheme, data] = authHeader.split(" ");
+		if(scheme === "Basic") {
+			const credential = Buffer.from(data, 'base64').toString('ascii');
+			const [serverName, password] = credential.split(":");
+			if( await ServerCredentials.findOne({cred: credential})) {
+				authorized = true;
+			}
+		}
+	}
+
+	if(req.cookies.token && !authorized){
+		let authorId;
+		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
+			authorId = req.body.author.id;
+		}
+		else if(req.body.type == "follow"){
+			authorId = req.body.actor.id;
+		}
+		else{
+			return res.sendStatus(400);
+		}
+
+		const token = req.cookies.token;
+		if(authLogin(token, authorId)){
+			authorized = true;
+		}
+	}
+
+	if(!authorized){
+		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
+		return res.sendStatus(401);
+	}
+
+	const type = req.body.type;
+	
+	if(type == "post"){
+		//For other servers to send their authors posts to us
+		await postInboxPost(req.body);
+	}
+	if(type == "follow"){
+		//For local/remote authors to server 
+		await postInboxFollow(req.body);
+	}
+	if(type == "like"){
+		await postInboxLike(req.body, req.params.authorId);
+	}
+	if(type == "comment"){
+		await postInboxComment(req.body);
+	}
+	return res.sendStatus(200);
+})
+
+router.delete('/', async (req, res) => {
+	const status = await deleteInbox(req.cookies.token, req.params.authorId);
+
+	return res.sendStatus(status);
+})
 
 module.exports = router;

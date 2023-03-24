@@ -43,6 +43,7 @@ const { createInbox } = require('./inbox.js')
 
 // Additional Functions
 const { checkUsername, checkExpiry } = require('./auth.js');
+const { Liked, LikedHistory } = require('../scheme/interactions.js');
 
 async function registerAuthor(req, res){
     if (await checkUsername(req) === "In use") { return res.sendStatus(400); }
@@ -83,9 +84,11 @@ async function registerAuthor(req, res){
 
     let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
     let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
+    let uuidLikedHistory = String(crypto.randomUUID()).replace(/-/g, "");
     await Follower({ _id: uuidFollower, username: username, authorId: author._id, followers: [] }).save();
     await Following({ _id: uuidFollowing, username: username, authorId: author._id, followings: [] }).save();
     await createInbox(author.username, author._id);
+    await LikedHistory({_id: uuidLikedHistory, authorId: uuid, numObjects: 0, liked: []}).save();
 
     return res.sendStatus(200);
 }
@@ -136,7 +139,7 @@ async function getAuthor(authorId){
         "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
         "authorId" : author._id,
         "host": process.env.DOMAIN_NAME,
-        "displayname": author.username,
+        "displayName": author.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
         "github": "",
         "profileImage": "",

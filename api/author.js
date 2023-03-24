@@ -25,6 +25,9 @@ const { getAuthor, updateAuthor, getAuthors, fetchMyPosts } = require('../routes
 // Router Setup
 const express = require('express'); 
 
+// Schemas
+const { Author } = require('../scheme/author');
+
 // Router
 const router = express.Router({mergeParams: true});
 
@@ -54,6 +57,20 @@ router.get('/:authorId', async (req, res) => {
   if (status == 404 || status == 500) { return res.sendStatus(status); }
 
   return res.json(author);
+})
+
+router.get('/search/:username', async (req, res) => {
+  const username = req.params.username;
+  const authors = await Author.find({username: username}).clone();
+  if (!authors) { 
+    return res.sendStatus(404)
+  }
+
+  return res.json({
+    "type": 'authors',
+    "items": authors
+  })
+
 })
 
 router.post('/:authorId', async (req, res) => {

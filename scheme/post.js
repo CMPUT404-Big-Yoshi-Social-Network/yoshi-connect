@@ -21,6 +21,8 @@ Foundation; All Rights Reserved
 
 // Database
 const mongoose = require("mongoose");
+const { authorScheme, basicAuthorScheme } = require("./author");
+const { likeAuthorScheme} = require("./interactions");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
@@ -34,8 +36,8 @@ const postScheme = new Schema({
     content: String,
     categories: [String],
     count: Number,
-    likes: [{ type: String, ref: 'Like' }],
-    comments: [{ type: String, ref: 'Comment' }],
+    like_count: Number,
+    comment_count: Number,
     published: String,
     visibility: String,
     postTo: String,
@@ -61,25 +63,38 @@ const publicScheme = new Schema({
     {versionKey: false
 })
 
+const inboxLikeScheme = new Schema({
+    author: basicAuthorScheme,
+    object: String,
+    summary: String
+})
+
+const inboxCommentScheme = new Schema({
+    _id: String,
+    author: basicAuthorScheme,
+    comment: String,
+    contentType: String,
+    published: String,
+    object: String
+})
+
 const inboxScheme = new Schema({
     _id: String,
     authorId: String,
     username: String,
     posts: [postScheme],
-    likes: [{ type: String, ref: 'Like' }],
-    comments: [{ type: String, ref: 'Comment' }],
+    likes: [inboxLikeScheme],
+    comments: [inboxCommentScheme],
     requests: [{ type: String, ref: 'Request' }]},
     {versionKey: false
 })
 
-const PostHistory = database.model('PostHistory', postHistoryScheme);
+const PostHistory = database.model('Post', postHistoryScheme);
 const PublicPost = database.model('PublicPost', publicScheme);
-const Inbox = database.model('Inbox', inboxScheme); 
-const Post = database.model('Post', postScheme);    
+const Inbox = database.model('Inbox', inboxScheme);   
 
 module.exports = {
     PostHistory,
     PublicPost,
     Inbox,
-    Post
 }

@@ -26,55 +26,56 @@ import { useNavigate } from 'react-router-dom';
 import Pagination from 'react-bootstrap/Pagination';
 
 // Child Component
-import Author from './author.jsx';
+import Node from './node.jsx';
 
-function Authors() {
-    const [authors, setAuthors] = useState([]);
-    const [page, setPage] = useState(1);
+function InNodes() {
     const size = 5;
-    const url = '/authors';
     const navigate = useNavigate();
-    const [prev, setPrev] = useState(true);
-    const [next, setNext] = useState(false);
+
+    const inUrl = '/nodes/incoming';
+    const [inNodes, setInNodes] = useState([]);
+    const [inPage, setInPage] = useState(1);
+    const [inPrev, setInPrev] = useState(true);
+    const [inNext, setInNext] = useState(false);
 
     useEffect(() => {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: inUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
-                page: page,
+                page: 1,
                 size: size
             }
         }
 
         axios
-        .get(url, config)
+        .get(inUrl, config)
         .then((response) => { 
-            if (response.data.items.length !== 0 && authors.length === 0) {
-                let authors = []
+            if (response.data.items.length !== 0 && inNodes.length === 0) {
+                let nodes = []
                 for (let i = 0; i < size; i++) {
-                    authors.push(response.data.items[i]);
+                    nodes.push(response.data.items[i]);
                 }
-                setAuthors(authors);
+                setInNodes(nodes);
             }
         })
         .catch(err => {
             if (err.response.status === 404) {
-                setAuthors([]);
+                console.log('Nothing.')
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('Unauthorized.')
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+               console.log('500 PAGE')
             }
         });
 
-        let updated = page + 1;
+        let updated = 2;
         config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: inUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -83,37 +84,33 @@ function Authors() {
         }
 
         axios
-        .get(url, config)
+        .get(inUrl, config)
         .then((response) => { 
             if (response.data.items.length === 0) { 
-                if (!next) {
-                    setNext(true); 
+                if (!inNext) {
+                    setInNext(true);    
                 }
             }
         })
         .catch(err => {
             if (err.response.status === 404) {
-                if (authors === undefined || authors.length === 0) {
-                    setAuthors([]);
-                } else {
-                    setAuthors(authors);
-                }
+                console.log('No more.')
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('Unauthorized.')
             } else if (err.response.status === 500) {
-                navigate('500 PAGE')
+               console.log('500 PAGE')
             }
         });
-    }, [authors, next, navigate, page]);
+    }, [inNodes, inNext]);
 
     const getMore = () => {
-        if (!next) {
-            let updated = page + 1;
-            setPage(updated);
+        if (!inNext) {
+            let updated = inPage + 1;
+            setInPage(updated);
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: inUrl,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -122,21 +119,21 @@ function Authors() {
             }
 
             axios
-            .get(url, config)
+            .get(inUrl, config)
             .then((response) => { 
-                let authors = []
+                let nodes = []
                 for (let i = 0; i < size; i++) {
-                    authors.push(response.data.items[i]);
+                    nodes.push(response.data.items[i]);
                 }
-                setAuthors(authors);
-                setPrev(false);
+                setInNodes(nodes);
+                setInPrev(false);
                 if (response.data.items.length < size) {
-                    setNext(true);
+                    setInNext(true);
                 } 
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    setAuthors([]);
+                    setInNodes([]);
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
@@ -144,11 +141,11 @@ function Authors() {
                 }
             });
         }
-        let updated = page + 2;
+        let updated = inPage + 2;
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: url,
+            url: inUrl,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
                 page: updated,
@@ -157,13 +154,13 @@ function Authors() {
         }
 
         axios
-        .get(url, config)
+        .get(inUrl, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setNext(true); }
+            if (response.data.items.length === 0) { setInNext(true); }
         })
         .catch(err => {
             if (err.response.status === 404) {
-                setAuthors([]);
+                setInNodes([]);
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
@@ -173,13 +170,13 @@ function Authors() {
     }
 
     const goBack = () => {
-        if (!prev && prev !== 1) {
-            let updated = page - 1;
-            setPage(updated);
+        if (!inPrev && inPage !== 1) {
+            let updated = inPage - 1;
+            setInPage(updated);
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: inUrl,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -188,21 +185,21 @@ function Authors() {
             }
     
             axios
-            .get(url, config)
+            .get(inUrl, config)
             .then((response) => { 
                 let more = []
                 for (let i = 0; i < size; i++) {
                     more.push(response.data.items[i]);
                 }
-                setAuthors(more) 
-                setNext(false)
+                setInNodes(more) 
+                setInNext(false)
                 if (updated === 1) {
-                    setPrev(true)
+                    setInPrev(true)
                 }
             })
             .catch(err => {
                 if (err.response.status === 404) {
-                    setAuthors([]);
+                    setInNodes([]);
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
@@ -214,18 +211,18 @@ function Authors() {
 
     return (
         <div>
-            <h3>Authors</h3>
-            { authors === undefined || authors.length === 0 ? 
+            <h3>Incoming Nodes</h3>
+            { inNodes === undefined || inNodes.length === 0 ? 
                 <div>
-                    <h4>No authors to show.</h4>
+                    <h4>No incoming nodes to show.</h4>
                 </div> :
                 <div>
                     <Pagination>
-                        {Object.keys(authors).map((author, idx) => (
-                            <Author key={idx} {...authors[author]}/>
+                        {Object.keys(inNodes).map((node, idx) => (
+                            <Node key={idx} node={inNodes[node]} url={inUrl}/>
                         ))}
-                        <Pagination.Prev disabled={prev} onClick={goBack}/>
-                        <Pagination.Next disabled={next} onClick={getMore}/>
+                        <Pagination.Prev disabled={inPrev} onClick={goBack}/>
+                        <Pagination.Next disabled={inNext} onClick={getMore}/>
                     </Pagination>
                 </div>
             }
@@ -233,4 +230,4 @@ function Authors() {
     )
 }
 
-export default Authors;
+export default InNodes;

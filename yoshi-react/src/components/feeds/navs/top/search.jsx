@@ -21,13 +21,25 @@ Foundation; All Rights Reserved
 
 // Functionality
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 
-function Follow(props) {
+// User Interface
+import { Button } from 'react-bootstrap';
+
+function SearchCard(props) {
+    const navigate = useNavigate();
+    const toProfile = () => {
+        navigate('/users/' + props.username)
+    }
     return (
-        <div id='follow'>
-            { props.displayName }
+        <div>
+            { !props && props.username === undefined ? null : 
+                <div>
+                    <Button onClick={toProfile} type="submit">{ props.username }</Button>
+                </div>
+            }
         </div>
     )
 }
 
-export default Follow;
+export default SearchCard;

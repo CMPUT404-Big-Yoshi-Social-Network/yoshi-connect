@@ -10,6 +10,12 @@ const { Request } = require('../scheme/relations.js');
 // UUID
 const crypto = require('crypto');
 
+// Other routes functions
+const { addLike, addLiked } = require('./likes.js');
+
+// Additional Functions
+const { authLogin } = require('./auth.js');
+
 async function createInbox(username, authorId){
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     await Inbox({
@@ -23,31 +29,58 @@ async function createInbox(username, authorId){
     }).save();
 }
 
-async function getInbox(req, res){
-    const authorId = req.params.author_id;
+async function getInbox(authorId, page, size){
 
-    let page = 1;
-    let size = 5;
+    if(page == undefined) { page = 1; }
+    if(size == undefined) { size = 5; }
 
-    if(req.query.page != undefined) { page = req.query.page; }
-    if(req.query.size != undefined) { size = req.query.size; }
+    let posts;
+    //TODO reduce code duplication
+    if(page > 1){
+        posts = await Inbox.aggregate([
+            {
+                $match: {'authorId': authorId}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $skip: (page - 1) * size
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            },
+        ]);
+    } else if (page == 1) {
+        posts = await Inbox.aggregate([
+            {
+                $match: {'authorId': authorId}
+            },
+            {
+                $unwind: '$posts'
+            },
+            {
+                $limit: size
+            },
+            {
+                $group: {
+                    _id: null,
+                    posts_array: { $push: "$posts" }
+                }
+            }
+            
+        ]);
+    } else{
+        return [[], 400];
+    }
 
-    const start_index = (page - 1) * size; 
-    const end_index = page * size;
-
-    let post = await Inbox.aggregate([
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $project: {_id: 1, posts: {$slice: ["$posts", start_index, end_index]}}
-        },
-        {
-            $unwind: "$posts"
-        },
-    ]);
-
-    return res.json(post);
+    return [posts[0].posts_array, 200];
 }
 
 async function postInbox(req, res){
@@ -148,26 +181,61 @@ async function postInboxRequest(request, authorId){
 
 async function postInboxLike(like, authorId){
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
+    let author = like.author;
 
-    inbox.likes.push(like);
+    author = {
+        _id: author.id,
+        host: author.host,
+        displayName: author.displayName,
+        url: author.url,
+        github: author.github, //TODO I don't think we need this but I'll leave it here for later consideration
+        profileImage: author.profileImage
+    };
+
+    //Add a like to the authors post/comment
+    await addLike(like, author);
+    await addLiked(author._id, like.object);
+
+    //TODO Unliking should also be added
+
+    const inboxLike = {
+        author: author,
+        object: like.object,
+        summary: like.summary
+    }
+
+    inbox.likes.push(inboxLike);
+
     inbox.save();
 }
 
 async function postInboxComment(comment, authorId){
     const inbox = await Inbox.findOne({authorid: authorId}, '_id comments');
 
+    //Add a comment to the authors post
+
     inbox.comments.push(comment);
     inbox.save();
 }
-async function deleteInbox(req, res){
-    const responses = await Inbox.updateOne({authorId: req.params.author_id},{$set: {'requests': [], 'likes': [], 'posts': [], 'comments': []}}).clone();
-    return res.sendStatus(200);
+
+async function deleteInbox(token, authorId){
+    if (! (await authLogin(token, authorId))) { return 401; }
+
+    const responses = await Inbox.updateOne({authorId: authorId},{requests: [], likes: [], posts: [], comments: []}).clone();
+    
+    if(responses.modifiedCount != 1){
+        return 404;
+    }
+
+    return 200;
 }
 
 module.exports = {
     createInbox,
     getInbox,
-    postInbox,
     deleteInbox,
     postInboxPost,
+    postInboxLike,
+    postInboxComment,
+    postInboxRequest,
 }

@@ -49,10 +49,11 @@ function Request(props) {
             }
         });
     }
+
     const rejectRequest = () => {
         console.log('Debug: Rejecting Author')
         axios
-        .delete('/authors/' + props.actorId + '/requests/' + props.objectId)
+        .delete('/authors/' + props.actorId + '/inbox/requests/' + props.objectId)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {

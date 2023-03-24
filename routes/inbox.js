@@ -190,9 +190,10 @@ async function postInboxPost(post, recieverAuthorId){
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
 
+    post._id = id
     inbox.posts.push(post);
     await inbox.save();
-
+    delete post._id;
     return [post, 200]
 }
 

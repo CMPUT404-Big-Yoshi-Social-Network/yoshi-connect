@@ -78,11 +78,31 @@ const inboxCommentScheme = new Schema({
     object: String
 })
 
+inboxPostScheme = new Schema({
+        _id: String,
+        origin: String,
+        source: String,
+        title: String,
+        description: String,
+        contentType: String,
+        content: String,
+        categories: [String],
+        author: basicAuthorScheme,
+        count: Number,
+        like_count: Number,
+        comment_count: Number,
+        published: String,
+        visibility: String,
+        postTo: String,
+        unlisted: Boolean,},
+        {versionKey: false
+})
+
 const inboxScheme = new Schema({
     _id: String,
     authorId: String,
     username: String,
-    posts: [postScheme],
+    posts: [inboxPostScheme],
     likes: [inboxLikeScheme],
     comments: [inboxCommentScheme],
     requests: [{

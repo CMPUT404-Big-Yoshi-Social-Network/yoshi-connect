@@ -73,13 +73,12 @@ router.post('/', async (req, res) => {
 		}
 	}
 
-	if(req.cookies.token && !authorized){
+	if(req.cookies.token){
 		let authorId;
 		const token = req.cookies.token;
 		if(!token){
 			return res.sendStatus(401);
 		}
-
 		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
 			authorId = req.body.author.id.split("/");
 			authorId = authorId[authorId.length - 1];
@@ -96,11 +95,12 @@ router.post('/', async (req, res) => {
 		}
 	}
 
+	/*
 	if(!authorized){
 		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
 		return res.sendStatus(401);
 	}
-
+	*/
 	const type = req.body.type;
 	let response, status;
 	if(type === "post"){

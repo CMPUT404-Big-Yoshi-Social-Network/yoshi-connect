@@ -57,7 +57,7 @@ async function senderAdded(authorId, foreignId, req, res) {
             };
             following.save(async (err, following, next) => { if (err) { success = false; } })
         }
-    }).clone()
+    }).clone();
 
     await Follower.findOne({authorId: foreignId}, async function(err, follower){
         if (follower) {

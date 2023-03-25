@@ -25,7 +25,7 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { PostHistory, PublicPost, Post, Image } = require('../scheme/post.js');
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
-const { Author } = require('../scheme/author.js');
+const { Author, Login } = require('../scheme/author.js');
 const {Follower} = require('../scheme/relations.js');
 
 
@@ -71,7 +71,7 @@ async function getImage(url) {
     return [image.src, 200];
 }
 
-async function getPost(postId, getterAuthorId, author){
+async function getPost(postId, auth, author){
     let post = await PostHistory.aggregate([
         {
             $match: {'authorId': author.authorId}
@@ -89,8 +89,23 @@ async function getPost(postId, getterAuthorId, author){
     post = post[0].posts
 
     if(post.visibility == "FRIENDS"){
-        //TODO Check if getter is a follower
+        //TODO Check if auth is in the following of the author
         //TODO Either allow any server to get friends or don't
+        let follower = false;
+        if(!auth){
+            return [{}, 401];
+        }
+        let login = await Login.findOne({token: auth});
+        let following = await Following.findOne({authorId: author.id});
+
+        for(let i = 0; i < following.following.length; i++){
+            follow = following.following[i];
+            if(follow.authorId = login.authorId){
+                follower = true;
+                break;
+            }
+        }
+        if(!follower) return [{}, 401];
     }
 
     post = {
@@ -334,7 +349,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["Public"]}
+                    'posts.visibility': {$in : ["PUBLIC"]}
                 }
             },
             {
@@ -376,7 +391,7 @@ async function getPosts(page, size, author) {
             },
             {
                 $match: {
-                    'posts.visibility': {$in : ["Public"]}
+                    'posts.visibility': {$in : ["PUBLIC"]}
                 }
             },
             {

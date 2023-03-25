@@ -422,8 +422,6 @@ async function getPosts(token, page, size, author) {
         posts = await PostHistory.aggregate(aggregatePipeline);
     } else if (page == 1) {
         posts = await PostHistory.aggregate(aggregatePipeline);
-    } else{
-        return [[], 400];
     }
     
     if (!posts || !posts[0] || !posts[0].posts_array) { return [[], 200]; }

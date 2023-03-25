@@ -247,7 +247,7 @@ router.get('/', async (req, res) => {
 
   if (status != 200 || author.admin) { return res.sendStatus(status); }
 
-  [posts, status] = await getPosts(page, size, author);
+  [posts, status] = await getPosts(req.cookies.token, page, size, author);
 
   if (status != 200) { return res.sendStatus(status); }
 

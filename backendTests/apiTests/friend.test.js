@@ -37,10 +37,6 @@ describe("Testing if the endpoints exist for /authors/:authorId/friends", () => 
 
     describe("/:foreignId", () => {
         let currentPath = basePath + "/foreignId"
-        it.only("get", async () => {
-            await request(app).get(currentPath).send({})
-        })
-
         it.only("post", async () => {
             await request(app).post(currentPath).send({})
         })

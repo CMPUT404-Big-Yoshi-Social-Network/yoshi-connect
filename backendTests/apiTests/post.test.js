@@ -59,8 +59,40 @@ describe("Testing if the endpoints exist for /authorId/posts", () => {
     })
 
 
+    describe("/:postid/image", () => {
+        let currentPath = basePath + "/postId/image"
+        it.only("get", async () => {
+            await request(app).get(currentPath).send({})
+        })
+
+        it.only("post", async () => {
+            await request(app).post(currentPath).send({})
+        })
+
+        it.only("put", async () => {
+            await request(app).put(currentPath).send({})
+        }) 
+    })
+
+
     describe("/:postId/likes", () => {
         let currentPath = basePath + "/postId/likes"
+        it.only("get", async () => {
+            await request(app).get(currentPath).send({})
+        })
+
+        it.only("delete", async () => {
+            await request(app).delete(currentPath).send({})
+        })
+
+        it.only("put", async () => {
+            await request(app).put(currentPath).send({})
+        })
+    })
+
+
+    describe("/:postId/liked", () => {
+        let currentPath = basePath + "/postId/liked"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})
         })

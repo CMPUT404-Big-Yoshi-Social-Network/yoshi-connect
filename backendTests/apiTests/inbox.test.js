@@ -41,4 +41,28 @@ describe("Testing if the endpoints exist for /authors/:author_id/inbox", () => {
             await request(app).delete(currentPath).send({})
         })
     })
+
+
+    describe("/requests", () => {
+        let currentPath = basePath + "/requests"
+        it.only("get", async () => {
+            await request(app).get(currentPath).send({})
+        })
+    })
+
+
+    describe("/requests/:foreignAuthorId", () => {
+        let currentPath = basePath + "requests/foreignAuthorId"
+        it.only("get", async () => {
+            await request(app).get(currentPath).send({})
+        })
+
+        it.only("delete", async () => {
+            await request(app).delete(currentPath).send({})
+        })
+
+        it.only("put", async () => {
+            await request(app).put(currentPath).send({})
+        })  
+    })
 })

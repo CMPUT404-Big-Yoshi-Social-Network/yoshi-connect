@@ -36,6 +36,26 @@ describe("Testing if the endpoints exist for /authors/:authorId/posts/:postId/co
         it.only("post", async () => {
             await request(app).post(currentPath).send({})
         })
+
+        it.only("put", async () => {
+            await request(app).put(currentPath).send({})
+        })
+    })
+
+
+    describe("/:commentId", () => {
+        let currentPath = basePath + "/commentId"
+        it.only("get", async () => {
+            await request(app).get(currentPath).send({})
+        })
+
+        it.only("post", async () => {
+            await request(app).post(currentPath).send({})
+        })
+
+        it.only("delete", async () => {
+            await request(app).delete(currentPath).send({})
+        })
     })
 
 

@@ -120,13 +120,13 @@ function Profile() {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .get('/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .get('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
             .then((response) => { 
                 exists.current = true; 
                 setRequestButton('Sent');
@@ -174,13 +174,13 @@ function Profile() {
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .put('/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .put('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
             .then((response) => { })
             .catch(err => {
               if (err.response.status === 401) {
@@ -192,7 +192,7 @@ function Profile() {
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
             axios
-            .delete('/authors/' + personal.viewerId + '/requests/' + personal.viewedId)
+            .delete('/authors/' + personal.viewerId + 'inbox/requests/' + personal.viewedId)
             .then((response) => { })
             .catch(err => {
                 if (err.response.status === 401) {

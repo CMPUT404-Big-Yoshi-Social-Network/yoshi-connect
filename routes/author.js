@@ -36,13 +36,25 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
-const { PostHistory } = require('../scheme/post.js');
+const { PostHistory, Inbox } = require('../scheme/post.js');
 
-// Additional Functions
-const { createInbox } = require('./inbox.js')
 
 // Additional Functions
 const { checkUsername, checkExpiry } = require('./auth.js');
+const { Liked, LikedHistory } = require('../scheme/interactions.js');
+
+async function createInbox(username, authorId){
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+    await Inbox({
+        _id: uuid,
+        authorId: authorId,
+        username: username,
+        posts: [],
+        likes:[],
+        comments: [],
+        requests: []
+    }).save();
+}
 
 async function registerAuthor(req, res){
     if (await checkUsername(req) === "In use") { return res.sendStatus(400); }
@@ -83,9 +95,11 @@ async function registerAuthor(req, res){
 
     let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
     let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
+    let uuidLikedHistory = String(crypto.randomUUID()).replace(/-/g, "");
     await Follower({ _id: uuidFollower, username: username, authorId: author._id, followers: [] }).save();
     await Following({ _id: uuidFollowing, username: username, authorId: author._id, followings: [] }).save();
     await createInbox(author.username, author._id);
+    await LikedHistory({_id: uuidLikedHistory, authorId: uuid, numObjects: 0, liked: []}).save();
 
     return res.sendStatus(200);
 }
@@ -136,11 +150,10 @@ async function getAuthor(authorId){
         "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
         "authorId" : author._id,
         "host": process.env.DOMAIN_NAME,
-        "displayname": author.username,
+        "displayName": author.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
-        "github": "",
-        "profileImage": "",
-        "email": author.email, 
+        "github": author.github,
+        "profileImage": author.profileImage,
         "about": author.about,
         "pronouns": author.pronouns,
     }
@@ -167,7 +180,7 @@ async function updateAuthor(token, author){
         "id" : process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
         "authorId" : authorProfile._id,
         "host": process.env.DOMAIN_NAME,
-        "displayname": authorProfile.username,
+        "displayName": authorProfile.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
         "github": authorProfile.github,
         "profileImage": authorProfile.profileImage,
@@ -200,7 +213,7 @@ async function getAuthors(page, size){
                 "type": "author",
                 "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
                 "host": process.env.DOMAIN_NAME,
-                "displayname": author.username,
+                "displayName": author.username,
                 "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
                 "github": "",
                 "profileImage": "",
@@ -212,10 +225,19 @@ async function getAuthors(page, size){
     return [sanitizedAuthors, 200];
 }
 
+function validateAuthorObject(author){
+    if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
+        return false;
+    }
+
+    return true;
+}
+
 module.exports={
     registerAuthor,
     getProfile,
     getAuthor,
     updateAuthor,
-    getAuthors
+    getAuthors,
+    validateAuthorObject
 }

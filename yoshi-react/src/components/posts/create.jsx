@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
+import FileBase64 from 'react-file-base64';
 
 // User Interface
 import { Nav } from 'react-bootstrap';
@@ -41,9 +42,9 @@ function CreatePost() {
      */
     const [data, setData] = useState({
         title: "",
-        desc: "",
-        contentType: "type/plain",
-        visibility: "Public",
+        description: "",
+        contentType: "text/plain",
+        visibility: "PUBLIC",
         content: "",
         likes: [],
         comments: [],
@@ -54,6 +55,12 @@ function CreatePost() {
         postId: ''
     })
     const [isOpen, setIsOpen] = useState(false);
+
+    const [item, setItem] = useState({ 
+        type: "",
+        image: "",
+        size: 0,
+     });
 
     useEffect(() => {
         /**
@@ -78,7 +85,7 @@ function CreatePost() {
         getId();
     }, []);
     
-    const savePost = () => {
+    const savePost = async () => {
         /**
          * Description: Saves a newly created post by sending a PUT request with accompanying data representing the post
          * Request: PUT
@@ -88,30 +95,39 @@ function CreatePost() {
 
         togglePostMenu();
 
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: '/authors/' + data.authorId + '/posts/',
-            headers: {
-            'Content-Type': 'multipart/form-data'
-            },
-            data: {
-                title: data.title,
-                desc: data.desc,
-                contentType: data.contentType,
-                visibility: data.visibility,
-                content: data.content,
-                likes: data.likes,
-                comments: data.comments,
-                unlisted: data.unlisted,
-                postTo: data.postTo,
-                image: data.image
-            }
+        let body = {
+            title: data.title,
+            description: data.description,
+            contentType: data.contentType,
+            visibility: data.visibility,
+            content: data.content,
+            likes: data.likes,
+            comments: data.comments,
+            unlisted: data.unlisted,
+            postTo: data.postTo,
+            image: data.image
         }
+
+        let link = { postId: "" }
         
-        axios.post('/authors/' + data.authorId + '/posts/', config)
-        .then((response) => { })
+        await axios.post('/authors/' + data.authorId + '/posts/', body)
+        .then((response) => { 
+            if (response.data[1] === 200) {
+                link.postId = response.data[0].id.split('/')[6];
+            }
+        })
         .catch((e) =>{ console.log(e); })
+
+        if (item.image !== "") {
+            axios.put('/authors/' + data.authorId + '/posts/' + link.postId + "/image", {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url: '/authors/' + data.authorId + '/posts/' + link.postId + "/image",
+                headers: { 'Content-Type': 'multipart/form-data' },
+                image: item.image
+            }).then((res) => {}).catch((e) => { console.log(e); })  
+        }
+        setItem({ ...item, image: "" })
     }
 
     const togglePostMenu = () => { 
@@ -120,31 +136,8 @@ function CreatePost() {
          * Returns: N/A
          */
         setIsOpen(!isOpen); 
+        setItem({ ...item, image: "" })
     }
-
-    async function uploadImage() {
-        /**
-         * Description: Uses Cloudinary in order to display images 
-         * Request: POST
-         * Returns: N/A
-         */
-        const formData = new FormData();
-        const preview = document.querySelector("img[src=''");
-        const file = document.querySelector("input[type=file]").files[0];
-
-        formData.append("file", file);
-        formData.append("upload_preset", "biumvy2g");
-      
-        const res = await fetch(
-          `https://api.cloudinary.com/v1_1/di9yhzyxv/image/upload`,
-          { method: "POST", body: formData }
-        );
-
-        const img = await res.json();
-
-        data.image = img.secure_url;
-        preview.src = img.secure_url;
-      }
 
     return (
         <>
@@ -161,14 +154,14 @@ function CreatePost() {
                         <label><p style={{color:"white"}}>Unlisted</p></label>
                         <select className={"postMenuDropDown"} id={"contentType"} name={"contentType"}onChange={(e) => {
                             setData({...data, contentType: e.target.value})}}>
-                            <option value={"plaintext"}>PLAIN TEXT</option>
-                            <option value={"markdown"}>MARKDOWN</option>
+                            <option value={"text/plain"}>PLAIN TEXT</option>
+                            <option value={"text/markdown"}>MARKDOWN</option>
                         </select>
 
                         <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
-                            <option value={"Public"}>Public</option>
-                            <option value={"Friends"}>Friends</option>
+                            <option value={"PUBLIC"}>Public</option>
+                            <option value={"FRIENDS"}>Friends</option>
                             <option value={"Private"}>Private</option>
                         </select>
 
@@ -184,7 +177,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Message To:</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, postTo: [e.target.value]})
+                            setData({...data, postTo: e.target.value})
                         }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>
@@ -194,13 +187,13 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Description</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, desc: e.target.value})
+                            setData({...data, description: e.target.value})
                         }}></input>
 
 
                         <label><p style={{color:"white"}}>Content</p></label>
                         <textarea className={"postMenuInput"} id={"description"} name={"description"} rows={"8"}
-                                    wrap="physical" maxLength={"150"} onChange={(e) =>{
+                                    wrap="physical" maxLength={"150"} onChange={(e) => {
                             setData({...data, content: e.target.value})
                         }}/>
                         <div style={{color:"white", textAlign:"right"}}>
@@ -208,13 +201,18 @@ function CreatePost() {
                         </div>
                         
                         <div className={"postMenuInput"}>
-                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={uploadImage}/>
+                        <FileBase64
+                                className={"postMenuImageInput"} name={"image"} id={"image"}
+                                type="file"
+                                multiple={false}
+                                onDone={({ base64, size, type }) => setItem({ ...item, image: base64, size: size, type: type })}
+                            />
                         <br/>
-                        <img src="" style={{maxHeight: "15vh"}} alt="" />
+                        <img src={item.image} style={{maxHeight: "15vh"}} alt="" />
                         </div>
 
                         <div style={{color:"white", textAlign:"right"}}>
-                            25MB (not enforced)
+                            {item.size} of 10MB
                         </div>
 
                         <button className={"createPostButton"} type={"button"} onClick={savePost}>Create Post</button>

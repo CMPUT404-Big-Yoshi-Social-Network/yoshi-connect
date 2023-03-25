@@ -23,13 +23,18 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Post } = require('../scheme/post.js');
+const { PostHistory, PublicPost, Post, Image } = require('../scheme/post.js');
+const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
+const { Author, Login } = require('../scheme/author.js');
+const { Follower, Following } = require('../scheme/relations.js');
+
 
 // UUID
 const crypto = require('crypto');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
+const { getAuthor } = require('./author.js');
 
 async function createPostHistory(author_id){
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
@@ -38,15 +43,38 @@ async function createPostHistory(author_id){
         authorId: author_id,
         num_posts: 0,
         posts: []
-    })
+    });
 
-    await new_post_history.save()
+    await new_post_history.save();
 }
 
-async function getPost(authorId, postId){
+async function uploadImage(url, image) {
+    let newImage = new Image ({
+        _id: url,  
+        src: image
+    })
+    await newImage.save()
+    return [newImage, 200]
+}
+
+async function editImage(url, src) {
+    let image = await Image.findOne({_id: url});
+    if (!image) { return [{}, 404]; }
+    image.src = src;
+    await image.save()
+    return [image, 200]
+}
+
+async function getImage(url) {
+    let image = await Image.findOne({_id: url});
+    if (!image) { return [{}, 404]; }
+    return [image.src, 200];
+}
+
+async function getPost(postId, auth, author){
     let post = await PostHistory.aggregate([
         {
-            $match: {'authorId': authorId}
+            $match: {'authorId': author.authorId}
         },
         {
             $unwind: "$posts"
@@ -56,22 +84,60 @@ async function getPost(authorId, postId){
         }
     ]);
     
-    if (post.length == 0) { return [{}, 404]; }
+    if (post.length == 0 || !post[0].posts) { return [{}, 404]; }
 
     post = post[0].posts
+
+    if(post.visibility == "FRIENDS"){
+        let follower = false;
+        if(!auth){
+            return [{}, 401];
+        }
+        else if(auth == "server"){
+            follower = true;
+        }
+        else{
+            let login = await Login.findOne({token: auth});
+
+            if(!login){
+                return [{}, 401];
+            }
+
+            //TODO ONLY WORKS FOR CURRENT SERVER NOT MULTIPLE
+            let authorId = author.id.split("/");
+            authorId = authorId[authorId.length - 1];
+            let following = await Following.findOne({authorId: authorId});
+
+            if(!following || !following.followings){
+                return [{}, 401];
+            }
+
+            for(let i = 0; i < following.followings.length; i++){
+                follow = following.followings[i];
+                if(follow.authorId = login.authorId){
+                    follower = true;
+                    break;
+                }
+            }
+        }
+        
+        if(!follower) return [{}, 401];
+    }
 
     post = {
         "type": "post",
         "title" : post.title,
-        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/" + postId,
+        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
         "source": post.source,
         "origin": post.origin,
         "description": post.description,
         "contentType": post.contentType,
-        "author": post.author, 
+        "content": post.content,
+        "author": author,
         "categories": post.categories,
-        "count": post.count,
-        "comments": post.comments,
+        "count": post.commentCount,
+        "likeCount": post.likeCount,
+        "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
         "commentSrc": post.commentSrc,
         "published": post.published,
         "visibility": post.visibility,
@@ -81,10 +147,12 @@ async function getPost(authorId, postId){
 }
 
 async function createPost(token, authorId, postId, newPost) {
-    if((await authLogin(token, authorId)) == false){ return [[], 401]; }
+    if(! (await authLogin(token, authorId))){ return [[], 401]; }
+
+    let authorPromise = getAuthor(authorId);
 
     const title = newPost.title;
-    const desc = newPost.desc;
+    const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
     const categories = [''];
@@ -93,13 +161,18 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
-    if (!title || !desc || !contentType || !content || !visibility) { return [[], 400]; }
+    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != true && unlisted != false)){
+        return [[], 400];
+    }
 
     let postHistory = await PostHistory.findOne({authorId: authorId});
+    if (!postHistory) {
+        return [[], 404];
+    }
 
     if(postId != undefined){
         let oldPost = postHistory.posts.id(postId);
-        if(oldPost) return [[], 400]
+        if (oldPost) return [[], 400];
     }
     
     if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
@@ -107,34 +180,42 @@ async function createPost(token, authorId, postId, newPost) {
     let source = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
     let origin = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
 
-    if (!postHistory) {
-        await createPostHistory(authorId);
-        postHistory = await PostHistory.findOne({authorId: authorId});
-    }
-
-    let post = new Post({
+    let post = {
         _id: postId,
         title: title,
         source: source,
         origin: origin,
-        description: desc,
+        description: description,
         contentType: contentType,
         content: content,
         authorId: authorId,
         categories: categories,
-        count: 0,
-        likes: [],
-        comments: [],
+        likeCount: 0,
+        commentCount: 0,
         published: published,
         visibility: visibility,
         unlisted: unlisted,
         postTo: postTo
-    });
+    };
+
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
-    await postHistory.save();
 
-    if (visibility == 'Public') {
+    let savePostPromise = postHistory.save();
+
+    let likes = LikeHistory({
+        type: "post",
+        Id: postId,
+        likes: [],
+    }).save();
+
+    let comments = CommentHistory({
+        postId: postId,
+        comments: [],
+    }).save();
+
+    //TODO make public posts into a collection with several documents
+    if (visibility == 'PUBLIC') {
         const publicPost = await PublicPost.findOne().clone();
         publicPost.posts.push({
             authorId: authorId,
@@ -143,11 +224,33 @@ async function createPost(token, authorId, postId, newPost) {
         publicPost.num_posts = publicPost.num_posts + 1;
         await publicPost.save();
     }
-    return [await getPost(authorId, postId), 200];
+
+    //TODO make this faster
+    //if not unlisted send to all followers 
+    if(unlisted === "false"){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            console.log(follower);
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+            console.log(inbox);
+
+            inbox.posts.push(post);
+            await inbox.save();
+        }
+    }
+
+    await likes;
+    await comments;
+    await savePostPromise;
+    let [author, status] = await authorPromise;
+    if (status != 200) { return [{}, 500]; }
+    return await getPost(postId, authorId, author);
 }
 
 async function updatePost(token, authorId, postId, newPost) {
-    if (!authLogin(token, authorId)) { return [{}, 401]; }
+    if (!(await authLogin(token, authorId))) { return [{}, 401]; }
 
     const title = newPost.title;
     const desc = newPost.desc;
@@ -163,8 +266,6 @@ async function updatePost(token, authorId, postId, newPost) {
 
     let post = postHistory.posts.id(postId);
 
-    if (!post) { return [{}, 404]; }
-
     post.title = title;
     post.description = desc;
     post.contentType = contentType;
@@ -174,7 +275,6 @@ async function updatePost(token, authorId, postId, newPost) {
     post.categories = categories;
     await postHistory.save()
 
-    //TODO Remove possiblity of visibility being "public"?
     if(post.visibility == "PUBLIC" || post.visibility == "Public"){
         let publicPosts = await PublicPost.findOne().clone();
 
@@ -188,11 +288,30 @@ async function updatePost(token, authorId, postId, newPost) {
         }
     }
 
+    if(unlisted === "false"){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        let promiseList = [];
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            console.log(follower);
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+            console.log(inbox);
+
+            inbox.posts.push(post);
+            promiseList.push(inbox.save());
+        }
+
+        for(let i = 0; i < promiseList.length; i++){
+            await promiseList[i];
+        }
+    }
+
     return [await getPost(authorId, postId), 200];
 }
 
 async function deletePost(token, authorId, postId) {
-    if (!authLogin(token, authorId)) { return [{}, 401]; }
+    if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
 
@@ -204,6 +323,10 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
+
+    const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
+    const comments = CommentHistory.findOneAndDelete({postId: postId});
+    
     postHistory.save();
 
     if (post.visibility == "PUBLIC" || post.visibility == "Public") {
@@ -219,94 +342,86 @@ async function deletePost(token, authorId, postId) {
         await publicPost.save();
     }
 
+    await likes;
+    await comments;
+
     return [post, 200]; 
 }
 
-async function getPosts(page, size, author) {
-    let posts = undefined
-    if(page > 1){
-        posts = await PostHistory.aggregate([
-            {
-                $match: {'authorId': author.id}
-            },
-            {
-                $unwind: '$posts'
-            },
-            {
-                $match: {
-                    'posts.unlisted': false
-                }
-            },
-            {
-                $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: { dateString: "$posts.published" }
-                    }
-                }
-            },
-            {
-                $sort: { "posts.published": -1 }
-            },
-            {
-                $skip: (page - 1) * size
-            },
-            {
-                $limit: size
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: { $push: "$posts" }
-                }
-            },
-        ]);
-    } else if (page == 1) {
-        posts = await PostHistory.aggregate([
-            {
-                $match: {'authorId': author.id}
-            },
-            {
-                $unwind: '$posts'
-            },
-            {
-                $match: {
-                    'posts.unlisted': false,
-                    
-                }
-            },
-            {
-                $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: { dateString: "$posts.published" }
-                    }
-                }
-            },
-            {
-                $sort: { "posts.published": -1 }
-            },
-            {
-                $limit: size
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: { $push: "$posts" }
+async function getPosts(token, page, size, author) {
+    if(page < 1 || size < 1){
+        return [[], 400]
+    }
+
+    let login = Login.findOne({token: token});
+
+    let aggregatePipeline = [
+        {
+            $match: {'authorId': author.authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $match: {
+                'posts.unlisted': false
+            }
+        },
+        {
+            $match: {
+                'posts.visibility': {$in : ["PUBLIC"]}
+            }
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: { dateString: "$posts.published" }
                 }
             }
-            
-        ]);
-    } else{
-        return [[], 400];
+        },
+        {
+            $sort: { "posts.published": -1 }
+        },
+        {
+            $limit: size
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: { $push: "$posts" }
+            }
+        },
+    ];
+
+    if(token){
+        login = await login;
+        if(login){
+            let following = await Following.findOne({authorId: author.authorId});
+
+            if(!following || !following.followings){
+                return [{}, 401];
+            }
+
+            for(let i = 0; i < following.followings.length; i++){
+                follow = following.followings[i];
+                if(follow.authorId = login.authorId){
+                    aggregatePipeline.splice(3, 1);
+                    break;
+                }
+            }
+        }
+
+        
+    }
+
+    let posts = undefined;
+    if(page > 1){
+        aggregatePipeline.splice(6, 0, {
+            $skip: (page - 1) * size
+        })
+        posts = await PostHistory.aggregate(aggregatePipeline);
+    } else if (page == 1) {
+        posts = await PostHistory.aggregate(aggregatePipeline);
     }
     
     if (!posts || !posts[0] || !posts[0].posts_array) { return [[], 200]; }
@@ -317,8 +432,8 @@ async function getPosts(page, size, author) {
         const post = posts[i];
         let sanitized_posts = {
             "type": "post",
-            "tite'": post.title,
-            "id": post._id,
+            "title": post.title,
+            "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id,
             "source": post.source,
             "origin": post.origin,
             "description": post.description,
@@ -326,10 +441,10 @@ async function getPosts(page, size, author) {
             "content": post.content,
             "author": author,
             "categories": post.categories,
-            "count": post.comments.length,
-            "comments": "",
-            "likeCount": post.likes.length,
-            "likes": "",
+            "count": post.commentCount,
+            "likeCount": post.likesCount,
+            "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
+            "commentSrc": post.commentSrc,
             "published": post.published,
             "visibility": post.visibility,
             "unlisted": post.unlisted,
@@ -375,6 +490,13 @@ async function fetchMyPosts(req, res) {
             }
         },
     ]);
+
+    if (posts[0] == undefined) {
+        return res.json({
+            type: "posts",
+            items: []
+        })        
+    }
 
     return res.json({
         type: "posts",
@@ -423,7 +545,7 @@ async function fetchOtherPosts(req, res) {
                 _id: null,
                 posts_array: {$push: "$posts"}
             }
-        },
+        }
     ]);
 
     if (posts[0] == undefined) {
@@ -446,5 +568,8 @@ module.exports={
     createPost,
     getPosts,
     fetchMyPosts,
-    fetchOtherPosts
+    fetchOtherPosts,
+    uploadImage,
+    getImage,
+    editImage
 }

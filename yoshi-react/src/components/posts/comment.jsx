@@ -37,28 +37,9 @@ function Comment(props) {
      * Returns: N/A
      */
     const deleteComment = () => {
-        /**
-         * Description: Deletes a comment related to a post
-         * Request: DELETE
-         * Returns: N/A
-         */
-        console.log("Debug: Deleting comment");
-
-        let config = {
-            method: "delete",
-            maxBodyLength: "Infinity",
-            url: "/server/authors/" + props.authorId + "/posts/" + props.postId,
-            headers: { 'Content-Type': 'application/json' },
-            data: {
-                commenter: props.commenter,
-                commentId: props._id,
-                authorId: props.authorId,
-                postId: props.postId,
-                status: "Remove comment"
-            }
-        };
-
-        axios.delete("/server/authors/" + props.authorId + "/posts/" + props.postId, config).then((response) => {}).catch((error) => { console.log(error); });
+        axios.delete('/authors/' + props.authorId + '/posts/' + props.postId + '/comments' + props._id)
+        .then((response) => { })
+        .catch((err) => { });
     }
 
     return (

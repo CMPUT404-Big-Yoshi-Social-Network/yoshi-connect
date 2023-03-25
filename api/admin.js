@@ -125,9 +125,38 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  *            oneOf:
  *              - $ref: '#/components/schemas/NewAuthor'
  *              - $ref: '#/components/schemas/ModifyAuthor'
+ *          examples:
+ *             NewAuthor:
+ *               value:
+ *                 status: Add
+ *                 username: kc
+ *                 email: ayuno@ualberta.ca
+ *                 password: 123
+ *             ModifyAuthor:
+ *               value:
+ *                 status: Modify
+ *                 newUsername: kc123
+ *                 newEmail: ayuno123@ualberta.ca
+ *                 newPassword: 123456
+ *                 newAbout: i am a bad monkey coder
+ *                 newPronouns: they/them
+ *                 newAdmin: false
+ *                 authorId: 29c546d45f564a27871838825e3dbecb
  *        application/json:
  *          schema:
  *            $ref: '#/components/schemas/Author'
+ *          example:
+ *            type: author
+ *            id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *            authorId: 29c546d45f564a27871838825e3dbecb
+ *            host: https://yoshi-connect.herokuapp.com/
+ *            url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *            displayName: kc
+ *            email: ayuno@ualberta.ca
+ *            about: i am a code monkey
+ *            pronouns: she/her
+ *            github: https://github.com/kezzayuno
+ *            profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *    responses:
  *      200: 
  *        description: OK, Author successfully added, modified, or enabled / disabled 
@@ -198,101 +227,78 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  *           status: 
  *             type: string
  *             description: type of request
- *             example: Add
  *           username: 
  *             type: string
  *             description: username of Author
- *             example: kc
  *           email:
  *             type: string
  *             description: email of Author
- *             example: ayuno@ualberta.ca
  *           password:
  *             type: string
  *             description: password of Author
- *             example: 123
  *     - ModifiedAuthor:
  *         type: object
  *         properties: 
  *           status: 
  *             type: string
  *             description: type of request
- *             example: Modify
  *           newUsername: 
  *             type: string
  *             description: new username of Author
- *             example: kc123
  *           newEmail:
  *             type: string
  *             description: new email of Author
- *             example: ayuno123@ualberta.ca
  *           newPassword:
  *             type: string
  *             description: new password of Author
- *             example: 123456
  *           newAbout:
  *             type: string
  *             description: new about of Author
- *             example: i am a bad monkey coder
  *           newPronouns:
  *             type: string
  *             description: new pronouns of Author
- *             example: they/them
  *           newAdmin:
  *             type: boolean
  *             description: enabling or disabling of Author admin
- *             example: false
  *           authorId:
  *             type: string
  *             description: UUID of author
- *             example: 29c546d45f564a27871838825e3dbecb
  *     - Author:
  *         type: object
  *         properties: 
  *           type:
  *             type: string
  *             description: JSON type 
- *             example: author
  *           id:
  *             type: string
  *             description: URL of Author
- *             example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
  *           authorId:
  *             type: string 
  *             description: UUID of Author 
- *             example: 29c546d45f564a27871838825e3dbecb
  *           host: 
  *             type: string
  *             description: network the Author is from 
- *             example: https://yoshi-connect.herokuapp.com/
  *           url: 
  *             type: string
  *             description: URL of Author 
- *             example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
  *           displayName:
  *             type: string
  *             description: username of Author (unique)
- *             example: kc
  *           email:
  *             type: string
  *             description: email of Author (unique)
- *             example: ayuno@ualberta.ca
  *           about: 
  *             type: string
  *             description: description about Author 
- *             example: i am a code monkey
  *           pronouns:
  *             type: string
  *             description: pronouns the Author takes
- *             example: she/her
  *           github:
  *             type: string
  *             description: GitHub linked to the Author
- *             example: https://github.com/kezzayuno
  *           profileImage:
  *             type: string
  *             description: profile picture Author uses
- *             example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  */
 router.put('/dashboard', (req, res) => {
   if (req.body.status == 'Add') {

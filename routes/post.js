@@ -93,7 +93,7 @@ async function getPost(postId, auth, author){
         if(!auth){
             return [{}, 401];
         }
-        else if(auth == "token"){
+        else if(auth == "server"){
             follower = true;
         }
         else{
@@ -215,7 +215,7 @@ async function createPost(token, authorId, postId, newPost) {
     }).save();
 
     //TODO make public posts into a collection with several documents
-    if (visibility == 'Public') {
+    if (visibility == 'PUBLIC') {
         const publicPost = await PublicPost.findOne().clone();
         publicPost.posts.push({
             authorId: authorId,
@@ -348,89 +348,80 @@ async function deletePost(token, authorId, postId) {
     return [post, 200]; 
 }
 
-async function getPosts(page, size, author) {
-    let posts = undefined
-    if(page > 1){
-        posts = await PostHistory.aggregate([
-            {
-                $match: {'authorId': author.authorId}
-            },
-            {
-                $unwind: '$posts'
-            },
-            {
-                $match: {
-                    'posts.unlisted': false
-                }
-            },
-            {
-                $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: { dateString: "$posts.published" }
-                    }
-                }
-            },
-            {
-                $sort: { "posts.published": -1 }
-            },
-            {
-                $skip: (page - 1) * size
-            },
-            {
-                $limit: size
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: { $push: "$posts" }
-                }
-            },
-        ]);
-    } else if (page == 1) {
-        posts = await PostHistory.aggregate([
-            {
-                $match: {'authorId': author.authorId}
-            },
-            {
-                $unwind: '$posts'
-            },
-            {
-                $match: {
-                    'posts.unlisted': false,
-                    
-                }
-            },
-            {
-                $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: { dateString: "$posts.published" }
-                    }
-                }
-            },
-            {
-                $sort: { "posts.published": -1 }
-            },
-            {
-                $limit: size
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: { $push: "$posts" }
+async function getPosts(token, page, size, author) {
+    if(page < 1 || size < 1){
+        return [[], 400]
+    }
+
+    let login = Login.findOne({token: token});
+
+    let aggregatePipeline = [
+        {
+            $match: {'authorId': author.authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $match: {
+                'posts.unlisted': false
+            }
+        },
+        {
+            $match: {
+                'posts.visibility': {$in : ["PUBLIC"]}
+            }
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: { dateString: "$posts.published" }
                 }
             }
-            
-        ]);
+        },
+        {
+            $sort: { "posts.published": -1 }
+        },
+        {
+            $limit: size
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: { $push: "$posts" }
+            }
+        },
+    ];
+
+    if(token){
+        login = await login;
+        if(login){
+            let following = await Following.findOne({authorId: author.authorId});
+
+            if(!following || !following.followings){
+                return [{}, 401];
+            }
+
+            for(let i = 0; i < following.followings.length; i++){
+                follow = following.followings[i];
+                if(follow.authorId = login.authorId){
+                    aggregatePipeline.splice(3, 1);
+                    break;
+                }
+            }
+        }
+
+        
+    }
+
+    let posts = undefined;
+    if(page > 1){
+        aggregatePipeline.splice(6, 0, {
+            $skip: (page - 1) * size
+        })
+        posts = await PostHistory.aggregate(aggregatePipeline);
+    } else if (page == 1) {
+        posts = await PostHistory.aggregate(aggregatePipeline);
     } else{
         return [[], 400];
     }

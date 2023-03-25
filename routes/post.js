@@ -26,7 +26,7 @@ mongoose.set('strictQuery', true);
 const { PostHistory, PublicPost, Post, Image } = require('../scheme/post.js');
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
 const { Author, Login } = require('../scheme/author.js');
-const {Follower} = require('../scheme/relations.js');
+const { Follower, Following } = require('../scheme/relations.js');
 
 
 // UUID
@@ -89,22 +89,38 @@ async function getPost(postId, auth, author){
     post = post[0].posts
 
     if(post.visibility == "FRIENDS"){
-        //TODO Check if auth is in the following of the author
-        //TODO Either allow any server to get friends or don't
         let follower = false;
         if(!auth){
             return [{}, 401];
         }
-        let login = await Login.findOne({token: auth});
-        let following = await Following.findOne({authorId: author.id});
+        else if(auth == "token"){
+            follower = true;
+        }
+        else{
+            let login = await Login.findOne({token: auth});
 
-        for(let i = 0; i < following.following.length; i++){
-            follow = following.following[i];
-            if(follow.authorId = login.authorId){
-                follower = true;
-                break;
+            if(!login){
+                return [{}, 401];
+            }
+
+            //TODO ONLY WORKS FOR CURRENT SERVER NOT MULTIPLE
+            let authorId = author.id.split("/");
+            authorId = authorId[authorId.length - 1];
+            let following = await Following.findOne({authorId: authorId});
+
+            if(!following || !following.followings){
+                return [{}, 401];
+            }
+
+            for(let i = 0; i < following.followings.length; i++){
+                follow = following.followings[i];
+                if(follow.authorId = login.authorId){
+                    follower = true;
+                    break;
+                }
             }
         }
+        
         if(!follower) return [{}, 401];
     }
 

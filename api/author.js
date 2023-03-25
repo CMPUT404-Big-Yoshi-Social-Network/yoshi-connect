@@ -208,6 +208,11 @@ router.get('/:authorId', async (req, res) => {
  *        application/x-www-form-urlencoded:
  *          schema:
  *            $ref: '#/components/schemas/Author'
+ *          example: 
+ *            authorId: 29c546d45f564a27871838825e3dbecb
+ *            host: https://yoshi-connect.herokuapp.com/
+ *            url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *            displayName: kc
  *    parameters:
  *      - in: path
  *        name: authorId
@@ -276,19 +281,15 @@ router.get('/:authorId', async (req, res) => {
  *           authorId: 
  *             type: string
  *             description: UUID of Author
- *             example: 29c546d45f564a27871838825e3dbecb
  *           host:
  *             type: string
  *             description: network the Author is from 
- *             example: https://yoshi-connect.herokuapp.com/
  *           displayName: 
  *             type: string
  *             description: username of Author
- *             example: kc
  *           url:
  *             type: string
  *             description: URL of Author
- *             example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
  */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }

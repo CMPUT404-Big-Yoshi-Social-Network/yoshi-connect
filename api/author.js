@@ -43,16 +43,64 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /authors:
  *  get:
- *    description: Fetches a paginated list of Authors (dictated by size and page queries)
+ *    summary: Fetches a paginated list of Authors (dictated by size and page queries)
  *    tags:
  *      - author
+ *    parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *        description: Page of Authors requested
+ *      - in: query
+ *        name: size
+ *        schema: 
+ *          type: integer
+ *          minimum: 5
+ *        description: Number of Authors on a Page requested
  *    responses:
  *      500:
- *        description: Internal Serevr Error -- unable to fetch Authors from database
+ *        description: Internal Serevr Error, unable to fetch Authors from database
  *      400:
- *        description: Bad Request -- incorrect paging requested from the user
+ *        description: Bad Request, incorrect paging requested from the user
  *      200: 
- *        description: OK -- successfully fetched and sanitized authors from the database 
+ *        description: OK, successfully fetched and sanitized authors from the database 
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: authors
+ *                items: 
+ *                  type: array
+ *                  items: 
+ *                    type: object
+ *                  description: array of Author object fetched from database 
+ *                  example: 
+ *                    - type: author
+ *                      id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                      authorId: 29c546d45f564a27871838825e3dbecb
+ *                      host: https://yoshi-connect.herokuapp.com/
+ *                      displayName: kc
+ *                      url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                      github: https://github.com/kezzayuno
+ *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      about: i am a code monkey
+ *                      pronouns: she/her
+ *                    - type: author
+ *                      id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      authorId: 3ec2a2a0685445509a3ea1dd3093639f
+ *                      host: https://yoshi-connect.herokuapp.com/
+ *                      displayName: allan
+ *                      url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      github: https://github.com/Holy-Hero
+ *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      about: i love hatsune miku
+ *                      pronouns: he/him
  */
 router.get('/', async (req, res) => {
 
@@ -80,13 +128,64 @@ router.get('/', async (req, res) => {
  *    description: Fetches a specific Author using authorId params
  *    tags:
  *      - author
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
  *    responses:
  *      404:
- *        description: Not Found -- Authour was not found in the database
+ *        description: Not Found, Author was not found in the database
  *      500:
- *        description: Internal Server Error -- server experienced 'server failure'
+ *        description: Internal Server Error, server experienced 'server failure'
  *      200: 
- *        description: OK -- successfully fetched and sanitized the Author from the database
+ *        description: OK, successfully fetched and sanitized the Author from the database
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: author
+ *                id:
+ *                  type: string
+ *                  description: URL of Author
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                authorId:
+ *                  type: string 
+ *                  description: UUID of Author 
+ *                  example: 29c546d45f564a27871838825e3dbecb
+ *                host: 
+ *                  type: string
+ *                  description: network the Author is from 
+ *                  example: https://yoshi-connect.herokuapp.com/
+ *                url: 
+ *                  type: string
+ *                  description: URL of Author 
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                displayName:
+ *                  type: string
+ *                  description: username of Author (unique)
+ *                  example: kc
+ *                about: 
+ *                  type: string
+ *                  description: description about Author 
+ *                  example: i am a code monkey
+ *                pronouns:
+ *                  type: string
+ *                  description: pronouns the Author takes
+ *                  example: she/her
+ *                github:
+ *                  type: string
+ *                  description: GitHub linked to the Author
+ *                  example: https://github.com/kezzayuno
+ *                profileImage:
+ *                  type: string
+ *                  description: profile picture Author uses
+ *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  */
 router.get('/:authorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -104,21 +203,92 @@ router.get('/:authorId', async (req, res) => {
  *    description: Updates an existing Author with authorId params
  *    tags:
  *      - author
- *    body: 
- *      - authorId: String
- *      - host: String
- *      - displayName: String
- *      - url: String
- *      - type: String
+ *    requestBody: 
+ *      content:
+ *        application/x-www-form-urlencoded:
+ *          schema:
+ *            $ref: '#/components/schemas/Author'
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
  *    responses:
  *      401:
- *        description: Unauthorized -- Author does not have an associated token 
+ *        description: Unauthorized, Author does not have an associated token 
  *      400:
- *        description: Bad Request -- type, authorId, host, username are incorrect
+ *        description: Bad Request, type, authorId, host, username are incorrect
  *      200:
- *        description: OK -- Author was succesfully sent, JSON sent with sanitized and updated Author
+ *        description: OK, Author was succesfully sent, JSON sent with sanitized and updated Author
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: author
+ *                id:
+ *                  type: string
+ *                  description: URL of Author
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                authorId:
+ *                  type: string 
+ *                  description: UUID of Author 
+ *                  example: 29c546d45f564a27871838825e3dbecb
+ *                host: 
+ *                  type: string
+ *                  description: network the Author is from 
+ *                  example: https://yoshi-connect.herokuapp.com/
+ *                url: 
+ *                  type: string
+ *                  description: URL of Author 
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                displayName:
+ *                  type: string
+ *                  description: username of Author (unique)
+ *                  example: kc
+ *                about: 
+ *                  type: string
+ *                  description: description about Author 
+ *                  example: i am a code monkey
+ *                pronouns:
+ *                  type: string
+ *                  description: pronouns the Author takes
+ *                  example: she/her
+ *                github:
+ *                  type: string
+ *                  description: GitHub linked to the Author
+ *                  example: https://github.com/kezzayuno
+ *                profileImage:
+ *                  type: string
+ *                  description: profile picture Author uses
+ *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *      404:
- *        description: Not Found -- Author was not found
+ *        description: Not Found, Author was not found
+ * components:
+ *   schemas:
+ *     - Author:
+ *         type: object
+ *         properties: 
+ *           authorId: 
+ *             type: string
+ *             description: UUID of Author
+ *             example: 29c546d45f564a27871838825e3dbecb
+ *           host:
+ *             type: string
+ *             description: network the Author is from 
+ *             example: https://yoshi-connect.herokuapp.com/
+ *           displayName: 
+ *             type: string
+ *             description: username of Author
+ *             example: kc
+ *           url:
+ *             type: string
+ *             description: URL of Author
+ *             example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
  */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }
@@ -137,6 +307,60 @@ router.post('/:authorId', async (req, res) => {
   if (status == 404 || status == 401) { return res.sendStatus(status); }
 })
 
+/**
+ * @openapi
+ * /search/:username:
+ *  post:
+ *    description: Searches for a list of names locally and remotely that match the searched username
+ *    tags:
+ *      - author
+ *    parameters:
+ *      - in: path
+ *        name: username
+ *        schema:
+ *          type: string
+ *        description: username of an Author
+ *    responses:
+ *      200:
+ *        description: OK, successfully found a list of Authors matching username
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: authors
+ *                items: 
+ *                  type: array
+ *                  items: 
+ *                    type: object
+ *                  description: array of Authors fetch from database that are from local and remote servers (matching username)
+ *                  example: 
+ *                    - type: author
+ *                      id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                      authorId: 29c546d45f564a27871838825e3dbecb
+ *                      host: https://yoshi-connect.herokuapp.com/
+ *                      displayName: kc
+ *                      url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                      github: https://github.com/kezzayuno
+ *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      about: i am a code monkey
+ *                      pronouns: she/her
+ *                    - type: author
+ *                      id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      authorId: 3ec2a2a0685445509a3ea1dd3093639f
+ *                      host: https://yoshi-connect.herokuapp.com/
+ *                      displayName: kc
+ *                      url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      github: https://github.com/Holy-Hero
+ *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      about: i love hatsune miku
+ *                      pronouns: he/him
+ *      404:
+ *        description: Not Found, Author was not found
+ */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
   const authors = await Author.find({username: username}).clone();

@@ -36,7 +36,7 @@ const express = require('express');
 
 // Router
 const router = express.Router({mergeParams: true});
-//TODO replace example with real response
+
 /**
  * @openapi
  * /admin:
@@ -46,24 +46,13 @@ const router = express.Router({mergeParams: true});
  *      - admin
  *    responses:
  *      400:
- *        description: Bad Request -- Invalid username or password or author does not exist
+ *        description: Bad Request, Invalid username or password or author does not exist
  *      500:
- *        description: Internal Server Error -- Unable to authenticate Author or Unable to delete login token from database or password is incorrect
+ *        description: Internal Server Error, Unable to authenticate Author or Unable to delete login token from database or password is incorrect
  *      403:
- *        description: Forbidden -- Author was not an admin
+ *        description: Forbidden, Author was not an admin
  *      200:
- *        description: OK -- Login as author was successful and cached
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                id:
- *                  type: integer
- *                  description: The user ID.
- *                username:
- *                  type: string
- *                  description: The user name.
+ *        description: OK, Login as author was successful and cached
  */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 
@@ -76,11 +65,11 @@ router.post('/', async (req, res) => { await authAuthor(req, res); })
  *      - admin
  *    responses:
  *      403:
- *        description: Forbidden -- if Admin is not authenticated, access is not granted
+ *        description: Forbidden, if Admin is not authenticated, access is not granted
  *      401:
- *        description: Unauthorized -- Admin token expired and was not granted authorization 
+ *        description: Unauthorized, Admin token expired and was not granted authorization 
  *      200:
- *        description: OK -- admin was successfully authenticated
+ *        description: OK, Admin was successfully authenticated
  */
 router.get('/dashboard', async (req, res) => {
   if(!(await checkAdmin(req, res))){ return res.sendStatus(403) }
@@ -97,11 +86,11 @@ router.get('/dashboard', async (req, res) => {
  *      - admin
  *    responses:
  *      500:
- *        description: Internal Server Error -- deleting Login document was unsuccessful 
+ *        description: Internal Server Error, deleting Login document was unsuccessful 
  *      200:
- *        description: OK -- Login document was successfully deleted 
+ *        description: OK, Login document was successfully deleted 
  *      401:
- *        description: Unauthorized -- Token is undefined, Login document never existed and user access is unauthorized  
+ *        description: Unauthorized, token is undefined, Login document never existed and user access is unauthorized  
  */
 router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
 
@@ -114,11 +103,11 @@ router.post('/dashboard', async (req, res) => { removeLogin(req, res); })
  *      - admin
  *    responses:
  *      404:
- *        description: Not Found -- Author was not found
+ *        description: Not Found, Author was not found
  *      500:
- *        description: Internal Server Error -- deleting Login document for Author was unsuccessful
+ *        description: Internal Server Error, deleting Login document for Author was unsuccessful
  *      204:
- *        description: No Content -- No Author data found, Author was successfully deleted
+ *        description: No Content, No Author found, Author was successfully deleted
  */
 router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
 
@@ -129,13 +118,181 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  *    summary: Adds an Author to YoshiConnect database or updates an Author's attributes
  *    tags:
  *      - admin
+ *    requestBody: 
+ *      content:
+ *        application/x-www-form-urlencoded:
+ *          schema:
+ *            oneOf:
+ *              - $ref: '#/components/schemas/NewAuthor'
+ *              - $ref: '#/components/schemas/ModifyAuthor'
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Author'
  *    responses:
+ *      200: 
+ *        description: OK, Author successfully added, modified, or enabled / disabled 
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: author
+ *                id:
+ *                  type: string
+ *                  description: URL of Author
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                authorId:
+ *                  type: string 
+ *                  description: UUID of Author 
+ *                  example: 29c546d45f564a27871838825e3dbecb
+ *                host: 
+ *                  type: string
+ *                  description: network the Author is from 
+ *                  example: https://yoshi-connect.herokuapp.com/
+ *                url: 
+ *                  type: string
+ *                  description: URL of Author 
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                displayName:
+ *                  type: string
+ *                  description: username of Author (unique)
+ *                  example: kc
+ *                email:
+ *                  type: string
+ *                  description: email of Author (unique)
+ *                  example: ayuno@ualberta.ca
+ *                about: 
+ *                  type: string
+ *                  description: description about Author 
+ *                  example: i am a code monkey
+ *                pronouns:
+ *                  type: string
+ *                  description: pronouns the Author takes
+ *                  example: she/her
+ *                github:
+ *                  type: string
+ *                  description: GitHub linked to the Author
+ *                  example: https://github.com/kezzayuno
+ *                profileImage:
+ *                  type: string
+ *                  description: profile picture Author uses
+ *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                admin: 
+ *                  type: boolean
+ *                  description: dictates whether the Author is an admin (true) or not (false)
+ *                  example: true
  *      400:
- *        description: Bad Request -- Author already exists, username and/or password taken, Admin did not fill all cells (username, password, email)
+ *        description: Bad Request, Author already exists, username and/or password taken, Admin did not fill all cells (username, password, email)
  *      500: 
- *        description: Internal Server Error -- unable to save the Author into the database, unable to find Login document for Author
+ *        description: Internal Server Error, unable to save the Author into the database, unable to find Login document for Author
  *      404: 
- *        description: Not Found -- cannot find an Author to modify 
+ *        description: Not Found, cannot find an Author to modify 
+ * components:
+ *   schemas:
+ *     - NewAuthor:
+ *         type: object
+ *         properties: 
+ *           status: 
+ *             type: string
+ *             description: type of request
+ *             example: Add
+ *           username: 
+ *             type: string
+ *             description: username of Author
+ *             example: kc
+ *           email:
+ *             type: string
+ *             description: email of Author
+ *             example: ayuno@ualberta.ca
+ *           password:
+ *             type: string
+ *             description: password of Author
+ *             example: 123
+ *     - ModifiedAuthor:
+ *         type: object
+ *         properties: 
+ *           status: 
+ *             type: string
+ *             description: type of request
+ *             example: Modify
+ *           newUsername: 
+ *             type: string
+ *             description: new username of Author
+ *             example: kc123
+ *           newEmail:
+ *             type: string
+ *             description: new email of Author
+ *             example: ayuno123@ualberta.ca
+ *           newPassword:
+ *             type: string
+ *             description: new password of Author
+ *             example: 123456
+ *           newAbout:
+ *             type: string
+ *             description: new about of Author
+ *             example: i am a bad monkey coder
+ *           newPronouns:
+ *             type: string
+ *             description: new pronouns of Author
+ *             example: they/them
+ *           newAdmin:
+ *             type: boolean
+ *             description: enabling or disabling of Author admin
+ *             example: false
+ *           authorId:
+ *             type: string
+ *             description: UUID of author
+ *             example: 29c546d45f564a27871838825e3dbecb
+ *     - Author:
+ *         type: object
+ *         properties: 
+ *           type:
+ *             type: string
+ *             description: JSON type 
+ *             example: author
+ *           id:
+ *             type: string
+ *             description: URL of Author
+ *             example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *           authorId:
+ *             type: string 
+ *             description: UUID of Author 
+ *             example: 29c546d45f564a27871838825e3dbecb
+ *           host: 
+ *             type: string
+ *             description: network the Author is from 
+ *             example: https://yoshi-connect.herokuapp.com/
+ *           url: 
+ *             type: string
+ *             description: URL of Author 
+ *             example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *           displayName:
+ *             type: string
+ *             description: username of Author (unique)
+ *             example: kc
+ *           email:
+ *             type: string
+ *             description: email of Author (unique)
+ *             example: ayuno@ualberta.ca
+ *           about: 
+ *             type: string
+ *             description: description about Author 
+ *             example: i am a code monkey
+ *           pronouns:
+ *             type: string
+ *             description: pronouns the Author takes
+ *             example: she/her
+ *           github:
+ *             type: string
+ *             description: GitHub linked to the Author
+ *             example: https://github.com/kezzayuno
+ *           profileImage:
+ *             type: string
+ *             description: profile picture Author uses
+ *             example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  */
 router.put('/dashboard', (req, res) => {
   if (req.body.status == 'Add') {

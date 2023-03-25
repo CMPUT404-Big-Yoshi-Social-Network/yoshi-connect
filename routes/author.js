@@ -155,7 +155,7 @@ async function getAuthor(authorId){
         "github": author.github,
         "profileImage": author.profileImage,
         "about": author.about,
-        "pronouns": author.pronouns,
+        "pronouns": author.pronouns
     }
     return [sanitizedAuthor, 200];
 }
@@ -186,7 +186,7 @@ async function updateAuthor(token, author){
         "profileImage": authorProfile.profileImage,
         "email": authorProfile.email, 
         "about": authorProfile.about,
-        "pronouns": authorProfile.pronouns,
+        "pronouns": authorProfile.pronouns
     }
 
     return [sanitizedAuthor, 200];

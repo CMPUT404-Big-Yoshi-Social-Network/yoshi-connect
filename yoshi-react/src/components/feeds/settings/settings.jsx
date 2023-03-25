@@ -88,6 +88,7 @@ function Settings() {
         }
         getAuthor();
     }, [navigate])
+    
     const modify = (e) => {
         /**
          * Description: Updates the new author's account details

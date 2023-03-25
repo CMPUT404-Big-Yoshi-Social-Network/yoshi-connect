@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 require('dotenv').config();
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect-localhost"}).catch(err => console.log(err));
+mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
 
 // Parser
 const bodyParser = require('body-parser');

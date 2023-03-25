@@ -209,10 +209,18 @@ router.get('/:authorId', async (req, res) => {
  *          schema:
  *            $ref: '#/components/schemas/Author'
  *          example: 
+ *            type: author
+ *            id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
  *            authorId: 29c546d45f564a27871838825e3dbecb
  *            host: https://yoshi-connect.herokuapp.com/
  *            url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *            displayName: kc
+ *            displayName: kc123
+ *            email: ayuno123@ualberta.ca
+ *            about: i am a code monkey 2.0
+ *            pronouns: she/her
+ *            github: https://github.com/kezzayuno
+ *            profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *            admin: true
  *    parameters:
  *      - in: path
  *        name: authorId
@@ -254,11 +262,15 @@ router.get('/:authorId', async (req, res) => {
  *                displayName:
  *                  type: string
  *                  description: username of Author (unique)
- *                  example: kc
+ *                  example: kc123
  *                about: 
  *                  type: string
  *                  description: description about Author 
- *                  example: i am a code monkey
+ *                  example: i am a code monkey 2.0
+ *                email: 
+ *                  type: string
+ *                  description: email about Author 
+ *                  example: ayuno123@ualberta.ca
  *                pronouns:
  *                  type: string
  *                  description: pronouns the Author takes
@@ -278,18 +290,39 @@ router.get('/:authorId', async (req, res) => {
  *     - Author:
  *         type: object
  *         properties: 
- *           authorId: 
+ *           type:
  *             type: string
- *             description: UUID of Author
- *           host:
- *             type: string
- *             description: network the Author is from 
- *           displayName: 
- *             type: string
- *             description: username of Author
- *           url:
+ *             description: JSON type 
+ *           id:
  *             type: string
  *             description: URL of Author
+ *           authorId:
+ *             type: string 
+ *             description: UUID of Author 
+ *           host: 
+ *             type: string
+ *             description: network the Author is from 
+ *           url: 
+ *             type: string
+ *             description: URL of Author 
+ *           displayName:
+ *             type: string
+ *             description: username of Author (unique)
+ *           email:
+ *             type: string
+ *             description: email of Author (unique)
+ *           about: 
+ *             type: string
+ *             description: description about Author 
+ *           pronouns:
+ *             type: string
+ *             description: pronouns the Author takes
+ *           github:
+ *             type: string
+ *             description: GitHub linked to the Author
+ *           profileImage:
+ *             type: string
+ *             description: profile picture Author uses
  */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }

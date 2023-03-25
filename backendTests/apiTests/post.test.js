@@ -24,10 +24,10 @@ const app = require("../../app.js");
 // TODO
 // Add the correct values and returns
 
-describe("Endpoints for /, Only testing if the endpoints reach", () => {
+describe("Testing if the endpoints exist for /authorId/posts", () => {
     const basePath = "/authorId/posts"
 
-    describe("For /", () => {
+    describe("/", () => {
         let currentPath = basePath + "/"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})
@@ -39,7 +39,7 @@ describe("Endpoints for /, Only testing if the endpoints reach", () => {
     })
 
 
-    describe("For /:postid/", () => {
+    describe("/:postid/", () => {
         let currentPath = basePath + "/postId"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})
@@ -59,7 +59,7 @@ describe("Endpoints for /, Only testing if the endpoints reach", () => {
     })
 
 
-    describe("For /:postId/likes", () => {
+    describe("/:postId/likes", () => {
         let currentPath = basePath + "/postId/likes"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})
@@ -67,7 +67,7 @@ describe("Endpoints for /, Only testing if the endpoints reach", () => {
     })
 
 
-    describe("For /friends-posts", () => {
+    describe("/friends-posts", () => {
         let currentPath = basePath + "/friends-posts"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})
@@ -75,7 +75,7 @@ describe("Endpoints for /, Only testing if the endpoints reach", () => {
     })
 
 
-    describe("For /other/:other", () => {
+    describe("/other/:other", () => {
         let currentPath = basePath + "/other/other"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})
@@ -83,7 +83,7 @@ describe("Endpoints for /, Only testing if the endpoints reach", () => {
     })
 
 
-    describe("For /personal", () => {
+    describe("/personal", () => {
         let currentPath = basePath + "/personal"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})
@@ -91,7 +91,7 @@ describe("Endpoints for /, Only testing if the endpoints reach", () => {
     })
 
 
-    describe("For /public", () => {
+    describe("/public", () => {
         let currentPath = basePath + "/public"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})

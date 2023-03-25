@@ -24,10 +24,10 @@ const app = require("../../app.js");
 // TODO
 // Add the correct values and returns
 
-describe("Endpoints for /, Only testing if the endpoints reach", () => {
+describe("Testing if the endpoints exist for /", () => {
     const basePath = "/"
 
-    describe("For /", () => {
+    describe("/", () => {
         let currentPath = basePath + "/"
         it.only("get", async () => {
             await request(app).get(currentPath).send({})
@@ -42,10 +42,7 @@ describe("Endpoints for /, Only testing if the endpoints reach", () => {
         })
 
         it.only("put", async () => {
-            await request(app).put(currentPath).send({})
+            request(app).put(currentPath).send({})
         })  
     })
 })
-
-
-

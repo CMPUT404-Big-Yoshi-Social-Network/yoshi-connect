@@ -36,7 +36,7 @@ const express = require('express');
 
 // Router
 const router = express.Router({mergeParams: true});
-
+//TODO replace example with real response
 /**
  * @openapi
  * /admin:
@@ -53,6 +53,17 @@ const router = express.Router({mergeParams: true});
  *        description: Forbidden -- Author was not an admin
  *      200:
  *        description: OK -- Login as author was successful and cached
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                id:
+ *                  type: integer
+ *                  description: The user ID.
+ *                username:
+ *                  type: string
+ *                  description: The user name.
  */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 

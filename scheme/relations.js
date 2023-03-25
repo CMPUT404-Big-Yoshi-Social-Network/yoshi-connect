@@ -29,6 +29,7 @@ const followerScheme = new Schema({
     username: String,
     authorId: String,
     followers: [{
+        _id: String,
         username: String,
         authorId: String
     }]},
@@ -40,6 +41,7 @@ const followingScheme = new Schema({
     username: String,
     authorId: String,
     followings: [{
+        _id: String,
         username: String,
         authorId: String
     }]},

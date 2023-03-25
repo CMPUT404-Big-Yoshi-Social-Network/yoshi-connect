@@ -113,13 +113,13 @@ router.get('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
   const postId = req.params.postId;
 
-  let [author, authorStatus] = await getAuthor(authorId)
+  let [author, authorStatus] = await getAuthor(authorId);
 
   if(authorStatus != 200){
     return res.sendStatus(authorStatus);
   }
 
-  let [post, postStatus] = await getPost(postId, author);
+  let [post, postStatus] = await getPost(postId, req.cookies.token, author);
 
   if (postStatus != 200) { return res.sendStatus(postStatus); }
 

@@ -34,6 +34,7 @@ const crypto = require('crypto');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
+const { getAuthor } = require('./author.js');
 
 async function createPostHistory(author_id){
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
@@ -70,7 +71,7 @@ async function getImage(url) {
     return [image.src, 200];
 }
 
-async function getPost(postId, author){
+async function getPost(postId, getterAuthorId, author){
     let post = await PostHistory.aggregate([
         {
             $match: {'authorId': author.authorId}
@@ -83,9 +84,14 @@ async function getPost(postId, author){
         }
     ]);
     
-    if (post.length == 0) { return [{}, 404]; }
+    if (post.length == 0 || !post[0].posts) { return [{}, 404]; }
 
     post = post[0].posts
+
+    if(post.visibility == "FRIENDS"){
+        //TODO Check if getter is a follower
+        //TODO Either allow any server to get friends or don't
+    }
 
     post = {
         "type": "post",
@@ -95,10 +101,12 @@ async function getPost(postId, author){
         "origin": post.origin,
         "description": post.description,
         "contentType": post.contentType,
-        "author": author, 
+        "content": post.content,
+        "author": author,
         "categories": post.categories,
-        "count": post.count,
-        "comments": post.comments,
+        "count": post.commentCount,
+        "likeCount": post.likeCount,
+        "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
         "commentSrc": post.commentSrc,
         "published": post.published,
         "visibility": post.visibility,
@@ -110,6 +118,8 @@ async function getPost(postId, author){
 async function createPost(token, authorId, postId, newPost) {
     if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
+    let authorPromise = getAuthor(authorId);
+
     const title = newPost.title;
     const description = newPost.description;
     const contentType = newPost.contentType;
@@ -120,22 +130,24 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
+    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != true && unlisted != false)){
+        return [[], 400];
+    }
+
     let postHistory = await PostHistory.findOne({authorId: authorId});
+    if (!postHistory) {
+        return [[], 404];
+    }
 
     if(postId != undefined){
         let oldPost = postHistory.posts.id(postId);
-        if (oldPost) return [[], 400]
+        if (oldPost) return [[], 400];
     }
     
     if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
 
     let source = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
     let origin = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
-
-    if (!postHistory) {
-        await createPostHistory(authorId);
-        postHistory = await PostHistory.findOne({authorId: authorId});
-    }
 
     let post = {
         _id: postId,
@@ -147,9 +159,8 @@ async function createPost(token, authorId, postId, newPost) {
         content: content,
         authorId: authorId,
         categories: categories,
-        count: 0,
-        like_count: 0,
-        comment_count: 0,
+        likeCount: 0,
+        commentCount: 0,
         published: published,
         visibility: visibility,
         unlisted: unlisted,
@@ -159,7 +170,7 @@ async function createPost(token, authorId, postId, newPost) {
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
 
-    const savePostPromise = await postHistory.save();
+    let savePostPromise = postHistory.save();
 
     let likes = LikeHistory({
         type: "post",
@@ -172,10 +183,7 @@ async function createPost(token, authorId, postId, newPost) {
         comments: [],
     }).save();
 
-    await likes;
-    await comments;
-    savePostPromise;
-
+    //TODO make public posts into a collection with several documents
     if (visibility == 'Public') {
         const publicPost = await PublicPost.findOne().clone();
         publicPost.posts.push({
@@ -201,7 +209,13 @@ async function createPost(token, authorId, postId, newPost) {
             await inbox.save();
         }
     }
-    return [await getPost(authorId, postId), 200];
+
+    await likes;
+    await comments;
+    await savePostPromise;
+    let [author, status] = await authorPromise;
+    if (status != 200) { return [{}, 500]; }
+    return await getPost(postId, authorId, author);
 }
 
 async function updatePost(token, authorId, postId, newPost) {
@@ -407,9 +421,9 @@ async function getPosts(page, size, author) {
             "content": post.content,
             "author": author,
             "categories": post.categories,
-            "count": post.count,
+            "count": post.commentCount,
             "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
-            "likeCount": post.likes_count,
+            "likeCount": post.likesCount,
             "likes": "",
             "published": post.published,
             "visibility": post.visibility,

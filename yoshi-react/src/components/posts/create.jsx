@@ -42,9 +42,9 @@ function CreatePost() {
      */
     const [data, setData] = useState({
         title: "",
-        desc: "",
+        description: "",
         contentType: "text/plain",
-        visibility: "Public",
+        visibility: "PUBLIC",
         content: "",
         likes: [],
         comments: [],
@@ -97,7 +97,7 @@ function CreatePost() {
 
         let body = {
             title: data.title,
-            desc: data.desc,
+            description: data.description,
             contentType: data.contentType,
             visibility: data.visibility,
             content: data.content,
@@ -160,8 +160,8 @@ function CreatePost() {
 
                         <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
-                            <option value={"Public"}>Public</option>
-                            <option value={"Friends"}>Friends</option>
+                            <option value={"PUBLIC"}>Public</option>
+                            <option value={"FRIENDS"}>Friends</option>
                             <option value={"Private"}>Private</option>
                         </select>
 
@@ -187,7 +187,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Description</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, desc: e.target.value})
+                            setData({...data, description: e.target.value})
                         }}></input>
 
 

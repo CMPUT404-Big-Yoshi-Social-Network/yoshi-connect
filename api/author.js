@@ -125,7 +125,7 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId:
  *  get:
- *    description: Fetches a specific Author using authorId params
+ *    summary: Fetches a specific Author using authorId params
  *    tags:
  *      - author
  *    parameters:
@@ -200,7 +200,7 @@ router.get('/:authorId', async (req, res) => {
  * @openapi
  * /authors/:authorId:
  *  post:
- *    description: Updates an existing Author with authorId params
+ *    summary: Updates an existing Author with authorId params
  *    tags:
  *      - author
  *    requestBody: 
@@ -345,7 +345,7 @@ router.post('/:authorId', async (req, res) => {
  * @openapi
  * /search/:username:
  *  post:
- *    description: Searches for a list of names locally and remotely that match the searched username
+ *    summary: Searches for a list of names locally and remotely that match the searched username
  *    tags:
  *      - author
  *    parameters:

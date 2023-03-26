@@ -41,7 +41,7 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /profile/:username:
  *  get:
- *    description: Checks for authenticated token to get the author profile
+ *    summary: Checks for authenticated token to get the author profile
  *    tags:
  *      - profile
  *    parameters:

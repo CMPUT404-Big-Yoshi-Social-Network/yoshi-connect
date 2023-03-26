@@ -44,7 +44,7 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /authors/:authorId/friends:
  *  get:
- *    description: Fetches friends list associated with authorId 
+ *    summary: Fetches friends list associated with authorId 
  *    tags:
  *      - friend
  *    parameters:

@@ -44,7 +44,7 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /authors/:authorId/followings:
  *  get:
- *    description: Fetches the followings list for Author associated with authorId
+ *    summary: Fetches the followings list for Author associated with authorId
  *    tags:
  *      - following 
  *    parameters:
@@ -138,7 +138,7 @@ router.get('/', async (req, res) => {
  * @openapi
  * /authors/:authorId/followings/:foreignAuthorId:
  *  get:
- *    description: deletes a specific Author associated with foreignAuthorId contained in Author followings list associated with authorIdi
+ *    summary: deletes a specific Author associated with foreignAuthorId contained in Author followings list associated with authorIdi
  *    tags:
  *      - following 
  *    parameters:

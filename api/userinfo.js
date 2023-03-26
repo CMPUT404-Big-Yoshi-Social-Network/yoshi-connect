@@ -40,7 +40,7 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /userinfo:
  *  get:
- *    description: Fetches the Author's attributes through the use of the cookie token 
+ *    summary: Fetches the Author's attributes through the use of the cookie token 
  *    tags:
  *      - userinfo
  *    responses:

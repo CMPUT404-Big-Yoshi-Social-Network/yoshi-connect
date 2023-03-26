@@ -20,7 +20,7 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /settings/logout:
  *  post:
- *    description: Removes login document (associated token) and logs out current Author 
+ *    summary: Removes login document (associated token) and logs out current Author 
  *    tags:
  *      - settings
  *    responses:
@@ -37,7 +37,7 @@ router.post('/logout', async (req, res) => { removeLogin(req, res); })
  * @openapi
  * /settings:
  *  post:
- *    description: Modifies an current Author's attributes 
+ *    summary: Modifies an current Author's attributes 
  *    tags:
  *      - settings
  *    responses:

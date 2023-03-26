@@ -40,7 +40,7 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /signup:
  *  post:
- *    description: Registers an Author in YoshiConnect by sending the document to be enabled or disabled by an Admin Author
+ *    summary: Registers an Author in YoshiConnect by sending the document to be enabled or disabled by an Admin Author
  *    tags:
  *      - signup
  *    responses:

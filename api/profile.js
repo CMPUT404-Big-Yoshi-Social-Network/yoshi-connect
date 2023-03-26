@@ -44,6 +44,12 @@ const router = express.Router({mergeParams: true});
  *    description: Checks for authenticated token to get the author profile
  *    tags:
  *      - profile
+ *    parameters:
+ *      - in: path
+ *        name: username
+ *        schema:
+ *          type: string
+ *        description: username of an Author
  *    responses:
  *     401:
  *        description: Unauthorized, Token for profile was not authenticated

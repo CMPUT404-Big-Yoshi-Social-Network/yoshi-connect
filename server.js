@@ -23,18 +23,20 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 require('dotenv').config();
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
+mongoose.connect(process.env.ATLAS_URI, {dbName: process.env.DATABASE}).catch(err => console.log(err));
 
 // Parser
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
-
-
 // App Setup
 const express = require('express');
 const app = express();
-var cors = require('cors');
+let cors = require('cors');
+let corsOptions = {
+  origin: ["http://www.distribution.social", "https://www.distribution.social/", "http://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com"],
+  credentials: true
+};
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 

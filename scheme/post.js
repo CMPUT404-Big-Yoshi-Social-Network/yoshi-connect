@@ -53,12 +53,21 @@ const postHistoryScheme = new Schema({
 })
 
 const publicScheme = new Schema({
-    _id: String,
-    posts: [{
-        authorId: String,
-        post: postScheme,
-    }],
-    num_posts: Number},
+    _id: String, //postId
+    authorId: String,
+    origin: String,
+    source: String,
+    title: String,
+    description: String,
+    contentType: String,
+    content: String,
+    categories: [String],
+    likeCount: Number,
+    commentCount: Number,
+    published: String,
+    visibility: String,
+    postTo: String,
+    unlisted: Boolean,},
     {versionKey: false
 })
 

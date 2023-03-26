@@ -115,7 +115,7 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  * @openapi
  * components:
  *   schemas:
- *     - NewAuthor:
+ *     NewAuthor:
  *         type: object
  *         properties: 
  *           status: 
@@ -130,7 +130,7 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  *           password:
  *             type: string
  *             description: password of Author
- *     - ModifiedAuthor:
+ *     ModifyAuthor:
  *         type: object
  *         properties: 
  *           status: 
@@ -157,7 +157,7 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  *           authorId:
  *             type: string
  *             description: UUID of author
- *     - Author:
+ *     Author:
  *         type: object
  *         properties: 
  *           type:
@@ -198,7 +198,7 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  *    summary: Adds an Author to YoshiConnect database or updates an Author's attributes
  *    tags:
  *      - admin
- *    requestBody: 
+ *    requestBody:
  *      content:
  *        application/x-wwwm-form-urlencoded:
  *          schema:

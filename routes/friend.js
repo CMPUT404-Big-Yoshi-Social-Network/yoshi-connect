@@ -134,7 +134,6 @@ async function isFriend(authorId, foreignId, res) {
             "host": process.env.DOMAIN_NAME,
             "oId" : process.env.DOMAIN_NAME + "authors/" + foreignId,
             "objectId" : foreignId,
-            "host": process.env.DOMAIN_NAME,
             status: 'Friends'
         }) 
     } else {
@@ -146,7 +145,6 @@ async function isFriend(authorId, foreignId, res) {
                 "host": process.env.DOMAIN_NAME,
                 "oId" : process.env.DOMAIN_NAME + "authors/" + foreignId,
                 "objectId" : foreignId,
-                "host": process.env.DOMAIN_NAME,
                 status: 'Follows'
             })  
         } else if (!actorFollows) {
@@ -157,7 +155,6 @@ async function isFriend(authorId, foreignId, res) {
                 "host": process.env.DOMAIN_NAME,
                 "oId" : process.env.DOMAIN_NAME + "authors/" + foreignId,
                 "objectId" : foreignId,
-                "host": process.env.DOMAIN_NAME,
                 status: 'Strangers'
             })  
         }

@@ -27,10 +27,25 @@ const { getCreds, getCred, postCred, putCred, allowNode, deleteCred } = require(
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router
 const router = express.Router({mergeParams: true});
 
-/** Outgoing Stuff */
+/**
+ * @openapi
+ * /nodes/outgoing:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - outgoing 
+ */
 router.get('/outgoing', async (req, res) => { 
     let page = req.query.page;
     let size = req.query.size;
@@ -40,10 +55,26 @@ router.get('/outgoing', async (req, res) => {
     await getCreds(res, page, size, req.cookies.token, 'outgoing'); 
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/:credId:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - outgoing 
+ */
 router.get('/outgoing/:credId', async (req, res) => { 
     await getCred(res, req.cookies.token, req.params.credId, 'outgoing'); 
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/:credId:
+ *  put:
+ *    summary: INSERT
+ *    tags:
+ *      - outgoing 
+ */
 router.put('/outgoing/:credId', async (req, res) => {
     if (req.body.status == 'modify') {
         await putCred(req, res, req.params.credId, req.cookies.token, 'outgoing'); 
@@ -52,15 +83,38 @@ router.put('/outgoing/:credId', async (req, res) => {
     }
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing:
+ *  post:
+ *    summary: INSERT
+ *    tags:
+ *      - outgoing 
+ */
 router.post('/outgoing', async (req, res) => {
     await postCred(req, res, req.cookies.token, 'outgoing'); 
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/:credId:
+ *  delete:
+ *    summary: INSERT
+ *    tags:
+ *      - outgoing 
+ */
 router.delete('/outgoing/:credId', async (req, res) => { 
     await deleteCred(req.cookies.token, req.params.credId, 'outgoing'); 
 })
 
-/** Communication with Remote */
+/**
+ * @openapi
+ * /nodes/outgoing/authors:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -94,6 +148,14 @@ router.get('/outgoing/authors', async (req, res) => {
     })
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -127,6 +189,14 @@ router.get('/outgoing/authors/:authorId', async (req, res) => {
     return res.json(author)
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/posts/:postId:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId/posts/:postId', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -160,6 +230,14 @@ router.get('/outgoing/authors/:authorId/posts/:postId', async (req, res) => {
     return res.json(post)
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/posts/:postId/image:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -193,6 +271,14 @@ router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) =
     return res.json(image)
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/posts:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -231,6 +317,14 @@ router.get('/outgoing/posts', async (req, res) => {
     })
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/posts/:postId/comments:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId/posts/:postId/comments', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -270,6 +364,14 @@ router.get('/outgoing/authors/:authorId/posts/:postId/comments', async (req, res
     })
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/followers:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId/followers', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -307,6 +409,14 @@ router.get('/outgoing/authors/:authorId/followers', async (req, res) => {
     })
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/followers/:foreignId:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -340,6 +450,14 @@ router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) 
     return res.json(follower)
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/inbox/like:
+ *  post:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.post('/outgoing/authors/:authorId/inbox/like', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
 
@@ -371,6 +489,14 @@ router.post('/outgoing/authors/:authorId/inbox/like', async (req, res) => {
     return res.sendStatus(200);
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/posts/:postId/likes:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId/posts/:postId/likes', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -408,6 +534,14 @@ router.get('/outgoing/authors/:authorId/posts/:postId/likes', async (req, res) =
     })
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -445,6 +579,14 @@ router.get('/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes'
     })
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/liked:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
@@ -478,6 +620,14 @@ router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
     return res.json(liked)
 })
 
+/**
+ * @openapi
+ * /nodes/outgoing/authors/:authorId/inbox/:type:
+ *  post:
+ *    summary: INSERT
+ *    tags:
+ *      - remote 
+ */
 router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
 
@@ -509,8 +659,14 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
     return res.sendStatus(200);
 })
 
-
-/** Incoming Stuff */
+/**
+ * @openapi
+ * /nodes/incoming:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - incoming 
+ */
 router.get('/incoming', async (req, res) => { 
     // Getting our credentials from other nodes
     let page = req.query.page;
@@ -521,16 +677,40 @@ router.get('/incoming', async (req, res) => {
     await getCreds(res, page, size, req.cookies.token, 'incoming'); 
 })
 
+/**
+ * @openapi
+ * /nodes/incoming/:credId:
+ *  get:
+ *    summary: INSERT
+ *    tags:
+ *      - incoming 
+ */
 router.get('/incoming/:credId', async (req, res) => { 
     // Getting our credentials from other nodes given the credId
     await getCred(res, req.cookies.token, req.params.credId, 'incoming'); 
 })
 
+/**
+ * @openapi
+ * /nodes/incoming:
+ *  post:
+ *    summary: INSERT
+ *    tags:
+ *      - incoming 
+ */
 router.post('/incoming', async (req, res) => {
     // Storing credentials from other nodes 
     await postCred(req, res, req.cookies.token, 'incoming'); 
 })
 
+/**
+ * @openapi
+ * /nodes/incoming/:credId:
+ *  put:
+ *    summary: INSERT
+ *    tags:
+ *      - incoming 
+ */
 router.put('/incoming/:credId', async (req, res) => {
     if (req.body.status == 'modify') {
         await putCred(req, res, req.params.credId, req.cookies.token, 'incoming'); 
@@ -539,6 +719,14 @@ router.put('/incoming/:credId', async (req, res) => {
     }
 })
 
+/**
+ * @openapi
+ * /nodes/incoming/:credId:
+ *  delete:
+ *    summary: INSERT
+ *    tags:
+ *      - incoming 
+ */
 router.delete('/incoming/:credId', async (req, res) => { 
     // Deleting credentials for us (in database)
     await deleteCred(req.cookies.token, req.params.credId, 'incoming'); 

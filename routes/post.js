@@ -23,10 +23,10 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Post, Image } = require('../scheme/post.js');
+const { PostHistory, PublicPost, Post, Image, Inbox } = require('../scheme/post.js');
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
-const { Author } = require('../scheme/author.js');
-const {Follower} = require('../scheme/relations.js');
+const { Author, Login } = require('../scheme/author.js');
+const { Follower, Following } = require('../scheme/relations.js');
 
 
 // UUID
@@ -34,6 +34,7 @@ const crypto = require('crypto');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
+const { getAuthor } = require('./author.js');
 
 async function createPostHistory(author_id){
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
@@ -70,7 +71,7 @@ async function getImage(url) {
     return [image.src, 200];
 }
 
-async function getPost(postId, author){
+async function getPost(postId, auth, author){
     let post = await PostHistory.aggregate([
         {
             $match: {'authorId': author.authorId}
@@ -83,9 +84,45 @@ async function getPost(postId, author){
         }
     ]);
     
-    if (post.length == 0) { return [{}, 404]; }
+    if (post.length == 0 || !post[0].posts) { return [{}, 404]; }
 
     post = post[0].posts
+
+    if(post.visibility == "FRIENDS"){
+        let follower = false;
+        if(!auth){
+            return [{}, 401];
+        }
+        else if(auth == "server"){
+            follower = true;
+        }
+        else{
+            let login = await Login.findOne({token: auth});
+
+            if(!login){
+                return [{}, 401];
+            }
+
+            //TODO ONLY WORKS FOR CURRENT SERVER NOT MULTIPLE
+            let authorId = author.id.split("/");
+            authorId = authorId[authorId.length - 1];
+            let following = await Following.findOne({authorId: authorId});
+
+            if(!following || !following.followings){
+                return [{}, 401];
+            }
+
+            for(let i = 0; i < following.followings.length; i++){
+                follow = following.followings[i];
+                if(follow.authorId = login.authorId){
+                    follower = true;
+                    break;
+                }
+            }
+        }
+        
+        if(!follower) return [{}, 401];
+    }
 
     post = {
         "type": "post",
@@ -95,10 +132,12 @@ async function getPost(postId, author){
         "origin": post.origin,
         "description": post.description,
         "contentType": post.contentType,
-        "author": author, 
+        "content": post.content,
+        "author": author,
         "categories": post.categories,
-        "count": post.count,
-        "comments": post.comments,
+        "count": post.commentCount,
+        "likeCount": post.likeCount,
+        "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
         "commentSrc": post.commentSrc,
         "published": post.published,
         "visibility": post.visibility,
@@ -110,6 +149,8 @@ async function getPost(postId, author){
 async function createPost(token, authorId, postId, newPost) {
     if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
+    let authorPromise = getAuthor(authorId);
+
     const title = newPost.title;
     const description = newPost.description;
     const contentType = newPost.contentType;
@@ -120,22 +161,24 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
+    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
+        return [[], 400];
+    }
+
     let postHistory = await PostHistory.findOne({authorId: authorId});
+    if (!postHistory) {
+        return [[], 404];
+    }
 
     if(postId != undefined){
         let oldPost = postHistory.posts.id(postId);
-        if (oldPost) return [[], 400]
+        if (oldPost) return [[], 400];
     }
     
     if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
 
     let source = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
     let origin = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
-
-    if (!postHistory) {
-        await createPostHistory(authorId);
-        postHistory = await PostHistory.findOne({authorId: authorId});
-    }
 
     let post = {
         _id: postId,
@@ -147,9 +190,8 @@ async function createPost(token, authorId, postId, newPost) {
         content: content,
         authorId: authorId,
         categories: categories,
-        count: 0,
-        like_count: 0,
-        comment_count: 0,
+        likeCount: 0,
+        commentCount: 0,
         published: published,
         visibility: visibility,
         unlisted: unlisted,
@@ -159,7 +201,7 @@ async function createPost(token, authorId, postId, newPost) {
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
 
-    const savePostPromise = await postHistory.save();
+    let savePostPromise = postHistory.save();
 
     let likes = LikeHistory({
         type: "post",
@@ -172,87 +214,110 @@ async function createPost(token, authorId, postId, newPost) {
         comments: [],
     }).save();
 
-    await likes;
-    await comments;
-    savePostPromise;
+    let [author, status] = await authorPromise;
+    if (status != 200) return [{}, 500];
 
-    if (visibility == 'Public') {
-        const publicPost = await PublicPost.findOne().clone();
-        publicPost.posts.push({
-            authorId: authorId,
-            post: post,
-        })
-        publicPost.num_posts = publicPost.num_posts + 1;
+    if (visibility == 'PUBLIC') {
+        post.author = {
+            _id: author.id,
+            displayName: author.displayName,
+            profileImage: author.profileImage,
+            pronouns: author.pronouns
+        }
+        const publicPost = new PublicPost(post);
         await publicPost.save();
     }
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if(unlisted === "false"){
+    if(unlisted == "false" || unlisted == false){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;
-            console.log(follower);
             const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-
-            console.log(inbox);
 
             inbox.posts.push(post);
             await inbox.save();
         }
     }
-    return [await getPost(authorId, postId), 200];
+
+    await likes;
+    await comments;
+    await savePostPromise;
+    return await getPost(postId, authorId, author);
 }
 
 async function updatePost(token, authorId, postId, newPost) {
     if (!(await authLogin(token, authorId))) { return [{}, 401]; }
-
     const title = newPost.title;
-    const desc = newPost.desc;
+    const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
     const categories = newPost.categories;
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
 
+    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false')){
+        return [{}, 400];
+    }
+
     const postHistory = await PostHistory.findOne({authorId: authorId});
 
     if (!postHistory) { return [{}, 500]; }
 
     let post = postHistory.posts.id(postId);
+    if(unlisted == 'false' && visibility == "PUBLIC" && !post.unlisted && post.visibility == "PUBLIC") {
+        let publicPosts = await PublicPost.findOne({_id: postId}).clone();
+        if(!publicPosts) return [{}, 500];
+        publicPosts.title = title;
+        publicPosts.description = description;
+        publicPosts.contentType = contentType;
+        publicPosts.content = content;
+        publicPosts.visibility = visibility;
+        publicPosts.unlisted = unlisted;
+        publicPosts.categories = categories;
+        await publicPosts.save();
+    }
+    else if(unlisted == 'false' && visibility == "PUBLIC") {
+        let publicPost = {
+            _id: postId,
+            title: title,
+            source: post.source,
+            origin: post.origin,
+            description: description,
+            contentType: contentType,
+            content: content,
+            authorId: authorId,
+            categories: categories,
+            likeCount: post.likeCount,
+            commentCount: post.commentCount,
+            published: post.published,
+            visibility: visibility,
+            unlisted: unlisted,
+            postTo: post.postTo
+        };
+        await (new PublicPost(publicPost)).save();
+    }
+    else if(unlisted == "true" || visibility == "FRIENDS"){
+        await PublicPost.findOneAndDelete({_id: postId}).clone();
+    }
 
     post.title = title;
-    post.description = desc;
+    post.description = description;
     post.contentType = contentType;
     post.content = content;
     post.visibility = visibility;
     post.unlisted = unlisted;
     post.categories = categories;
     await postHistory.save()
-
-    if(post.visibility == "PUBLIC" || post.visibility == "Public"){
-        let publicPosts = await PublicPost.findOne().clone();
-
-        for(let i = 0; i < publicPosts.posts.length; i++){
-            let publicPost = publicPosts.posts[i];
-            if(publicPost.post._id == post._id){
-                publicPosts.posts[i].post = post;
-                await publicPosts.save();
-                break;
-            }
-        }
-    }
-
+    
+    /*
     if(unlisted === "false"){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         let promiseList = [];
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;
-            console.log(follower);
             const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-
-            console.log(inbox);
-
             inbox.posts.push(post);
             promiseList.push(inbox.save());
         }
@@ -261,8 +326,9 @@ async function updatePost(token, authorId, postId, newPost) {
             await promiseList[i];
         }
     }
-
-    return [await getPost(authorId, postId), 200];
+    */
+    let author = await getAuthor(authorId);
+    return await getPost(postId, token, author[0]);
 }
 
 async function deletePost(token, authorId, postId) {
@@ -270,11 +336,11 @@ async function deletePost(token, authorId, postId) {
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
 
-    if (!postHistory) { return [[], 500]; }
+    if (!postHistory) { return [{}, 404]; }
 
     const post = postHistory.posts.id(postId);
 
-    if(!post) { return [[], 404]; }
+    if(!post) { return [{}, 404]; }
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
@@ -284,110 +350,89 @@ async function deletePost(token, authorId, postId) {
     
     postHistory.save();
 
-    if (post.visibility == "PUBLIC" || post.visibility == "Public") {
-        const publicPost = await PublicPost.findOne().clone();
-        let posts = publicPost.posts;
-        for (let i = 0; i < posts.length; i++) {
-            if (posts[i].post._id === post._id) {
-                publicPost.posts[i].remove();
-                break;
-            }
-        }
-        publicPost.num_posts = publicPost.num_posts - 1;
-        await publicPost.save();
+    let publicPost;
+    if (post.visibility == "PUBLIC") {
+        publicPost = PublicPost.findOneAndDelete({_id: postId}).clone();
     }
 
     await likes;
     await comments;
-
-    return [post, 200]; 
+    await publicPost;
+    return [undefined, 200]; 
 }
 
-async function getPosts(page, size, author) {
-    let posts = undefined
-    if(page > 1){
-        posts = await PostHistory.aggregate([
-            {
-                $match: {'authorId': author.authorId}
-            },
-            {
-                $unwind: '$posts'
-            },
-            {
-                $match: {
-                    'posts.unlisted': false
-                }
-            },
-            {
-                $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: { dateString: "$posts.published" }
-                    }
-                }
-            },
-            {
-                $sort: { "posts.published": -1 }
-            },
-            {
-                $skip: (page - 1) * size
-            },
-            {
-                $limit: size
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: { $push: "$posts" }
-                }
-            },
-        ]);
-    } else if (page == 1) {
-        posts = await PostHistory.aggregate([
-            {
-                $match: {'authorId': author.authorId}
-            },
-            {
-                $unwind: '$posts'
-            },
-            {
-                $match: {
-                    'posts.unlisted': false,
-                    
-                }
-            },
-            {
-                $match: {
-                    'posts.visibility': {$in : ["PUBLIC"]}
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: { dateString: "$posts.published" }
-                    }
-                }
-            },
-            {
-                $sort: { "posts.published": -1 }
-            },
-            {
-                $limit: size
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: { $push: "$posts" }
+async function getPosts(token, page, size, author) {
+    if(page < 0 || size < 0){
+        return [[], 400]
+    }
+
+    let login = Login.findOne({token: token});
+
+    let aggregatePipeline = [
+        {
+            $match: {'authorId': author.authorId}
+        },
+        {
+            $unwind: '$posts'
+        },
+        {
+            $match: {
+                'posts.unlisted': false
+            }
+        },
+        {
+            $match: {
+                'posts.visibility': {$in : ["PUBLIC"]}
+            }
+        },
+        {
+            $set: {
+                "posts.published": {
+                    $dateFromString: { dateString: "$posts.published" }
                 }
             }
-            
-        ]);
-    } else{
-        return [[], 400];
+        },
+        {
+            $sort: { "posts.published": -1 }
+        },
+        {
+            $limit: size
+        },
+        {
+            $group: {
+                _id: null,
+                posts_array: { $push: "$posts" }
+            }
+        },
+    ];
+
+    if(token){
+        login = await login;
+        if(login){
+            let following = await Following.findOne({authorId: author.authorId});
+
+            if(!following || !following.followings){
+                return [{}, 401];
+            }
+
+            for(let i = 0; i < following.followings.length; i++){
+                follow = following.followings[i];
+                if(follow.authorId = login.authorId){
+                    aggregatePipeline.splice(3, 1);
+                    break;
+                }
+            }
+        }
+    }
+
+    let posts = undefined;
+    if(page > 1){
+        aggregatePipeline.splice(6, 0, {
+            $skip: (page - 1) * size
+        })
+        posts = await PostHistory.aggregate(aggregatePipeline);
+    } else if (page == 1) {
+        posts = await PostHistory.aggregate(aggregatePipeline);
     }
     
     if (!posts || !posts[0] || !posts[0].posts_array) { return [[], 200]; }
@@ -398,7 +443,7 @@ async function getPosts(page, size, author) {
         const post = posts[i];
         let sanitized_posts = {
             "type": "post",
-            "tite'": post.title,
+            "title": post.title,
             "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id,
             "source": post.source,
             "origin": post.origin,
@@ -407,10 +452,10 @@ async function getPosts(page, size, author) {
             "content": post.content,
             "author": author,
             "categories": post.categories,
-            "count": post.count,
+            "count": post.commentCount,
+            "likeCount": post.likesCount,
             "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
-            "likeCount": post.likes_count,
-            "likes": "",
+            "commentSrc": post.commentSrc,
             "published": post.published,
             "visibility": post.visibility,
             "unlisted": post.unlisted,

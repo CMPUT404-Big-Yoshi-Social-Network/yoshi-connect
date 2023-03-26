@@ -94,7 +94,7 @@ async function authAuthor(req, res) {
 
     const author = await Author.findOne({username: req.body.username});
 
-    if (!author) { return res.sendStatus(400); }
+    if (!author) { return res.sendStatus(404); }
     req.author = author;
 
     if (!author.allowed) {

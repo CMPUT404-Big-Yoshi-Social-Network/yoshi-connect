@@ -113,6 +113,8 @@ async function modifyAuthor(req, res){
             "email": req.body.newEmail,
             "about": req.body.newAbout,
             "pronouns": req.body.newPronouns,
+            "github": author.github,
+            "profileImage": author.profileImage,
             "admin": req.body.newAdmin
         })
     }).clone();
@@ -137,7 +139,20 @@ async function allowAuthor(req, res){
         author.allowed = true;
     }
     author.save();
-    return res.sendStatus(200)
+    return res.json({
+        "type": "author",
+        "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+        "authorId" : author._id,
+        "host": process.env.DOMAIN_NAME,
+        "url": process.env.DOMAIN_NAME + "authors/" + author._id,
+        "displayname": author.username,
+        "email": author.email,
+        "about": author.about,
+        "pronouns": author.pronouns,
+        "github": author.github,
+        "profileImage": author.profileImage,
+        "admin": author.admin
+    })
 }
 
 module.exports={

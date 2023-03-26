@@ -33,154 +33,61 @@ const { PostHistory, PublicPost } = require('../scheme/post.js');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
 
-async function fetchPublicPosts(req, res) {
+async function fetchPublicPosts(page, size) {
     // TODO: Paging
-    const login = await Login.findOne({token: req.cookies.token}).clone();
+    if(!page) page = 1;
+    if(!size) size = 5;
 
-    let followings = [];
-    if (!login && login != null) { 
-        const username = login.username
-    
-        const following = await Following.aggregate([
-            {
-                $match: {'username': username} 
-            },
-            {
-                $unwind: '$followings'
-            },
-            {
-                $project: {
-                    "followings.authorId": 1
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    follows: { $addToSet: "$followings.authorId"}
-                }
-            },
-        ]);
-        if(following.length > 0){ followings = following[0].follows; }
-    }
+    if(page < 0 || size < 0) return [{}, 400];
 
-    let posts = null;
-    if(followings.length != 0){
-        posts = await PostHistory.aggregate([
-            {
-                $match: {
-                    $expr: {
-                        $in : ["$authorId", followings]
-                    }
-                },
-            },
-            {
-                $unwind: "$posts"
-            },
-            {
-                $match: {
-                    $expr: {
-                        $ne: ["$unlisted", true]
-                    }
-                }
-            },
-            {
-                $set: {
-                    "posts.published": {
-                        $dateFromString: {
-                            dateString: "$posts.published"
-                        }
-                    }
-                }
-            },
-            {
-                $addFields: {
-                    "posts.authorId": "$authorId"
-                }
-            },
-            {
-                $sort: {"posts.published": -1}
-            },
-            {
-                $group: {
-                    _id: null,
-                    posts_array: {$push: "$posts"}
-                }
-            },
-        ]);
-    }
-
-    let isPublicExists = true;
-    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-    const publicPost = await PublicPost.find().clone();
-    if (publicPost.length == 0) {
-        let pp = new PublicPost({
-            _id: uuid,
-            posts: [],
-            num_posts: 0
-        });
-        pp.save(async (err, publicPost, next) => { if (err) { 
-            isPublicExists = false;
-            return res.sendStatus(500) 
-        } })
-    }
-
-    let publicPosts = await PublicPost.aggregate([
-        { $match: {} },
-        {
-            $unwind: "$posts"
-        },
-        {
-            $match: {
-                $expr: {
-                    $ne: ["$posts.post.unlisted", true]
-                }
-            }
-        },
+    let aggregatePipeline = [
         {
             $set: {
-                "posts.post.published": {
-                    $dateFromString: {
-                        dateString: "$posts.post.published"
-                    }
+                "published": {
+                    $dateFromString: { dateString: "$published" }
                 }
             }
         },
         {
-            $addFields: {
-                "posts.post.authorId": "$posts.authorId"
-            }
+            $sort: { "published": -1 }
         },
         {
-            $sort: {"posts.post.published": -1}
+            $limit: size
         },
-        {
-            $group: {
-                _id: null,
-                publicPosts: {$push: "$posts.post"}
-            }
-        }  
-    ]);
+    ]
 
+    if(page > 1){
+        aggregatePipeline.splice(2, 0, {
+            $skip: (page - 1) * size
+        });
+    }
+
+    let publicPosts = await PublicPost.aggregate(aggregatePipeline)
+    if(!publicPosts) return [[], 500];
+
+    for(let i = 0; i < publicPosts.length; i++){
+        let post = publicPosts[i];
+        post.id = process.env.DOMAIN_NAME + "authors/" + post.authorId + '/posts/' + post._id;
+        delete post._id;
+    }
+    return [publicPosts, 200];
+    /*
     const outgoings = await OutgoingCredentials.find().clone();
     
     // TODO: WORKING ON THIS WIP
     let fposts = [];
-
-    for (let i = 0; i < outgoings.length; i++) {
+    /*
+    for (let i = 0; i < 1; i++) {
         var config = {
             host: outgoings[i].url,
-            url: outgoings[i].url + '/posts',
+            url: outgoings[i].url + "/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts",
             method: 'GET',
             headers: {
                 'Authorization': outgoings[i].auth,
                 'Content-Type': 'application/json'
-            },
-            params: {
-                page: req.query.page,
-                size: req.query.size
             }
         };
-    
+        console.log(config)
         await axios.request(config)
         .then( res => {
             let items = res.data.items
@@ -190,6 +97,14 @@ async function fetchPublicPosts(req, res) {
             console.log(error);
         })
     }
+    */
+    /*
+    let response = await axios.get('http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts', {
+        headers: {
+            'Authorization': 'Basic eW9zaGk6eW9zaGkxMjM=',
+            'Content-Type': 'application/json'
+        }
+    })
 
     let allPosts = null;
     if (publicPosts[0] != undefined && posts != undefined) {
@@ -201,9 +116,15 @@ async function fetchPublicPosts(req, res) {
     } else {
         allPosts = [];
     }
-
+    */
     // Remove duplicates (https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects)
-    allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
+    //allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
+
+    /*WIP*/
+    /*
+    for(let i = 0; i < response.data.items.length; i++){
+        allPosts.push(response.data.items[i]);
+    }
 
     if (allPosts && isPublicExists){
         return res.json({
@@ -211,6 +132,8 @@ async function fetchPublicPosts(req, res) {
             items: allPosts
           });
     }
+    */
+
 }
 
 module.exports={

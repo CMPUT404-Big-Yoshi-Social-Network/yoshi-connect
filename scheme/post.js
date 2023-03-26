@@ -35,9 +35,8 @@ const postScheme = new Schema({
     contentType: String,
     content: String,
     categories: [String],
-    count: Number,
-    like_count: Number,
-    comment_count: Number,
+    likeCount: Number,
+    commentCount: Number,
     published: String,
     visibility: String,
     postTo: String,
@@ -53,13 +52,29 @@ const postHistoryScheme = new Schema({
     {versionKey: false
 })
 
-const publicScheme = new Schema({
+const publicPostAuthorsScheme = new Schema({
     _id: String,
-    posts: [{
-        authorId: String,
-        post: postScheme,
-    }],
-    num_posts: Number},
+    displayName: String,
+    profileImage: String,
+    pronouns: String
+})
+
+const publicScheme = new Schema({
+    _id: String, //postId
+    author: publicPostAuthorsScheme,
+    origin: String,
+    source: String,
+    title: String,
+    description: String,
+    contentType: String,
+    content: String,
+    categories: [String],
+    likeCount: Number,
+    commentCount: Number,
+    published: String,
+    visibility: String,
+    postTo: String,
+    unlisted: Boolean,},
     {versionKey: false
 })
 
@@ -89,8 +104,8 @@ inboxPostScheme = new Schema({
         categories: [String],
         author: basicAuthorScheme,
         count: Number,
-        like_count: Number,
-        comment_count: Number,
+        likeCount: Number,
+        commentCount: Number,
         published: String,
         visibility: String,
         postTo: String,

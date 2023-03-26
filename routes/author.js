@@ -152,11 +152,10 @@ async function getAuthor(authorId){
         "host": process.env.DOMAIN_NAME,
         "displayName": author.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
-        "github": "",
-        "profileImage": "",
-        "email": author.email, 
+        "github": author.github,
+        "profileImage": author.profileImage,
         "about": author.about,
-        "pronouns": author.pronouns,
+        "pronouns": author.pronouns
     }
     return [sanitizedAuthor, 200];
 }
@@ -181,13 +180,13 @@ async function updateAuthor(token, author){
         "id" : process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
         "authorId" : authorProfile._id,
         "host": process.env.DOMAIN_NAME,
-        "displayname": authorProfile.username,
+        "displayName": authorProfile.username,
         "url":  process.env.DOMAIN_NAME + "authors/" + authorProfile._id,
         "github": authorProfile.github,
         "profileImage": authorProfile.profileImage,
         "email": authorProfile.email, 
         "about": authorProfile.about,
-        "pronouns": authorProfile.pronouns,
+        "pronouns": authorProfile.pronouns
     }
 
     return [sanitizedAuthor, 200];
@@ -214,7 +213,7 @@ async function getAuthors(page, size){
                 "type": "author",
                 "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
                 "host": process.env.DOMAIN_NAME,
-                "displayname": author.username,
+                "displayName": author.username,
                 "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
                 "github": "",
                 "profileImage": "",

@@ -29,10 +29,14 @@ mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
-
 // App Setup
 const express = require('express');
 const app = express();
+let cors = require('cors');
+let corsOptions = {
+  origin: ["http://www.distribution.social", "https://www.distribution.social/", "http://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com"],
+  credentials: true
+};
 const PORT = process.env.PORT || 8080;
 const path = require('path');
 
@@ -61,6 +65,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors(corsOptions));
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Routing

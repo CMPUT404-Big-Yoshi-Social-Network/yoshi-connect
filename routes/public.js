@@ -67,7 +67,9 @@ async function fetchPublicPosts(page, size) {
 
     for(let i = 0; i < publicPosts.length; i++){
         let post = publicPosts[i];
-        post.id = process.env.DOMAIN_NAME + "authors/" + post.authorId + '/posts/' + post._id;
+        let authorId = post.author._id.split("/");
+        authorId = authorId[authorId.length - 1];
+        post.id = process.env.DOMAIN_NAME + "authors/" + authorId + '/posts/' + post._id;
         delete post._id;
     }
     return [publicPosts, 200];

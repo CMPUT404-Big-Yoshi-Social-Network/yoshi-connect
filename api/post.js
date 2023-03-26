@@ -53,7 +53,15 @@ const router = express.Router({mergeParams: true});
  *      200:
  *        description: OK -- Returns JSON with type and items (all posts)
  */
-router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
+router.get('/public', async (req, res) => { 
+  let page = parseInt(req.query.page);
+  let size = parseInt(req.query.size);
+
+  const [publicPosts, status] = await fetchPublicPosts(page, size); 
+
+  if(status != 200) return res.sendStatus(status);
+  return res.json(publicPosts);
+})
 
 /**
  * @openapi

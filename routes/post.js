@@ -357,7 +357,7 @@ async function deletePost(token, authorId, postId) {
 }
 
 async function getPosts(token, page, size, author) {
-    if(page < 1 || size < 1){
+    if(page < 0 || size < 0){
         return [[], 400]
     }
 
@@ -418,8 +418,6 @@ async function getPosts(token, page, size, author) {
                 }
             }
         }
-
-        
     }
 
     let posts = undefined;

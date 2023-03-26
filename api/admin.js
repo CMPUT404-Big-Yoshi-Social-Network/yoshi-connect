@@ -200,7 +200,7 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  *      - admin
  *    requestBody: 
  *      content:
- *        application/x-www-form-urlencoded:
+ *        application/x-wwwm-form-urlencoded:
  *          schema:
  *            oneOf:
  *              - $ref: '#/components/schemas/NewAuthor'

@@ -287,7 +287,7 @@ router.get('/:authorId', async (req, res) => {
  *        description: Not Found, Author was not found
  * components:
  *   schemas:
- *     - Author:
+ *     Author:
  *         type: object
  *         properties: 
  *           type:

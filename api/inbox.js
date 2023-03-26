@@ -126,8 +126,8 @@ router.get('/requests', async (req, res) => {
  *    responses:
  *      400:
  *        description: Bad Request, no requests to get
- * 		500: 
- * 		  description: Internal Server Error, could not find Actor or Object
+ *      500: 
+ *        description: Internal Server Error, could not find Actor or Object
  *      200: 
  *        description: OK, successfully deletes the request from Inbox
  */
@@ -154,8 +154,8 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
  *    responses:
  *      401:
  *        description: Unauthorized, no token or not authorized 
- * 		400:
- * 		  description: Bad Request, no valid type specified in request
+ *      400:
+ *        description: Bad Request, no valid type specified in request
  *      200: 
  *        description: OK, successfully posts to the Inbox
  */
@@ -302,8 +302,8 @@ router.put('/requests/:foreignAuthorId', async (req, res) => {
  *          type: string
  *        description: id of an foreign Author
  *    responses:
- * 		404:
- * 		  description: Not Found, follow request was not found 
+ *      404:
+ *        description: Not Found, follow request was not found 
  *      200: 
  *        description: OK, successfully finds the follow request
  */
@@ -344,8 +344,8 @@ router.get('/requests/:foreignAuthorId', async (req, res) => {
  *    responses:
  *      200: 
  *        description: OK, successfully deletes the request from the Inbox
- * 		500: 
- * 		  description: Internal Server Error, no Actor or Object Authors retrieved 
+ *      500: 
+ *        description: Internal Server Error, no Actor or Object Authors retrieved 
  */
 router.delete('/', async (req, res) => {
 	const status = await deleteInbox(req.cookies.token, req.params.authorId);

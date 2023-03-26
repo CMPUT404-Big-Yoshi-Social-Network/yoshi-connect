@@ -45,11 +45,11 @@ const router = express.Router({mergeParams: true});
  *      - signup
  *    responses:
  *      400:
- *        description: Bad Request -- Username is already taken, no 'username', 'email', or 'password' was given, or invalid email
+ *        description: Bad Request, Username is already taken, no 'username', 'email', or 'password' was given, or invalid email
  *      500:
- *        description: Internal Server Error -- Unable to save object in database
+ *        description: Internal Server Error, Unable to save object in database
  *      200:
- *        description: OK -- Author regristration was successful, authour added to the database
+ *        description: OK, Author regristration was successful, authour added to the database
  */
 router.post('/', async (req, res) => { await registerAuthor(req, res); })
 

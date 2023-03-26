@@ -52,9 +52,16 @@ const postHistoryScheme = new Schema({
     {versionKey: false
 })
 
+const publicPostAuthorsScheme = new Schema({
+    _id: String,
+    displayName: String,
+    profileImage: String,
+    pronouns: String
+})
+
 const publicScheme = new Schema({
     _id: String, //postId
-    authorId: String,
+    author: publicPostAuthorsScheme,
     origin: String,
     source: String,
     title: String,

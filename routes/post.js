@@ -214,9 +214,16 @@ async function createPost(token, authorId, postId, newPost) {
         comments: [],
     }).save();
 
-    //TODO make public posts into a collection with several documents
+    let [author, status] = await authorPromise;
+    if (status != 200) return [{}, 500];
+
     if (visibility == 'PUBLIC') {
-        post.authorId = authorId
+        post.author = {
+            _id: author.id,
+            displayName: author.displayName,
+            profileImage: author.profileImage,
+            pronouns: author.pronouns
+        }
         const publicPost = new PublicPost(post);
         await publicPost.save();
     }
@@ -237,8 +244,6 @@ async function createPost(token, authorId, postId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-    let [author, status] = await authorPromise;
-    if (status != 200) { return [{}, 500]; }
     return await getPost(postId, authorId, author);
 }
 

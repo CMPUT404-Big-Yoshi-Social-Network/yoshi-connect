@@ -108,26 +108,26 @@ const router = express.Router({mergeParams: true});
  *                  example: 
  *                    - type: comments
  *                      author:
- *                        - type: author
- *                          id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                          url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                          host: https://yoshi-connect.herokuapp.com/
- *                          displayName: allan
- *                          github: https://github.com/Holy-Hero
- *                          profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                        type: author
+ *                        id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                        url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                        host: https://yoshi-connect.herokuapp.com/
+ *                        displayName: allan
+ *                        github: https://github.com/Holy-Hero
+ *                        profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *                      comment: Monkey is me!
  *                      contentType: text/plain
  *                      published: 2023-03-23T05:39:47.567Z
  *                      id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments/f25cd371afbb4775930fefa6ad8828c4
  *                    - type: comments
  *                      author:
- *                        - type: author
- *                          id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                          url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                          host: https://yoshi-connect.herokuapp.com/
- *                          displayName: kc
- *                          github: https://github.com/kezzayuno
- *                          profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                        type: author
+ *                        id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                        url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                        host: https://yoshi-connect.herokuapp.com/
+ *                        displayName: kc
+ *                        github: https://github.com/kezzayuno
+ *                        profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *                      comment: You're a monkey!
  *                      contentType: text/plain
  *                      published: 2023-03-24T06:53:47.567Z
@@ -209,17 +209,53 @@ router.get('/', async (req, res) => {
  *                  description: JSON type 
  *                  example: comment
  *                author:
- *                  - type: author
- *                    id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                    url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                    host: https://yoshi-connect.herokuapp.com/
- *                    displayName: allan
- *                    github: https://github.com/Holy-Hero
- *                    profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
- *                comment: Monkey, monkey!
- *                contentType: text/plain
- *                published: 2023-03-24T06:53:47.567Z
- *                id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments/f25cd371afbb4775930fefa6ad8828c4
+ *                    type: object
+ *                    description: Author object
+ *                    properties: 
+ *                      type: 
+ *                        type: string
+ *                        description: JSON type
+ *                        example: author
+ *                      id: 
+ *                        type: string
+ *                        description: Author id
+ *                        example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      url: 
+ *                        type: string
+ *                        description: URL of Author
+ *                        example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      host: 
+ *                        type: string
+ *                        description: host associated with Author
+ *                        example: https://yoshi-connect.herokuapp.com/
+ *                      displayName: 
+ *                        type: string
+ *                        description: username of Author
+ *                        example: allan
+ *                      github: 
+ *                        type: string
+ *                        description: associated GitHub of Author
+ *                        example: https://github.com/Holy-Hero
+ *                      profileImage: 
+ *                        type: string
+ *                        description: profile picture of Author
+ *                        example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                comment: 
+ *                  type: string
+ *                  description: comment made by Author
+ *                  example: Monkey, monkey!
+ *                contentType:
+ *                  type: string
+ *                  description: content type of comment 
+ *                  example: text/plain
+ *                published: 
+ *                  type: string
+ *                  description: published time of the comment 
+ *                  example: 2023-03-24T06:53:47.567Z
+ *                id: 
+ *                  type: string
+ *                  description: comment Id
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments/f25cd371afbb4775930fefa6ad8828c4
  */
 router.get('/:commentId', async (req, res) => {
   const [comment, status] = await getComment( req.params.authorId, req.params.postId, req.params.commentId);
@@ -263,17 +299,53 @@ router.get('/:commentId', async (req, res) => {
  *                  description: JSON type 
  *                  example: comment
  *                author:
- *                  - type: author
- *                    id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                    url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                    host: https://yoshi-connect.herokuapp.com/
- *                    displayName: allan
- *                    github: https://github.com/Holy-Hero
- *                    profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
- *                comment: Monkey, monkey!
- *                contentType: text/plain
- *                published: 2023-03-24T06:53:47.567Z
- *                id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments/f25cd371afbb4775930fefa6ad8828c4
+ *                    type: object
+ *                    description: Author object
+ *                    properties: 
+ *                      type: 
+ *                        type: string
+ *                        description: JSON type
+ *                        example: author
+ *                      id: 
+ *                        type: string
+ *                        description: Author id
+ *                        example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      url: 
+ *                        type: string
+ *                        description: URL of Author
+ *                        example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      host: 
+ *                        type: string
+ *                        description: host associated with Author
+ *                        example: https://yoshi-connect.herokuapp.com/
+ *                      displayName: 
+ *                        type: string
+ *                        description: username of Author
+ *                        example: allan
+ *                      github: 
+ *                        type: string
+ *                        description: associated GitHub of Author
+ *                        example: https://github.com/Holy-Hero
+ *                      profileImage: 
+ *                        type: string
+ *                        description: profile picture of Author
+ *                        example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                comment: 
+ *                  type: string
+ *                  description: comment made by the Author
+ *                  example: Monkey, monkey!
+ *                contentType:
+ *                  type: string
+ *                  description: type of comment  
+ *                  example: text/plain
+ *                published: 
+ *                  type: string
+ *                  description: time the comment was made
+ *                  example: 2023-03-24T06:53:47.567Z
+ *                id: 
+ *                  type: string
+ *                  description: Comment id
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments/f25cd371afbb4775930fefa6ad8828c4
  */
 router.post('/', async (req, res) => {
   const postId = req.params.postId;

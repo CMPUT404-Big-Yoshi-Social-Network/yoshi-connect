@@ -65,7 +65,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.set('views', path.resolve( __dirname, './yoshi-react/build'));
 
 // Routing

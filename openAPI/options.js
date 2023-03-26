@@ -48,6 +48,7 @@ const options = {
         './api/settings.js',
         './api/signup.js',
         './api/userinfo.js',
+        './api/node.js',
     ],
 };
 

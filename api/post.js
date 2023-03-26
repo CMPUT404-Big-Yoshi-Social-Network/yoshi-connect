@@ -61,7 +61,7 @@ router.get('/public', async (req, res) => { await fetchPublicPosts(req, res); })
  *  get:
  *    summary: Gets the friend's posts associated with authorId
  *    tags:
- *      - following 
+ *      - friend 
  *    responses:
  *      200:
  *        description: Returns either an empty array is the post is undefined, otherwise the friend (authorId) 
@@ -74,7 +74,7 @@ router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, r
  *  get:
  *    summary: Gets the posts associated with authorId for the Author themselves
  *    tags:
- *      - following 
+ *      - author 
  *    responses:
  *      200:
  *        description: Returns JSON with the type and the post object

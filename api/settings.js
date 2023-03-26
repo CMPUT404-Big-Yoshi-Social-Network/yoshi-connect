@@ -47,6 +47,51 @@ router.post('/logout', async (req, res) => { removeLogin(req, res); })
  *        description: Not Found, Author was not found
  *      200:
  *        description: OK, Returns the sanitized Author
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: author
+ *                id:
+ *                  type: string
+ *                  description: URL of Author
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                authorId:
+ *                  type: string 
+ *                  description: UUID of Author 
+ *                  example: 29c546d45f564a27871838825e3dbecb
+ *                host: 
+ *                  type: string
+ *                  description: network the Author is from 
+ *                  example: https://yoshi-connect.herokuapp.com/
+ *                url: 
+ *                  type: string
+ *                  description: URL of Author 
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                displayName:
+ *                  type: string
+ *                  description: username of Author (unique)
+ *                  example: kc
+ *                about: 
+ *                  type: string
+ *                  description: description about Author 
+ *                  example: i am a code monkey
+ *                pronouns:
+ *                  type: string
+ *                  description: pronouns the Author takes
+ *                  example: she/her
+ *                github:
+ *                  type: string
+ *                  description: GitHub linked to the Author
+ *                  example: https://github.com/kezzayuno
+ *                profileImage:
+ *                  type: string
+ *                  description: profile picture Author uses
+ *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  */
 router.put('/', async (req, res) => {
   const status = await updateAuthor(req.cookies.token, req.body.data);

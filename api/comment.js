@@ -362,7 +362,7 @@ router.delete('/:commentId', async (req, res) => {
  *                    type: object
  *                  description: array of Like object for specific Comment on a specific Post 
  *                  example: 
- *                    - @context: https://www.w3.org/ns/activitystreams
+ *                    - "@context": https://www.w3.org/ns/activitystreams
  *                      summary: kc likes your post
  *                      type: Like
  *                      author: 
@@ -374,7 +374,7 @@ router.delete('/:commentId', async (req, res) => {
  *                          github: https://github.com/kezzayuno
  *                          profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *                      object: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4
- *                    - @context: https://www.w3.org/ns/activitystreams
+ *                    - "@context": https://www.w3.org/ns/activitystreams
  *                      summary: allan likes your post
  *                      type: Like
  *                      author: 

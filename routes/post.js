@@ -161,7 +161,7 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
-    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false')){
+    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
     }
 
@@ -230,7 +230,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if(unlisted === "false"){
+    if(unlisted == "false" || unlisted == false){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;

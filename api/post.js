@@ -54,8 +54,8 @@ const router = express.Router({mergeParams: true});
  *        description: OK -- Returns JSON with type and items (all posts)
  */
 router.get('/public', async (req, res) => { 
-  let page = req.params.page;
-  let size = req.params.size;
+  let page = parseInt(req.query.page);
+  let size = parseInt(req.query.size);
 
   const [publicPosts, status] = await fetchPublicPosts(page, size); 
 

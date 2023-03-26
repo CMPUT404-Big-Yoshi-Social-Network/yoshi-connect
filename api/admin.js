@@ -113,6 +113,86 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     - NewAuthor:
+ *         type: object
+ *         properties: 
+ *           status: 
+ *             type: string
+ *             description: type of request
+ *           username: 
+ *             type: string
+ *             description: username of Author
+ *           email:
+ *             type: string
+ *             description: email of Author
+ *           password:
+ *             type: string
+ *             description: password of Author
+ *     - ModifiedAuthor:
+ *         type: object
+ *         properties: 
+ *           status: 
+ *             type: string
+ *             description: type of request
+ *           newUsername: 
+ *             type: string
+ *             description: new username of Author
+ *           newEmail:
+ *             type: string
+ *             description: new email of Author
+ *           newPassword:
+ *             type: string
+ *             description: new password of Author
+ *           newAbout:
+ *             type: string
+ *             description: new about of Author
+ *           newPronouns:
+ *             type: string
+ *             description: new pronouns of Author
+ *           newAdmin:
+ *             type: boolean
+ *             description: enabling or disabling of Author admin
+ *           authorId:
+ *             type: string
+ *             description: UUID of author
+ *     - Author:
+ *         type: object
+ *         properties: 
+ *           type:
+ *             type: string
+ *             description: JSON type 
+ *           id:
+ *             type: string
+ *             description: URL of Author
+ *           authorId:
+ *             type: string 
+ *             description: UUID of Author 
+ *           host: 
+ *             type: string
+ *             description: network the Author is from 
+ *           url: 
+ *             type: string
+ *             description: URL of Author 
+ *           displayName:
+ *             type: string
+ *             description: username of Author (unique)
+ *           email:
+ *             type: string
+ *             description: email of Author (unique)
+ *           about: 
+ *             type: string
+ *             description: description about Author 
+ *           pronouns:
+ *             type: string
+ *             description: pronouns the Author takes
+ *           github:
+ *             type: string
+ *             description: GitHub linked to the Author
+ *           profileImage:
+ *             type: string
+ *             description: profile picture Author uses
  * /admin/dashboard:
  *  put:
  *    summary: Adds an Author to YoshiConnect database or updates an Author's attributes
@@ -219,86 +299,6 @@ router.delete('/dashboard', (req, res) => { deleteAuthor(req, res); })
  *        description: Internal Server Error, unable to save the Author into the database, unable to find Login document for Author
  *      404: 
  *        description: Not Found, cannot find an Author to modify 
- * components:
- *   schemas:
- *     - NewAuthor:
- *         type: object
- *         properties: 
- *           status: 
- *             type: string
- *             description: type of request
- *           username: 
- *             type: string
- *             description: username of Author
- *           email:
- *             type: string
- *             description: email of Author
- *           password:
- *             type: string
- *             description: password of Author
- *     - ModifiedAuthor:
- *         type: object
- *         properties: 
- *           status: 
- *             type: string
- *             description: type of request
- *           newUsername: 
- *             type: string
- *             description: new username of Author
- *           newEmail:
- *             type: string
- *             description: new email of Author
- *           newPassword:
- *             type: string
- *             description: new password of Author
- *           newAbout:
- *             type: string
- *             description: new about of Author
- *           newPronouns:
- *             type: string
- *             description: new pronouns of Author
- *           newAdmin:
- *             type: boolean
- *             description: enabling or disabling of Author admin
- *           authorId:
- *             type: string
- *             description: UUID of author
- *     - Author:
- *         type: object
- *         properties: 
- *           type:
- *             type: string
- *             description: JSON type 
- *           id:
- *             type: string
- *             description: URL of Author
- *           authorId:
- *             type: string 
- *             description: UUID of Author 
- *           host: 
- *             type: string
- *             description: network the Author is from 
- *           url: 
- *             type: string
- *             description: URL of Author 
- *           displayName:
- *             type: string
- *             description: username of Author (unique)
- *           email:
- *             type: string
- *             description: email of Author (unique)
- *           about: 
- *             type: string
- *             description: description about Author 
- *           pronouns:
- *             type: string
- *             description: pronouns the Author takes
- *           github:
- *             type: string
- *             description: GitHub linked to the Author
- *           profileImage:
- *             type: string
- *             description: profile picture Author uses
  */
 router.put('/dashboard', (req, res) => {
   if (req.body.status == 'Add') {

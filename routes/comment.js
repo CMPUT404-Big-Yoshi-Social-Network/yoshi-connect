@@ -124,7 +124,7 @@ async function getComments(postId, authorId, page, size) {
             comment: comment.comment,
             contentType: comment.contentType,
             published: comment.published,
-            id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id,
+            id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + comment._id
         }
     }
 
@@ -250,7 +250,6 @@ async function createComment(token, authorId, postId, newComment) {
 
     return [inboxComment, 200];
 }
-
 
 async function deleteComment(req, res){
     let success = false;

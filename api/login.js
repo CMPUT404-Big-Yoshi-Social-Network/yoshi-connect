@@ -50,8 +50,8 @@ const router = express.Router({mergeParams: true});
  *        description: Internal Server Error, Unable to save or delete currently existing Login document (unable to update the Login document) and password from request and encrypted password in database not equal to each other
  *      403:
  *        description: Forbidden, unable to Login as user as user is trying to login as an admin but is not an admin 
- * 		200: 
- * 		  description: OK, Login as author was successful and cached
+ *      200:
+ *        description: OK, Login as author was successful and cached
  */
 router.post('/', async (req, res) => { await authAuthor(req, res); })
 

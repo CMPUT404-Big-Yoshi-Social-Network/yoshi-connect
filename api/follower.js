@@ -45,13 +45,54 @@ const router = express.Router({mergeParams: true});
  *    description: Fetches the followers for a specific Author using the authorId params
  *    tags:
  *      - follower
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
  *    responses:
  *      404:
- *        description: Not Found -- could not find any followers for the specific Author
+ *        description: Not Found, could not find any followers for the specific Author
  *      200:
- *        description: OK -- returns followers as sanitized object with type, id, host, displayname, url, github, profileImage, email, about, pronouns
+ *        description: OK, successfully fetches and sanitizes followers
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: followers
+ *                items: 
+ *                  type: array
+ *                  items: 
+ *                    type: object
+ *                  description: array of followers
+ *                  example: 
+ *                    - type: author
+ *                      id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                      authorId: 29c546d45f564a27871838825e3dbecb
+ *                      host: https://yoshi-connect.herokuapp.com/
+ *                      displayName: kc
+ *                      url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                      github: https://github.com/kezzayuno
+ *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      about: i am a code monkey
+ *                      pronouns: she/her
+ *                    - type: author
+ *                      id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      authorId: 3ec2a2a0685445509a3ea1dd3093639f
+ *                      host: https://yoshi-connect.herokuapp.com/
+ *                      displayName: allan
+ *                      url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      github: https://github.com/Holy-Hero
+ *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      about: i love hatsune miku
+ *                      pronouns: he/him
  *      401: 
- *        description: Unauthorized -- Author does not have associated Login token or Login token has expired 
+ *        description: Unauthorized, Author does not have associated Login token or Login token has expired 
  */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
@@ -98,9 +139,59 @@ router.get('/', async (req, res) => {
  *    description: Fetches a specific Author using foreignAuthorId params associated by authorId params 
  *    tags:
  *      - follower
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of the foreign Author
  *    responses:
  *      404:
- *        description: Not Found -- could not find any followers for Author associated with authorId or could not find the foreign Author following the Author associated with authorId
+ *        description: Not Found, could not find any followers for Author associated with authorId or could not find the foreign Author following the Author associated with authorId
+ *      200:
+ *        description: OK, successfully fetches a specific follower
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: author
+ *                id:
+ *                  type: string
+ *                  description: authorId of follower
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                host: 
+ *                  type: string
+ *                  description: host of follower
+ *                  example: https://yoshi-connect.herokuapp.com
+ *                displayname:
+ *                  type: string
+ *                  description: username of follower
+ *                  example: kc
+ *                url:
+ *                  type: string
+ *                  description: URL of follower
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                github:
+ *                  type: string
+ *                  description: associated GitHub of follower
+ *                  example: https://github.com/kezzayuno
+ *                profileImage:
+ *                  type: string
+ *                  description: profile picture of follower
+ *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                pronouns: 
+ *                  type: string
+ *                  description: pronouns for a follower
+ *                  example: she/her
  */
 router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -142,13 +233,24 @@ router.get('/:foreignAuthorId', async (req, res) => {
  *    description: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
  *    tags:
  *      - follower
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of the foreign Author
  *    responses:
  *      401:
- *        description: Unauthorized -- no associated cookies, Login token had expired, authorId was not authenticated 
+ *        description: Unauthorized, no associated cookies, Login token had expired, authorId was not authenticated 
  *      404: 
- *        description: Bad Request -- unable to find a request object from the foreignAuthorId to the authorId
+ *        description: Bad Request, unable to find a request object from the foreignAuthorId to the authorId
  *      200: 
- *        description: OK -- successfully added follower to the follower document for Author associated with authorId
+ *        description: OK, successfully added follower to the follower document for Author associated with authorId
  */
 router.put('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
@@ -169,15 +271,24 @@ router.put('/:foreignAuthorId', async (req, res) => {
  *    description: deleting follower associated with foreignAuthorId from Author followers list associated authorId 
  *    tags:
  *      - follower
- *    body: 
- *      - type: String
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of the foreign Author
  *    responses:
  *      401:
- *        description: Unauthorized -- no associated cookies or Login token has expired 
+ *        description: Unauthorized, no associated cookies or Login token has expired 
  *      400: 
- *        description: Bad Request -- no type specified or req.body.type != 'follower' 
+ *        description: Bad Request, no type specified or req.body.type != 'follower' 
  *      204: 
- *        description: No Content -- follower was successfully deleted from Author follower list 
+ *        description: No Content, follower was successfully deleted from Author follower list 
  */
 router.delete('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }

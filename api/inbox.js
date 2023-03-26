@@ -40,16 +40,64 @@ const { authLogin } = require('../routes/auth');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors/:authorId/inbox:
+ *  get:
+ *    summary: Fetches an Author's inbox posts
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *        description: Page of the Inbox objects
+ *      - in: query
+ *        name: size
+ *        schema:
+ *          type: integer
+ *        description: Size of the Inbox objects
+ *    responses:
+ *      400:
+ *        description: Bad Request, no posts to get
+ *      200: 
+ *        description: OK, successfully fetches posts from Inbox
+ */
 router.get('/', async (req, res) => {
 	const [posts, status] = await getInbox(req.cookies.token, req.params.authorId, req.query.size, req.query.page); 
 
-	if(status != 200){
-		return res.sendStatus(status);
-	}
+	if (status != 200) { return res.sendStatus(status); }
 
 	return res.json(posts);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests:
+ *  get:
+ *    summary: Fetches an Author's inbox requests
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *    responses:
+ *      400:
+ *        description: Bad Request, no requests to get
+ *      401:
+ *        description: Unauthorized, token is not authorized or does not exist in cookies
+ *      200: 
+ *        description: OK, successfully fetches requests from Inbox
+ */
 router.get('/requests', async (req, res) => {
 	if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
   
@@ -57,6 +105,32 @@ router.get('/requests', async (req, res) => {
 	await getRequests(authorId, res);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests/:foreignAuthorId:
+ *  delete:
+ *    summary: Fetches an Author's inbox requests
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      400:
+ *        description: Bad Request, no requests to get
+ *      500: 
+ *        description: Internal Server Error, could not find Actor or Object
+ *      200: 
+ *        description: OK, successfully deletes the request from Inbox
+ */
 router.delete('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
@@ -64,10 +138,30 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
 	await deleteRequest(authorId, foreignId, res);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/inbox:
+ *  post:
+ *    summary: posts an object into the Author's inbox (comment, post, like, follow)
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *    responses:
+ *      401:
+ *        description: Unauthorized, no token or not authorized 
+ *      400:
+ *        description: Bad Request, no valid type specified in request
+ *      200: 
+ *        description: OK, successfully posts to the Inbox
+ */
 router.post('/', async (req, res) => {
 
 	let authorized = false;
-	//If req.headers.authorization is set then process it
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
 
@@ -153,6 +247,28 @@ router.post('/', async (req, res) => {
 	return res.json(response);
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests/:foreignAuthorId:
+ *  put:
+ *    summary: creates a request and saves it into the inbox
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      200: 
+ *        description: OK, successfully saves the request to the Inbox
+ */
 router.put('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
@@ -167,6 +283,30 @@ router.put('/requests/:foreignAuthorId', async (req, res) => {
 	})
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests/:foreignAuthorId:
+ *  get:
+ *    summary: creates a request and saves it into the inbox
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      404:
+ *        description: Not Found, follow request was not found 
+ *      200: 
+ *        description: OK, successfully finds the follow request
+ */
 router.get('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
@@ -183,6 +323,30 @@ router.get('/requests/:foreignAuthorId', async (req, res) => {
 	})
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/inbox:
+ *  delete:
+ *    summary: creates a request and saves it into the inbox
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      200: 
+ *        description: OK, successfully deletes the request from the Inbox
+ *      500: 
+ *        description: Internal Server Error, no Actor or Object Authors retrieved 
+ */
 router.delete('/', async (req, res) => {
 	const status = await deleteInbox(req.cookies.token, req.params.authorId);
 

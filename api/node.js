@@ -509,7 +509,6 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
     return res.sendStatus(200);
 })
 
-
 /** Incoming Stuff */
 router.get('/incoming', async (req, res) => { 
     // Getting our credentials from other nodes

@@ -194,11 +194,23 @@ async function deleteAuthor(req, res){
 
 async function allowAuthor(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: ENables or disables the Author's permissions
+    Associated Endpoint: /admin/dashboard:
+    Request Type: POST
+    Request Body: N/A
+    Return: 200 Status (OK) -- Returns a JSON containing 
+                                            { "type": "author",
+                                                    "id" : https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                                    "authorId" : 29c546d45f564a27871838825e3dbecb,
+                                                    "host": https://yoshi-connect.herokuapp.com/,
+                                                    "url": https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                                    "displayname": abc,
+                                                    "email": 123@ualberta.ca,
+                                                    "about": "author bio",
+                                                    "pronouns": "they/them",
+                                                    "github": "https://github.com/name",
+                                                    "profileImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd",
+                                                    admin: true }
     */
     const author = await Author.findOne({username: req.body.displayname}).clone();
     if (author.allowed) {

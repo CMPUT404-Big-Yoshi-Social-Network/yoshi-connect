@@ -53,6 +53,19 @@ const router = express.Router({mergeParams: true});
  *        description: id of author
  *        schema:
  *          type: string
+ *    parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *        description: Page of Posts requested
+ *      - in: query
+ *        name: size
+ *        schema: 
+ *          type: integer
+ *          minimum: 5
+ *        description: Number of Posts on a Page requested
  *    responses:
  *      500:
  *        description: Internal Server Error -- Unable to save public post in database
@@ -176,6 +189,34 @@ router.get('/:postId', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     UpdatePost:
+ *         type: object
+ *         properties: 
+ *           title: 
+ *             type: string
+ *             description: title of post
+ *           description:
+ *             type: string
+ *             description: description of post
+ *           contentType:
+ *             type: string
+ *             description: content type of post (text/plain or markdown)
+ *           content: 
+ *             type: string
+ *             description: content of post 
+ *           categories: 
+ *             type: array
+ *             description: categories associated with post
+ *             items: 
+ *               type: string
+ *           visibility: 
+ *             type: string
+ *             description: level of visibility of a post (private or public)
+ *           unlisted: 
+ *             type: boolean
+ *             description: dictates whether a post is unlisted or not
  * /authors/:authorId/posts/:postId:
  *  post:
  *    summary: Sends the posts associated with postId for the Author associated with authorId to update the post
@@ -192,6 +233,23 @@ router.get('/:postId', async (req, res) => {
  *        description: id of post
  *        schema:
  *          type: string
+ *    requestBody: 
+ *     content:
+ *       application/x-wwwm-form-urlencoded:
+ *         schema:
+ *           - $ref: '#/components/schemas/UpdatePost'
+ *         examples:
+ *           UpdatePost:
+ *             value:
+ *               title: MONKEY123
+ *               description: monkey yeah!
+ *               contentType: text/plain
+ *               content: monkey123
+ *               categories: 
+ *                 - tag1
+ *                 - tag23
+ *               visibility: Public
+ *               unlisted: true
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -262,6 +320,40 @@ router.delete('/:postId', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     Post:
+ *         type: object
+ *         properties: 
+ *           title: 
+ *             type: string
+ *             description: title of post
+ *           description:
+ *             type: string
+ *             description: description of post
+ *           contentType:
+ *             type: string
+ *             description: content type of post (text/plain or markdown)
+ *           content: 
+ *             type: string
+ *             description: content of post 
+ *           categories: 
+ *             type: array
+ *             description: categories associated with post
+ *             items: 
+ *               type: string
+ *           published: 
+ *             type: string
+ *             description: date post was made
+ *           visibility: 
+ *             type: string
+ *             description: level of visibility of a post (private or public)
+ *           unlisted: 
+ *             type: boolean
+ *             description: dictates whether a post is unlisted or not
+ *           postTo: 
+ *             type: string
+ *             description: posting to a specific author (private)
  * /authors/:authorId/posts/:postId:
  *  put:
  *    summary: Puts the posts associated with postId for the Author associated with authorId to create a post
@@ -278,6 +370,25 @@ router.delete('/:postId', async (req, res) => {
  *        description: id of post
  *        schema:
  *          type: string
+ *    requestBody: 
+ *     content:
+ *       application/x-wwwm-form-urlencoded:
+ *         schema:
+ *           - $ref: '#/components/schemas/Post'
+ *         examples:
+ *           Post:
+ *             value:
+ *               title: MONKEY
+ *               description: monkey yeah
+ *               contentType: text/plain
+ *               content: monkey
+ *               categories: 
+ *                 - tag1
+ *                 - tag2
+ *               published: 2023-03-24T06:53:47.567Z
+ *               visibility: Public
+ *               unlisted: false
+ *               postTo: beta
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -314,6 +425,18 @@ router.put('/:postId', async (req, res) => {
  *        description: id of author
  *        schema:
  *          type: string
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *        description: Page of Posts requested
+ *      - in: query
+ *        name: size
+ *        schema: 
+ *          type: integer
+ *          minimum: 5
+ *        description: Number of Posts on a Page requested
  *    responses:
  *      500:
  *        description: Internal Server Error -- Unable to fetch Author from database
@@ -346,6 +469,40 @@ router.get('/', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     Post:
+ *         type: object
+ *         properties: 
+ *           title: 
+ *             type: string
+ *             description: title of post
+ *           description:
+ *             type: string
+ *             description: description of post
+ *           contentType:
+ *             type: string
+ *             description: content type of post (text/plain or markdown)
+ *           content: 
+ *             type: string
+ *             description: content of post 
+ *           categories: 
+ *             type: array
+ *             description: categories associated with post
+ *             items: 
+ *               type: string
+ *           published: 
+ *             type: string
+ *             description: date post was made
+ *           visibility: 
+ *             type: string
+ *             description: level of visibility of a post (private or public)
+ *           unlisted: 
+ *             type: boolean
+ *             description: dictates whether a post is unlisted or not
+ *           postTo: 
+ *             type: string
+ *             description: posting to a specific author (private)
  * /authors/:authorId/posts:
  *  post:
  *    summary: Sends the posts associated with authorId
@@ -357,6 +514,25 @@ router.get('/', async (req, res) => {
  *        description: id of author
  *        schema:
  *          type: string
+ *    requestBody: 
+ *     content:
+ *       application/x-wwwm-form-urlencoded:
+ *         schema:
+ *           - $ref: '#/components/schemas/Post'
+ *         examples:
+ *           Post:
+ *             value:
+ *               title: MONKEY
+ *               description: monkey yeah
+ *               contentType: text/plain
+ *               content: monkey
+ *               categories: 
+ *                 - tag1
+ *                 - tag2
+ *               published: 2023-03-24T06:53:47.567Z
+ *               visibility: Public
+ *               unlisted: false
+ *               postTo: beta
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -479,11 +655,10 @@ router.delete('/:postId/likes', async (req, res) => {
  *          type: string
  */
 router.get('/:postId/liked', async (req, res) => {
-  //TODO we can refactor this endpoint to take multiple posts which will allow us to amortize the amount of time spent searching for public posts
-  //Or we can merge public posts with getting liked posts
   console.log('TODO: GET Request that detects whether a post has already been liked by the viewer (which you can get from token); 200 means liked, 404 not liked etc')
 })
 
+// NEED ALLAN TO PROVIDE AN EXAMPLE FOR REQUEST BODY
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:
@@ -513,6 +688,7 @@ router.post("/:postId/image", async (req, res) => {
   }
 })
 
+// NEED ALLAN TO PROVIDE AN EXAMPLE FOR REQUEST BODY
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:
@@ -542,6 +718,7 @@ router.put("/:postId/image", async (req, res) => {
   }
 })
 
+// NEED ALLAN TO PROVIDE AN EXAMPLE FOR REQUEST BODY
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:

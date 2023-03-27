@@ -95,7 +95,7 @@ const router = express.Router({mergeParams: true});
  *        description: Unauthorized, Author does not have associated Login token or Login token has expired 
  */
 router.get('/', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
+  //if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
   
   const authorId = req.params.authorId;
   const followers = await getFollowers(authorId);

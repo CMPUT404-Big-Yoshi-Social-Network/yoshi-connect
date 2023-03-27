@@ -127,6 +127,36 @@ async function fetchPublicPosts(page, size) {
     //         })
     //     }
     // }
+    
+    var config = {
+        host: 'http://www.distribution.social/api',
+        url: 'http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Basic eW9zaGk6eW9zaGkxMjM=',
+            'Content-Type': 'application/json'
+        }
+    };
+    await axios.request(config)
+    .then( res => { console.log(res) })
+    .catch( error => {
+        console.log(error)
+    })
+
+    var config = {
+        host: 'https://sociallydistributed.herokuapp.com',
+        url: 'https://sociallydistributed.herokuapp.com/authors/546de5fe-77ea-4cc2-93f9-7a3825132d68/posts/',
+        method: 'GET',
+        auth: { username: 'Yoshi_Connects', password: 'MinionConnector1' },
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    await axios.request(config)
+    .then( res => { console.log(res) })
+    .catch( error => {
+        console.log('Error')
+    })
 
     response = {
         items: publicPosts

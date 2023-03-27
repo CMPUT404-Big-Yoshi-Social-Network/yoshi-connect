@@ -961,7 +961,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                 }
             };
             await axios.request(config)
-            .then( res => { })
+            .then( res => { console.log(res) })
             .catch( error => {
                 if (error.response.status == 404) {
                     console.log('Debug: Adding an object (post, follow, like) to inbox.')

@@ -34,11 +34,34 @@ const { Login, Author } = require('../scheme/author.js');
 
 async function addAuthor(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Adds author to YoshiConnect database or updates an Author's attributes
+    Associated Endpoint: /admin/dashboard:
+    Request Type: PUT
+    Request Body: Example: 
+        { _id: 29c546d45f564a27871838825e3dbecb,
+            username: abc, 
+            password: 123, 
+            email: 123@aulenrta.ca, 
+            about: "author bio", 
+            pronouns: "they/them", 
+            github: "https://github.com/name",
+            profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd", 
+            admin: false }
+    Return: 500 Status (Internal Server Error) -- Unable to save Author in YoshiConnect database
+            400 Status (Bad Request) -- Author already exists, username and/or password taken, Admin did not fill all cells (username, password, email)
+            200 Status (OK) -- Returns the JSON containing 
+                                                { "type": "author",
+                                                    "id" : https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                                    "authorId" : 29c546d45f564a27871838825e3dbecb,
+                                                    "host": https://yoshi-connect.herokuapp.com/,
+                                                    "url": https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                                    "displayname": abc,
+                                                    "email": 123@ualberta.ca,
+                                                    "about": "author bio",
+                                                    "pronouns": "they/them",
+                                                    "github": "https://github.com/name",
+                                                    "profileImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd",
+                                                    admin: false }
     */
     let existingAuthor = await Author.findOne({username: req.body.username}).clone();
     if (existingAuthor !== undefined && existingAuthor !== null) { return res.sendStatus(400); }

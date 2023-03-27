@@ -74,11 +74,13 @@ async function fetchPublicPosts(page, size) {
 
     for(let i = 0; i < publicPosts.length; i++){
         let post = publicPosts[i];
-        post.author.authorId = post.author._id.split("/");
-        post.author.authorId = post.author.authorId[post.author.authorId.length - 1];
-        post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
-        post.comments = post.id + "/comments";
-        delete post._id;
+        if (post.author != undefined) {
+            post.author.authorId = post.author._id != undefined ? post.author._id.split("/") : post.author.authorId ;
+            post.author.authorId = post.author._id != undefined ? post.author.authorId[post.author.authorId.length - 1] : post.author.authorId;
+            post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
+            post.comments = post.id + "/comments";
+            delete post._id;
+        }
     }
 
     response = {

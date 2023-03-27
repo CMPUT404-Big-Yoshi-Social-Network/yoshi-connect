@@ -24,6 +24,7 @@ const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fet
 const { fetchPublicPosts } = require('../routes/public');
 const { fetchFriendPosts } = require('../routes/friend');
 const { getAuthor } = require('../routes/author.js');
+const { getInbox } = require('../routes/inbox.js');
 
 // OpenAPI
 const {options} = require('../openAPI/options.js');
@@ -74,7 +75,13 @@ router.get('/public', async (req, res) => {
  *      200:
  *        description: Returns either an empty array is the post is undefined, otherwise the friend (authorId) 
  */
-router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, res); })
+router.get('/friends-posts', async (req, res) => { 
+  const [posts, status] = await getInbox(req.cookies.token, req.params.authorId, req.query.page, req.query.size); 
+
+	if (status != 200) { return res.sendStatus(status); }
+
+	return res.json(posts);
+})
 
 /**
  * @openapi

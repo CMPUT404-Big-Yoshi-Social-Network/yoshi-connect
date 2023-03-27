@@ -70,7 +70,7 @@ const router = express.Router({mergeParams: true});
  *        description: OK, successfully fetches posts from Inbox
  */
 router.get('/', async (req, res) => {
-	const [posts, status] = await getInbox(req.cookies.token, req.params.authorId, req.query.size, req.query.page); 
+	const [posts, status] = await getInbox(req.cookies.token, req.params.authorId, req.query.page, req.query.size); 
 
 	if (status != 200) { return res.sendStatus(status); }
 

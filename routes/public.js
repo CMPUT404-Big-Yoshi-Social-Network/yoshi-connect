@@ -73,7 +73,11 @@ async function fetchPublicPosts(page, size) {
         post.comments = post.id + "/comments";
         delete post._id;
     }
-    return [publicPosts, 200];
+
+    response = {
+        items: publicPosts
+    }
+    return [response, 200];
     /*
     const outgoings = await OutgoingCredentials.find().clone();
     

@@ -25,6 +25,8 @@ async function getInbox(token, authorId, page, size){
 
     if(page == undefined) { page = 1; }
     if(size == undefined) { size = 5; }
+    page = parseInt(page);
+    size = parseInt(size);
 
     let posts;
     //TODO reduce code duplication
@@ -72,7 +74,19 @@ async function getInbox(token, authorId, page, size){
         return [[], 400];
     }
 
-    return [posts[0].posts_array, 200];
+    if(!posts || !posts[0]){
+        posts = [];
+    }
+    else{
+        posts = posts[0].posts_array
+    }
+    let response = {
+        type: "inbox",
+        author: process.env.DOMAIN_NAME + "authors/" + authorId,
+        items: posts
+    };
+
+    return [response, 200];
 }
 
 async function postInbox(req, res){

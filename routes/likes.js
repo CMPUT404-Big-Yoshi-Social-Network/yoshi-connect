@@ -35,6 +35,13 @@ const { authLogin } = require('./auth.js');
 
 
 async function getLikes(authorId, postId, commentId, type){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let objectId;
     if(type == "comment"){
         objectId = commentId;
@@ -82,6 +89,13 @@ async function getLikes(authorId, postId, commentId, type){
 }
 
 async function addLike(like, authorId, postId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const type = like.type;
     const summary = like.summary;
     let object = like.object;
@@ -126,6 +140,13 @@ async function addLike(like, authorId, postId){
 }
 
 async function addLiked(authorId, objectId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     //Add this object to the list of posts that the author has liked
     //extract author uuid from authorID
     let authorUUID = authorId.split("/")
@@ -146,6 +167,13 @@ async function addLiked(authorId, objectId){
 
 //TODO Refactor this to work
 async function deleteLike(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let success = false;
     let numLikes = 0;
     let publicPost = await PublicPost.find();
@@ -178,10 +206,24 @@ async function deleteLike(req, res){
 
 //TODO Delete the liked
 async function deleteLiked(objectId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     
 }
 
 async function fetchCommentLikes(authorId, postId, commentId) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     // TODO Paging
     const comments = getPost(authorId, postId).comments; 
     let comment = null;
@@ -197,6 +239,13 @@ async function fetchCommentLikes(authorId, postId, commentId) {
 }
 
 async function hasLiked(authorId, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const history = await LikedHistory.findOne({authorId: authorId});
     for (let i = 0; i < likers.length; i++) {
         if (likers[i].liker === req.body.data.viewerId) {
@@ -208,6 +257,13 @@ async function hasLiked(authorId, res) {
 
 
 async function fetchLikes(authorId, postId) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     // TODO: Paginate
     const posts = PostHistory.find(
         {
@@ -235,6 +291,13 @@ async function fetchLikes(authorId, postId) {
 }
 
 async function getAuthorLikes(authorId) { 
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     return await Liked.findOne({authorId: authorId}); 
 }
 

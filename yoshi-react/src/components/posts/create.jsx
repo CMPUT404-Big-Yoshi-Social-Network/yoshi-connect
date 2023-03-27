@@ -40,6 +40,7 @@ function CreatePost() {
      *     - uploadImage: Uploades an image into the database related to a post
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const [data, setData] = useState({
         title: "",
         description: "",
@@ -68,6 +69,7 @@ function CreatePost() {
          * Request: POST
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         const getId = () => {
             axios
             .get('/userinfo/')
@@ -135,6 +137,7 @@ function CreatePost() {
          * Description: Toggles the Post Menu by changing the isOpen useState
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         setIsOpen(!isOpen); 
         setItem({ ...item, image: "" })
     }

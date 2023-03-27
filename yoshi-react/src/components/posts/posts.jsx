@@ -30,6 +30,12 @@ import axios from 'axios';
 import Post from './post.jsx';
 
 function Posts(props) { 
+    /**
+     * Description:  
+     * Request: (if axios is used)    
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
@@ -49,13 +55,14 @@ function Posts(props) {
          * Description: Fetches the current author's id and the public and following (who the author follows) posts  
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         const getId = () => {
             /**
              * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
-
+            console.log('Debug: <TLDR what the function is doing>')
             axios
             .get('/userinfo/')
             .then((response) => {
@@ -71,6 +78,12 @@ function Posts(props) {
     }, [navigate, props, type]);
 
     useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
        if (url) {
         let config = {
             method: 'get',
@@ -135,6 +148,12 @@ function Posts(props) {
     }, [url, navigate, page, size]);
 
     const getMore = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {
             let updated = page + 1;
             setPage(updated);

@@ -36,6 +36,12 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post}) {
+    /**
+     * Description:  
+     * Request: (if axios is used)    
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const postId = post._id;
     const authorId = post.authorId;
 
@@ -49,7 +55,13 @@ function Post({viewerId, post}) {
 
     const navigate = useNavigate();
 
-    useEffect(() => { 
+    useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             axios
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
@@ -65,11 +77,12 @@ function Post({viewerId, post}) {
     }, [authorId, postId])
 
     useEffect(() => {
-                /**
+        /**
          * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
          * Request: POST
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         const hasLiked = () => {
             axios
             .get('/authors/' + authorId + '/posts/' + postId + '/liked')
@@ -82,6 +95,12 @@ function Post({viewerId, post}) {
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         axios.delete('/authors/' + authorId + '/posts/' + postId)
         .then((response) => { })
         .catch((err) => { 
@@ -98,6 +117,12 @@ function Post({viewerId, post}) {
     }
 
     const addLike = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         axios.put('/authors/' + authorId + '/posts/' + postId + '/likes')
         .then((response) => { 
             setNumLikes(response.data.numLikes); 
@@ -117,6 +142,12 @@ function Post({viewerId, post}) {
     }
 
     const removeLike = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         axios.delete('/authors/' + authorId + '/posts/' + postId + '/likes')
         .then((response) => { 
             setNumLikes(response.data.numLikes); 
@@ -136,6 +167,12 @@ function Post({viewerId, post}) {
     }
 
     const makeComment = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         let body = { content: comment.newComment };
 
         axios.put('/authors/' + authorId + '/posts/' + postId + '/comments', body)

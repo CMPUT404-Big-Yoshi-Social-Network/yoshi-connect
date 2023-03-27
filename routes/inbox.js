@@ -107,6 +107,35 @@ async function getInbox(token, authorId, page, size){
     else{
         posts = posts[0].posts_array
     }
+
+    for(let i = 0; i < posts.length; i++){
+        let post = posts[i];
+        posts[i] = {
+            "type": "post",
+            "title": post.title,
+            "id": post.author._id + '/posts/' + post._id,
+            "source": post.source,
+            "origin": post.origin,
+            "description": post.description,
+            "contentType": post.contentType,
+            "content": post.content,
+            "author": {
+                id: post.author._id,
+                displayName: post.author.displayName,
+                profileImage: post.author.profileImage,
+            },
+            "categories": post.categories,
+            "count": post.commentCount,
+            "likeCount": post.likesCount,
+            "commentCount": post.commentCount,
+            "comments": post.author._id + '/posts/' + post._id + '/comments/',
+            "commentSrc": post.commentSrc,
+            "published": post.published,
+            "visibility": post.visibility,
+            "unlisted": post.unlisted,
+        }
+    }
+
     let response = {
         type: "inbox",
         author: process.env.DOMAIN_NAME + "authors/" + authorId,

@@ -76,6 +76,8 @@ async function fetchPublicPosts(page, size) {
         let post = publicPosts[i];
         post.author.authorId = post.author._id.split("/");
         post.author.authorId = post.author.authorId[post.author.authorId.length - 1];
+        post.author.id = post.author._id;
+        delete post.author._id;
         post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
         post.comments = post.id + "/comments";
         delete post._id;

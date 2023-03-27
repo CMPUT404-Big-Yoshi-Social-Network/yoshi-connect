@@ -26,7 +26,7 @@ mongoose.set('strictQuery', true);
 const { PostHistory, PublicPost, Inbox } = require('../scheme/post.js');
 const { CommentHistory, LikeHistory } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
-const {Follower } = require('../scheme/relations.js');
+const { Follower } = require('../scheme/relations.js');
 
 // UUID
 const crypto = require('crypto');
@@ -227,6 +227,13 @@ async function createComment(token, authorId, postId, newComment) {
     if(!id){
         id = String(crypto.randomUUID()).replace(/-/g, "");
     }
+
+    let posts = await PostHistory.findOne({authorId: authorId});
+    let post = posts.posts.id(postId);
+    post.commentCount = post.commentCount + 1;
+    await posts.save();
+
+    await PublicPost.findOneAndUpdate({_id: postId}, {commentCount: post.commentCount});
 
     let comments = await CommentHistory.findOne({postId: postId}); 
     author._id = author.id;

@@ -38,7 +38,8 @@ import Popup from 'reactjs-popup';
 function Post({viewerId, post}) {
     let postId = post.id ? post.id.split('/') : undefined;
     postId = postId ? postId[postId.length - 1] : undefined;
-    let authorId = post.author ? post.author.authorId : undefined;
+    let authorId = post.author ? post.author.id.split('/') : undefined;
+    authorId = authorId ? authorId[authorId.length - 1] : undefined;
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
     const [numComments, setNumComments] = useState(post.commentCount);
@@ -142,7 +143,7 @@ function Post({viewerId, post}) {
             setNumLikes(response.data.numLikes); 
             setLike(false);
         })
-        .catch((err) => { 
+        .catch((err) => {
             if (err.response.status === 401) {
                 navigate('/unauthorized')
             } else if (err.response.status === 400) {
@@ -162,9 +163,14 @@ function Post({viewerId, post}) {
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')
-        let body = { content: comment.newComment };
+        let body = { 
+            type: "comment",
+            author: viewerId,
+            comment: comment.newComment, 
+            contentType: "text/plaintext",
+        };
 
-        axios.put('/authors/' + authorId + '/posts/' + postId + '/comments', body)
+        axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
         .then((response) => { setNumComments(response.data.numComments); })
         .catch((err) => { 
             if (err.response.status === 401) {

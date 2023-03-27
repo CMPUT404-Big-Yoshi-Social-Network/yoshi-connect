@@ -124,7 +124,8 @@ async function checkAdmin(req){
 async function authAuthor(req, res) {
     /**
     Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
+    Associated Endpoint: /login:
+                         /admin:    
     Request Type: 
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)

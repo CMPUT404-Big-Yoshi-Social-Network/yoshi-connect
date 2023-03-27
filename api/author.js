@@ -236,31 +236,32 @@ router.get('/:authorId', async (req, res) => {
  *           profileImage:
  *             type: string
  *             description: profile picture Author uses
+ *           admin:
+ *             type: boolean
+ *             description: dictates whether the Author is an admin or not
  * /authors/:authorId:
  *  post:
  *    summary: Updates an existing Author with authorId params
  *    tags:
  *      - author
- *    requestBody: 
+ *    requestBody:
  *      content:
- *        application/x-www-form-urlencoded:
+ *        application/x-wwwm-form-urlencoded:
  *          schema:
  *            $ref: '#/components/schemas/Author'
- *          examples: 
- *            Author:
- *              value: 
- *                type: author
- *                id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                authorId: 29c546d45f564a27871838825e3dbecb
- *                host: https://yoshi-connect.herokuapp.com/
- *                url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                displayName: kc123
- *                email: ayuno123@ualberta.ca
- *                about: i am a code monkey 2.0
- *                pronouns: she/her
- *                github: https://github.com/kezzayuno
- *                profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
- *                admin: true
+ *          example:
+ *            type: author
+ *            id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *            authorId: 29c546d45f564a27871838825e3dbecb
+ *            host: https://yoshi-connect.herokuapp.com/
+ *            url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *            displayName: kc
+ *            email: ayuno@ualberta.ca
+ *            about: i am a code monkey
+ *            pronouns: she/her
+ *            github: https://github.com/kezzayuno
+ *            profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *            admin: true
  *    parameters:
  *      - in: path
  *        name: authorId

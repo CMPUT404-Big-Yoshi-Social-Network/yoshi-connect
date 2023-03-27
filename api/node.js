@@ -655,20 +655,18 @@ router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) 
  *          schema:
  *            - $ref: '#/components/schemas/Like'
  *          example:
- *            Like: 
- *              value:
- *                "@context": https://www.w3.org/ns/activitystreams
- *                summary: Lara Croft Likes your post       
- *                type: Like
- *                author:
- *                  type: author
- *                  id: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
- *                  host: http://127.0.0.1:5454/
- *                  displayName: Lara Croft
- *                  url: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
- *                  github: http://github.com/laracroft
- *                  profileImage: https://i.imgur.com/k7XVwpB.jpeg
- *                object: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e
+ *            "@context": https://www.w3.org/ns/activitystreams
+ *            summary: Lara Croft Likes your post       
+ *            type: Like
+ *            author:
+ *              type: author
+ *              id: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+ *              host: http://127.0.0.1:5454/
+ *              displayName: Lara Croft
+ *              url: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+ *              github: http://github.com/laracroft
+ *              profileImage: https://i.imgur.com/k7XVwpB.jpeg
+ *            object: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e
  */
 router.post('/outgoing/authors/:authorId/inbox/like', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();

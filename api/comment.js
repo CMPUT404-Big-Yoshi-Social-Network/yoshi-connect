@@ -302,13 +302,11 @@ router.get('/:commentId', async (req, res) => {
  *      content: 
  *        application/x-wwwm-form-urlencoded:
  *          schema:
- *            - $ref: '#/components/schemas/NewComment'
+ *            $ref: '#/components/schemas/NewComment'
  *          example:
- *            NewComment: 
- *              value:
- *                type: comment
- *                comment: Monkey, monkey!
- *                contentType: text/plain
+ *            type: comment
+ *            comment: Monkey, monkey!
+ *            contentType: text/plain
  *    responses:
  *      400: 
  *        description: Bad Request, no comment provided, no Author to be the author of the comment, did not provide content type or type

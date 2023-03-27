@@ -63,12 +63,10 @@ router.post('/logout', async (req, res) => { removeLogin(req, res); })
  *          schema:
  *            - $ref: '#/components/schemas/SettingsAuthor'
  *          example:
- *             SettingsAuthor:
- *               value:
- *                 id: 29c546d45f564a27871838825e3dbecb
- *                 username: kc
- *                 password: 123
- *                 email: ayuno@ualberta.ca
+ *            id: 29c546d45f564a27871838825e3dbecb
+ *            username: kc
+ *            password: 123
+ *            email: ayuno@ualberta.ca
  *    responses:
  *      401:
  *        description: Unauthourized, Author's token is not authenticated 

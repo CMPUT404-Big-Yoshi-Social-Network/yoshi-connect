@@ -39,7 +39,7 @@ const { Author, Login } = require('../scheme/author.js');
 async function checkUsername(req) {
     /**
     Description: Authenticates username
-    Associated Endpoint: (for example: /authors/:authorid)
+    Associated Endpoint: /authors/:authorid
     Request Type: GET
     Request Body: Example: 
                     { username: abc }
@@ -59,11 +59,13 @@ async function checkUsername(req) {
 
 async function removeLogin(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes the Author's login token
+    Associated Endpoint: /settings/logout:
+    Request Type: DELETE
+    Request Body: N/A
+    Return: 500 Status (Internal Server Error) -- Unable to delete login token from database
+            200 Status (OK) -- Login document (associated token) succesfully removed
+            401 Status (Unauthorized) -- Token is not authenticated
     */
     if (req.cookies.token != undefined) {
 
@@ -78,11 +80,16 @@ async function removeLogin(req, res) {
 
 async function checkExpiry(token) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Checks token authentication
+    Associated Endpoint: /admin/dashboard:
+                         /authors/:authorId/followers:
+                         /authors/:authorId/followings:
+                         /authors/:authorId/friends/:foreignId:
+                         /authors/:authorId/inbox/requests:
+                         /profile/:username:
+    Request Type: GET
+    Request Body: N/A
+    Return: N/A
     */
     if (token == undefined) { return true }
 
@@ -99,11 +106,11 @@ async function checkExpiry(token) {
 
 async function checkAdmin(req){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Authenticates admin
+    Associated Endpoint: /admin/dashboard:
+    Request Type: GET
+    Request Body: N/A
+    Return: N/A
     */
     if (req.cookies.token != undefined) {
         const login_session = await Login.findOne({token: req.cookies.token});

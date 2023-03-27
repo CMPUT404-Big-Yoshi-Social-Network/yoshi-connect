@@ -72,11 +72,23 @@ async function createInbox(username, authorId){
 
 async function registerAuthor(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Registers the Author to the database
+    Associated Endpoint: components:
+    Request Type: POST
+    Request Body: Example: 
+        { _id: 29c546d45f564a27871838825e3dbecb,
+            username: abc, 
+            password: 123, 
+            email: 123@aulenrta.ca, 
+            about: "author bio", 
+            pronouns: "they/them", 
+            github: "https://github.com/name",
+            profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd", 
+            admin: false
+            allowed: false }
+    Return: 400 Status (Bad Request) -- Username is already taken, no 'username', 'email', or 'password' was given, or invalid email
+            500 Status (Internal Server Error) -- Unable to save Author in database
+            200 Status (OK) -- Author was succesfully registered and added to the database
     */
     if (await checkUsername(req) === "In use") { return res.sendStatus(400); }
 

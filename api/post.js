@@ -67,9 +67,37 @@ const router = express.Router({mergeParams: true});
  *        description: Number of Posts on a Page requested
  *    responses:
  *      500:
- *        description: Internal Server Error -- Unable to save public post in database
+ *        description: Internal Server Error, Unable to save public post in database
  *      200:
- *        description: OK -- Returns JSON with type and items (all posts)
+ *        description: OK, Returns JSON with type and items (all posts)
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                type: object
+ *              description: array of Public posts
+ *              example:
+ *                - id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                  author: 
+ *                    _id: http://localhost:3000/authors/29c546d45f564a27871838825e3dbecb
+ *                    displayName: kc
+ *                    profileImage: ""
+ *                    pronouns: she/her
+ *                  origin: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                  source: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                  title: avocado
+ *                  description: hello monkey boy
+ *                  contentType: text/plain
+ *                  content: MONKEY BUSINESS
+ *                  categories: 
+ *                    - tag1
+ *                  likeCount: 1
+ *                  commentCount: 100
+ *                  published: 2023-03-27T06:43:18.423Z
+ *                  visibility: PUBLIC
+ *                  postTo: ""
+ *                  unlisted: false
  */
 router.get('/public', async (req, res) => { 
   let page = parseInt(req.query.page);
@@ -96,7 +124,41 @@ router.get('/public', async (req, res) => {
  *          type: string
  *    responses:
  *      200:
- *        description: Returns either an empty array is the post is undefined, otherwise the friend (authorId) 
+ *        description: OK, Returns either an empty array is the post is undefined, otherwise the friend (authorId) 
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type: 
+ *                  type: string
+ *                  example: posts
+ *                items:
+ *                  type: array
+ *                  items:
+ *                    type: object
+ *                  description: array of Public posts
+ *                  example:
+ *                    - id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      author: 
+ *                        _id: http://localhost:3000/authors/29c546d45f564a27871838825e3dbecb
+ *                        displayName: kc
+ *                        profileImage: ""
+ *                        pronouns: she/her
+ *                      origin: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      source: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      title: avocado
+ *                      description: hello monkey boy
+ *                      contentType: text/plain
+ *                      content: MONKEY BUSINESS
+ *                      categories: 
+ *                        - tag1
+ *                      likeCount: 1
+ *                      commentCount: 100
+ *                      published: 2023-03-27T06:43:18.423Z
+ *                      visibility: PUBLIC
+ *                      postTo: ""
+ *                      unlisted: false
  */
 router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, res); })
 
@@ -115,7 +177,41 @@ router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, r
  *          type: string
  *    responses:
  *      200:
- *        description: Returns JSON with the type and the post object
+ *        description: OK, Returns JSON with the type and the post object
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type: 
+ *                  type: string
+ *                  example: posts
+ *                items:
+ *                  type: array
+ *                  items:
+ *                    type: object
+ *                  description: array of Public posts
+ *                  example:
+ *                    - id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      author: 
+ *                        _id: http://localhost:3000/authors/29c546d45f564a27871838825e3dbecb
+ *                        displayName: kc
+ *                        profileImage: ""
+ *                        pronouns: she/her
+ *                      origin: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      source: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      title: avocado
+ *                      description: hello monkey boy
+ *                      contentType: text/plain
+ *                      content: MONKEY BUSINESS
+ *                      categories: 
+ *                        - tag1
+ *                      likeCount: 1
+ *                      commentCount: 100
+ *                      published: 2023-03-27T06:43:18.423Z
+ *                      visibility: PUBLIC
+ *                      postTo: ""
+ *                      unlisted: false
  */
 router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
 
@@ -139,7 +235,41 @@ router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
  *          type: string
  *    responses:
  *      200:
- *        description: Returns JSON with either an empty array if the post is undefined, otherwise the post object
+ *        description: OK, Returns JSON with either an empty array if the post is undefined, otherwise the post object
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type: 
+ *                  type: string
+ *                  example: posts
+ *                items:
+ *                  type: array
+ *                  items:
+ *                    type: object
+ *                  description: array of Public posts
+ *                  example:
+ *                    - id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      author: 
+ *                        _id: http://localhost:3000/authors/29c546d45f564a27871838825e3dbecb
+ *                        displayName: kc
+ *                        profileImage: ""
+ *                        pronouns: she/her
+ *                      origin: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      source: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                      title: avocado
+ *                      description: hello monkey boy
+ *                      contentType: text/plain
+ *                      content: MONKEY BUSINESS
+ *                      categories: 
+ *                        - tag1
+ *                      likeCount: 1
+ *                      commentCount: 100
+ *                      published: 2023-03-27T06:43:18.423Z
+ *                      visibility: PUBLIC
+ *                      postTo: ""
+ *                      unlisted: false
  */
 router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
 
@@ -163,9 +293,115 @@ router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res
  *          type: string
  *    responses:
  *      404:
- *        description: Not Found -- Author ID was not found or Post associated with Author was not found
+ *        description: Not Found, Author ID was not found or Post associated with Author was not found
  *      200:
- *        description: OK -- Returns Authour's post 
+ *        description: OK, Returns Authour's post 
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type: 
+ *                  type: string
+ *                  example: post
+ *                title: 
+ *                  type: string
+ *                  example: MONKEYMONKEY
+ *                id: 
+ *                  type: string
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                source: 
+ *                  type: string
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                origin:
+ *                  type: string
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c
+ *                description:
+ *                  type: string
+ *                  example: monkeyyy
+ *                contentType:
+ *                  type: string
+ *                  example: text/plain
+ *                content: 
+ *                  type: string
+ *                  example: monkey
+ *                author: 
+ *                  type: object
+ *                  properties:
+ *                    type: 
+ *                      type: string
+ *                      example: author
+ *                    id: 
+ *                      type: string
+ *                      example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                    authorId: 
+ *                      type: string
+ *                      example: 29c546d45f564a27871838825e3dbecb
+ *                    host: 
+ *                      type: string
+ *                      example: https://yoshi-connect.herokuapp.com/
+ *                    displayName: 
+ *                      type: string
+ *                      example: kc
+ *                    url: 
+ *                      type: string
+ *                      example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                    github: 
+ *                      type: string
+ *                      example: https://github.com/kezzayuno
+ *                    profileImage: 
+ *                      type: string
+ *                      example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                    about: 
+ *                      type: string
+ *                      example: i am a code monkey
+ *                    pronouns: 
+ *                      type: string
+ *                      example: she/her
+ *                categories:
+ *                  type: array
+ *                  items:
+ *                    type: string
+ *                  example: 
+ *                    - tag1
+ *                count: 
+ *                  type: integer
+ *                  example: 0
+ *                likeCount:
+ *                  type: integer
+ *                  example: 0
+ *                comments:
+ *                  type: array
+ *                  items:
+ *                    type: object
+ *                  example: 
+ *                    - _id: 29c546d45f564a27871838825e3dbecb
+ *                      author: 
+ *                        _id: 37c546d45f564a27871838826e3dbec8
+ *                        username: kc
+ *                        email: monkey@ualberta.ca
+ *                        about: ""
+ *                        pronouns: she/her
+ *                        github: ""
+ *                        profileImage: ""
+ *                        admin: false
+ *                        allowed: false
+ *                      comment: yo monkey
+ *                      likeCount: 0
+ *                      contentType: text/plain
+ *                      published: 2023-03-27T06:43:18.423Z
+ *                commentSrc:
+ *                  type: string
+ *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c/comments
+ *                published:
+ *                  type: string
+ *                  example: 2023-03-27T06:43:18.423Z
+ *                visibility:
+ *                  type: string
+ *                  example: PUBLIC
+ *                unlisted:
+ *                  type: boolean
+ *                  example: false
  */
 router.get('/:postId', async (req, res) => {
   if (req.params.authorId == undefined) { return res.sendStatus(404); }
@@ -186,6 +422,7 @@ router.get('/:postId', async (req, res) => {
   return res.json(post);
 })
 
+// TBA 200
 /**
  * @openapi
  * components:
@@ -251,13 +488,13 @@ router.get('/:postId', async (req, res) => {
  *               unlisted: true
  *    responses:
  *      401:
- *        description: Unauthorized -- Author token is not authenticated
+ *        description: Unauthorized, Author token is not authenticated
  *      500:
- *        description: Internal Server Error -- Unable to fetch post history from database
+ *        description: Internal Server Error, Unable to fetch post history from database
  *      404:
- *        description: Not Found -- Post was not found
+ *        description: Not Found, Post was not found
  *      200:
- *        description: Ok -- Returns a JSON of the updated post object
+ *        description: OK, Returns a JSON of the updated post object
  */
 router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -274,6 +511,7 @@ router.post('/:postId', async (req, res) => {
   }
 })
 
+// TBA 200
 /**
  * @openapi
  * /authors/:authorId/posts/:postId:
@@ -317,6 +555,7 @@ router.delete('/:postId', async (req, res) => {
   } 
 })
 
+// TBA 200
 /**
  * @openapi
  * components:
@@ -411,6 +650,7 @@ router.put('/:postId', async (req, res) => {
   }
 })
 
+// TBA 200
 /**
  * @openapi
  * /authors/:authorId/posts:
@@ -466,6 +706,7 @@ router.get('/', async (req, res) => {
   });
 })
 
+// TBA 200
 /**
  * @openapi
  * components:
@@ -553,6 +794,7 @@ router.post('/', async (req, res) => {
   return res.sendStatus(status); 
 })
 
+// TBA
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/likes:
@@ -588,6 +830,7 @@ router.get('/:postId/likes', async (req, res) => {
   });
 })
 
+// TBA
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/likes:
@@ -611,6 +854,7 @@ router.put('/:postId/likes', async (req, res) => {
   console.log('TODO: PUT Request that adds a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
 })
 
+// TBA
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/likes:
@@ -634,6 +878,7 @@ router.delete('/:postId/likes', async (req, res) => {
   console.log('TODO: DELETE Request that deletes a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
 })
 
+// TBA
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/liked:
@@ -657,6 +902,7 @@ router.get('/:postId/liked', async (req, res) => {
   console.log('TODO: GET Request that detects whether a post has already been liked by the viewer (which you can get from token); 200 means liked, 404 not liked etc')
 })
 
+// TBA
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:
@@ -697,6 +943,7 @@ router.post("/:postId/image", async (req, res) => {
   }
 })
 
+// TBA
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:
@@ -737,6 +984,7 @@ router.put("/:postId/image", async (req, res) => {
   }
 })
 
+// TBA
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:

@@ -38,6 +38,7 @@ const openapiSpecification = swaggerJsdoc(options);
 // Router
 const router = express.Router({mergeParams: true});
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing:
@@ -68,6 +69,7 @@ router.get('/outgoing', async (req, res) => {
     await getCreds(res, page, size, req.cookies.token, 'outgoing'); 
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/:credId:
@@ -86,6 +88,7 @@ router.get('/outgoing/:credId', async (req, res) => {
     await getCred(res, req.cookies.token, req.params.credId, 'outgoing'); 
 })
 
+// TBA
 /**
  * @openapi
  * components:
@@ -133,6 +136,7 @@ router.put('/outgoing/:credId', async (req, res) => {
     }
 })
 
+// TBA
 /**
  * @openapi
  * components:
@@ -178,6 +182,7 @@ router.post('/outgoing', async (req, res) => {
     await postCred(req, res, req.cookies.token, 'outgoing'); 
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/:credId:
@@ -196,6 +201,7 @@ router.delete('/outgoing/:credId', async (req, res) => {
     await deleteCred(req.cookies.token, req.params.credId, 'outgoing'); 
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors:
@@ -237,6 +243,7 @@ router.get('/outgoing/authors', async (req, res) => {
     })
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId:
@@ -284,6 +291,7 @@ router.get('/outgoing/authors/:authorId', async (req, res) => {
     return res.json(author)
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId:
@@ -336,6 +344,7 @@ router.get('/outgoing/authors/:authorId/posts/:postId', async (req, res) => {
     return res.json(post)
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId/image:
@@ -388,6 +397,7 @@ router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) =
     return res.json(image)
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/posts:
@@ -434,6 +444,7 @@ router.get('/outgoing/posts', async (req, res) => {
     })
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId/comments:
@@ -492,6 +503,7 @@ router.get('/outgoing/authors/:authorId/posts/:postId/comments', async (req, res
     })
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId/followers:
@@ -543,6 +555,7 @@ router.get('/outgoing/authors/:authorId/followers', async (req, res) => {
     })
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId/followers/:foreignId:
@@ -595,6 +608,7 @@ router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) 
     return res.json(follower)
 })
 
+// TBA
 /**
  * @openapi
  * components:
@@ -699,6 +713,7 @@ router.post('/outgoing/authors/:authorId/inbox/like', async (req, res) => {
     return res.sendStatus(200);
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId/likes:
@@ -750,6 +765,7 @@ router.get('/outgoing/authors/:authorId/posts/:postId/likes', async (req, res) =
     })
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes:
@@ -811,6 +827,7 @@ router.get('/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes'
     })
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/outgoing/authors/:authorId/liked:
@@ -858,6 +875,7 @@ router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
     return res.json(liked)
 })
 
+// TBA
 /**
  * @openapi
  * components:
@@ -933,6 +951,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
     return res.sendStatus(200);
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/incoming:
@@ -963,6 +982,7 @@ router.get('/incoming', async (req, res) => {
     await getCreds(res, page, size, req.cookies.token, 'incoming'); 
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/incoming/:credId:
@@ -981,6 +1001,7 @@ router.get('/incoming/:credId', async (req, res) => {
     await getCred(res, req.cookies.token, req.params.credId, 'incoming'); 
 })
 
+// TBA
 /**
  * @openapi
  * components:
@@ -1026,6 +1047,7 @@ router.post('/incoming', async (req, res) => {
     await postCred(req, res, req.cookies.token, 'incoming'); 
 })
 
+// TBA
 /**
  * @openapi
  * components:
@@ -1073,6 +1095,7 @@ router.put('/incoming/:credId', async (req, res) => {
     }
 })
 
+// TBA
 /**
  * @openapi
  * /nodes/incoming/:credId:

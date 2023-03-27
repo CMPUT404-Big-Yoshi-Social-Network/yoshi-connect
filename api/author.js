@@ -454,7 +454,6 @@ router.get('/search/:username', async (req, res) => {
           })
       }
   }
-
   return res.json({
     "type": 'authors',
     "items": authors

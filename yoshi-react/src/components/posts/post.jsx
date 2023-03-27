@@ -66,7 +66,7 @@ function Post({viewerId, post}) {
     }, [authorId, postId])
 
     useEffect(() => {
-                /**
+         /**
          * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
          * Request: POST
          * Returns: N/A
@@ -99,7 +99,7 @@ function Post({viewerId, post}) {
     }
 
     const addLike = () => {
-        axios.put('/authors/' + authorId + '/posts/' + postId + '/likes')
+        axios.put('/authors/' + authorId + '/inbox/')
         .then((response) => { 
             setNumLikes(response.data.numLikes); 
             setLike(true);

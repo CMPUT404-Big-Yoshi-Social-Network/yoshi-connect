@@ -37,6 +37,13 @@ mongoose.set('strictQuery', true);
 const { Author, Login } = require('../scheme/author.js');
 
 async function checkUsername(req) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const author = await Author.findOne({username: req.body.username});
 
     if (author == undefined) { return "Not in use"; }
@@ -50,6 +57,13 @@ async function checkUsername(req) {
 }
 
 async function removeLogin(req, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (req.cookies.token != undefined) {
 
         Login.deleteOne({token: req.cookies.token}, function(err, login) {
@@ -62,6 +76,13 @@ async function removeLogin(req, res) {
 }
 
 async function checkExpiry(token) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (token == undefined) { return true }
 
     const login = await Login.findOne({token: token}).clone();
@@ -76,6 +97,13 @@ async function checkExpiry(token) {
 }
 
 async function checkAdmin(req){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (req.cookies.token != undefined) {
         const login_session = await Login.findOne({token: req.cookies.token});
         if (login_session == null) { return false; }
@@ -86,6 +114,13 @@ async function checkAdmin(req){
 }
 
 async function authAuthor(req, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const username = req.body.username;
     const password = req.body.password;
 
@@ -133,6 +168,13 @@ async function authAuthor(req, res) {
 }
 
 async function authLogin(token, authorId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (await checkExpiry(token)) { return false; }
 
     const login = await Login.findOne({token: token});  

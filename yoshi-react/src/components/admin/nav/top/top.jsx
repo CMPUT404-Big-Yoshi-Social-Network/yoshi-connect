@@ -32,6 +32,7 @@ function TopAdminNav() {
      * Description: Represents the top navigation bar
      * Returns: N/A
      */
+    console.log('Debug: Calling the top admin navigation bar')
     return (
         <Navbar className='topAdminNav'>
             <Container>

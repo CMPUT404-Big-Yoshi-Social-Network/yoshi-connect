@@ -946,7 +946,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
             var config = {
                 host: outgoings[i].url,
                 url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox',
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Authorization': outgoings[i].auth,
                     'Content-Type': 'application/json'
@@ -961,7 +961,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                 }
             };
             await axios.request(config)
-            .then( res => { })
+            .then( res => { console.log(res) })
             .catch( error => {
                 if (error.response.status == 404) {
                     console.log('Debug: Adding an object (post, follow, like) to inbox.')

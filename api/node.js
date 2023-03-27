@@ -72,6 +72,48 @@ router.get('/outgoing', async (req, res) => {
 // TBA
 /**
  * @openapi
+ * /nodes/outgoing/authors:
+ *  get:
+ *    summary: Fetches remote authors from outgoing nodes (communicates with other servers)
+ *    tags:
+ *      - remote 
+ */
+router.get('/outgoing/authors', async (req, res) => {
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    let authors = [];
+
+    for (let i = 0; i < outgoings.length; i++) {
+        if (outgoings[i].allowed) {
+            var config = {
+                host: outgoings[i].url,
+                url: outgoings[i].url + '/authors',
+                method: 'GET',
+                headers: {
+                    'Authorization': outgoings[i].auth,
+                    'Content-Type': 'application/json'
+                }
+            };
+    
+            await axios.request(config)
+            .then( res => {
+                let items = res.data.items
+                authors = authors.concat(items);
+            })
+            .catch( error => {
+                console.log(error);
+            })
+        }
+    }
+    return res.json({
+        'type': 'authors',
+        items: authors
+    })
+})
+
+// TBA
+/**
+ * @openapi
  * /nodes/outgoing/:credId:
  *  get:
  *    summary: Fetches a specific node used to communicate with a specific server
@@ -199,48 +241,6 @@ router.post('/outgoing', async (req, res) => {
  */
 router.delete('/outgoing/:credId', async (req, res) => { 
     await deleteCred(req.cookies.token, req.params.credId, 'outgoing'); 
-})
-
-// TBA
-/**
- * @openapi
- * /nodes/outgoing/authors:
- *  get:
- *    summary: Fetches remote authors from outgoing nodes (communicates with other servers)
- *    tags:
- *      - remote 
- */
-router.get('/outgoing/authors', async (req, res) => {
-    const outgoings = await OutgoingCredentials.find().clone();
-    
-    let authors = [];
-
-    for (let i = 0; i < outgoings.length; i++) {
-        if (outgoings[i].allowed) {
-            var config = {
-                host: outgoings[i].url,
-                url: outgoings[i].url + '/authors',
-                method: 'GET',
-                headers: {
-                    'Authorization': outgoings[i].auth,
-                    'Content-Type': 'application/json'
-                }
-            };
-    
-            await axios.request(config)
-            .then( res => {
-                let items = res.data.items
-                authors = authors.concat(items);
-            })
-            .catch( error => {
-                console.log(error);
-            })
-        }
-    }
-    return res.json({
-        'type': 'authors',
-        items: authors
-    })
 })
 
 // TBA

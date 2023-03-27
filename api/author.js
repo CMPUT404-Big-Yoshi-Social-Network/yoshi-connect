@@ -35,6 +35,9 @@ const express = require('express');
 
 // Schemas
 const { Author } = require('../scheme/author');
+const { OutgoingCredentials } = require('../scheme/server');
+
+const axios = require('axios');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -400,9 +403,40 @@ router.post('/:authorId', async (req, res) => {
  */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  const authors = await Author.find({username: username}).clone();
+  let authors = await Author.find({username: username}).clone();
   if (!authors) { 
     return res.sendStatus(404)
+  }
+
+  const outgoings = await OutgoingCredentials.find().clone();
+
+  for (let i = 0; i < outgoings.length; i++) {
+      if (outgoings[i].allowed) {
+          var config = {
+              host: outgoings[i].url,
+              url: outgoings[i].url + '/authors',
+              method: 'GET',
+              headers: {
+                  'Authorization': outgoings[i].auth,
+                  'Content-Type': 'application/json'
+              }
+          };
+  
+          await axios.request(config)
+          .then( res => {
+              let items = res.data.items
+              if (items != undefined) {
+                for (let j = 0; j < items.length; j++) {
+                  if (items[j].displayName == username) {
+                    authors.push(items[j]);
+                  }
+                }
+              }
+          })
+          .catch( error => {
+              console.log(error);
+          })
+      }
   }
 
   return res.json({

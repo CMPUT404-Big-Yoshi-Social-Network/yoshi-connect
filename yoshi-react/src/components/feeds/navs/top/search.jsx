@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
+    const username = props.username !== undefined ? props.username : props.displayName
     /**
      * Description:     
      * Returns: 
@@ -38,9 +39,10 @@ function SearchCard(props) {
     }
     return (
         <div>
-            { !props && props.username === undefined ? null : 
+            { !props && username === undefined ? null : 
                 <div>
-                    <Button onClick={toProfile} type="submit">{ props.username }</Button>
+                    {username}
+                    <Button onClick={sendRequest} type="submit">Send Follow Request</Button>
                 </div>
             }
         </div>

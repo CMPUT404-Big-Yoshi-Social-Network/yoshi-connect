@@ -42,7 +42,7 @@ const router = express.Router({mergeParams: true});
  * @openapi
  * /nodes/outgoing:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches the nodes used to communicate with other servers
  *    tags:
  *      - outgoing 
  */
@@ -59,9 +59,15 @@ router.get('/outgoing', async (req, res) => {
  * @openapi
  * /nodes/outgoing/:credId:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches a specific node used to communicate with a specific server
  *    tags:
  *      - outgoing 
+ *    parameters:
+ *      - in: path
+ *        name: credId
+ *        description: id of outgoing node
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/:credId', async (req, res) => { 
     await getCred(res, req.cookies.token, req.params.credId, 'outgoing'); 
@@ -71,9 +77,15 @@ router.get('/outgoing/:credId', async (req, res) => {
  * @openapi
  * /nodes/outgoing/:credId:
  *  put:
- *    summary: INSERT
+ *    summary: Modifies an existing node that communicates with other servers or enables / disables this node
  *    tags:
  *      - outgoing 
+ *    parameters:
+ *      - in: path
+ *        name: credId
+ *        description: id of outgoing node
+ *        schema:
+ *          type: string
  */
 router.put('/outgoing/:credId', async (req, res) => {
     if (req.body.status == 'modify') {
@@ -87,7 +99,7 @@ router.put('/outgoing/:credId', async (req, res) => {
  * @openapi
  * /nodes/outgoing:
  *  post:
- *    summary: INSERT
+ *    summary: Adds a new outgoing node to YoshiConnect database
  *    tags:
  *      - outgoing 
  */
@@ -99,9 +111,15 @@ router.post('/outgoing', async (req, res) => {
  * @openapi
  * /nodes/outgoing/:credId:
  *  delete:
- *    summary: INSERT
+ *    summary: Deletes an existing node that communicates with another server
  *    tags:
  *      - outgoing 
+ *    parameters:
+ *      - in: path
+ *        name: credId
+ *        description: id of outgoing node
+ *        schema:
+ *          type: string
  */
 router.delete('/outgoing/:credId', async (req, res) => { 
     await deleteCred(req.cookies.token, req.params.credId, 'outgoing'); 
@@ -111,7 +129,7 @@ router.delete('/outgoing/:credId', async (req, res) => {
  * @openapi
  * /nodes/outgoing/authors:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches remote authors from outgoing nodes (communicates with other servers)
  *    tags:
  *      - remote 
  */
@@ -152,9 +170,15 @@ router.get('/outgoing/authors', async (req, res) => {
  * @openapi
  * /nodes/outgoing/authors/:authorId:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches a remote author from another server
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -193,9 +217,20 @@ router.get('/outgoing/authors/:authorId', async (req, res) => {
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches a specific post made by a specific remote author
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post made by remote author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId/posts/:postId', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -234,9 +269,20 @@ router.get('/outgoing/authors/:authorId/posts/:postId', async (req, res) => {
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId/image:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches a specific image associated with a post made by a remote author
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post made by remote author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -275,7 +321,7 @@ router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) =
  * @openapi
  * /nodes/outgoing/posts:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches posts from remote servers 
  *    tags:
  *      - remote 
  */
@@ -321,9 +367,20 @@ router.get('/outgoing/posts', async (req, res) => {
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId/comments:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches the comments for a post made by a remote author
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post made by remote author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId/posts/:postId/comments', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -368,9 +425,15 @@ router.get('/outgoing/authors/:authorId/posts/:postId/comments', async (req, res
  * @openapi
  * /nodes/outgoing/authors/:authorId/followers:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches followers of a specific remote author
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId/followers', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -413,9 +476,20 @@ router.get('/outgoing/authors/:authorId/followers', async (req, res) => {
  * @openapi
  * /nodes/outgoing/authors/:authorId/followers/:foreignId:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches a specific follower of a remote author
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: foreignId
+ *        description: id of specific follower of remote author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -454,9 +528,15 @@ router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) 
  * @openapi
  * /nodes/outgoing/authors/:authorId/inbox/like:
  *  post:
- *    summary: INSERT
+ *    summary: Posts a like to a remote author's inbox
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
  */
 router.post('/outgoing/authors/:authorId/inbox/like', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -493,9 +573,15 @@ router.post('/outgoing/authors/:authorId/inbox/like', async (req, res) => {
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId/likes:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches the likes from a specific post made by a remote author
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId/posts/:postId/likes', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -538,9 +624,25 @@ router.get('/outgoing/authors/:authorId/posts/:postId/likes', async (req, res) =
  * @openapi
  * /nodes/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches the likes associated with a comment on a post made by a remote author
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post made by remote author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: commentId
+ *        description: id of comment made by an author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -583,9 +685,15 @@ router.get('/outgoing/authors/:authorId/posts/:postId/comments/:commentId/likes'
  * @openapi
  * /nodes/outgoing/authors/:authorId/liked:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches the liked object of a remote author 
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
  */
 router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -624,9 +732,20 @@ router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
  * @openapi
  * /nodes/outgoing/authors/:authorId/inbox/:type:
  *  post:
- *    summary: INSERT
+ *    summary: Adds a certain object to the remote author's inbox (specificed by type)
  *    tags:
  *      - remote 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of remote author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: type
+ *        description: type of object from remote author's inbox
+ *        schema:
+ *          type: string
  */
 router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -663,7 +782,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
  * @openapi
  * /nodes/incoming:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches all incoming nodes (remote servers use to communicate)
  *    tags:
  *      - incoming 
  */
@@ -681,12 +800,17 @@ router.get('/incoming', async (req, res) => {
  * @openapi
  * /nodes/incoming/:credId:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches a specific incoming node using its credential id
  *    tags:
  *      - incoming 
+ *    parameters:
+ *      - in: path
+ *        name: credId
+ *        description: id of incoming node
+ *        schema:
+ *          type: string
  */
 router.get('/incoming/:credId', async (req, res) => { 
-    // Getting our credentials from other nodes given the credId
     await getCred(res, req.cookies.token, req.params.credId, 'incoming'); 
 })
 
@@ -694,12 +818,11 @@ router.get('/incoming/:credId', async (req, res) => {
  * @openapi
  * /nodes/incoming:
  *  post:
- *    summary: INSERT
+ *    summary: Stores incoming node (nodes used to communicate with our server)
  *    tags:
  *      - incoming 
  */
 router.post('/incoming', async (req, res) => {
-    // Storing credentials from other nodes 
     await postCred(req, res, req.cookies.token, 'incoming'); 
 })
 
@@ -707,9 +830,15 @@ router.post('/incoming', async (req, res) => {
  * @openapi
  * /nodes/incoming/:credId:
  *  put:
- *    summary: INSERT
+ *    summary: Modifies an existing incoming node credentials or enables / disables incoming node 
  *    tags:
  *      - incoming 
+ *    parameters:
+ *      - in: path
+ *        name: credId
+ *        description: id of incoming node
+ *        schema:
+ *          type: string
  */
 router.put('/incoming/:credId', async (req, res) => {
     if (req.body.status == 'modify') {
@@ -723,9 +852,15 @@ router.put('/incoming/:credId', async (req, res) => {
  * @openapi
  * /nodes/incoming/:credId:
  *  delete:
- *    summary: INSERT
+ *    summary: Deletes an existing incoming node from YoshiConnect database
  *    tags:
  *      - incoming 
+ *    parameters:
+ *      - in: path
+ *        name: credId
+ *        description: id of incoming node
+ *        schema:
+ *          type: string
  */
 router.delete('/incoming/:credId', async (req, res) => { 
     // Deleting credentials for us (in database)

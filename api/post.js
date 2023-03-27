@@ -47,6 +47,12 @@ const router = express.Router({mergeParams: true});
  *    summary: Gets the posts associated with authorId 
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
  *    responses:
  *      500:
  *        description: Internal Server Error -- Unable to save public post in database
@@ -70,6 +76,12 @@ router.get('/public', async (req, res) => {
  *    summary: Gets the friend's posts associated with authorId
  *    tags:
  *      - friend 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
  *    responses:
  *      200:
  *        description: Returns either an empty array is the post is undefined, otherwise the friend (authorId) 
@@ -83,6 +95,12 @@ router.get('/friends-posts', async (req, res) => { await fetchFriendPosts(req, r
  *    summary: Gets the posts associated with authorId for the Author themselves
  *    tags:
  *      - author 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
  *    responses:
  *      200:
  *        description: Returns JSON with the type and the post object
@@ -93,9 +111,20 @@ router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
  * @openapi
  * /authors/:authorId/posts/other/:other:
  *  get:
- *    summary: Gets the posts associated with other for the Author associated with authorId
+ *    summary: Gets the posts associated with other for the Author associated with authorId (viewing someone else's profile)
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: other
+ *        description: id of other author 
+ *        schema:
+ *          type: string
  *    responses:
  *      200:
  *        description: Returns JSON with either an empty array if the post is undefined, otherwise the post object
@@ -109,6 +138,17 @@ router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res
  *    summary: Gets the posts associated with postId for the Author associated with authorId
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  *    responses:
  *      404:
  *        description: Not Found -- Author ID was not found or Post associated with Author was not found
@@ -141,6 +181,17 @@ router.get('/:postId', async (req, res) => {
  *    summary: Sends the posts associated with postId for the Author associated with authorId to update the post
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -173,6 +224,17 @@ router.post('/:postId', async (req, res) => {
  *    summary: Deletes the posts associated with postId for the Author associated with authorId to delete the post
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -205,6 +267,17 @@ router.delete('/:postId', async (req, res) => {
  *    summary: Puts the posts associated with postId for the Author associated with authorId to create a post
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -235,6 +308,12 @@ router.put('/:postId', async (req, res) => {
  *    summary: Gets the posts associated with authorId
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
  *    responses:
  *      500:
  *        description: Internal Server Error -- Unable to fetch Author from database
@@ -272,6 +351,12 @@ router.get('/', async (req, res) => {
  *    summary: Sends the posts associated with authorId
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -297,9 +382,20 @@ router.post('/', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId/likes:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches the likes associated with a specific post made by a specific author
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  */
 router.get('/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;
@@ -321,9 +417,20 @@ router.get('/:postId/likes', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId/likes:
  *  put:
- *    summary: INSERT
+ *    summary: Adds a like to the post from viewer
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  */
 router.put('/:postId/likes', async (req, res) => {
   console.log('TODO: PUT Request that adds a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
@@ -333,9 +440,20 @@ router.put('/:postId/likes', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId/likes:
  *  delete:
- *    summary: INSERT
+ *    summary: Deletes a like to the post from viewer
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  */
 router.delete('/:postId/likes', async (req, res) => {
   console.log('TODO: DELETE Request that deletes a like to the post from viewer (can get from token) RESPONSE expected to have response.data.numLikes')
@@ -345,9 +463,20 @@ router.delete('/:postId/likes', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId/liked:
  *  get:
- *    summary: INSERT
+ *    summary: Detects whether a post has already been liked by the viewer
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  */
 router.get('/:postId/liked', async (req, res) => {
   //TODO we can refactor this endpoint to take multiple posts which will allow us to amortize the amount of time spent searching for public posts
@@ -359,9 +488,20 @@ router.get('/:postId/liked', async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId/image:
  *  post:
- *    summary: INSERT
+ *    summary: Edits an image associated with a specific post made by a specific author
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  */
 router.post("/:postId/image", async (req, res) => {  
   const [image, status] = await editImage(req.body.url, req.body.image);
@@ -377,9 +517,20 @@ router.post("/:postId/image", async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId/image:
  *  put:
- *    summary: INSERT
+ *    summary: Uploads an image related to a post made by a specific author
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  */
 router.put("/:postId/image", async (req, res) => {  
   const [image, status] = await uploadImage(req.body.url, req.body.image);
@@ -395,9 +546,20 @@ router.put("/:postId/image", async (req, res) => {
  * @openapi
  * /authors/:authorId/posts/:postId/image:
  *  get:
- *    summary: INSERT
+ *    summary: Fetches the image associated with post made by a specific author
  *    tags:
  *      - post 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of post
+ *        schema:
+ *          type: string
  */
 router.get("/:postId/image", async (req, res) => { 
   const [image, status] = await getImage(req.originalUrl); 

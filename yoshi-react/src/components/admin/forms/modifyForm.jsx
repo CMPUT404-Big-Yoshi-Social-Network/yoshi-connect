@@ -26,6 +26,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function ModifyAuthor(props) {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
     const [data, setData] = useState({
         newUsername: props.displayName,
@@ -45,6 +52,7 @@ function ModifyAuthor(props) {
          * Request: PUT
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         e.preventDefault();
 
         let body = {

@@ -38,6 +38,7 @@ function RightNavBar() {
      * Description: Represents the right navigation bar
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const [username, setUsername] = useState('');
     const navigate = useNavigate();
     

@@ -33,6 +33,11 @@ import SettingsNav from '../../settings/nav.jsx';
 import './nav.css';
 
 function LeftNavBar(props) {
+    /**
+     * Description:  
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const url = window.location.pathname;
     const { username } = useParams();
     let url1 = ''

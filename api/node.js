@@ -935,7 +935,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                 },
                 data: {
                     type: req.params.type,
-                    item: req.body.item
+                    item: req.body
                 }
             };
     

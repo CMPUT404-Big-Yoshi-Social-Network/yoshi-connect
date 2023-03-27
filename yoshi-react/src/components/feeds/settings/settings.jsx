@@ -44,6 +44,7 @@ function Settings() {
      *     - modify(): Updates the new author's account details
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
     const [newAuthor, setNewAuthor] = useState({
         newUsername: '',
@@ -58,6 +59,7 @@ function Settings() {
          * Request: POST
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         const getAuthor = () => {
             let config = {
                 method: 'get',
@@ -91,10 +93,11 @@ function Settings() {
     
     const modify = (e) => {
         /**
-         * Description: Updates the new author's account details
+         * Description: Updates the author's account details
          * Request: PUT
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         e.preventDefault();
         console.log('Debug: Attempting to modify an author.');
         let config = {

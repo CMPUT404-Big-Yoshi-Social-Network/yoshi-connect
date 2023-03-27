@@ -40,6 +40,7 @@ const { authLogin } = require('../routes/auth');
 // Router
 const router = express.Router({mergeParams: true});
 
+// TBA 200
 /**
  * @openapi
  * /authors/:authorId/inbox:
@@ -77,6 +78,7 @@ router.get('/', async (req, res) => {
 	return res.json(posts);
 })
 
+// TBA 200
 /**
  * @openapi
  * /authors/:authorId/inbox/requests:
@@ -105,6 +107,7 @@ router.get('/requests', async (req, res) => {
 	await getRequests(authorId, res);
 })
 
+// TBA 200
 /**
  * @openapi
  * /authors/:authorId/inbox/requests/:foreignAuthorId:
@@ -138,6 +141,7 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
 	await deleteRequest(authorId, foreignId, res);
 })
 
+// TBA 200
 /**
  * @openapi
  * /authors/:authorId/inbox:
@@ -247,6 +251,7 @@ router.post('/', async (req, res) => {
 	return res.json(response);
 })
 
+// TBA 200
 /**
  * @openapi
  * /authors/:authorId/inbox/requests/:foreignAuthorId:
@@ -283,6 +288,7 @@ router.put('/requests/:foreignAuthorId', async (req, res) => {
 	})
 })
 
+// TBA 200
 /**
  * @openapi
  * /authors/:authorId/inbox/requests/:foreignAuthorId:

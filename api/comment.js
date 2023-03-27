@@ -268,6 +268,20 @@ router.get('/:commentId', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     NewComment:
+ *         type: object
+ *         properties: 
+ *           type: 
+ *             type: string
+ *             description: type of object (comment)
+ *           comment:
+ *             type: string
+ *             description: comment that was made 
+ *           contentType:
+ *             type: string
+ *             description: content type (text/plain or markdown)
  * /authors/:authorId/posts/:postId/comments:
  *  post:
  *    summary: Creates comment for a specific Post made by a specific Author
@@ -284,6 +298,15 @@ router.get('/:commentId', async (req, res) => {
  *        description: id of Post 
  *        schema:
  *          type: string
+ *    requestBody:
+ *      content: 
+ *        application/x-wwwm-form-urlencoded:
+ *          schema:
+ *            $ref: '#/components/schemas/NewComment'
+ *          example:
+ *            type: comment
+ *            comment: Monkey, monkey!
+ *            contentType: text/plain
  *    responses:
  *      400: 
  *        description: Bad Request, no comment provided, no Author to be the author of the comment, did not provide content type or type
@@ -366,14 +389,81 @@ router.post('/', async (req, res) => {
     }) 
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId/comments:
+ *  put:
+ *    summary: Makes a comment on a post by viewer
+ *    tags:
+ *      - comments
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of Author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of Post 
+ *        schema:
+ *          type: string
+ */
 router.put('/', async (req, res) => {
   console.log('TODO: PUT Request that makes a comment on a post by viewer (can get from token) RESPONSE expected to have response.data.numComments')
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId/comments/:commentId:
+ *  post:
+ *    summary: Modifies a comment
+ *    tags:
+ *      - comments
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of Author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of Post 
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: commentId
+ *        description: id of comment
+ *        schema:
+ *          type: string
+ */
 router.post('/:commentId', async (req, res) => {
   console.log('TODO: POST request that modifies a comment; body has comment for the new comment content')
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/posts/:postId/comments/:commentId:
+ *  delete:
+ *    summary: Deletes a comment
+ *    tags:
+ *      - comments
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        description: id of Author
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: postId
+ *        description: id of Post 
+ *        schema:
+ *          type: string
+ *      - in: path
+ *        name: commentId
+ *        description: id of comment
+ *        schema:
+ *          type: string
+ */
 router.delete('/:commentId', async (req, res) => {
   console.log('TODO: DELETE request that deletes a comment from a post')
 })
@@ -401,6 +491,18 @@ router.delete('/:commentId', async (req, res) => {
  *        description: id of Post 
  *        schema:
  *          type: string
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *        description: Page of Likes requested
+ *      - in: query
+ *        name: size
+ *        schema: 
+ *          type: integer
+ *          minimum: 5
+ *        description: Number of Likes on a Page requested
  *    responses:
  *      400: 
  *        description: Bad Request, type not given

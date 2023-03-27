@@ -28,6 +28,11 @@ import React from 'react';
 import './left.css';
 
 function LeftAdminNavBar() {
+    /**
+     * Description: Represents the left navigation bar     
+     * Returns: N/A
+     */
+    console.log('Debug: Calling the left admin navigation bar')
     return (
         <div className='left-admin-column'>
         </div>

@@ -35,6 +35,7 @@ function Requests(props) {
      *     - useEffect(): Before render, checks the and sends the requests
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const [requests, setRequests] = useState([]);
     const navigate = useNavigate();
     const [seeMore, setSeeMore] = useState(false);
@@ -43,6 +44,12 @@ function Requests(props) {
     const url = '/authors/' + props.authorId + '/inbox/requests';
 
     useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -97,6 +104,12 @@ function Requests(props) {
     }, [navigate, page, requests, url]);
 
     const getMore = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {
             let updated = page + 1;
             setPage(updated);

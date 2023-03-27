@@ -35,6 +35,7 @@ export default function Signup() {
    *     - getAccount(): Sends a POST request to get the account for routing it to the public feed as well as saving the new author
    * Returns: N/A
    */
+  console.log('Debug: <TLDR what the function is doing>')
   const navigate = useNavigate();
   const [data, setData] = useState({ username: '', email: '', password: '' })
   const [error, setError] = useState(false);
@@ -47,6 +48,7 @@ export default function Signup() {
      * Request: POST
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     e.preventDefault()
       if (data.email.length === 0 || data.username.length === 0 || data.password.length === 0){
         setError(true)

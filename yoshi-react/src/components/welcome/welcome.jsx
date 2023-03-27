@@ -31,6 +31,7 @@ function Welcome() {
      * Description: Represents Welcome screen that routes to the Signup and Login page 
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div className='welcome'>
             <Image fluid src='/images/yoshi_connect_logo2.png' alt='Logo' width={100} />

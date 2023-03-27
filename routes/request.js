@@ -32,6 +32,13 @@ const { Request, Follower, Following } = require('../scheme/relations.js');
 const { Inbox } = require('../scheme/post.js');
 
 async function senderAdded(authorId, foreignId, req, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let success = true;
 
     const actor = await Author.findOne({_id: authorId});
@@ -87,6 +94,13 @@ async function senderAdded(authorId, foreignId, req, res) {
 }
 
 async function sendRequest(authorId, foreignId, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
     let summary = ''
@@ -150,6 +164,13 @@ async function sendRequest(authorId, foreignId, res) {
 }
 
 async function deleteRequest(authorId, foreignId, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
 
@@ -189,6 +210,13 @@ async function deleteRequest(authorId, foreignId, res) {
 }
 
 async function getRequests(authorId, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
     return res.json({
         "type": 'requests',
@@ -197,6 +225,13 @@ async function getRequests(authorId, res) {
 }
 
 async function getRequest(authorId, foreignId) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
     return inbox.requests[idx];

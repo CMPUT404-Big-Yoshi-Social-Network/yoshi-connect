@@ -37,6 +37,7 @@ function GitHub() {
      *     - useEffect(): Before rendering, checks if the author is logged in to authorize routing
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div>
             <TopNav/>

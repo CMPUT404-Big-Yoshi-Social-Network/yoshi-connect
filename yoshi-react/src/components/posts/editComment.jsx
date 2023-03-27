@@ -27,6 +27,12 @@ import React, { useState } from "react";
 import './create.css';
 
 function EditComment(props) {
+    /**
+     * Description:  
+     * Request: (if axios is used)    
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const [data, setData] = useState({ comment: props.comment })
     
     const modifyComment = () => {

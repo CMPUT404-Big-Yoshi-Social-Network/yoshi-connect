@@ -47,10 +47,17 @@ function AdminDashboard() {
      *     - LogOut(): Logs the admin out
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
     const url = '/admin/dashboard';
 
     const getDashboard = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         axios
         .get(url)
         .then((response) => { })
@@ -68,6 +75,12 @@ function AdminDashboard() {
     });
 
     const LogOut = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

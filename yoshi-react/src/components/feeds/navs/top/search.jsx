@@ -20,22 +20,75 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React from "react";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
+    const username = props.username !== undefined ? props.username : props.displayName
+    const [requestButton, setRequestButton] = useState('Send Follow Request');
+    /**
+     * Description:     
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
+    const [viewerId, setViewerId] = useState('')
+    const [viewer, setViewer] = useState({})
     const navigate = useNavigate();
-    const toProfile = () => {
-        navigate('/users/' + props.username)
+
+    useEffect(() => {
+        /**
+         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        const getId = () => {
+            /**
+             * Description: Sends a POST request to get the current author's id 
+             * Request: POST
+             * Returns: N/A
+             */
+            console.log('Debug: <TLDR what the function is doing>')
+            axios
+            .get('/userinfo/')
+            .then((response) => {
+                console.log(response)
+                let viewerId = response.data.authorId;
+                let viewer = response.data;
+                setViewerId(viewerId)
+                setViewer(viewer)
+            })
+            .catch(err => { if (err.response.status === 404) { 
+                setViewerId('')
+            }})
+        }
+        getId();
+    }, [navigate]);
+
+    const sendRequest = () => {
+        setRequestButton('Sent');
+        let id = props.id.replace(props.host + 'authors/', '');
+        let config = {
+            summary: viewer + " wants to follow " + username,
+            actor: viewer,
+            actorId: viewerId,
+            objectId: id,
+            object: props
+        }
+        axios
+        .post('/outgoing/authors/' + id + '/inbox/follow', config)
+        .then((response) => { })
+        .catch(err => { });
     }
     return (
         <div>
-            { !props && props.username === undefined ? null : 
+            { !props && username === undefined ? null : 
                 <div>
-                    <Button onClick={toProfile} type="submit">{ props.username }</Button>
+                    {username}
+                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }
         </div>

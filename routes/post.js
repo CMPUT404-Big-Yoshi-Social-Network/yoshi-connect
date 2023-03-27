@@ -37,6 +37,13 @@ const { authLogin } = require('./auth.js');
 const { getAuthor } = require('./author.js');
 
 async function createPostHistory(author_id){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let new_post_history = new PostHistory ({
         _id: uuid,
@@ -49,6 +56,13 @@ async function createPostHistory(author_id){
 }
 
 async function uploadImage(url, image) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let newImage = new Image ({
         _id: url,  
         src: image
@@ -58,6 +72,13 @@ async function uploadImage(url, image) {
 }
 
 async function editImage(url, src) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
     image.src = src;
@@ -66,12 +87,26 @@ async function editImage(url, src) {
 }
 
 async function getImage(url) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
     return [image.src, 200];
 }
 
 async function getPost(postId, auth, author){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let post = await PostHistory.aggregate([
         {
             $match: {'authorId': author.authorId}
@@ -147,6 +182,13 @@ async function getPost(postId, auth, author){
 }
 
 async function createPost(token, authorId, postId, newPost) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
     let authorPromise = getAuthor(authorId);
@@ -248,6 +290,13 @@ async function createPost(token, authorId, postId, newPost) {
 }
 
 async function updatePost(token, authorId, postId, newPost) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (!(await authLogin(token, authorId))) { return [{}, 401]; }
     const title = newPost.title;
     const description = newPost.description;
@@ -332,6 +381,13 @@ async function updatePost(token, authorId, postId, newPost) {
 }
 
 async function deletePost(token, authorId, postId) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
@@ -362,6 +418,13 @@ async function deletePost(token, authorId, postId) {
 }
 
 async function getPosts(token, page, size, author) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if(page < 0 || size < 0){
         return [[], 400]
     }
@@ -466,6 +529,13 @@ async function getPosts(token, page, size, author) {
 }
 
 async function fetchMyPosts(req, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const posts = await PostHistory.aggregate([
         {
             $match: {
@@ -516,6 +586,13 @@ async function fetchMyPosts(req, res) {
 }
 
 async function fetchOtherPosts(req, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const posts = await PostHistory.aggregate([
         {
             $match: {

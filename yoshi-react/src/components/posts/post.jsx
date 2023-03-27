@@ -36,8 +36,9 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post}) {
-    const postId = post._id;
-    const authorId = post.authorId;
+    let postId = post.id ? post.id.split('/') : undefined;
+    postId = postId ? postId[postId.length - 1] : undefined;
+    let authorId = post.author ? post.author.authorId : undefined;
 
     const [numLikes, setNumLikes] = useState(post.likes !== undefined ? post.likes.length : 0);
     const [numComments, setNumComments] = useState(post.comments !== undefined ? post.comments.length : 0);
@@ -49,7 +50,7 @@ function Post({viewerId, post}) {
 
     const navigate = useNavigate();
 
-    useEffect(() => { 
+    useEffect(() => {
         const getImage = () => {
             axios
             .get("/authors/" + authorId + "/posts/" + postId + "/image")

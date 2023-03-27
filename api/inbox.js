@@ -235,7 +235,6 @@ router.post('/', async (req, res) => {
 		//[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
 	else if(type === "follow"){
-		
 	}
 	else if(type === "comment"){
 		response = {

@@ -83,6 +83,79 @@ async function fetchPublicPosts(page, size) {
         }
     }
 
+    // const outgoings = await OutgoingCredentials.find().clone();
+
+    // for (let i = 0; i < outgoings.length; i++) {
+    //     if (outgoings[i].allowed) {
+    //         const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+    //         if (outgoings[i].auth === 'userpass') {
+    //             var config = {
+    //                 host: outgoings[i].url,
+    //                 url: outgoings[i].url + '/posts/public',
+    //                 method: 'GET',
+    //                 auth: auth,
+    //                 headers: {
+    //                     'Content-Type': 'application/json'
+    //                 }
+    //             };
+    //         } else {
+    //             var config = {
+    //                 host: outgoings[i].url,
+    //                 url: outgoings[i].url + '/posts/public',
+    //                 method: 'GET',
+    //                 headers: {
+    //                     'Authorization': auth,
+    //                     'Content-Type': 'application/json'
+    //                 }
+    //             };
+    //         }
+      
+    //         await axios.request(config)
+    //         .then( res => {
+    //             let items = []
+    //             if (outgoings[i].auth === 'userpass') {
+    //                 items = res.data.results
+    //             } else {
+    //                 items = res.data.items
+    //             }
+    //             for (let j = 0; j < items.length; j++) {
+    //                 publicPosts.push(items[j]);
+    //             }
+    //         })
+    //         .catch( error => {
+    //             console.log(error);
+    //         })
+    //     }
+    // }
+    
+    var config = {
+        host: 'http://www.distribution.social/api',
+        url: 'http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Basic eW9zaGk6eW9zaGkxMjM=',
+            'Content-Type': 'application/json'
+        }
+    };
+    await axios.request(config)
+    .then( res => { console.log(res) })
+    .catch( error => { })
+
+    var config = {
+        host: 'https://sociallydistributed.herokuapp.com',
+        url: 'https://sociallydistributed.herokuapp.com/posts/authors/546de5fe-77ea-4cc2-93f9-7a3825132d68/posts/',
+        method: 'GET',
+        auth: { username: 'Yoshi_Connects', password: 'MinionConnector1' },
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    await axios.request(config)
+    .then( res => { publicPosts.push(res.data.results) })
+    .catch( error => {
+        console.log('Error')
+    })
+
     response = {
         items: publicPosts
     }

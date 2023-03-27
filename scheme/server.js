@@ -36,7 +36,7 @@ const outgoingCredentialScheme = new Schema({
 
 const incomingCredentialsScheme = new Schema({
     _id: String,
-    dispalyName: String,
+    displayName: String,
     url: String,
     password: String,
     allowed: Boolean,

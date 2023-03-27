@@ -34,7 +34,7 @@ const express = require('express');
 const app = express();
 let cors = require('cors');
 let corsOptions = {
-  origin: ["http://www.distribution.social", "https://www.distribution.social/", "http://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com"],
+  origin: ["http://www.distribution.social", "https://www.distribution.social/", "http://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com", "http://localhost:127.0.0.1:8000"],
   credentials: true
 };
 const PORT = process.env.PORT || 8080;

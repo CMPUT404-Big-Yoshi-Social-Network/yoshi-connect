@@ -93,7 +93,7 @@ function Settings() {
     
     const modify = (e) => {
         /**
-         * Description: Updates the new author's account details
+         * Description: Updates the author's account details
          * Request: PUT
          * Returns: N/A
          */

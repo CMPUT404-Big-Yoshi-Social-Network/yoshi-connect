@@ -80,7 +80,7 @@ function SearchCard(props) {
         }
         axios
         .post('/outgoing/authors/' + id + '/inbox/follow', config)
-        .then((response) => { })
+        .then((response) => { console.log(response) })
         .catch(err => { });
     }
     return (

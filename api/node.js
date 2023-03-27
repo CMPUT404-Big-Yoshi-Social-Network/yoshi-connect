@@ -945,7 +945,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
         if (outgoings[i].allowed) {
             var config = {
                 host: outgoings[i].url,
-                url: outgoings[i].url + '/authors' + req.params.authorId + '/inbox',
+                url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox',
                 method: 'POST',
                 headers: {
                     'Authorization': outgoings[i].auth,

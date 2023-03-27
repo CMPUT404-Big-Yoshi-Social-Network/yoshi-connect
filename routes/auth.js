@@ -38,11 +38,12 @@ const { Author, Login } = require('../scheme/author.js');
 
 async function checkUsername(req) {
     /**
-    Description: 
+    Description: Authenticates username
     Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Request Type: GET
+    Request Body: Example: 
+                    { username: abc }
+    Return: N/A
     */
     const author = await Author.findOne({username: req.body.username});
 

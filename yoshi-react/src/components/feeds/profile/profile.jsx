@@ -274,9 +274,10 @@ function Profile() {
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    { personal.person ? 
+                    { (personal.person == null) ? null:
+                        (personal.person == true ?
                         <Posts type={'personal'}/> : 
-                        <Posts type={otherUrl}/> 
+                        <Posts type={otherUrl}/>) 
                     }   
                 </div>
                 <div className='profColR'>

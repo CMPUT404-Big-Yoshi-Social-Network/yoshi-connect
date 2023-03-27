@@ -36,17 +36,12 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post}) {
-    /**
-     * Description:  
-     * Request: (if axios is used)    
-     * Returns: 
-     */
-    console.log('Debug: <TLDR what the function is doing>')
-    const postId = post._id;
-    const authorId = post.authorId;
+    let postId = post.id ? post.id.split('/') : undefined;
+    postId = postId ? postId[postId.length - 1] : undefined;
+    let authorId = post.author ? post.author.authorId : undefined;
 
-    const [numLikes, setNumLikes] = useState(post.likes !== undefined ? post.likes.length : 0);
-    const [numComments, setNumComments] = useState(post.comments !== undefined ? post.comments.length : 0);
+    const [numLikes, setNumLikes] = useState(post.likeCount);
+    const [numComments, setNumComments] = useState(post.commentCount);
 
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);

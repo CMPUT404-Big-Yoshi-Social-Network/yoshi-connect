@@ -43,19 +43,24 @@ body {
   }
   
   .postMenuBox{
+    justify-content: center;
     position: relative;
-    width: 80%;
-    height: 90%;
+    max-width: 50%;
     background-color: #24292f;
     border-radius: 10px;
-    margin: 2em 10%;
-    padding: 10px;
+    margin-top: 5em;
+    margin-left: 25%;
+    padding: 1em;
     overflow: auto;
   }
   
+  .postLabel {
+    display: inline-block;
+    margin-right: 0.3em;
+  }
   .postMenuCloseButton {
     cursor: pointer;
-    border: none;
+    border: #4a5460;
     font-size: larger;
     position: absolute;
     right: 15px;
@@ -65,18 +70,20 @@ body {
   }
   
   .postMenuDropDown {
-    border-radius:10px;
-    display:inline-block;
+    border-radius: 10px;
+    display: inline-block;
     border: 1px solid white;
     background-color: #24292f;
     padding: 5px;
-    color: chartreuse;
+    margin-right: 1em;
+    color: #D2F364;
   }
   
   .postMenuInput {
     background-color: #4a5460;
-    border: none;
+    border: #4a5460;
     width: 100%;
+    border-radius: .5em;
   }
   
   .postMenuImageInput {
@@ -92,12 +99,13 @@ body {
   }
   
   .createPostButton {
-    right: 15px;
     color: black;
-    background-color: chartreuse;
-    border: none;
-    border-radius:10px;
-    padding: 5px;
+    background-color: #D2F364;
+    border: #D2F364;
+    font-size: 18px;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
   }
   
   .tempBackground {

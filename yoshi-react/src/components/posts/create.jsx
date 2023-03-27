@@ -152,22 +152,20 @@ function CreatePost() {
                     <h1 className={"createPostHeader"}>Create New Post</h1>
                     <hr size={"2px"} width={"fill"} color={"white"}/>
                     <form encType='multipart/form-data'>
-                        <label><p style={{color:"white"}}>Content Type</p></label>
-                        <label><p style={{color:"white"}}>Visibility</p></label>
-                        <label><p style={{color:"white"}}>Unlisted</p></label>
+                        <label className='postLabel'><p style={{color:"white"}}>Content Type:</p></label>
                         <select className={"postMenuDropDown"} id={"contentType"} name={"contentType"}onChange={(e) => {
                             setData({...data, contentType: e.target.value})}}>
-                            <option value={"text/plain"}>PLAIN TEXT</option>
-                            <option value={"text/markdown"}>MARKDOWN</option>
+                            <option value={"text/plain"}>Plain Text</option>
+                            <option value={"text/markdown"}>Markdown</option>
                         </select>
-
+                        <label className='postLabel'><p style={{color:"white"}}>Visibility:</p></label>
                         <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
                             <option value={"PUBLIC"}>Public</option>
                             <option value={"FRIENDS"}>Friends</option>
                             <option value={"Private"}>Private</option>
                         </select>
-
+                        <label className='postLabel'><p style={{color:"white"}}>Unlisted:</p></label>
                         <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{
                             let bool;
                             if(e.target.value === "True") bool = true;

@@ -98,14 +98,8 @@ function Posts(props) {
 
         axios
         .get(url, config)
-        .then((response) => { 
-            let posts = []
-            if (response.data.items.length !== 0) {
-                for (let i = 0; i < response.data.items.length; i++) {
-                    posts.push(response.data.items[i]);
-                }
-            }
-            setPosts(posts);
+        .then((response) => {
+            setPosts(posts.concat(response.data.items));
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -117,7 +111,7 @@ function Posts(props) {
                 setPosts([]);
             }
         });
-
+        
         let updated = page + 1;
         config = {
             method: 'get',
@@ -133,7 +127,7 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setSeeMore(true); }
+            if (response.data[0]) { setSeeMore(true); }
         })
         .catch(err => {
             if (err.response.status === 500) {
@@ -144,6 +138,7 @@ function Posts(props) {
                 navigate('/unauthorized');
             }
         });
+        
        } 
     }, [url, navigate, page, size]);
 
@@ -209,15 +204,20 @@ function Posts(props) {
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
         .catch(err => {
-            if (err.response.status === 404) {
-                setPosts(posts);
-            } else if (err.response.status === 401) {
-                navigate('/unauthorized');
-            } else if (err.response.status === 500) {
-                // TEMPORARY
-                setPosts(posts);
+            console.log(err);
+            if(err.response){
+                if (err.response.status === 404) {
+                    setPosts(posts);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    // TEMPORARY
+                    setPosts(posts);
+                }
             }
+            
         });
+        
     }
 
     return (

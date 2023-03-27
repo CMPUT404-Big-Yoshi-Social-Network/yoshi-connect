@@ -79,8 +79,8 @@ function SearchCard(props) {
             object: props
         }
         axios
-        .post('/outgoing/authors/' + id + '/inbox/follow', config)
-        .then((response) => { console.log(response) })
+        .post('/nodes/outgoing/authors/' + id + '/inbox/follow', config)
+        .then((response) => { })
         .catch(err => { });
     }
     return (

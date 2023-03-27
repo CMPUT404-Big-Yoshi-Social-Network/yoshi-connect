@@ -953,10 +953,13 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                 },
                 data: {
                     type: req.params.type,
-                    item: req.body
+                    summary: req.body.summary,
+                    actor: req.body.actor,
+                    actorId: req.body.actorId,
+                    objectId: req.body.objectId,
+                    object: req.body.object
                 }
             };
-    
             await axios.request(config)
             .then( res => { })
             .catch( error => {

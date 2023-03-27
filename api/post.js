@@ -53,7 +53,6 @@ const router = express.Router({mergeParams: true});
  *        description: id of author
  *        schema:
  *          type: string
- *    parameters:
  *      - in: query
  *        name: page
  *        schema:

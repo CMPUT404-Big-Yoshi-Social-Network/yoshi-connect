@@ -41,28 +41,28 @@ const router = express.Router({mergeParams: true});
  * components:
  *   schemas:
  *     RegisterAuthor:
- *         type: object
- *         properties: 
- *           username: 
- *             type: string
- *             description: username of Author
- *           email:
- *             type: string
- *             description: email of Author
- *           password:
- *             type: string
- *             description: password of Author
+ *       type: object
+ *       properties: 
+ *         username: 
+ *           type: string
+ *           description: username of Author
+ *         email:
+ *           type: string
+ *           description: email of Author
+ *         password:
+ *           type: string
+ *           description: password of Author
  * /signup:
  *  post:
  *    summary: Registers an Author in YoshiConnect by sending the document to be enabled or disabled by an Admin Author
  *    tags:
  *      - signup
  *    requestBody: 
- * 		content: 
+ *    content: 
  *        application/x-wwwm-form-urlencoded:
  *          schema:
  *              - $ref: '#/components/schemas/RegisterAuthor'
- * 			example: 
+ *          example: 
  *             RegisterAuthor:
  *               value:
  *                 username: kc

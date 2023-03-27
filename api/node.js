@@ -172,7 +172,7 @@ router.put('/outgoing/:credId', async (req, res) => {
  *                 displayName: monkey
  *                 password: monkey123
  *                 allowed: false
- *          	   auth: 29c546d45f564a27871838825e3dbecb
+ *                 auth: 29c546d45f564a27871838825e3dbecb
  */
 router.post('/outgoing', async (req, res) => {
     await postCred(req, res, req.cookies.token, 'outgoing'); 
@@ -1022,7 +1022,7 @@ router.get('/incoming/:credId', async (req, res) => {
  *                 displayName: monkey
  *                 password: monkey123
  *                 allowed: false
- *          	   auth: 29c546d45f564a27871838825e3dbecb
+ *                 auth: 29c546d45f564a27871838825e3dbecb
  */
 router.post('/incoming', async (req, res) => {
     await postCred(req, res, req.cookies.token, 'incoming'); 

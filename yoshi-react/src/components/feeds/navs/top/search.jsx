@@ -27,6 +27,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
+    /**
+     * Description:     
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
     const toProfile = () => {
         navigate('/users/' + props.username)

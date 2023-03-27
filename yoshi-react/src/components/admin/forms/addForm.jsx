@@ -26,11 +26,24 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function AddAuthor() {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const url = '/admin/dashboard';
     const [data, setData] = useState({ username: '', password: '', email: '' })
     const navigate = useNavigate();
 
     const addAuthor = async (e) => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         e.preventDefault();
         let body = {
             status: 'Add',

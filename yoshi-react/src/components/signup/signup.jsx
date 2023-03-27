@@ -35,6 +35,7 @@ export default function Signup() {
    *     - getAccount(): Sends a POST request to get the account for routing it to the public feed as well as saving the new author
    * Returns: N/A
    */
+  console.log('Debug: <TLDR what the function is doing>')
   const navigate = useNavigate();
   const [data, setData] = useState({ username: '', email: '', password: '' })
   const url = '/signup';
@@ -45,6 +46,7 @@ export default function Signup() {
      * Request: POST
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     e.preventDefault()
 
     axios

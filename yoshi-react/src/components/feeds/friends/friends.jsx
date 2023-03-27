@@ -27,9 +27,22 @@ import React, { useEffect, useState } from "react";
 import Friend from './friend.jsx';
 
 function Friends(props) {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (props.authorId) {
             axios
             .get('/authors/' + props.authorId + '/friends')

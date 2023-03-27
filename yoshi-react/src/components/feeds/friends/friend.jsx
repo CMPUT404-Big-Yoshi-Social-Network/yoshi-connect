@@ -23,6 +23,11 @@ Foundation; All Rights Reserved
 import React from "react";
 
 function Friend(props) {
+    /**
+     * Description:    
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div id='friend'>
             { props.displayName }

@@ -35,9 +35,22 @@ import Posts from '../../posts/posts.jsx';
 import './feed.css';
 
 function FriendFeed() {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewerId] = useState({ viewerId: '' })
 
     useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         const getId = () => {
             axios
             .get('/userinfo/')

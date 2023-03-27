@@ -44,6 +44,13 @@ const { checkUsername, checkExpiry } = require('./auth.js');
 const { Liked, LikedHistory } = require('../scheme/interactions.js');
 
 async function createInbox(username, authorId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     await Inbox({
         _id: uuid,
@@ -57,6 +64,13 @@ async function createInbox(username, authorId){
 }
 
 async function registerAuthor(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (await checkUsername(req) === "In use") { return res.sendStatus(400); }
 
     const username = req.body.username;
@@ -105,6 +119,13 @@ async function registerAuthor(req, res){
 }
 
 async function getProfile(req, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (req.cookies == undefined) { return res.sendStatus(404); } else if (req.cookies.token == undefined) { return res.sendStatus(404); }
 
     const login = await Login.findOne({token: req.cookies.token});
@@ -134,6 +155,13 @@ async function getProfile(req, res) {
 }
 
 async function getAuthor(authorId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const author = await Author.findOne({_id: authorId}, function (err, author) {
         if (err) { return "server failure"; }
         return [author, 200];
@@ -161,6 +189,13 @@ async function getAuthor(authorId){
 }
 
 async function updateAuthor(token, author){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (await checkExpiry(token)) { return [null, 401]; }
 
     let authorProfile = await Author.findOne({_id: author.id});
@@ -193,6 +228,13 @@ async function updateAuthor(token, author){
 }
 
 async function getAuthors(page, size){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let authors = undefined;
 
     if (page > 1) { 
@@ -226,6 +268,13 @@ async function getAuthors(page, size){
 }
 
 function validateAuthorObject(author){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
         return false;
     }

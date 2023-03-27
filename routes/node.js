@@ -33,6 +33,13 @@ const crypto = require('crypto');
 const crypto_js = require('crypto-js');
 
 async function getCreds(res, page, size, token, type) {
+	/**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -80,6 +87,13 @@ async function getCreds(res, page, size, token, type) {
 }
 
 async function getCred(res, token, credId, type) {
+	/**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -103,6 +117,13 @@ async function getCred(res, token, credId, type) {
 }
 
 async function postCred(req, res, token, type) {
+	/**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -128,6 +149,13 @@ async function postCred(req, res, token, type) {
 }
 
 async function putCred(req, res, credId, token, type) {
+	/**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -149,6 +177,13 @@ async function putCred(req, res, credId, token, type) {
 }
 
 async function deleteCred(token, credId, type) {
+	/**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
@@ -164,6 +199,13 @@ async function deleteCred(token, credId, type) {
 }
 
 async function allowNode(res, credId, type){
+	/**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
 	let coll = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;

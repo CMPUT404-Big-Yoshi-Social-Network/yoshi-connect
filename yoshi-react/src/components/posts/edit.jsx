@@ -55,6 +55,7 @@ function EditPost({viewerId, post}) {
      * Request: POST    
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const [data, setData] = useState({
         title: post.title,
         desc: post.description,
@@ -73,6 +74,7 @@ function EditPost({viewerId, post}) {
          * Request: POST    
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         e.preventDefault()
         
         let body = {

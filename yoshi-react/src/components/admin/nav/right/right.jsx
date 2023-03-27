@@ -34,6 +34,7 @@ function RightAdminNavBar() {
      * Description: Represents the right navigation bar
      * Returns: N/A
      */
+    console.log('Debug: Calling the right admin navigation bar')
     //const { username } = useParams();
     return (
         <Navbar className="right-admin-column">

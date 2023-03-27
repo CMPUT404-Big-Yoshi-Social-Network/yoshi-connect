@@ -36,6 +36,7 @@ function Comment(props) {
      *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const deleteComment = () => {
         axios.delete('/authors/' + props.authorId + '/posts/' + props.postId + '/comments' + props._id)
         .then((response) => { })

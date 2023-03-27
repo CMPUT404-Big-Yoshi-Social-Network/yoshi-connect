@@ -41,6 +41,9 @@ import PublicFeed from "./components/feeds/public/public.jsx";
 import FriendFeed from "./components/feeds/friends/feed.jsx";
 import Messages from "./components/feeds/messages/messages.jsx";
 
+// Posts
+import SinglePost from "./components/posts/singlePost.jsx"
+
 // Author Specifics
 import Profile from "./components/feeds/profile/profile.jsx";
 import Settings from './components/feeds/settings/settings.jsx';
@@ -83,6 +86,10 @@ const router = createBrowserRouter([
   {
     path: '/users/:username/', 
     element: <Profile/>
+  },
+  {
+    path: '/users/:username/posts/:postId', 
+    element: <SinglePost/>
   },
   {
     path: '/messages/', 

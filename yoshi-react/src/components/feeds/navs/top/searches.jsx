@@ -30,6 +30,13 @@ import axios from 'axios';
 import Pagination from 'react-bootstrap/Pagination';
 
 function SearchOutcomes({url}) {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const [findings, setFindings] = useState(false);
     const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
@@ -39,6 +46,12 @@ function SearchOutcomes({url}) {
     const [next, setNext] = useState(false);
 
     useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         setFindings(true);
 
         let config = {
@@ -110,6 +123,12 @@ function SearchOutcomes({url}) {
     }, [setFindings, authors, next, page, url])
 
     const getMore = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!next) {
             let updated = page + 1;
             setPage(updated);
@@ -176,6 +195,12 @@ function SearchOutcomes({url}) {
     }
 
     const goBack = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!prev && prev !== 1) {
             let updated = page - 1;
             setPage(updated);

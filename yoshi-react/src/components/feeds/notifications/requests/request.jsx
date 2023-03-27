@@ -25,9 +25,22 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Request(props) {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
 
     const addRequest = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
@@ -51,6 +64,12 @@ function Request(props) {
     }
 
     const rejectRequest = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         console.log('Debug: Rejecting Author')
         axios
         .delete('/authors/' + props.actorId + '/inbox/requests/' + props.objectId)

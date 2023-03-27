@@ -26,7 +26,20 @@ import React, { useEffect } from "react";
 import Requests from './requests/requests.jsx';
 
 function Notifications(props) {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
      });
     return (
         <div>

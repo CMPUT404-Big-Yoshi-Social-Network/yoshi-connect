@@ -35,6 +35,7 @@ export default function Login() {
      *     - getUserpass(): Sends a POST request to get the account for routing it to the public feed as well as loggin in the existing author
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
     const [data, setData] = useState({
       username: '',
@@ -47,6 +48,7 @@ export default function Login() {
        * Request: POST
        * Returns: N/A
        */
+      console.log('Debug: <TLDR what the function is doing>')
       e.preventDefault()
 
       if (data.username.length === 0 || data.password.length === 0){

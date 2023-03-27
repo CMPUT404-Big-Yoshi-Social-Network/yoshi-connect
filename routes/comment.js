@@ -36,6 +36,13 @@ const { authLogin, checkExpiry } = require('./auth.js');
 
 
 async function getComments(postId, authorId, page, size) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let comments = undefined
     //TODO Avoid duplicated code by using a list of objects and modifying them before sending
     if(page > 1){
@@ -132,6 +139,13 @@ async function getComments(postId, authorId, page, size) {
 }
 
 async function getComment(authorId, postId, commentId, token) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const commentHistory = await CommentHistory.findOne({postId: postId});
 
@@ -156,6 +170,13 @@ async function getComment(authorId, postId, commentId, token) {
 }
 
 async function createComment(token, authorId, postId, newComment) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if(newComment == undefined){
         return [{}, 400];
     }
@@ -252,6 +273,13 @@ async function createComment(token, authorId, postId, newComment) {
 }
 
 async function deleteComment(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let success = false;
     let numComments = 0;
     let publicPost = await PublicPost.find();
@@ -286,6 +314,13 @@ async function deleteComment(req, res){
 }
 
 async function editComment(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let success = false;
     let publicPost = await PublicPost.find();
     await PostHistory.findOne({authorId: req.body.data.authorId}, async function(err, history){

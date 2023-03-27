@@ -24,6 +24,13 @@ const { checkExpiry } = require('./auth.js');
 const { getAuthor } = require('./author.js')
 
 async function getUserInfo(token){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (await checkExpiry(token)) { return [{}, 401]; }
     
     const login = await Login.findOne({token: token}); 

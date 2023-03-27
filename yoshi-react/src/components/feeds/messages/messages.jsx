@@ -38,6 +38,7 @@ function Messages() {
      *     - logOut(): Logs out an author and sends them to the Welcome component 
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewer] = useState({ viewerId: '' });
     const navigate = useNavigate();
 
@@ -47,6 +48,7 @@ function Messages() {
          * Request: POST
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         const getAuthor = () => {
             axios
             .get('/userinfo')

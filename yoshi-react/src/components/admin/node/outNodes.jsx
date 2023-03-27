@@ -29,6 +29,13 @@ import Pagination from 'react-bootstrap/Pagination';
 import Node from './node.jsx';
 
 function OutNodes() {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const size = 5;
     const navigate = useNavigate();
     const outUrl = '/nodes/outgoing';
@@ -38,6 +45,12 @@ function OutNodes() {
     const [outNext, setOutNext] = useState(false);
 
     useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -105,6 +118,12 @@ function OutNodes() {
     }, [outNodes, outNext, navigate]);
 
     const getMore = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!outNext) {
             let updated = outPage + 1;
             setOutPage(updated);
@@ -171,6 +190,12 @@ function OutNodes() {
     }
 
     const goBack = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!outPrev && outPage !== 1) {
             let updated = outPage - 1;
             setOutPage(updated);

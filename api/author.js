@@ -35,6 +35,9 @@ const express = require('express');
 
 // Schemas
 const { Author } = require('../scheme/author');
+const { OutgoingCredentials } = require('../scheme/server');
+
+const axios = require('axios');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -198,25 +201,66 @@ router.get('/:authorId', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     Author:
+ *         type: object
+ *         properties: 
+ *           type:
+ *             type: string
+ *             description: JSON type 
+ *           id:
+ *             type: string
+ *             description: URL of Author
+ *           authorId:
+ *             type: string 
+ *             description: UUID of Author 
+ *           host: 
+ *             type: string
+ *             description: network the Author is from 
+ *           url: 
+ *             type: string
+ *             description: URL of Author 
+ *           displayName:
+ *             type: string
+ *             description: username of Author (unique)
+ *           email:
+ *             type: string
+ *             description: email of Author (unique)
+ *           about: 
+ *             type: string
+ *             description: description about Author 
+ *           pronouns:
+ *             type: string
+ *             description: pronouns the Author takes
+ *           github:
+ *             type: string
+ *             description: GitHub linked to the Author
+ *           profileImage:
+ *             type: string
+ *             description: profile picture Author uses
+ *           admin:
+ *             type: boolean
+ *             description: dictates whether the Author is an admin or not
  * /authors/:authorId:
  *  post:
  *    summary: Updates an existing Author with authorId params
  *    tags:
  *      - author
- *    requestBody: 
+ *    requestBody:
  *      content:
- *        application/x-www-form-urlencoded:
+ *        application/x-wwwm-form-urlencoded:
  *          schema:
  *            $ref: '#/components/schemas/Author'
- *          example: 
+ *          example:
  *            type: author
  *            id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
  *            authorId: 29c546d45f564a27871838825e3dbecb
  *            host: https://yoshi-connect.herokuapp.com/
  *            url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *            displayName: kc123
- *            email: ayuno123@ualberta.ca
- *            about: i am a code monkey 2.0
+ *            displayName: kc
+ *            email: ayuno@ualberta.ca
+ *            about: i am a code monkey
  *            pronouns: she/her
  *            github: https://github.com/kezzayuno
  *            profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
@@ -285,44 +329,6 @@ router.get('/:authorId', async (req, res) => {
  *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *      404:
  *        description: Not Found, Author was not found
- * components:
- *   schemas:
- *     Author:
- *         type: object
- *         properties: 
- *           type:
- *             type: string
- *             description: JSON type 
- *           id:
- *             type: string
- *             description: URL of Author
- *           authorId:
- *             type: string 
- *             description: UUID of Author 
- *           host: 
- *             type: string
- *             description: network the Author is from 
- *           url: 
- *             type: string
- *             description: URL of Author 
- *           displayName:
- *             type: string
- *             description: username of Author (unique)
- *           email:
- *             type: string
- *             description: email of Author (unique)
- *           about: 
- *             type: string
- *             description: description about Author 
- *           pronouns:
- *             type: string
- *             description: pronouns the Author takes
- *           github:
- *             type: string
- *             description: GitHub linked to the Author
- *           profileImage:
- *             type: string
- *             description: profile picture Author uses
  */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }
@@ -397,9 +403,40 @@ router.post('/:authorId', async (req, res) => {
  */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  const authors = await Author.find({username: username}).clone();
+  let authors = await Author.find({username: username}).clone();
   if (!authors) { 
     return res.sendStatus(404)
+  }
+
+  const outgoings = await OutgoingCredentials.find().clone();
+
+  for (let i = 0; i < outgoings.length; i++) {
+      if (outgoings[i].allowed) {
+          var config = {
+              host: outgoings[i].url,
+              url: outgoings[i].url + '/authors',
+              method: 'GET',
+              headers: {
+                  'Authorization': outgoings[i].auth,
+                  'Content-Type': 'application/json'
+              }
+          };
+  
+          await axios.request(config)
+          .then( res => {
+              let items = res.data.items
+              if (items != undefined) {
+                for (let j = 0; j < items.length; j++) {
+                  if (items[j].displayName == username) {
+                    authors.push(items[j]);
+                  }
+                }
+              }
+          })
+          .catch( error => {
+              console.log(error);
+          })
+      }
   }
 
   return res.json({

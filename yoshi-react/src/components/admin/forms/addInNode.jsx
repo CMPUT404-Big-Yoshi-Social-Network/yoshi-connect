@@ -26,10 +26,23 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function AddInNode() {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const [data, setData] = useState({ username: '', password: '', host: '', auth: '' })
     const navigate = useNavigate();
 
     const addNode = async (e) => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         e.preventDefault();
         let body = {
             username: data.username,

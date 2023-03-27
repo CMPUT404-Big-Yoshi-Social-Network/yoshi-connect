@@ -19,6 +19,13 @@ const { validateAuthorObject } = require('./author.js');
 const { authLogin } = require('./auth.js');
 
 async function getInbox(token, authorId, page, size){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if( ! (await authLogin(token, authorId))){
         return [{}, 401];
     }
@@ -110,6 +117,13 @@ async function getInbox(token, authorId, page, size){
 }
 
 async function postInbox(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if(req.body.type === "post") {
         const title = req.body.title;
         const id = req.body._id;
@@ -192,6 +206,13 @@ async function postInbox(req, res){
 }
 
 async function postInboxPost(post, recieverAuthorId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const type = post.type;
     const title = post.title;
     const id = post.id;
@@ -232,6 +253,13 @@ async function postInboxPost(post, recieverAuthorId){
 }
 
 async function postInboxLike(like, authorId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
     if(!validateAuthorObject(author)){
@@ -267,6 +295,13 @@ async function postInboxLike(like, authorId){
 }
 
 async function postInboxComment(newComment, recieverAuthorId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if(!newComment){
         return [{}, 400];
     }
@@ -337,6 +372,13 @@ async function postInboxComment(newComment, recieverAuthorId){
 }
 
 async function deleteInbox(token, authorId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     if (! (await authLogin(token, authorId))) { return 401; }
 
     const responses = await Inbox.updateOne({authorId: authorId},{requests: [], likes: [], posts: [], comments: []}).clone();

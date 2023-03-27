@@ -29,12 +29,25 @@ import { Button } from 'react-bootstrap';
 import '../login/login.css';
 
 export default function AdminLogin() { 
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const url = '/admin';
     const navigate = useNavigate();
     const [data, setData] = useState({ username: '', password: '' })
     const [error, setError] = useState(false);
 
     const getAdmin = (e) => {
+      /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+      console.log('Debug: <TLDR what the function is doing>')
       e.preventDefault()
 
       if (data.username.length === 0 || data.password.length === 0){

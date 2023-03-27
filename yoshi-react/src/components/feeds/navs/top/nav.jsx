@@ -32,6 +32,11 @@ import './nav.css'
 import SearchOutcomes from './searches';
 
 function TopNav(props) {
+    /**
+     * Description:      
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const [newAuthor, setNewAuthor] = useState({newSearch: ''})
 
     return (

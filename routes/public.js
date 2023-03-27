@@ -34,6 +34,13 @@ const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
 
 async function fetchPublicPosts(page, size) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     // TODO: Paging
     if(!page) page = 1;
     if(!size) size = 5;

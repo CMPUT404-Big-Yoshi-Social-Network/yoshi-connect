@@ -48,6 +48,7 @@ function Profile() {
      *     - LogOut(): Logs the author out  
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const { username } = useParams();
     const [personal, setPersonal] = useState({
         person: null,
@@ -66,6 +67,7 @@ function Profile() {
          * Request: GET
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         let person = '';
         let viewer = '';
         let viewed = '';
@@ -79,6 +81,7 @@ function Profile() {
              * Request: GET
              * Returns: N/A
              */
+            console.log('Debug: <TLDR what the function is doing>')
             axios
             .get('/profile/' + username)
             .then((response) => {
@@ -115,6 +118,7 @@ function Profile() {
          * Request: POST
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!personal.person && personal.viewerId != null && personal.viewedId != null) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
@@ -143,6 +147,7 @@ function Profile() {
          * Returns: N/A
          * REFACTOR: CHECK 
          */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
             console.log('See if they are followers or friends.');
             let config = {
@@ -169,6 +174,12 @@ function Profile() {
     }, [username, personal, exists, requestButton])
 
     const SendRequest = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (requestButton === "Add") {
             setRequestButton('Sent');
             let config = {

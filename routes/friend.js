@@ -34,18 +34,39 @@ const { senderAdded } = require('./request.js');
 const {authLogin} = require('./auth.js');
 
 async function getFollowers(id){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const followers = await Follower.findOne({authorId: id});
     if (!followers) { return 404; }
     return followers.followers;
 }
 
 async function getFollowings(id){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const following = await Following.findOne({authorId: id});
     if (!following) { return 404; }
     return following.followings;
 }
 
 async function getFriends(id){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const following = await Following.aggregate([
         {
             $match: {'authorId': id} 
@@ -98,6 +119,13 @@ async function getFriends(id){
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
     if (idx <= -1) { return 404; } 
@@ -106,6 +134,13 @@ async function addFollower(token, authorId, foreignId, body, req, res){
 }
 
 async function deleteFollowing(authorId, foreignId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const followings = await Following.findOne({authorId: authorId});
     for(let i = 0; i < followings.followings.length; i++){
         let follow = followings.followings[i];
@@ -120,6 +155,13 @@ async function deleteFollowing(authorId, foreignId){
 }
 
 async function isFriend(authorId, foreignId, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let actorFollows = false;
     let objectFollows = false;
     const followerA = await Following.findOne({authorId: authorId}, {followings: {$elemMatch: {authorId : {$eq: foreignId}}}});
@@ -162,6 +204,13 @@ async function isFriend(authorId, foreignId, res) {
 }
 
 async function fetchFriendPosts(req, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const friends = await getFriends(req.params.authorId);
 
     const posts = await PostHistory.aggregate([

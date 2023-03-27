@@ -174,11 +174,13 @@ async function modifyAuthor(req, res){
 
 async function deleteAuthor(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes Author from YoshiConnect database
+    Associated Endpoint: /admin/dashboard:
+    Request Type: DELETE
+    Request Body: N/A
+    Return: 404 Status (Not Found) -- Cannot find Author
+            500 Status (Internal Server Error) -- Unable to delete Author from YoshiConnect database
+            200 Status (OK) -- Author was succesfully deleted from YoshiConnect database
     */
     await Author.deleteOne({_id: req.body.author.id}, function(err, obj){
         if (!obj.acknowledged) { return res.sendStatus(404); }

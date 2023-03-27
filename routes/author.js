@@ -139,11 +139,18 @@ async function registerAuthor(req, res){
 
 async function getProfile(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Retrieves the Author profile from database
+    Associated Endpoint: /profile/:username
+    Request Type: GET
+    Request Body: { username: abc }
+    Return: 404 Status (Not Found) -- Login token expired or Author was not found
+            401 (Unauthorized) -- Token for profile is not authenticated 
+            200 (OK) -- Returns a JSON containing 
+                                        { viewed: abc,
+                                            viewedId: 29c546d45f564a27871838825e3dbecb,
+                                            viewer: def,
+                                            viewerId: 50c546d45f979a27871838825e7ebokgd,
+                                            personal: true }
     */
     if (req.cookies == undefined) { return res.sendStatus(404); } else if (req.cookies.token == undefined) { return res.sendStatus(404); }
 

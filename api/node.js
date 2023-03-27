@@ -45,6 +45,19 @@ const router = express.Router({mergeParams: true});
  *    summary: Fetches the nodes used to communicate with other servers
  *    tags:
  *      - outgoing 
+ *    parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *        description: Page of outgonig nodes requested
+ *      - in: query
+ *        name: size
+ *        schema: 
+ *          type: integer
+ *          minimum: 5
+ *        description: Number of outgoing nodes on a Page requested
  */
 router.get('/outgoing', async (req, res) => { 
     let page = req.query.page;
@@ -75,6 +88,20 @@ router.get('/outgoing/:credId', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     UpdateOutcomingNode:
+ *         type: object
+ *         properties: 
+ *           newUsername: 
+ *             type: string
+ *             description: new username for node
+ *           newPassword:
+ *             type: string
+ *             description: new password for node
+ *           newHost:
+ *             type: string
+ *             description: new host url 
  * /nodes/outgoing/:credId:
  *  put:
  *    summary: Modifies an existing node that communicates with other servers or enables / disables this node
@@ -86,6 +113,17 @@ router.get('/outgoing/:credId', async (req, res) => {
  *        description: id of outgoing node
  *        schema:
  *          type: string
+ *    requestBody: 
+ *     content:
+ *       application/x-wwwm-form-urlencoded:
+ *         schema:
+ *           - $ref: '#/components/schemas/UpdateOutcomingNode'
+ *         examples:
+ *           UpdateOutcomingNode:
+ *             value:
+ *               newUsername: pass123
+ *               newPassword: badpassword
+ *               newHost: http://localhost:3000/api/forreal
  */
 router.put('/outgoing/:credId', async (req, res) => {
     if (req.body.status == 'modify') {
@@ -97,11 +135,44 @@ router.put('/outgoing/:credId', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     OutgoingNode:
+ *         type: object
+ *         properties: 
+ *           url: 
+ *             type: string
+ *             description: url of remote server we use
+ *           password: 
+ *             type: string
+ *             description: password for outgoing node
+ *           allowed:
+ *             type: string
+ *             description: enabling / disabling boolean for node
+ *           displayName:
+ *             type: string
+ *             description: username of outgoing node
+ *           auth:
+ *             type: string
+ *             description: authentication used for outgoing node 
  * /nodes/outgoing:
  *  post:
  *    summary: Adds a new outgoing node to YoshiConnect database
  *    tags:
  *      - outgoing 
+ *    requestBody:
+ *      content: 
+ *        application/x-wwwm-form-urlencoded:
+ *          schema:
+ *              - $ref: '#/components/schemas/OutgoingNode'
+ *          examples:
+ *             OutgoingNode:
+ *               value:
+ *                 url: http://localhost:3000/api
+ *                 displayName: monkey
+ *                 password: monkey123
+ *                 allowed: false
+ *          	   auth: 29c546d45f564a27871838825e3dbecb
  */
 router.post('/outgoing', async (req, res) => {
     await postCred(req, res, req.cookies.token, 'outgoing'); 
@@ -526,6 +597,47 @@ router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) 
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     Like:
+ *         type: object
+ *         properties: 
+ *           '@context': 
+ *             type: string
+ *             description: context of like
+ *           summary:
+ *             type: string
+ *             description: who liked the post
+ *           type:
+ *             type: string
+ *             description: type of object (like)
+ *           author: 
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 description: type of object (author)
+ *               id: 
+ *                 type: string
+ *                 description: id of author
+ *               host:
+ *                 type: string
+ *                 description: host of author
+ *               displayName: 
+ *                 type: string
+ *                 description: username of author
+ *               url: 
+ *                 type: string
+ *                 description: url of author
+ *               github: 
+ *                 type: string
+ *                 description: associated GitHub of author
+ *               profileImage: 
+ *                 type: string
+ *                 description: profile picture of author
+ *           object: 
+ *             type: string
+ *             description: id of like
  * /nodes/outgoing/authors/:authorId/inbox/like:
  *  post:
  *    summary: Posts a like to a remote author's inbox
@@ -537,6 +649,26 @@ router.get('/outgoing/authors/:authorId/followers/:foreignId', async (req, res) 
  *        description: id of remote author
  *        schema:
  *          type: string
+ *    requestBody:
+ *      content: 
+ *        application/x-wwwm-form-urlencoded:
+ *          schema:
+ *            - $ref: '#/components/schemas/Like'
+ *          example:
+ *            Like: 
+ *              value:
+ *                "@context": https://www.w3.org/ns/activitystreams
+ *                summary: Lara Croft Likes your post       
+ *                type: Like
+ *                author:
+ *                  type: author
+ *                  id: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+ *                  host: http://127.0.0.1:5454/
+ *                  displayName: Lara Croft
+ *                  url: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+ *                  github: http://github.com/laracroft
+ *                  profileImage: https://i.imgur.com/k7XVwpB.jpeg
+ *                object: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e
  */
 router.post('/outgoing/authors/:authorId/inbox/like', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -730,6 +862,20 @@ router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     ExampleObject:
+ *         type: object
+ *         properties: 
+ *           type: 
+ *             type: string
+ *             description: type of object (comment)
+ *           comment:
+ *             type: string
+ *             description: comment that was made 
+ *           contentType:
+ *             type: string
+ *             description: content type (text/plain or markdown)
  * /nodes/outgoing/authors/:authorId/inbox/:type:
  *  post:
  *    summary: Adds a certain object to the remote author's inbox (specificed by type)
@@ -746,6 +892,17 @@ router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
  *        description: type of object from remote author's inbox
  *        schema:
  *          type: string
+ *    requestBody: 
+ *     content:
+ *       application/x-wwwm-form-urlencoded:
+ *         schema:
+ *           - $ref: '#/components/schemas/ExampleObject'
+ *         examples:
+ *           ExampleObject:
+ *             value:
+ *               type: comment
+ *               comment: Monkey, monkey!
+ *               contentType: text/plain
  */
 router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
@@ -785,9 +942,21 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
  *    summary: Fetches all incoming nodes (remote servers use to communicate)
  *    tags:
  *      - incoming 
+ *    parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *          minimum: 1
+ *        description: Page of Incoming Nodes requested
+ *      - in: query
+ *        name: size
+ *        schema: 
+ *          type: integer
+ *          minimum: 5
+ *        description: Number of Incoming Nodes on a Page requested
  */
 router.get('/incoming', async (req, res) => { 
-    // Getting our credentials from other nodes
     let page = req.query.page;
     let size = req.query.size;
   
@@ -816,11 +985,44 @@ router.get('/incoming/:credId', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     IncomingNode:
+ *         type: object
+ *         properties: 
+ *           url: 
+ *             type: string
+ *             description: url using our server
+ *           password: 
+ *             type: string
+ *             description: password for incoming node
+ *           allowed:
+ *             type: string
+ *             description: enabling / disabling boolean for node
+ *           displayName:
+ *             type: string
+ *             description: username of incoming node
+ *           auth:
+ *             type: string
+ *             description: authentication used for incoming node 
  * /nodes/incoming:
  *  post:
  *    summary: Stores incoming node (nodes used to communicate with our server)
  *    tags:
  *      - incoming 
+ *    requestBody:
+ *      content: 
+ *        application/x-wwwm-form-urlencoded:
+ *          schema:
+ *              - $ref: '#/components/schemas/IncomingNode'
+ *          examples:
+ *             IncomingNode:
+ *               value:
+ *                 url: http://localhost:3000/api
+ *                 displayName: monkey
+ *                 password: monkey123
+ *                 allowed: false
+ *          	   auth: 29c546d45f564a27871838825e3dbecb
  */
 router.post('/incoming', async (req, res) => {
     await postCred(req, res, req.cookies.token, 'incoming'); 
@@ -828,6 +1030,20 @@ router.post('/incoming', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     UpdateIncomingNode:
+ *         type: object
+ *         properties: 
+ *           newUsername: 
+ *             type: string
+ *             description: new username for node
+ *           newPassword:
+ *             type: string
+ *             description: new password for node
+ *           newHost:
+ *             type: string
+ *             description: new host url 
  * /nodes/incoming/:credId:
  *  put:
  *    summary: Modifies an existing incoming node credentials or enables / disables incoming node 
@@ -839,6 +1055,17 @@ router.post('/incoming', async (req, res) => {
  *        description: id of incoming node
  *        schema:
  *          type: string
+ *    requestBody: 
+ *     content:
+ *       application/x-wwwm-form-urlencoded:
+ *         schema:
+ *           - $ref: '#/components/schemas/UpdateIncomingNode'
+ *         examples:
+ *           UpdateIncomingNode:
+ *             value:
+ *               newUsername: pass123
+ *               newPassword: badpassword
+ *               newHost: http://localhost:3000/api/forreal
  */
 router.put('/incoming/:credId', async (req, res) => {
     if (req.body.status == 'modify') {
@@ -863,7 +1090,6 @@ router.put('/incoming/:credId', async (req, res) => {
  *          type: string
  */
 router.delete('/incoming/:credId', async (req, res) => { 
-    // Deleting credentials for us (in database)
     await deleteCred(req.cookies.token, req.params.credId, 'incoming'); 
 })
 

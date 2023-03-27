@@ -35,11 +35,40 @@ router.post('/logout', async (req, res) => { removeLogin(req, res); })
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     SettingsAuthor:
+ *         type: object
+ *         properties: 
+ *           id: 
+ *             type: string
+ *             description: id of author
+ *           username: 
+ *             type: string
+ *             description: username of Author
+ *           email:
+ *             type: string
+ *             description: email of Author
+ *           password:
+ *             type: string
+ *             description: password of Author
  * /settings:
  *  post:
  *    summary: Modifies an current Author's attributes 
  *    tags:
  *      - settings
+ *    requestBody: 
+ *      content: 
+ *        application/x-www-form-urlencoded:
+ *          schema:
+ *            - $ref: '#/components/schemas/SettingsAuthor'
+ *          example:
+ *             SettingsAuthor:
+ *               value:
+ *                 id: 29c546d45f564a27871838825e3dbecb
+ *                 username: kc
+ *                 password: 123
+ *                 email: ayuno@ualberta.ca
  *    responses:
  *      401:
  *        description: Unauthourized, Author's token is not authenticated 

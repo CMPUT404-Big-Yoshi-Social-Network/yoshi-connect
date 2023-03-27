@@ -29,35 +29,46 @@ const crypto = require('crypto');
 // Schemas
 const { Author } = require('../scheme/author.js');
 const { Request, Follower, Following } = require('../scheme/relations.js');
+const { Inbox } = require('../scheme/post.js');
 
 async function senderAdded(authorId, foreignId, req, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let success = true;
 
     const actor = await Author.findOne({_id: authorId});
     const object = await Author.findOne({_id: foreignId});
+    let uuidFollow = String(crypto.randomUUID()).replace(/-/g, "");
+    let uuidF = String(crypto.randomUUID()).replace(/-/g, "");
 
     await Following.findOne({authorId: authorId}, async function(err, following){
         if (following) {
-            following.followings.push({authorId: foreignId, username: object.username});
+            following.followings.push({_id: uuidFollow, authorId: foreignId, username: object.username});
             await following.save();
         } else {
             let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
-            var following = new Following({
+            var following = {
                 _id: uuidFollowing,
                 username: actor.username,
                 authorId: authorId,
                 followings: [{
+                    _id: uuidFollow,
                     username: object.username,
                     authorId: foreignId
                 }]
-            });
+            };
             following.save(async (err, following, next) => { if (err) { success = false; } })
         }
-    }).clone()
+    }).clone();
 
     await Follower.findOne({authorId: foreignId}, async function(err, follower){
         if (follower) {
-            follower.followers.push({username: actor.username, authorId: authorId});
+            follower.followers.push({_id: uuidF, username: actor.username, authorId: authorId});
             await follower.save();
         } else {
             let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
@@ -66,6 +77,7 @@ async function senderAdded(authorId, foreignId, req, res) {
                 username: object.username,
                 authorId: foreignId,
                 followers: [{
+                    _id: uuidF,
                     username: actor.username,
                     authorId: authorId
                 }]
@@ -82,6 +94,13 @@ async function senderAdded(authorId, foreignId, req, res) {
 }
 
 async function sendRequest(authorId, foreignId, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
     let summary = ''
@@ -106,16 +125,19 @@ async function sendRequest(authorId, foreignId, res) {
 
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
 
-    const request = new Request({
+    const request = {
         _id: uuid,
-        type: type,
+        goal: type,
         summary: summary,
         actor: actor.username,
         actorId: actor._id,
         objectId: object._id,
         object: object.username
-    });
-    request.save(async (err, request, next) => { if (err) { return 400; } });
+    }
+
+    const inbox = await Inbox.findOne({authorId: foreignId});
+    inbox.requests.push(request);
+    inbox.save();
 
     return {
         type: type,
@@ -142,15 +164,25 @@ async function sendRequest(authorId, foreignId, res) {
 }
 
 async function deleteRequest(authorId, foreignId, res) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
+
+    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
 
     if (!actor && !object) { return 500 }
 
     let summary = '';
-
-    const request = await Request.findOneAndDelete({senderId: actor._id, receiverId: object._id}); 
-    if (!request) { return 500 }
+    let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
+    const request = inbox.requests[idx]
+    inbox.requests.splice(idx, 1);
+    inbox.save();
     summary = actor.username + " wants to undo " + request.type + " request to " + object.username;  
 
     return res.json({
@@ -178,25 +210,31 @@ async function deleteRequest(authorId, foreignId, res) {
 }
 
 async function getRequests(authorId, res) {
-    let rqs = [];
-    await Request.find({objectId: authorId}, function(err, requests){
-        if (!requests) { 
-            rqs = []; 
-        } else {
-            rqs = requests;
-        }
-    }).clone()
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
+    const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
     return res.json({
         "type": 'requests',
-        items: rqs
+        items: inbox.requests
     })
 }
 
-async function getRequest(authorId, foreignId, res) {
-    await Request.findOne({actorId: authorId, objectId: foreignId}, function(err, request){
-        if (!request) { return res.sendStatus(404); }
-        return res.json(request)
-    }).clone()
+async function getRequest(authorId, foreignId) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
+    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
+    let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
+    return inbox.requests[idx];
 }
 
 module.exports={

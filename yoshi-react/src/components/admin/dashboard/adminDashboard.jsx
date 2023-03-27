@@ -28,6 +28,10 @@ import Popup from 'reactjs-popup';
 // Child Component
 import Authors from '../author/authors.jsx';
 import AddAuthor from "../forms/addForm.jsx";
+import InNodes from '../node/inNodes.jsx';
+import OutNodes from '../node/outNodes.jsx';
+import AddInNode from "../forms/addInNode.jsx";
+import AddOutNode from "../forms/addOutNode.jsx";
 import TopAdminNav from '../nav/top/top.jsx';
 import LeftAdminNavBar from '../nav/left/left.jsx';
 import RightAdminNavBar from '../nav/right/right.jsx';
@@ -43,10 +47,17 @@ function AdminDashboard() {
      *     - LogOut(): Logs the admin out
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
     const url = '/admin/dashboard';
 
     const getDashboard = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         axios
         .get(url)
         .then((response) => { })
@@ -64,6 +75,12 @@ function AdminDashboard() {
     });
 
     const LogOut = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,
@@ -83,6 +100,7 @@ function AdminDashboard() {
           }
         });
     }
+    
     return (
         <div>            
             <TopAdminNav/>
@@ -98,6 +116,14 @@ function AdminDashboard() {
                             <AddAuthor/>
                         </Popup>
                         <div><Authors/></div>
+                        <Popup trigger={<button>Add Incoming Node</button>} position="right center">
+                            <AddInNode/>
+                        </Popup>
+                        <div><InNodes/></div>
+                        <Popup trigger={<button>Add Outgoing Node</button>} position="right center">
+                            <AddOutNode/>
+                        </Popup>
+                        <div><OutNodes/></div>
                     </div>
                 </div>
                 <div className='adminColR'>

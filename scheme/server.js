@@ -19,28 +19,35 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality
-import React from 'react';
+// Database
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const database = mongoose.connection;
 
-// User Interface
-import { Image } from 'react-bootstrap'
+const outgoingCredentialScheme = new Schema({
+    _id: String,
+    displayName: String,
+    url: String,
+    password: String,
+    allowed: Boolean,
+    auth: String},
+    {versionKey: false
+})
 
-// Styling
-import './404.css'
+const incomingCredentialsScheme = new Schema({
+    _id: String,
+    displayName: String,
+    url: String,
+    password: String,
+    allowed: Boolean,
+    auth: String},
+    {versionKey: false
+});
 
-function PageNotFound() {
-    /**
-     * Description: Represents a Page Not Found Error (Status 404)
-     * Returns: N/A
-     */
-    return (
-        <div className="sc404">
-            <h1>404</h1>
-            <h2>Page Not Found</h2>
-            <h3>NOT FOUND</h3>
-            <Image src='/images/status_code_404.png'/>
-        </div>
-    )
+const OutgoingCredentials = database.model('outcred', outgoingCredentialScheme);
+const IncomingCredentials = database.model('incred', incomingCredentialsScheme);
+
+module.exports = {
+    OutgoingCredentials,
+    IncomingCredentials
 }
-
-export default PageNotFound;

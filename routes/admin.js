@@ -33,6 +33,13 @@ mongoose.set('strictQuery', true);
 const { Login, Author } = require('../scheme/author.js');
 
 async function addAuthor(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     let existingAuthor = await Author.findOne({username: req.body.username}).clone();
     if (existingAuthor !== undefined && existingAuthor !== null) { return res.sendStatus(400); }
 
@@ -75,6 +82,13 @@ async function addAuthor(req, res){
 }
 
 async function modifyAuthor(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const author = await Author.findOne({_id: req.body.authorId}).clone();
 
     if (author == undefined) { return res.sendStatus(404); }
@@ -113,12 +127,21 @@ async function modifyAuthor(req, res){
             "email": req.body.newEmail,
             "about": req.body.newAbout,
             "pronouns": req.body.newPronouns,
+            "github": author.github,
+            "profileImage": author.profileImage,
             "admin": req.body.newAdmin
         })
     }).clone();
 }
 
 async function deleteAuthor(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     await Author.deleteOne({_id: req.body.author.id}, function(err, obj){
         if (!obj.acknowledged) { return res.sendStatus(404); }
 
@@ -130,6 +153,13 @@ async function deleteAuthor(req, res){
 }
 
 async function allowAuthor(req, res){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
     const author = await Author.findOne({username: req.body.displayname}).clone();
     if (author.allowed) {
         author.allowed = false;
@@ -137,7 +167,20 @@ async function allowAuthor(req, res){
         author.allowed = true;
     }
     author.save();
-    return res.sendStatus(200)
+    return res.json({
+        "type": "author",
+        "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+        "authorId" : author._id,
+        "host": process.env.DOMAIN_NAME,
+        "url": process.env.DOMAIN_NAME + "authors/" + author._id,
+        "displayname": author.username,
+        "email": author.email,
+        "about": author.about,
+        "pronouns": author.pronouns,
+        "github": author.github,
+        "profileImage": author.profileImage,
+        "admin": author.admin
+    })
 }
 
 module.exports={

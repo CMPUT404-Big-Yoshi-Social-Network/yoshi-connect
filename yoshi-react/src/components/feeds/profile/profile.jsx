@@ -48,6 +48,7 @@ function Profile() {
      *     - LogOut(): Logs the author out  
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const { username } = useParams();
     const [personal, setPersonal] = useState({
         person: null,
@@ -66,6 +67,7 @@ function Profile() {
          * Request: GET
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         let person = '';
         let viewer = '';
         let viewed = '';
@@ -79,6 +81,7 @@ function Profile() {
              * Request: GET
              * Returns: N/A
              */
+            console.log('Debug: <TLDR what the function is doing>')
             axios
             .get('/profile/' + username)
             .then((response) => {
@@ -115,18 +118,19 @@ function Profile() {
          * Request: POST
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!personal.person && personal.viewerId != null && personal.viewedId != null) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .get('/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .get('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
             .then((response) => { 
                 exists.current = true; 
                 setRequestButton('Sent');
@@ -143,6 +147,7 @@ function Profile() {
          * Returns: N/A
          * REFACTOR: CHECK 
          */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
             console.log('See if they are followers or friends.');
             let config = {
@@ -169,18 +174,24 @@ function Profile() {
     }, [username, personal, exists, requestButton])
 
     const SendRequest = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (requestButton === "Add") {
             setRequestButton('Sent');
             let config = {
                 method: 'put',
                 maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/requests/' + personal.viewedId,
+                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }
             axios
-            .put('/authors/' + personal.viewerId + '/requests/' + personal.viewedId, config)
+            .put('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
             .then((response) => { })
             .catch(err => {
               if (err.response.status === 401) {
@@ -192,7 +203,7 @@ function Profile() {
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
             axios
-            .delete('/authors/' + personal.viewerId + '/requests/' + personal.viewedId)
+            .delete('/authors/' + personal.viewerId + 'inbox/requests/' + personal.viewedId)
             .then((response) => { })
             .catch(err => {
                 if (err.response.status === 401) {
@@ -263,9 +274,10 @@ function Profile() {
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    { personal.person ? 
+                    { (personal.person === null) ? null:
+                        (personal.person === true ?
                         <Posts type={'personal'}/> : 
-                        <Posts type={otherUrl}/> 
+                        <Posts type={otherUrl}/>) 
                     }   
                 </div>
                 <div className='profColR'>

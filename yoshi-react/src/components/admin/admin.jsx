@@ -29,12 +29,30 @@ import { Button } from 'react-bootstrap';
 import '../login/login.css';
 
 export default function AdminLogin() { 
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const url = '/admin';
     const navigate = useNavigate();
     const [data, setData] = useState({ username: '', password: '' })
+    const [error, setError] = useState(false);
 
     const getAdmin = (e) => {
+      /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+      console.log('Debug: <TLDR what the function is doing>')
       e.preventDefault()
+
+      if (data.username.length === 0 || data.password.length === 0){
+        setError(true)
+      }
 
       let justLogged =  new Date();
 
@@ -53,9 +71,9 @@ export default function AdminLogin() {
       .then((response) => { navigate('/admin/dashboard/'); })
       .catch(err => {
         if (err.response.status === 400) {
-          navigate('/badrequest'); 
+          setError(true);
         } else if (err.response.status === 500) {
-          console.log('NEED 500 PAGE!')
+          navigate('/servererror');
         } else if (err.response.status === 403) {
           navigate('/forbidden');
         }
@@ -65,6 +83,7 @@ export default function AdminLogin() {
       <div className='login'>
         <form>
           <h1>Admin</h1>
+          {error? <p className='login-error'>Username or password is incorrect</p>:""}
         <label>
           <p>Username</p>
         </label>
@@ -74,6 +93,7 @@ export default function AdminLogin() {
               username: e.target.value
             })
           }}/>
+          {error&&data.username.length<=0? <p className='login-error'>Username cannot be empty</p>:""}
         <label>
           <p>Password</p>
         </label>
@@ -83,6 +103,7 @@ export default function AdminLogin() {
               password: e.target.value
             })
           }}/>
+          {error&&data.password.length<=0? <p className='login-error'>Password cannot be empty</p>:""}
         <div>
           <br/>
           <Button onClick={getAdmin} variant="warning" type="submit" className='login-button'>Next</Button>

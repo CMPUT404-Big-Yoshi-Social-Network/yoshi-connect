@@ -37,6 +37,7 @@ function PasswordChange() {
      *     - useEffect(): Before rendering, checks if the author is logged in
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div>
             <TopNav/>

@@ -20,18 +20,342 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInbox, deleteInbox} = require('../routes/inbox')
+const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, postInboxRequest} = require('../routes/inbox')
+const { sendRequest, deleteRequest, getRequests, getRequest } = require('../routes/request');
+const { checkExpiry } = require('../routes/auth');
+
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
+const { IncomingCredentials } = require('../scheme/server');
+const { authLogin } = require('../routes/auth');
 
 // Router
 const router = express.Router({mergeParams: true});
 
-router.get('/', async (req, res) => { await getInbox(req, res); })
+// TBA 200
+/**
+ * @openapi
+ * /authors/:authorId/inbox:
+ *  get:
+ *    summary: Fetches an Author's inbox posts
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: query
+ *        name: page
+ *        schema:
+ *          type: integer
+ *        description: Page of the Inbox objects
+ *      - in: query
+ *        name: size
+ *        schema:
+ *          type: integer
+ *        description: Size of the Inbox objects
+ *    responses:
+ *      400:
+ *        description: Bad Request, no posts to get
+ *      200: 
+ *        description: OK, successfully fetches posts from Inbox
+ */
+router.get('/', async (req, res) => {
+	const [posts, status] = await getInbox(req.cookies.token, req.params.authorId, req.query.page, req.query.size); 
 
-router.post('/', async (req, res) => { await postInbox(req, res); })
+	if (status != 200) { return res.sendStatus(status); }
 
-router.delete('/', async (req, res) => { await deleteInbox(req, res); })
+	return res.json(posts);
+})
+
+// TBA 200
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests:
+ *  get:
+ *    summary: Fetches an Author's inbox requests
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *    responses:
+ *      400:
+ *        description: Bad Request, no requests to get
+ *      401:
+ *        description: Unauthorized, token is not authorized or does not exist in cookies
+ *      200: 
+ *        description: OK, successfully fetches requests from Inbox
+ */
+router.get('/requests', async (req, res) => {
+	if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
+  
+	const authorId = req.params.authorId;
+	await getRequests(authorId, res);
+})
+
+// TBA 200
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests/:foreignAuthorId:
+ *  delete:
+ *    summary: Fetches an Author's inbox requests
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      400:
+ *        description: Bad Request, no requests to get
+ *      500: 
+ *        description: Internal Server Error, could not find Actor or Object
+ *      200: 
+ *        description: OK, successfully deletes the request from Inbox
+ */
+router.delete('/requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	await deleteRequest(authorId, foreignId, res);
+})
+
+// TBA 200
+/**
+ * @openapi
+ * /authors/:authorId/inbox:
+ *  post:
+ *    summary: posts an object into the Author's inbox (comment, post, like, follow)
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *    responses:
+ *      401:
+ *        description: Unauthorized, no token or not authorized 
+ *      400:
+ *        description: Bad Request, no valid type specified in request
+ *      200: 
+ *        description: OK, successfully posts to the Inbox
+ */
+router.post('/', async (req, res) => {
+
+	let authorized = false;
+	if(req.headers.authorization){
+		const authHeader = req.headers.authorization;
+
+		const [scheme, data] = authHeader.split(" ");
+		if(scheme === "Basic") {
+			const credential = Buffer.from(data, 'base64').toString('ascii');
+			const [serverName, password] = credential.split(":");
+			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
+				authorized = true;
+			}
+		}
+	}
+
+	if(req.cookies.token){
+		let authorId;
+		const token = req.cookies.token;
+		if(!token){
+			return res.sendStatus(401);
+		}
+		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
+			authorId = req.body.author.id.split("/");
+			authorId = authorId[authorId.length - 1];
+		}
+		else if(req.body.type == "follow"){
+			authorId = req.body.actor.id;
+		}
+		else{
+			return res.sendStatus(400);
+		}
+
+		if( await authLogin(token, authorId)){
+			authorized = true;
+		}
+	}
+
+	//TODO fix this once and for all
+	if(!authorized){
+		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
+		return res.sendStatus(401);
+	}
+	
+	const type = req.body.type;
+	let response, status;
+	if(type === "post"){
+		//For other servers to send their authors posts to us
+		[response, status] = await postInboxPost(req.body, req.params.authorId);
+	}
+	else if(type === "follow"){
+		//For local/remote authors to server 
+		[response, status] = await postInboxFollow(req.body);
+	}
+	else if(type === "like"){
+		[response, status] = await postInboxLike(req.body, req.params.authorId);
+	}
+	else if(type === "comment"){
+		[response, status] = await postInboxComment(req.body, req.params.authorId);
+	}
+	else{
+		res.sendStatus(400);
+	}
+
+	if(status != 200){
+		return res.sendStatus(status);
+	}
+
+	if(type === "post"){
+		//[response, status] = await postInboxPost(req.body, req.params.authorId);
+	}
+	else if(type === "follow"){
+	}
+	else if(type === "comment"){
+		response = {
+			type: "comment",
+			author: response.author,
+			comment: response.comment,
+			contentType: response.contentType,
+			published: response.published,
+			id: response._id
+		}
+	}
+
+	return res.json(response);
+})
+
+// TBA 200
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests/:foreignAuthorId:
+ *  put:
+ *    summary: creates a request and saves it into the inbox
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      200: 
+ *        description: OK, successfully saves the request to the Inbox
+ */
+router.put('/requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	const request = await sendRequest(authorId, foreignId, res);
+  
+	return res.json({
+	  "type": request.type,
+	  "summary": request.summary,
+	  "actor": request.actor,
+	  "object": request.object
+	})
+})
+
+// TBA 200
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests/:foreignAuthorId:
+ *  get:
+ *    summary: creates a request and saves it into the inbox
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      404:
+ *        description: Not Found, follow request was not found 
+ *      200: 
+ *        description: OK, successfully finds the follow request
+ */
+router.get('/requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	const request = await getRequest(authorId, foreignId);
+
+	if (!request) { return res.sendStatus(404); }
+  
+	return res.json({
+	  "type": request.type,
+	  "summary": request.summary,
+	  "actor": request.actor,
+	  "object": request.object
+	})
+})
+
+/**
+ * @openapi
+ * /authors/:authorId/inbox:
+ *  delete:
+ *    summary: creates a request and saves it into the inbox
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      200: 
+ *        description: OK, successfully deletes the request from the Inbox
+ *      500: 
+ *        description: Internal Server Error, no Actor or Object Authors retrieved 
+ */
+router.delete('/', async (req, res) => {
+	const status = await deleteInbox(req.cookies.token, req.params.authorId);
+
+	return res.sendStatus(status);
+})
 
 module.exports = router;

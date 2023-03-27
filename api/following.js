@@ -23,6 +23,14 @@ Foundation; All Rights Reserved
 const { getFollowings, deleteFollowing } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
+// OpenAPI
+const {options} = require('../openAPI/options.js');
+
+// Swaggerio
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require('swagger-jsdoc');
+const openapiSpecification = swaggerJsdoc(options);
+
 // Router Setup
 const express = require('express'); 
 
@@ -32,13 +40,69 @@ const { Author } = require('../scheme/author');
 // Router
 const router = express.Router({mergeParams: true});
 
+/**
+ * @openapi
+ * /authors/:authorId/followings:
+ *  get:
+ *    summary: Fetches the followings list for Author associated with authorId
+ *    tags:
+ *      - following 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *    responses:
+ *      401:
+ *        description: Unauthorized, no associated cookies or Login token expired 
+ *      404: 
+ *        description: Not Found, Author associated with authorId does not have a followings list 
+ *      200: 
+ *        description: OK, successfully fetches and sanitizes followings list associated with authorId 
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  description: JSON type 
+ *                  example: followings
+ *                items: 
+ *                  type: array
+ *                  items: 
+ *                    type: object
+ *                  description: array of followings
+ *                  example: 
+ *                    - type: author
+ *                      id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                      authorId: 29c546d45f564a27871838825e3dbecb
+ *                      host: https://yoshi-connect.herokuapp.com/
+ *                      displayName: kc
+ *                      url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+ *                      github: https://github.com/kezzayuno
+ *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      about: i am a code monkey
+ *                      pronouns: she/her
+ *                    - type: author
+ *                      id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      authorId: 3ec2a2a0685445509a3ea1dd3093639f
+ *                      host: https://yoshi-connect.herokuapp.com/
+ *                      displayName: allan
+ *                      url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                      github: https://github.com/Holy-Hero
+ *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      about: i love hatsune miku
+ *                      pronouns: he/him
+ */
 router.get('/', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
 
   const authorId = req.params.authorId;
   const followings = await getFollowings(authorId);
 
-  if (followings == 404 || followings == 404) { return res.sendStatus(404); }
+  if (followings == 404 || followings == undefined) { return res.sendStatus(404); }
 
   sanitizedObjects = [];
   for (let i = 0; i < followings.length; i++) {
@@ -70,6 +134,30 @@ router.get('/', async (req, res) => {
   });
 })
 
+/**
+ * @openapi
+ * /authors/:authorId/followings/:foreignAuthorId:
+ *  get:
+ *    summary: deletes a specific Author associated with foreignAuthorId contained in Author followings list associated with authorIdi
+ *    tags:
+ *      - following 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      401:
+ *        description: Unauthorized, no associated cookies or Login token expired 
+ *      204: 
+ *        description: No Content, following foreign Author was deleted from followings list associated with authorId 
+ */
 router.delete('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
 

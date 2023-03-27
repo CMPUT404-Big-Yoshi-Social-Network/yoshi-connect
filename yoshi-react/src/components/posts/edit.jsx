@@ -21,17 +21,41 @@ Foundation; All Rights Reserved
 
 // Functionality 
 import axios from 'axios';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import FileBase64 from 'react-file-base64';
 
 // Styling
 import './create.css';
 
 function EditPost({viewerId, post}) {
+
+    const [item, setItem] = useState({ 
+        type: "",
+        base64: "",
+        size: 0,
+        exist: false
+     });
+
+    useEffect(() => { 
+        console.log('Debug: Checking if the viewer has already liked the post')
+        const getImage = () => {
+            axios
+            .get("/authors/" + post.authorId + "/posts/" + post._id + "/image")
+            .then((res) => {
+                if (res.data.status === 200) {
+                    setItem({ ...item, image: res.data.src, exist: true})
+                }
+            })
+        }
+        getImage();
+    }, [post, item])
+
     /**
      * Description: Sends a POST request to get the post content and handles the content update of that post 
      * Request: POST    
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const [data, setData] = useState({
         title: post.title,
         desc: post.description,
@@ -50,6 +74,7 @@ function EditPost({viewerId, post}) {
          * Request: POST    
          * Returns: N/A
          */
+        console.log('Debug: <TLDR what the function is doing>')
         e.preventDefault()
         
         let body = {
@@ -67,31 +92,25 @@ function EditPost({viewerId, post}) {
         axios.post('/authors/' + post.authorId + '/posts/' + post._id, body)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
-    }
 
-    async function uploadImage() {
-        /**
-         * Description: Sends a GET request to get the retrieve the image date and handles the content upload 
-         * Request: GET    
-         * Returns: N/A
-         */
-        // Cloudinary Version
-        const data2 = new FormData();
-        const preview = document.querySelector("img");
-        const file = document.querySelector("input[type=file]").files[0];
-        data2.append("file", file);
-        data2.append("upload_preset", "biumvy2g");
-      
-        const res = await fetch(
-          `https://api.cloudinary.com/v1_1/di9yhzyxv/image/upload`,
-          {
-            method: "POST",
-            body: data2,
-          }
-        );
-        const img = await res.json();
-        data.image = img.secure_url;
-        preview.src = img.secure_url;
+        if (item.exist) {
+            axios.post('/authors/' + post.authorId + '/posts/' + post._id + "/image", {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/authors/' + post.authorId + '/posts/' + post._id + "/image",
+                headers: { 'Content-Type': 'multipart/form-data' },
+                image: item.image
+            }).then((res) => {}).catch((e) => {console.log(e);})
+        } else {
+            axios.put('/authors/' + post.authorId + '/posts/' + post._id + "/image", {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: '/authors/' + post.authorId + '/posts/' + post._id + "/image",
+                headers: { 'Content-Type': 'multipart/form-data' },
+                image: item.image
+            }).then((res) => {}).catch((e) => {console.log(e);})
+        }
+
         
     }
 
@@ -158,9 +177,17 @@ function EditPost({viewerId, post}) {
                 </select>
                 <br/>
                 <div className={"postMenuInput"}>
-                        <input type={"file"} accept={"image/*"} multiple={false} className={"postMenuImageInput"} name={"image"} id={"image"} onChange={uploadImage}/>
+                        <FileBase64
+                                className={"postMenuImageInput"} name={"image"} id={"image"}
+                                type="image"
+                                multiple={false}
+                                onDone={({ base64, size, type }) => setItem({ ...item, image: base64, size: size, type: type })}
+                            />
                         <br/>
-                        <img src="" style={{maxHeight: "15vh"}} alt="" />
+                        <img src={item.image} style={{maxHeight: "15vh"}} alt="" />
+                </div>
+                <div style={{color:"white", textAlign:"right"}}>
+                    {item.size} of 10MB
                 </div>
                 <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Post</button>
             </form>

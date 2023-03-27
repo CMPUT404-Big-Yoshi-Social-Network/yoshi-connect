@@ -29,6 +29,13 @@ import Pagination from 'react-bootstrap/Pagination';
 import Author from './author.jsx';
 
 function Authors() {
+    /**
+     * Description: 
+     * Functions: 
+     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Returns: N/A
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
     const size = 5;
@@ -38,6 +45,12 @@ function Authors() {
     const [next, setNext] = useState(false);
 
     useEffect(() => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -52,11 +65,13 @@ function Authors() {
         axios
         .get(url, config)
         .then((response) => { 
-            let authors = []
-            for (let i = 0; i < size; i++) {
-                authors.push(response.data.items[i]);
+            if (response.data.items.length !== 0 && authors.length === 0) {
+                let authors = []
+                for (let i = 0; i < size; i++) {
+                    authors.push(response.data.items[i]);
+                }
+                setAuthors(authors);
             }
-            setAuthors(authors);
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -83,7 +98,11 @@ function Authors() {
         axios
         .get(url, config)
         .then((response) => { 
-            if (response.data.items.length === 0) { setNext(true); }
+            if (response.data.items.length === 0) { 
+                if (!next) {
+                    setNext(true); 
+                }
+            }
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -98,9 +117,15 @@ function Authors() {
                 navigate('500 PAGE')
             }
         });
-    }, [setAuthors, url, navigate, page, size, authors]);
+    }, [authors, next, navigate, page]);
 
     const getMore = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!next) {
             let updated = page + 1;
             setPage(updated);
@@ -167,6 +192,12 @@ function Authors() {
     }
 
     const goBack = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         if (!prev && prev !== 1) {
             let updated = page - 1;
             setPage(updated);

@@ -28,40 +28,18 @@ import './create.css';
 
 function EditComment(props) {
     /**
-     * Description: Represents the Edit functionality for a comment 
-     * Functions: 
-     *     - modifyComment(): Modfies a comment related to a post 
-     * Returns: N/A
+     * Description:  
+     * Request: (if axios is used)    
+     * Returns: 
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const [data, setData] = useState({ comment: props.comment })
     
     const modifyComment = () => {
-        /**
-         * Description: Modifies an existing post owned by the current viewer
-         * Request: PUT
-         * Returns: N/A
-         */
-        console.log('Debug: Modifying a post')
-        let config = {
-            method: 'put',
-            maxBodyLength: Infinity,
-            url: '/server/authors/' + props.authorId + '/posts/' + props.postId,
-            headers: {
-            'Content-Type': 'multipart/form-data'
-            },
-            data: {
-                commenter: props.commenter,
-                comment: data.comment,
-                commentId: props._id,
-                authorId: props.authorId,
-                postId: props.postId,
-                status: "Modify comment"
-            }
-        }
-        
-        axios.put('/server/authors/' + props.authorId + '/posts/' + props.postId, config)
+        let body = { comment: data.comment }
+        axios.post('/authors/' + props.authorId + '/posts/' + props.postId + '/comments' + props._id, body)
         .then((response) => { })
-        .catch((e) =>{ console.log(e); })
+        .catch((err) =>{ })
     }
 
     return (

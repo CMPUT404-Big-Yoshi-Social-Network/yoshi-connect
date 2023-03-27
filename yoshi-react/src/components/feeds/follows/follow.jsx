@@ -23,9 +23,14 @@ Foundation; All Rights Reserved
 import React from "react";
 
 function Follow(props) {
+    /**
+     * Description:   
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div id='follow'>
-            { props.displayname }
+            { props.displayName }
         </div>
     )
 }

@@ -63,3 +63,7 @@ Foundation; All Rights Reserved
     background-color: #A7E7F8;
     color: black;
 }
+
+.signup-error{
+    color: #CE3426;
+}

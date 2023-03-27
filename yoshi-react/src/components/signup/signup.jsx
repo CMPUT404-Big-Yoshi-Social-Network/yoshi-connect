@@ -35,9 +35,12 @@ export default function Signup() {
    *     - getAccount(): Sends a POST request to get the account for routing it to the public feed as well as saving the new author
    * Returns: N/A
    */
+  console.log('Debug: <TLDR what the function is doing>')
   const navigate = useNavigate();
   const [data, setData] = useState({ username: '', email: '', password: '' })
+  const [error, setError] = useState(false);
   const url = '/signup';
+
 
   const getAccount = async (e) => {
     /**
@@ -45,16 +48,20 @@ export default function Signup() {
      * Request: POST
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     e.preventDefault()
+      if (data.email.length === 0 || data.username.length === 0 || data.password.length === 0){
+        setError(true)
+      }
 
     axios
     .post(url, data)
     .then((response) => { alert('Now you must be approved by an admin.') })
     .catch(err => {
       if (err.response.status === 400) {
-        navigate('/badrequest'); 
+        setError(true);
       } else if (err.response.status === 500) {
-        console.log('NEED 500 PAGE!')
+        navigate('/servererror');
       }
     });
   }
@@ -70,32 +77,35 @@ export default function Signup() {
             <h3>Sign Up</h3>
         </Card.Header>
         <Card.Body>
-            <Form className='signup-form'>
+          <Form onSubmit={getAccount} className='signup-form'>
             <Form.Group className="signup-a">
-                  <p>Email</p>
-                    <Form.Control
-                        name="email"
-                        onChange={(e) => {setData({...data, email: e.target.value})}}
-                        type="email" className='signup-box'/>
-                </Form.Group>
-                <Form.Group className="signup-a">
-                  <p>Username</p>
-                    <Form.Control
-                        name="username"
-                        onChange={(e) => {setData({...data, username: e.target.value})}}
-                        type="text" className='signup-box'/>
-                </Form.Group>
-                <Form.Group className="signup-a">
-                  <p>Password</p>
-                    <Form.Control
-                        name="password"
-                        onChange={(e) => {setData({...data, password: e.target.value})}}
-                        type="password" className='signup-box'/>
-                </Form.Group>
-                <br></br>
-                <Button href='/' variant="warning" type="submit" className='signup-button'>Back</Button>
-                <Button onClick={getAccount} variant="warning" type="submit" className='signup-button'>Next</Button>
-            </Form>
+              <p>Email</p>
+                <Form.Control
+                    name="email"
+                    onChange={(e) => {setData({...data, email: e.target.value})}}
+                    type="email" className='signup-box'/>
+                {error&&data.email.length<=0? <p className='signup-error'>Email cannot be empty</p>:""}
+            </Form.Group>
+            <Form.Group className="signup-a">
+              <p>Username</p>
+                <Form.Control
+                    name="username"
+                    onChange={(e) => {setData({...data, username: e.target.value})}}
+                    type="text" className='signup-box'/>
+                {error&&data.username.length<=0? <p className='signup-error'>Username cannot be empty</p>:""}
+            </Form.Group>
+            <Form.Group className="signup-a">
+              <p>Password</p>
+                <Form.Control
+                    name="password"
+                    onChange={(e) => {setData({...data, password: e.target.value})}}
+                    type="password" className='signup-box'/>
+                {error&&data.password.length<=0? <p className='signup-error'>Password cannot be empty</p>:""}
+            </Form.Group>
+            <br></br>
+            <Button href='/' type="button" className='signup-button'>Back</Button>
+            <Button type="submit" className='signup-button'>Next</Button>
+          </Form>
         </Card.Body>
       </Card>
     </div>

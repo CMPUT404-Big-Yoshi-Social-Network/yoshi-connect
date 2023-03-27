@@ -39,3 +39,8 @@ Foundation; All Rights Reserved
     background-color: #a7e7f8;
     border: #a7e7f8;
 }
+
+.image{
+    width: 100%;
+    border-radius: .5em;
+}

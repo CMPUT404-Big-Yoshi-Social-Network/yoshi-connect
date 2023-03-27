@@ -38,6 +38,7 @@ function RightNavBar() {
      * Description: Represents the right navigation bar
      * Returns: N/A
      */
+    console.log('Debug: <TLDR what the function is doing>')
     const [username, setUsername] = useState('');
     const navigate = useNavigate();
     
@@ -46,7 +47,7 @@ function RightNavBar() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let username = response.data.displayname;
+                let username = response.data.displayName;
                 setUsername(username)
             })
             .catch(err => { if (err.response.status === 404) { 

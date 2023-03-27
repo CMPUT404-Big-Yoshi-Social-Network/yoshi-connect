@@ -270,7 +270,7 @@ router.get('/:commentId', async (req, res) => {
  * @openapi
  * components:
  *   schemas:
- *     newComment:
+ *     NewComment:
  *         type: object
  *         properties: 
  *           type: 

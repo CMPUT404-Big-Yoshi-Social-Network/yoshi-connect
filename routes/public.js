@@ -138,8 +138,8 @@ async function fetchPublicPosts(page, size) {
         }
     };
     await axios.request(config)
-    .then( res => { console.log(res) })
-    .catch( error => { })
+    .then( res => { })
+    .catch( error => {  })
 
     var config = {
         host: 'https://sociallydistributed.herokuapp.com',
@@ -151,7 +151,24 @@ async function fetchPublicPosts(page, size) {
         }
     };
     await axios.request(config)
-    .then( res => { publicPosts.push(res.data.results) })
+    .then( res => { 
+        publicPosts = publicPosts.concat(res.data.results) 
+    })
+    .catch( error => { })
+
+    var config = {
+        host: 'https://bigger-yoshi.herokuapp.com/api',
+        url: 'https://bigger-yoshi.herokuapp.com/api/authors/6421fdb1000041ba410007/posts/',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Basic bWFuOjEyMw==',
+            'Content-Type': 'application/json'
+        }
+    };
+    await axios.request(config)
+    .then( res => {
+        publicPosts = publicPosts.concat(res.data.items) 
+    })
     .catch( error => {
         console.log('Error')
     })

@@ -39,7 +39,7 @@ function Posts(props) {
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
-    const size = 5;
+    const size = 20;
     const navigate = useNavigate();
     const [url, setUrl] = useState('');
     const [viewerId, setViewerId] = useState('');
@@ -99,6 +99,7 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => {
+            console.log(response.data)
             setPosts(posts.concat(response.data.items));
         })
         .catch(err => {

@@ -86,7 +86,7 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => {
-            setPosts(posts.concat(response.data));
+            setPosts(posts.concat(response.data.items));
         })
         .catch(err => {
             if (err.response.status === 404) {

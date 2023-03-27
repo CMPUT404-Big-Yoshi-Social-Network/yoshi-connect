@@ -125,8 +125,10 @@ async function postCred(req, res, token, type) {
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
 	let coll = null
+	let auth = null
 	if (type == 'incoming') {
 		coll = IncomingCredentials;
+		auth = 'Basic ' + btoa(req.body.username + ':' + req.body.password);
 	} else if (type == 'outgoing') {
 		coll = OutgoingCredentials;
 	}
@@ -139,7 +141,7 @@ async function postCred(req, res, token, type) {
 		url: req.body.host,
 		password: crypto_js.SHA256(req.body.password),
 		allowed: false,
-		auth: req.body.auth
+		auth: auth != null ? auth : req.body.auth
 	})
 	await node.save();
 	return res.json({

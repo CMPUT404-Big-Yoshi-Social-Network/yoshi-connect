@@ -34,7 +34,7 @@ const { Login, Author } = require('../scheme/author.js');
 
 async function addAuthor(req, res){
     /**
-    Description: Adds author to YoshiConnect database or updates an Author's attributes
+    Description: Adds author to YoshiConnect database
     Associated Endpoint: /admin/dashboard:
     Request Type: PUT
     Request Body: Example: 
@@ -48,7 +48,7 @@ async function addAuthor(req, res){
             profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd", 
             admin: false }
     Return: 500 Status (Internal Server Error) -- Unable to save Author in YoshiConnect database
-            400 Status (Bad Request) -- Author already exists, username and/or password taken, Admin did not fill all cells (username, password, email)
+            400 Status (Bad Request) -- Author already exists, and/or Admin did not fill all cells (username, password, email)
             200 Status (OK) -- Returns the JSON containing 
                                                 { "type": "author",
                                                     "id" : https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
@@ -106,11 +106,26 @@ async function addAuthor(req, res){
 
 async function modifyAuthor(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
+    Description: Updates an Author's attributes in the YoshiConnect Database
+    Associated Endpoint: /admin/dashboard:
+    Request Type: POST
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Return: 404 Status (Not Found) -- Cannot find Author
+            400 Status (Bad Request) -- Username and/or email already taken
+            500 Status (Internal Server Error) -- Unable to find Login document for Author
+            200 Status (OK) -- Returns a JSON containing 
+                                            { "type": "author",
+                                                    "id" : https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                                    "authorId" : 29c546d45f564a27871838825e3dbecb,
+                                                    "host": https://yoshi-connect.herokuapp.com/,
+                                                    "url": https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                                    "displayname": abc,
+                                                    "email": 123@ualberta.ca,
+                                                    "about": "author bio",
+                                                    "pronouns": "they/them",
+                                                    "github": "https://github.com/name",
+                                                    "profileImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd",
+                                                    admin: true }
     */
     const author = await Author.findOne({_id: req.body.authorId}).clone();
 

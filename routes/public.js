@@ -139,13 +139,11 @@ async function fetchPublicPosts(page, size) {
     };
     await axios.request(config)
     .then( res => { console.log(res) })
-    .catch( error => {
-        console.log(error)
-    })
+    .catch( error => { })
 
     var config = {
         host: 'https://sociallydistributed.herokuapp.com',
-        url: 'https://sociallydistributed.herokuapp.com/authors/546de5fe-77ea-4cc2-93f9-7a3825132d68/posts/',
+        url: 'https://sociallydistributed.herokuapp.com/posts/authors/546de5fe-77ea-4cc2-93f9-7a3825132d68/posts/',
         method: 'GET',
         auth: { username: 'Yoshi_Connects', password: 'MinionConnector1' },
         headers: {
@@ -153,7 +151,7 @@ async function fetchPublicPosts(page, size) {
         }
     };
     await axios.request(config)
-    .then( res => { console.log(res) })
+    .then( res => { publicPosts.push(res.data.results) })
     .catch( error => {
         console.log('Error')
     })

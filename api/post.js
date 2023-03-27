@@ -657,7 +657,6 @@ router.get('/:postId/liked', async (req, res) => {
   console.log('TODO: GET Request that detects whether a post has already been liked by the viewer (which you can get from token); 200 means liked, 404 not liked etc')
 })
 
-// NEED ALLAN TO PROVIDE AN EXAMPLE FOR REQUEST BODY
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:
@@ -665,6 +664,17 @@ router.get('/:postId/liked', async (req, res) => {
  *    summary: Edits an image associated with a specific post made by a specific author
  *    tags:
  *      - post 
+ *    requestBody: 
+ *      content: 
+ *        multipart/form-data:
+ *          schema:
+ *            url:
+ *              type: string
+ *            image:
+ *              type: string
+ *          example:
+ *            url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image
+ *            image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *    parameters:
  *      - in: path
  *        name: authorId
@@ -687,7 +697,6 @@ router.post("/:postId/image", async (req, res) => {
   }
 })
 
-// NEED ALLAN TO PROVIDE AN EXAMPLE FOR REQUEST BODY
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:
@@ -695,6 +704,17 @@ router.post("/:postId/image", async (req, res) => {
  *    summary: Uploads an image related to a post made by a specific author
  *    tags:
  *      - post 
+ *    requestBody: 
+ *      content: 
+ *        multipart/form-data:
+ *          schema:
+ *            url:
+ *              type: string
+ *            image:
+ *              type: string
+ *          example:
+ *            url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image
+ *            image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *    parameters:
  *      - in: path
  *        name: authorId
@@ -717,7 +737,6 @@ router.put("/:postId/image", async (req, res) => {
   }
 })
 
-// NEED ALLAN TO PROVIDE AN EXAMPLE FOR REQUEST BODY
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/image:
@@ -725,6 +744,14 @@ router.put("/:postId/image", async (req, res) => {
  *    summary: Fetches the image associated with post made by a specific author
  *    tags:
  *      - post 
+ *    requestBody: 
+ *      content: 
+ *        multipart/form-data:
+ *          schema:
+ *            originalUrl:
+ *              type: string
+ *          example: 
+ *            originalUrl: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image
  *    parameters:
  *      - in: path
  *        name: authorId

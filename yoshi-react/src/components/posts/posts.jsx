@@ -140,7 +140,7 @@ function Posts(props) {
         });
         
        } 
-    }, [url, navigate, page, size]);
+    }, [url, navigate, page, size, posts]);
 
     const getMore = () => {
         /**

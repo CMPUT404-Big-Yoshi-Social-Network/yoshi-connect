@@ -472,6 +472,7 @@ async function getPosts(token, page, size, author) {
     if(token){
         login = await login;
         if(login){
+            let followingStatus = false;
             let following = await Following.findOne({authorId: author.authorId});
 
             if(!following || !following.followings){
@@ -482,7 +483,15 @@ async function getPosts(token, page, size, author) {
                 follow = following.followings[i];
                 if(follow.authorId = login.authorId){
                     aggregatePipeline.splice(3, 1);
+                    followingStatus = true;
                     break;
+                }
+            }
+
+            if(!followingStatus && author.authorId == login.authorId){
+                if(authLogin(token, author.authorId)){
+                    aggregatePipeline.splice(3, 1);
+                    aggregatePipeline.splice(4, 1);
                 }
             }
         }

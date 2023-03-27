@@ -39,6 +39,16 @@ async function getInbox(token, authorId, page, size){
                 $unwind: '$posts'
             },
             {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: { dateString: "$posts.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "posts.published": -1 }
+            },
+            {
                 $skip: (page - 1) * size
             },
             {
@@ -58,6 +68,16 @@ async function getInbox(token, authorId, page, size){
             },
             {
                 $unwind: '$posts'
+            },
+            {
+                $set: {
+                    "posts.published": {
+                        $dateFromString: { dateString: "$posts.published" }
+                    }
+                }
+            },
+            {
+                $sort: { "posts.published": -1 }
             },
             {
                 $limit: size

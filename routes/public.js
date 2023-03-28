@@ -158,7 +158,7 @@ async function fetchPublicPosts(page, size) {
 
     var config = {
         host: 'https://bigger-yoshi.herokuapp.com/api',
-        url: 'https://bigger-yoshi.herokuapp.com/api/authors/6421fdb1000041ba410007/posts/',
+        url: 'https://bigger-yoshi.herokuapp.com/api/authors/6422246700002cf6bf0007/posts/',
         method: 'GET',
         headers: {
             'Authorization': 'Basic bWFuOjEyMw==',
@@ -173,6 +173,7 @@ async function fetchPublicPosts(page, size) {
         console.log('Error')
     })
 
+    console.log(publicPosts)
     response = {
         items: publicPosts
     }

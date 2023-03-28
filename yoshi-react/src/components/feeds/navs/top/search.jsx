@@ -72,7 +72,7 @@ function SearchCard(props) {
         setRequestButton('Sent');
         let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
         let config = {
-            summary: viewer + " wants to follow " + username,
+            summary: viewer.displayName + " wants to follow " + username,
             actor: viewer,
             actorId: viewerId,
             objectId: id,

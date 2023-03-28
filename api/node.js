@@ -1011,7 +1011,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                   var config = {
                     host: outgoings[i].url,
                     url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox',
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'Authorization': auth,
                         'Content-Type': 'application/json'
@@ -1025,7 +1025,8 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
             }
             await axios.request(config)
             .then( res => { console.log(res) })
-            .catch( error => { })
+            .catch( error => { 
+                console.log(error) })
         }
     }
     return res.sendStatus(200);

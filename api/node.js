@@ -85,19 +85,37 @@ router.get('/outgoing/authors', async (req, res) => {
 
     for (let i = 0; i < outgoings.length; i++) {
         if (outgoings[i].allowed) {
-            var config = {
-                host: outgoings[i].url,
-                url: outgoings[i].url + '/authors',
-                method: 'GET',
-                headers: {
-                    'Authorization': outgoings[i].auth,
-                    'Content-Type': 'application/json'
-                }
-            };
+            const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+            if (outgoings[i].auth === 'userpass') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/',
+                    method: 'GET',
+                    auth: auth,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+            } else {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': auth,
+                        'Content-Type': 'application/json'
+                    }
+                };
+            }
     
             await axios.request(config)
             .then( res => {
-                let items = res.data.items
+                let items = []
+                if (outgoings[i].auth === 'userpass') {
+                    items = res.data.results
+                } else {
+                    items = res.data.items
+                }
                 authors = authors.concat(items);
             })
             .catch( error => {
@@ -927,20 +945,23 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
         if (outgoings[i].allowed) {
             var config = {
                 host: outgoings[i].url,
-                url: outgoings[i].url + '/authors' + req.params.authorId + '/inbox/' + req.params.type,
-                method: 'POST',
+                url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox',
+                method: 'GET',
                 headers: {
                     'Authorization': outgoings[i].auth,
                     'Content-Type': 'application/json'
                 },
                 data: {
                     type: req.params.type,
-                    item: req.body
+                    summary: req.body.summary,
+                    actor: req.body.actor,
+                    actorId: req.body.actorId,
+                    objectId: req.body.objectId,
+                    object: req.body.object
                 }
             };
-    
             await axios.request(config)
-            .then( res => { })
+            .then( res => { console.log(res) })
             .catch( error => {
                 if (error.response.status == 404) {
                     console.log('Debug: Adding an object (post, follow, like) to inbox.')

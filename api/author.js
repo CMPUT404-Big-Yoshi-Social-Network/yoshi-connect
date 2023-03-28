@@ -412,24 +412,40 @@ router.get('/search/:username', async (req, res) => {
 
   for (let i = 0; i < outgoings.length; i++) {
       if (outgoings[i].allowed) {
-          var config = {
-              host: outgoings[i].url,
-              url: outgoings[i].url + '/authors',
-              method: 'GET',
-              headers: {
-                  'Authorization': outgoings[i].auth,
-                  'Content-Type': 'application/json'
-              }
-          };
-  
+          const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+          if (outgoings[i].auth === 'userpass') {
+              var config = {
+                  host: outgoings[i].url,
+                  url: outgoings[i].url + '/authors/',
+                  method: 'GET',
+                  auth: auth,
+                  headers: {
+                      'Content-Type': 'application/json'
+                  }
+              };
+          } else {
+              var config = {
+                  host: outgoings[i].url,
+                  url: outgoings[i].url + '/authors',
+                  method: 'GET',
+                  headers: {
+                      'Authorization': auth,
+                      'Content-Type': 'application/json'
+                  }
+              };
+          }
+    
           await axios.request(config)
           .then( res => {
-              let items = res.data.items
-              if (items != undefined) {
-                for (let j = 0; j < items.length; j++) {
-                  if (items[j].displayName == username) {
-                    authors.push(items[j]);
-                  }
+              let items = []
+              if (outgoings[i].auth === 'userpass') {
+                  items = res.data.results
+              } else {
+                  items = res.data.items
+              }
+              for (let j = 0; j < items.length; j++) {
+                if (items[j].displayName == username) {
+                  authors.push(items[j]);
                 }
               }
           })
@@ -438,7 +454,6 @@ router.get('/search/:username', async (req, res) => {
           })
       }
   }
-
   return res.json({
     "type": 'authors',
     "items": authors

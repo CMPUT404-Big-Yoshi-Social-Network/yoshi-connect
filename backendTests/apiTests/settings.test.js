@@ -17,37 +17,31 @@ limitations under the License.
 Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
-*/
+*/ 
+const request = require("supertest");
+const app = require("../../app.js");
 
-// Database
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
-const database = mongoose.connection;
+// TODO
+// Add the correct values and returns
 
-const outgoingCredentialScheme = new Schema({
-    _id: String,
-    displayName: String,
-    url: String,
-    password: String,
-    allowed: Boolean,
-    auth: String},
-    {versionKey: false
+describe("Testing if the endpoints exist for /settings", () => {
+    const basePath = "/settings"
+
+    describe("/", () => {
+        let currentPath = basePath + "/"
+        it.only("put", async () => {
+            await request(app).put(currentPath).send({})
+        })  
+    })
+
+
+    describe("/logout", () => {
+        let currentPath = basePath + "/logout"
+        it.only("post", async () => {
+            await request(app).post(currentPath).send({})
+        })
+    })
 })
 
-const incomingCredentialsScheme = new Schema({
-    _id: String,
-    displayName: String,
-    url: String,
-    password: String,
-    allowed: Boolean,
-    auth: String},
-    {versionKey: false
-});
 
-const OutgoingCredentials = database.model('outcred', outgoingCredentialScheme);
-const IncomingCredentials = database.model('incred', incomingCredentialsScheme);
 
-module.exports = {
-    OutgoingCredentials,
-    IncomingCredentials
-}

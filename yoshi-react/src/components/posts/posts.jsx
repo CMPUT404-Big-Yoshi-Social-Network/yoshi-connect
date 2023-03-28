@@ -235,8 +235,8 @@ function Posts(props) {
                             <Post key={idx} viewerId={viewerId} post={posts[post]} author={userInfo}/>
                         ))}  
                         { seeMore ? null :
-                            <div>
-                                <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
+                            <div className='post-seemore'>
+                                <p disabled={seeMore} onClick={getMore}>See More</p>
                             </div>
                         }
                     </Pagination>  

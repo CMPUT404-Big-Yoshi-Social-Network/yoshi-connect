@@ -220,7 +220,7 @@ function Profile() {
                 }
             })
             .catch(err => {
-                if (err.response.status === 500) { console.log('500 PAGE') }
+                if (err.response.status === 500) { navigate('/servererror') }
             });
         }
     }, [username, personal, exists, requestButton])
@@ -322,11 +322,15 @@ function Profile() {
                     <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
-                    <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>
+                    { (profileInfo.profileImage === '') ? <img className='profile-image' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='profile-image' src={profileInfo.profileImage} alt='prof-userimg' width={130}/>}
+                    <h1 className='profile-username'>{username}</h1>
+                    <p className='profile-pronouns' >{profileInfo.pronouns}</p>
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
-
-                    <h2 style={{paddingLeft: '1em'}}>Posts</h2>
+                    <p className='profile-about'>{profileInfo.about}</p>
+                    
+                    <hr/>
+                    <br/>
                     { (personal.person === null) ? null : (personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>) 
                     }   
                 </div>

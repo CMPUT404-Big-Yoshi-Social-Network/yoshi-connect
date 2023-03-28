@@ -18,6 +18,8 @@ Furthermore it is derived from the Python documentation examples thus
 some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */ 
+
+//////////////// API template
 const request = require("supertest");
 const app = require("../../app.js");
 
@@ -45,4 +47,13 @@ describe("Testing if the endpoints exist for /", () => {
             request(app).put(currentPath).send({})
         })  
     })
+})
+
+
+
+/////////////// Routes template
+describe("", () => {
+        it.only("", async () => {
+            await expect().resolves.toBe()
+        })
 })

@@ -434,7 +434,7 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
             if (outgoings[i].auth === 'userpass') {
                 var config = {
                     host: outgoings[i].url,
-                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts/',
+                    url: outgoings[i].url + '/posts/authors/' + req.params.authorId + '/posts/',
                     method: 'GET',
                     auth: auth,
                     headers: {

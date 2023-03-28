@@ -34,6 +34,7 @@ import './post.css';
 
 // User Interface
 import Popup from 'reactjs-popup';
+import SharePost from "./sharePost";
 
 function Post({viewerId, post}) {
     let postId = post.id ? post.id.split('/') : undefined;
@@ -227,7 +228,8 @@ function Post({viewerId, post}) {
                     }    
                     {
                         post.authorId !== viewerId ? null : <button className='post-buttons' onClick={deletePost}>Delete</button>
-                    }    
+                    }  
+                    <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup> 
                 </div>}
         </div>
     )

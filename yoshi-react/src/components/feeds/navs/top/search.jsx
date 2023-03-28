@@ -89,8 +89,18 @@ function SearchCard(props) {
             navigate('/users/' + username);
         } else {
             let id = props.id.split(host + '/authors/')[1];
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/nodes/outgoing/authors/' + id + '/posts',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: 1,
+                    size: 5
+                }
+            }
             axios
-            .get('/nodes/outgoing/authors/' + id + '/posts')
+            .get('/nodes/outgoing/authors/' + id + '/posts', config)
             .then((response) => { console.log(response.data) })
             .catch(err => { if (err.response.status === 404) { 
                 setViewerId('')

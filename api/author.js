@@ -403,10 +403,7 @@ router.post('/:authorId', async (req, res) => {
  */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  let authors = await Author.find({username: username}).clone();
-  if (!authors) { 
-    return res.sendStatus(404)
-  }
+  let authors = []
 
   const outgoings = await OutgoingCredentials.find().clone();
 

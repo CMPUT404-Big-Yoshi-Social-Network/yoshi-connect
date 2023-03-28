@@ -30,6 +30,7 @@ import { Button } from 'react-bootstrap';
 function SearchCard(props) {
     const username = props.username !== undefined ? props.username : props.displayName
     const [requestButton, setRequestButton] = useState('Send Follow Request');
+    console.log(props)
     /**
      * Description:     
      * Returns: 
@@ -55,7 +56,6 @@ function SearchCard(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                console.log(response)
                 let viewerId = response.data.authorId;
                 let viewer = response.data;
                 setViewerId(viewerId)
@@ -88,6 +88,8 @@ function SearchCard(props) {
             { !props && username === undefined ? null : 
                 <div>
                     {username}
+                    <br></br>
+                    {props.host}
                     <Button onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }

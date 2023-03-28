@@ -47,6 +47,7 @@ function Post({viewerId, post}) {
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
     const [item, setItem] = useState("");
+    const url = "/authors/" + authorId + "/posts/" + postId + "/image"
 
     const navigate = useNavigate();
 
@@ -59,7 +60,7 @@ function Post({viewerId, post}) {
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             axios
-            .get("/authors/" + authorId + "/posts/" + postId + "/image")
+            .get(url)
             .then((res) => {
                 if (res.data.status === 200) {
                     setItem(res.data.src)
@@ -69,7 +70,7 @@ function Post({viewerId, post}) {
             })
         }
         getImage();
-    }, [authorId, postId])
+    }, [url])
 
     useEffect(() => {
         /**
@@ -79,10 +80,11 @@ function Post({viewerId, post}) {
          */
         console.log('Debug: <TLDR what the function is doing>')
         const hasLiked = () => {
-            axios
-            .get('/authors/' + authorId + '/posts/' + postId + '/liked')
-            .then((response) => { setLike(true) })
-            .catch(err => { setLike(false) });
+            // axios
+            // .get('/authors/' + authorId + '/posts/' + postId + '/liked')
+            // .then((response) => { setLike(true) })
+            // .catch(err => { setLike(false) });
+            console.log('In construction')
         }
         hasLiked();
     }, [authorId, postId])

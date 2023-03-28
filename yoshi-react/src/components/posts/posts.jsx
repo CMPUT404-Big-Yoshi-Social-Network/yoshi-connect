@@ -99,7 +99,7 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => {
-            setPosts(posts.concat(response.data.items));
+            setPosts(response.data.items);
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -139,7 +139,7 @@ function Posts(props) {
         });
         
        } 
-    }, [url, navigate, page, size, posts]);
+    }, [url, navigate, page, size]);
 
     const getMore = () => {
         /**

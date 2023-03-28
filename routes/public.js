@@ -82,7 +82,7 @@ async function fetchPublicPosts(page, size) {
             delete post._id;
         }
     }
-    
+
     response = {
         items: publicPosts
     }

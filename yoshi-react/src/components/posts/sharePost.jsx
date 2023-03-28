@@ -20,7 +20,11 @@ Foundation; All Rights Reserved
 */
 
 // Styling
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import ReactCommonmark from 'react-commonmark';
 import './create.css';
+
 
 function SharePost({viewerId, post}) {
     let postId = post.id ? post.id.split('/') : undefined;

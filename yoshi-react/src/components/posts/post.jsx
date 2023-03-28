@@ -57,20 +57,22 @@ function Post({viewerId, post}) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>') 
-        const getImage = () => {
-            axios
-            .get(url)
-            .then((res) => {
-                if (res.data.status === 200) {
-                    setItem(res.data.src)
-                } else {
-                    setItem('')
-                }
-            })
+        if (viewerId !== null) {
+            console.log('Debug: <TLDR what the function is doing>') 
+            const getImage = () => {
+                axios
+                .get(url)
+                .then((res) => {
+                    if (res.data.status === 200) {
+                        setItem(res.data.src)
+                    } else {
+                        setItem('')
+                    }
+                })
+            }
+            getImage();
         }
-        getImage();
-    }, [url])
+    }, [url, viewerId])
 
     useEffect(() => {
         /**

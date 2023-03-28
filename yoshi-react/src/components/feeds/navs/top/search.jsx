@@ -70,7 +70,7 @@ function SearchCard(props) {
 
     const sendRequest = () => {
         setRequestButton('Sent');
-        let id = props.id.split(host + '/authors/')[1];
+        let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
         let config = {
             summary: viewer + " wants to follow " + username,
             actor: viewer,
@@ -88,7 +88,7 @@ function SearchCard(props) {
         if (host === 'https://yoshi-connect.herokuapp.com/') {
             navigate('/users/' + username);
         } else {
-            let id = props.id.split(host + '/authors/')[1];
+            let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
@@ -101,10 +101,10 @@ function SearchCard(props) {
             }
             axios
             .get('/nodes/outgoing/authors/' + id + '/posts', config)
-            .then((response) => { console.log(response.data) })
-            .catch(err => { if (err.response.status === 404) { 
-                setViewerId('')
-            }})
+            .then((response) => { 
+                navigate('/users/' + username, { state: { posts: response.data.items } })
+            })
+            .catch(err => { })
         }
     }
 

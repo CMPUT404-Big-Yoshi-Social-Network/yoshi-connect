@@ -479,13 +479,10 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
 
             await axios.request(config)
             .then( res => {
-                if (outgoings[i].auth === 'userpass') { 
-                    console.log(res)
-                }
-                let items = res.data.items
+                let items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
                 posts = posts.concat(items);
             })
-            .catch( error => { })
+            .catch(error => { })
         }
     }
     return res.json({

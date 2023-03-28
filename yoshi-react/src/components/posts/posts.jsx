@@ -39,6 +39,7 @@ function Posts(props) {
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
+    const [userInfo, setUserInfo] = useState({})
     const size = 20;
     const navigate = useNavigate();
     const [url, setUrl] = useState('');
@@ -66,6 +67,7 @@ function Posts(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
+                setUserInfo(response.data);
                 let viewerId = response.data.authorId;
                 setViewerId(viewerId);
                 setUrl('/authors/' + viewerId + '/posts/' + type)
@@ -230,7 +232,7 @@ function Posts(props) {
                 <div> 
                     <Pagination>
                         {Object.keys(posts).map((post, idx) => (
-                            <Post key={idx} viewerId={viewerId} post={posts[post]}/>
+                            <Post key={idx} viewerId={viewerId} post={posts[post]} author={userInfo}/>
                         ))}  
                         { seeMore ? null :
                             <div>

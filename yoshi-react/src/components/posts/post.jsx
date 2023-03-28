@@ -35,7 +35,7 @@ import './post.css';
 // User Interface
 import Popup from 'reactjs-popup';
 
-function Post({viewerId, post}) {
+function Post({viewerId, post, author}) {
     let postId = post.id ? post.id.split('/') : undefined;
     postId = postId ? postId[postId.length - 1] : undefined;
     let authorId = post.author ? post.author.id.split('/') : undefined;
@@ -92,6 +92,12 @@ function Post({viewerId, post}) {
         hasLiked();
     }, [])
     */
+
+    useEffect(() => {
+        if(!numLikes){
+            getLikes();
+        }
+    })
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
@@ -117,12 +123,23 @@ function Post({viewerId, post}) {
     }
 
     const addLike = () => {
-        axios.put('/authors/' + authorId + '/posts/' + postId + '/likes')
-        .then((response) => { 
-            setNumLikes(response.data.numLikes); 
+        if(author){
+        let body = {
+            type: "like",
+            summary: "DisplayName likes your post",
+            author: author,
+            object: post.id
+        }
+
+        axios.post(post.author.id + '/inbox', body, {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then((response) => {
             setLike(true);
         })
-        .catch((err) => { 
+        .catch((err) => {
             if (err.response.status === 401) {
                 navigate('/unauthorized')
             } else if (err.response.status === 400) {
@@ -132,7 +149,8 @@ function Post({viewerId, post}) {
             } else if (err.response.status === 500) {
                 console.log('500 PAGE')
             }
-         });
+        });
+        }
     }
 
     const removeLike = () => {
@@ -170,7 +188,7 @@ function Post({viewerId, post}) {
         let body = { 
             type: "comment",
             author: viewerId,
-            comment: comment.newComment, 
+            comment: comment.newComment,
             contentType: "text/plaintext",
         };
 
@@ -189,6 +207,23 @@ function Post({viewerId, post}) {
          });
     }
     
+    const getLikes = () => {
+
+        axios.get(post.id + '/likes')
+        .then((response) => { setNumLikes(response.data.items.length); })
+        .catch((err) => { 
+            if (err.response.status === 401) {
+                navigate('/unauthorized')
+            } else if (err.response.status === 400) {
+                navigate('/badrequest')
+            } else if (err.response.status === 404) {
+                navigate('/notfound')
+            } else if (err.response.status === 500) {
+                console.log('500 PAGE')
+            }
+         });
+    }
+
     return (
         <div className="post">
             {!post.unlisted &&

@@ -202,8 +202,11 @@ router.post('/', async (req, res) => {
 	}
 
 	//TODO fix this once and for all
-	if(!authorized){
+	if(!authorized && req.headers["x-requested-with"] != "XMLHttpRequest"){
 		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
+		return res.sendStatus(401);
+	}
+	else if(!authorized){
 		return res.sendStatus(401);
 	}
 	

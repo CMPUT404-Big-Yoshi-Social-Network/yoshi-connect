@@ -451,7 +451,6 @@ router.get('/search/:username', async (req, res) => {
                   items = res.data.results
               } else {
                   items = res.data.items
-                  console.log(res.data.items)
               }
               for (let j = 0; j < items.length; j++) {
                 if (items[j].displayName == username) {

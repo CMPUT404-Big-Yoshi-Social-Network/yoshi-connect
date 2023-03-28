@@ -88,7 +88,13 @@ function SearchCard(props) {
         if (host === 'https://yoshi-connect.herokuapp.com/') {
             navigate('/users/' + username);
         } else {
-            console.log('View posts for remote profile')
+            let id = props.id.split(host + '/authors/')[1];
+            axios
+            .get('/outgoing/authors/' + id + '/posts')
+            .then((response) => { })
+            .catch(err => { if (err.response.status === 404) { 
+                setViewerId('')
+            }})
         }
     }
 

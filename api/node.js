@@ -424,7 +424,7 @@ router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) =
  *    tags:
  *      - remote 
  */
-router.get('/outgoing/posts', async (req, res) => {
+router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
     
     let posts = [];
@@ -433,7 +433,7 @@ router.get('/outgoing/posts', async (req, res) => {
         if (outgoings[i].allowed) {
             var config = {
                 host: outgoings[i].url,
-                url: outgoings[i].url + '/posts',
+                url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts',
                 method: 'GET',
                 headers: {
                     'Authorization': outgoings[i].auth,

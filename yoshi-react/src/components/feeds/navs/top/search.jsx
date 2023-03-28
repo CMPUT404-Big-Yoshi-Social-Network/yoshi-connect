@@ -70,7 +70,7 @@ function SearchCard(props) {
 
     const sendRequest = () => {
         setRequestButton('Sent');
-        let id = props.id.replace(host + 'authors/', '');
+        let id = props.id.split(host + '/authors/')[1];
         let config = {
             summary: viewer + " wants to follow " + username,
             actor: viewer,
@@ -83,6 +83,15 @@ function SearchCard(props) {
         .then((response) => { })
         .catch(err => { });
     }
+
+    const seePosts = () => {
+        if (host === 'https://yoshi-connect.herokuapp.com/') {
+            navigate('/users/' + username);
+        } else {
+            console.log('View posts for remote profile')
+        }
+    }
+
     return (
         <div>
             { !props && username === undefined ? null : 
@@ -90,6 +99,7 @@ function SearchCard(props) {
                     {username}
                     <br></br>
                     {host}
+                    <Button onClick={seePosts} type="submit">View Posts</Button>
                     <Button onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }

@@ -30,6 +30,7 @@ function SharePost({viewerId, post}) {
     let postId = post.id ? post.id.split('/') : undefined;
     postId = postId ? postId[postId.length - 1] : undefined;
     let authorId = post.author ? post.author.authorId : undefined;
+    console.log(post)
 
     const [item, setItem] = useState("");
     const numLikes = post.likeCount;
@@ -67,13 +68,30 @@ function SharePost({viewerId, post}) {
         }
     }, [url, viewerId])
 
-    const share = () => {
+    const share = async () => {
         /**
          * Description:  
          * Request: (if axios is used)    
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')
+        let body = {
+            title: post.title,
+            description: post.description,
+            contentType: post.contentType,
+            visibility: data.visibility,
+            content: post.content,
+            likes: post.likes,
+            comments: post.comments,
+            unlisted: data.unlisted,
+            postTo: data.postTo,
+            image: post.image,
+            postId: post._id
+        }
+        
+        await axios.post('/authors/' + authorId + '/posts/' + postId + '/share', body)
+        .then((response) => { })
+        .catch((e) =>{ console.log(e); })
     }
 
     return (
@@ -95,6 +113,7 @@ function SharePost({viewerId, post}) {
                         setData({...data, specifics: [e.target.value]})
                     }}></input>
             <br/>
+            <span>Unlisted</span>
             <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
                         let bool;
                         if(e.target.value === "True") bool = true;

@@ -83,6 +83,60 @@ async function fetchPublicPosts(page, size) {
         }
     }
 
+    const outgoings = await OutgoingCredentials.find().clone();
+
+    for (let i = 0; i < outgoings.length; i++) {
+        if (outgoings[i].allowed || outgoings[i].url !== 'https://bigger-yoshi.herokuapp.com/api') {
+            const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+            if (outgoings[i].auth === 'userpass') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/posts/public/',
+                    method: 'GET',
+                    auth: auth,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: page,
+                        size: size
+                    },
+                    data: {
+                        local: false
+                    }
+                };
+            } else {
+                var config = {
+                host: outgoings[i].url,
+                url: outgoings[i].url + '/posts/public',
+                method: 'GET',
+                headers: {
+                    'Authorization': auth,
+                    'Content-Type': 'application/json'
+                },
+                params: {
+                    page: page,
+                    size: size
+                }
+                };
+            }
+      
+            await axios.request(config)
+            .then( res => {
+                let items = []
+                if (outgoings[i].auth === 'userpass') { 
+                    items = res.data.results.filter((i)=>i !== null && typeof i !== 'undefined');
+                } else {
+                    items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
+                }
+                publicPosts = publicPosts.concat(items);
+            })
+            .catch( error => {
+                console.log(error);
+            })
+        }
+    }
+
     response = {
         items: publicPosts
     }

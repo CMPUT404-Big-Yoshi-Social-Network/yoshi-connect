@@ -99,7 +99,6 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => {
-            console.log(response.data)
             setPosts(posts.concat(response.data.items));
         })
         .catch(err => {
@@ -108,7 +107,6 @@ function Posts(props) {
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                //TEMPORARY
                 setPosts([]);
             }
         });

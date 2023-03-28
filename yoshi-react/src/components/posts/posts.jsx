@@ -58,7 +58,7 @@ function Posts(props) {
         console.log('Debug: <TLDR what the function is doing>')
         const getId = () => {
             /**
-             * Description: Sends a POST request to get the current author's id 
+             * Description: Sends a GET request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
@@ -141,7 +141,7 @@ function Posts(props) {
         });
         
        } 
-    }, [url, navigate, page, size, posts]);
+    }, [url, navigate]);
 
     const getMore = () => {
         /**

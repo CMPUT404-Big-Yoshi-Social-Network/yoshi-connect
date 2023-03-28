@@ -21,33 +21,43 @@ Foundation; All Rights Reserved
 
 // Functionality 
 import React from "react";
+import Pagination from 'react-bootstrap/Pagination';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 // User Interface
-import Popup from 'reactjs-popup';
+import Comment from './comment.jsx';
 
-function Comments(url) {
-    /**
-     * Description: Represents a Comment 
-     * Functions: 
-     *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
-     * Returns: N/A
-     */
+function Comments(params) {
+    const [comments, setComments] = useState([]);
+
     console.log('Debug: <TLDR what the function is doing>')
-    const getComment = () => {
-        axios.delete('/authors/' + props.authorId + '/posts/' + props.postId + '/comments' + props._id)
-        .then((response) => { })
-        .catch((err) => { });
-    }
+    useEffect(() => {
 
+        axios.get(params.url)
+        .then((response) => {
+            if(response.data.comments){
+                setComments(response.data.comments);
+            }
+         })
+        .catch((err) => {
+            setComments([]);
+         });
+    }, []);
     return (
-        <div id='comment'>
-            <h4>{ props.commenter }</h4>
-            { props.comment }
-            { props.commenter !== props.viewerId ? null : 
-                <Popup className='post-buttons' trigger={<button>Edit</button>}><EditComment {...props}/></Popup> }    
-            { props.commenter !== props.viewerId ? null : 
-                <button className='post-buttons' onClick={deleteComment}>Delete</button> }    
+        <div>
+            { comments.length === 0 ? 
+                <div>
+                    <h4>No comments to show.</h4>
+                </div> : 
+                <div> 
+                    <Pagination>
+                        {Object.keys(comments).map((comment, idx) => (
+                            <Comment comment={comments[comment]}/>
+                        ))}  
+                    </Pagination>  
+                </div>
+            }
         </div>
     )
 }

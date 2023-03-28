@@ -83,6 +83,11 @@ async function fetchPublicPosts(page, size) {
         delete post._id;
     }
 
+    response = {
+        items: publicPosts
+    }
+    
+    return [response, 200];
     // const outgoings = await OutgoingCredentials.find().clone();
 
     // for (let i = 0; i < outgoings.length; i++) {
@@ -127,7 +132,7 @@ async function fetchPublicPosts(page, size) {
     //         })
     //     }
     // }
-    
+    /* 
     var config = {
         host: 'http://www.distribution.social/api',
         url: 'http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts',
@@ -173,10 +178,8 @@ async function fetchPublicPosts(page, size) {
         console.log('Error')
     })
 
-    response = {
-        items: publicPosts
-    }
-    return [response, 200];
+    
+    
     /*
     const outgoings = await OutgoingCredentials.find().clone();
     

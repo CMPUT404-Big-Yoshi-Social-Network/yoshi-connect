@@ -29,7 +29,7 @@ import EditComment from "./editComment";
 // User Interface
 import Popup from 'reactjs-popup';
 
-function Comment(props) {
+function Comment({comment}) {
     /**
      * Description: Represents a Comment 
      * Functions: 
@@ -38,18 +38,18 @@ function Comment(props) {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const deleteComment = () => {
-        axios.delete('/authors/' + props.authorId + '/posts/' + props.postId + '/comments' + props._id)
+        axios.delete('/authors/' + comment.authorId + '/posts/' + comment.postId + '/comments' + comment._id)
         .then((response) => { })
         .catch((err) => { });
     }
 
     return (
         <div id='comment'>
-            <h4>{ props.commenter }</h4>
-            { props.comment }
-            { props.commenter !== props.viewerId ? null : 
-                <Popup className='post-buttons' trigger={<button>Edit</button>}><EditComment {...props}/></Popup> }    
-            { props.commenter !== props.viewerId ? null : 
+            <h4>{ comment != undefined ? comment.author.displayName : null}</h4>
+            { comment ? comment.comment : null }
+            { comment && comment.commenter !== comment.viewerId ? null : 
+                <Popup className='post-buttons' trigger={<button>Edit</button>}><EditComment {...comment}/></Popup> }    
+            { comment && comment.commenter !== comment.viewerId ? null : 
                 <button className='post-buttons' onClick={deleteComment}>Delete</button> }    
         </div>
     )

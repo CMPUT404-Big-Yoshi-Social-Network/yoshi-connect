@@ -26,7 +26,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Child Component 
-import Comment from './comment';
+import Comments from './comments';
 import EditPost from "./edit";
 
 // Styling
@@ -51,12 +51,14 @@ function Post({viewerId, post}) {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        /**
+    /**
          * Description:  
          * Request: (if axios is used)    
          * Returns: 
          */
+    
+    useEffect(() => {
+        
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             axios
@@ -70,14 +72,16 @@ function Post({viewerId, post}) {
             })
         }
         getImage();
-    }, [authorId, postId])
-
-    useEffect(() => {
-         /**
+    }, [])
+    
+    /**
          * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
          * Request: POST
          * Returns: N/A
          */
+    /*
+    useEffect(() => {
+         
         console.log('Debug: <TLDR what the function is doing>')
         const hasLiked = () => {
             axios
@@ -86,8 +90,8 @@ function Post({viewerId, post}) {
             .catch(err => { setLike(false) });
         }
         hasLiked();
-    }, [authorId, postId])
-
+    }, [])
+    */
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
@@ -211,11 +215,7 @@ function Post({viewerId, post}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                            {
-                                Object.keys(post.comments).map((comment, idx) => (
-                                <Comment key={idx} authorId={authorId} viewerId={viewerId} postId={postId} {...post.comments[comment]}/>
-                                )
-                            )}
+                           <Comments url={post.id + '/comments'}> </Comments> 
                         </div>}
                         <br></br>
                     {

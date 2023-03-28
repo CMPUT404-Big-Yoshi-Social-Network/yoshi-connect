@@ -81,6 +81,8 @@ async function fetchPublicPosts(page, size) {
         post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
         post.comments = post.id + "/comments";
         delete post._id;
+        post.count = post.commentCount;
+        delete post.commentCount;
     }
 
     response = {

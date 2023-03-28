@@ -120,14 +120,17 @@ async function getInbox(token, authorId, page, size){
             "contentType": post.contentType,
             "content": post.content,
             "author": {
+                type: "author",
                 id: post.author._id,
+                host: post.author.host,
                 displayName: post.author.displayName,
                 profileImage: post.author.profileImage,
+                url: post.author.url,
+                github: post.author.github,
             },
             "categories": post.categories,
             "count": post.commentCount,
             "likeCount": post.likesCount,
-            "commentCount": post.commentCount,
             "comments": post.author._id + '/posts/' + post._id + '/comments/',
             "commentSrc": post.commentSrc,
             "published": post.published,
@@ -143,95 +146,6 @@ async function getInbox(token, authorId, page, size){
     };
 
     return [response, 200];
-}
-
-async function postInbox(req, res){
-    /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
-    */
-    if(req.body.type === "post") {
-        const title = req.body.title;
-        const id = req.body._id;
-        const description = req.body.description;
-        const contentType = req.body.contentType;
-        const content = req.body.content;
-        const categories = req.body.categories;
-        const count = req.body.count;
-        const comments = req.body.comments;
-        const published = req.body.published;
-        const visibility = req.body.visibility;
-        const unlisted = req.body.unlisted;
-        const authorId = req.body.authorId;
-
-        if ( title === undefined || id === undefined || description === undefined || 
-            contentType === undefined || content === undefined || categories === undefined || 
-            count === undefined || comments === undefined|| published === undefined || visibility === undefined || 
-            unlisted === undefined || authorId === undefined ) { 
-                return res.sendStatus(400); 
-        }
-
-        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-        const post = Post({
-                _id: uuid,
-                title: title,
-                description: description,
-                contentType: contentType,
-                content: content,
-                authorId: authorId,
-                categories: categories,
-                count: 0,
-                likes: [],
-                comments: [],
-                published: published,
-                visibility: visibility,
-                specifics: specifics,
-                unlisted: unlisted,
-                image: ""
-        });
-
-        postInboxPost(post, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "follow") {
-        const senderUUID = await Author.findOne({username: req.body.data.sender});
-        const receiverUUID = await Author.findOne({username: req.body.data.receiver});
-        let uuidReq = String(crypto.randomUUID()).replace(/-/g, "");
-        const request = new Request({
-            _id: uuidReq,
-            senderId: req.body.sender,
-            senderUUID: senderUUID,
-            receiverId: req.body.receiver,
-            receiverUUID: receiverUUID,
-        });
-
-        postInboxRequest(request, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "like") {
-        
-        let uuidLike = String(crypto.randomUUID()).replace(/-/g, "");
-        const like = new Like({
-            _id: uuidLike,
-            liker: req.body.liker
-        });
-
-        postInboxLike(like, req.params.author_id);
-    } else if (req.body.type === "comment") {
-        let uuidCom = String(crypto.randomUUID()).replace(/-/g, "");
-        const comment = new Comment({
-            _id: uuidCom,
-            commenter: req.body.commenter,
-            comment: req.body.comment
-        });
-
-        postInboxComment(comment, req.params.author_id);
-    } else {
-        res.sendStatus(400);
-    }
 }
 
 async function postInboxPost(post, recieverAuthorId){

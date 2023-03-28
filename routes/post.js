@@ -262,9 +262,12 @@ async function createPost(token, authorId, postId, newPost) {
     if (visibility == 'PUBLIC') {
         post.author = {
             _id: author.id,
+            host: author.host,
             displayName: author.displayName,
+            url: author.url,
+            github: author.github,
             profileImage: author.profileImage,
-            pronouns: author.pronouns
+            pronouns: author.pronouns,
         }
         const publicPost = new PublicPost(post);
         await publicPost.save();

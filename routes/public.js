@@ -107,22 +107,22 @@ async function fetchPublicPosts(page, size) {
                 };
             } else {
                 var config = {
-                host: outgoings[i].url,
-                url: outgoings[i].url + '/posts/public',
-                method: 'GET',
-                headers: {
-                    'Authorization': auth,
-                    'Content-Type': 'application/json'
-                },
-                params: {
-                    page: page,
-                    size: size
-                }
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/posts/public',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': auth,
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: page,
+                        size: size
+                    }
                 };
             }
       
             await axios.request(config)
-            .then( res => {
+            .then(res => {
                 let items = []
                 if (outgoings[i].auth === 'userpass') { 
                     items = res.data.results.filter((i)=>i !== null && typeof i !== 'undefined');

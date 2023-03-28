@@ -86,7 +86,11 @@ function SharePost({viewerId, post}) {
             unlisted: data.unlisted,
             postTo: data.postTo,
             image: post.image,
-            postId: post._id
+            postId: post._id,
+            source: post.source,
+            origin: post.origin,
+            id: post.id,
+            author: post.author
         }
         
         await axios.post('/authors/' + authorId + '/posts/' + postId + '/share', body)

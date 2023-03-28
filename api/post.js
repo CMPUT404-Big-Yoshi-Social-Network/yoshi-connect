@@ -20,9 +20,8 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, getImage, editImage } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, sharePost, getImage, editImage } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
-const { fetchFriendPosts } = require('../routes/friend');
 const { getAuthor } = require('../routes/author.js');
 const { getInbox } = require('../routes/inbox.js');
 
@@ -799,6 +798,18 @@ router.post('/', async (req, res) => {
     return res.json(post);
   }
   return res.sendStatus(status); 
+})
+
+router.post('/:postId/share', async (req, res) => {
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
+
+  if (!req.cookies.token) { return res.sendStatus(401); }
+
+  const [post, status] = await sharePost(req.cookies.token, authorId, postId, req.body);
+
+  if (status == 200) { return res.json(post); }
+  return res.sendStatus(status);  
 })
 
 // TBA

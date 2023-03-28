@@ -421,7 +421,18 @@ router.get('/search/:username', async (req, res) => {
                   }
               };
           } else {
-              var config = {
+            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                var config = {
+                  host: outgoings[i].url,
+                  url: outgoings[i].url + '/authors/',
+                  method: 'GET',
+                  headers: {
+                      'Authorization': auth,
+                      'Content-Type': 'application/json'
+                  }
+                };              
+            } else {
+                var config = {
                   host: outgoings[i].url,
                   url: outgoings[i].url + '/authors',
                   method: 'GET',
@@ -429,7 +440,8 @@ router.get('/search/:username', async (req, res) => {
                       'Authorization': auth,
                       'Content-Type': 'application/json'
                   }
-              };
+                };
+            }
           }
     
           await axios.request(config)
@@ -439,6 +451,7 @@ router.get('/search/:username', async (req, res) => {
                   items = res.data.results
               } else {
                   items = res.data.items
+                  console.log(res.data.items)
               }
               for (let j = 0; j < items.length; j++) {
                 if (items[j].displayName == username) {

@@ -29,8 +29,8 @@ import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
     const username = props.username !== undefined ? props.username : props.displayName
+    const host = props.host === "" ? 'http://sociallydistributed.herokuapp.com' : props.host
     const [requestButton, setRequestButton] = useState('Send Follow Request');
-    console.log(props)
     /**
      * Description:     
      * Returns: 
@@ -70,7 +70,7 @@ function SearchCard(props) {
 
     const sendRequest = () => {
         setRequestButton('Sent');
-        let id = props.id.replace(props.host + 'authors/', '');
+        let id = props.id.replace(host + 'authors/', '');
         let config = {
             summary: viewer + " wants to follow " + username,
             actor: viewer,
@@ -89,7 +89,7 @@ function SearchCard(props) {
                 <div>
                     {username}
                     <br></br>
-                    {props.host}
+                    {host}
                     <Button onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }

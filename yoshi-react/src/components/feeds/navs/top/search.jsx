@@ -116,7 +116,10 @@ function SearchCard(props) {
                     <br></br>
                     {host}
                     <Button onClick={seePosts} type="submit">View Profile</Button>
-                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    {
+                        host === 'https://yoshi-connect.herokuapp.com/' ? null : 
+                        <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    }
                 </div>
             }
         </div>

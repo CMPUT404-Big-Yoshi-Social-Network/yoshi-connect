@@ -29,7 +29,7 @@ import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
     const username = props.username !== undefined ? props.username : props.displayName
-    const host = props.host === "" ? 'http://sociallydistributed.herokuapp.com' : props.host
+    const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
     const [requestButton, setRequestButton] = useState('Send Follow Request');
     /**
      * Description:     
@@ -90,8 +90,8 @@ function SearchCard(props) {
         } else {
             let id = props.id.split(host + '/authors/')[1];
             axios
-            .get('/outgoing/authors/' + id + '/posts')
-            .then((response) => { })
+            .get('/nodes/outgoing/authors/' + id + '/posts')
+            .then((response) => { console.log(response.data) })
             .catch(err => { if (err.response.status === 404) { 
                 setViewerId('')
             }})

@@ -426,36 +426,68 @@ router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) =
  */
 router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
-    
     let posts = [];
 
     for (let i = 0; i < outgoings.length; i++) {
         if (outgoings[i].allowed) {
-            var config = {
-                host: outgoings[i].url,
-                url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts',
-                method: 'GET',
-                headers: {
-                    'Authorization': outgoings[i].auth,
-                    'Content-Type': 'application/json'
-                },
-                params: {
-                    page: req.query.page,
-                    size: req.query.size
-                }
-            };
-        
+            const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+            if (outgoings[i].auth === 'userpass') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts/',
+                    method: 'GET',
+                    auth: auth,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: req.query.page,
+                        size: req.query.size
+                    }
+                };
+            } else {
+              if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                  var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts/',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': outgoings[i].auth,
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: req.query.page,
+                        size: req.query.size
+                    }
+                  };              
+              } else {
+                  var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': outgoings[i].auth,
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: req.query.page,
+                        size: req.query.size
+                    }
+                  };
+              }
+            }
+
             await axios.request(config)
             .then( res => {
+                if (outgoings[i].auth === 'userpass') { 
+                    console.log(res)
+                }
                 let items = res.data.items
                 posts = posts.concat(items);
             })
-            .catch( error => {
-                console.log(error);
-            })
+            .catch( error => { })
         }
     }
-    
     return res.json({
         'type': 'posts',
         items: posts

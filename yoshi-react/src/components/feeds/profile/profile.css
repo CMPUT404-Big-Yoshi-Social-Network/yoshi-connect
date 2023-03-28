@@ -32,5 +32,18 @@ Foundation; All Rights Reserved
     width: 70%;
     background-color: #090D0E;
 }
-
+.profile-buttons{
+    margin: .1em;
+    color: white;
+    padding: .5em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: .5em;
+    cursor: pointer;
+    display: inline-block;
+}
+.profile-buttons:hover{
+    background-color: #a7e7f8;
+    border: #a7e7f8;
+}
 

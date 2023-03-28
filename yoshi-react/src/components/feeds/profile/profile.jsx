@@ -50,6 +50,12 @@ function Profile() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const { username } = useParams();
+    const [profileInfo, setProfileInfo] = useState({
+        github: null,
+        profileImage: null,
+        about: null,
+        pronouns: null
+    })
     const [personal, setPersonal] = useState({
         person: null,
         viewer: null,
@@ -63,7 +69,7 @@ function Profile() {
     let exists = useRef(null);
     useEffect(() => {
         /**
-         * Description: Get the account details of the author
+         * Description: Get the viewership details
          * Request: GET
          * Returns: N/A
          */
@@ -91,6 +97,7 @@ function Profile() {
                 viewed = response.data.viewed
                 viewedId = response.data.viewedId
                 viewerId = response.data.viewerId
+                console.log("Everything", response.data)
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
                 setPersonal(prevViewer => ({...prevViewer, viewer}))
                 setPersonal(prevViewed => ({...prevViewed, viewed}))
@@ -112,6 +119,51 @@ function Profile() {
         }
         isRealProfile();
     }, [navigate, username])
+
+    useEffect(() => {
+        let github = '';
+        let profileImage = '';
+        let about = '';
+        let pronouns = '';
+
+        if (personal.viewedId) {
+            const getProfileInfo = () => {
+                /**
+                 * Description: Gets account details of author
+                 * Request: GET
+                 * Returns: N/A
+                 */
+                console.debug("Debug: Getting user profile info");
+                axios
+                .get('/authors/' + personal.viewedId)
+                .then((response) => {
+                    console.log("Debug: Received user profile info");
+                    console.log("Profile Info", response.data);
+                    github = response.data.github
+                    profileImage = response.data.profileImage
+                    about = response.data.about
+                    pronouns = response.data.pronouns
+                    setProfileInfo(prevGithub => ({...prevGithub, github}))
+                    setProfileInfo(prevProfileImage => ({...prevProfileImage, profileImage}))
+                    setProfileInfo(prevAbout => ({...prevAbout, about}))
+                    setProfileInfo(prevPronouns => ({...prevPronouns, pronouns}))
+                })
+                .catch(err => {
+                    if (err.response.status === 404) {
+                        navigate('/notfound');
+                    }
+                    else if (err.response.status === 401) {
+                        navigate('/notauthorized');
+                    }
+                    else if (err.response.status === 500) {
+                        navigate('/servererror');
+                    }
+                })
+            }
+            getProfileInfo();
+        }
+    }, [navigate, personal])
+
     useEffect(() => {
         /**
          * Description: Checks if the viewer has already sent a friend request
@@ -272,12 +324,10 @@ function Profile() {
                 <div className='profColM'>
                     <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>
                     { personal.person ? null : 
-                        <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
+                        <button style={{marginLeft: '1.8em'}} className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
+
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    { (personal.person === null) ? null:
-                        (personal.person === true ?
-                        <Posts type={'personal'}/> : 
-                        <Posts type={otherUrl}/>) 
+                    { (personal.person === null) ? null : (personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>) 
                     }   
                 </div>
                 <div className='profColR'>

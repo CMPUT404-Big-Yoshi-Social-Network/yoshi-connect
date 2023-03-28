@@ -45,7 +45,7 @@ function Comment({comment}) {
 
     return (
         <div id='comment'>
-            <h4>{ comment != undefined ? comment.author.displayName : null}</h4>
+            <h4>{ comment !== undefined ? comment.author.displayName : null}</h4>
             { comment ? comment.comment : null }
             { comment && comment.commenter !== comment.viewerId ? null : 
                 <Popup className='post-buttons' trigger={<button>Edit</button>}><EditComment {...comment}/></Popup> }    

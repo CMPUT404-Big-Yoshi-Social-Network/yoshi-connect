@@ -99,7 +99,7 @@ function SearchCard(props) {
                     {username}
                     <br></br>
                     {host}
-                    <Button onClick={seePosts} type="submit">View Posts</Button>
+                    <Button onClick={seePosts} type="submit">View Profile</Button>
                     <Button onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }

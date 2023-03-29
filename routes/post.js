@@ -169,6 +169,7 @@ async function getPost(postId, auth, author){
         "contentType": post.contentType,
         "content": post.content,
         "author": author,
+        "shared": post.shared,
         "categories": post.categories,
         "count": post.commentCount,
         "likeCount": post.likeCount,
@@ -237,6 +238,7 @@ async function createPost(token, authorId, postId, newPost) {
         published: published,
         visibility: visibility,
         unlisted: unlisted,
+        shared: false,
         postTo: postTo
     };
 
@@ -312,7 +314,6 @@ async function sharePost(token, authorId, postId, newPost) {
     const postTo = newPost.postTo;
     const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
     const origin = newPost.origin;
-    const originalSource = newPost.source;
 
     if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
@@ -321,12 +322,7 @@ async function sharePost(token, authorId, postId, newPost) {
     let postHistory = await PostHistory.findOne({authorId: authorId});
     if (!postHistory) { return [[], 404]; }
 
-    let source = '';
-    if (originalSource != origin) {
-        source = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId;
-    } else {
-        source = originalSource;
-    }
+    let source = newPost.author._id + '/posts/' + newPost.postId;
 
     let post = {
         _id: sharedPostId,
@@ -343,6 +339,7 @@ async function sharePost(token, authorId, postId, newPost) {
         published: published,
         visibility: visibility,
         unlisted: unlisted,
+        shared: true,
         postTo: postTo,
         author: null
     };
@@ -449,6 +446,7 @@ async function updatePost(token, authorId, postId, newPost) {
             commentCount: post.commentCount,
             published: post.published,
             visibility: visibility,
+            shared: post.shared,
             unlisted: unlisted,
             postTo: post.postTo
         };
@@ -466,23 +464,7 @@ async function updatePost(token, authorId, postId, newPost) {
     post.unlisted = unlisted;
     post.categories = categories;
     await postHistory.save()
-    
-    /*
-    if(unlisted === "false"){
-        const followers = await Follower.findOne({authorId: authorId}).clone();
-        let promiseList = [];
-        for(let i = 0; i < followers.followers.length; i++){
-            const follower = followers.followers[i].authorId;
-            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-            inbox.posts.push(post);
-            promiseList.push(inbox.save());
-        }
 
-        for(let i = 0; i < promiseList.length; i++){
-            await promiseList[i];
-        }
-    }
-    */
     let author = await getAuthor(authorId);
     return await getPost(postId, token, author[0]);
 }

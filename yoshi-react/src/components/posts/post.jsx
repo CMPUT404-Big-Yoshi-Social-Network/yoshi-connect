@@ -194,6 +194,7 @@ function Post({viewerId, post}) {
         <div className="post">
             {!post.unlisted &&
                 <div>
+                    { post.shared ? <h4>Shared Post</h4> : null }
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }

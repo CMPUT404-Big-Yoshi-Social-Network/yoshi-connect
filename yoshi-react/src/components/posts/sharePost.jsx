@@ -30,13 +30,9 @@ function SharePost({viewerId, post}) {
     let postId = post.id ? post.id.split('/') : undefined;
     postId = postId ? postId[postId.length - 1] : undefined;
     let authorId = post.author ? post.author.authorId : undefined;
-    console.log(post)
 
-    const [item, setItem] = useState("");
     const numLikes = post.likeCount;
     const numComments = post.commentCount;
-
-    const url = "/authors/" + authorId + "/posts/" + postId + "/image"
 
     const [data, setData] = useState({
         visibility: post.visibility,
@@ -45,28 +41,26 @@ function SharePost({viewerId, post}) {
         postId: post._id
     })
 
-    useEffect(() => {
-        /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
-         */
-        if (viewerId !== null) {
-            console.log('Debug: <TLDR what the function is doing>') 
-            const getImage = () => {
-                axios
-                .get(url)
-                .then((res) => {
-                    if (res.data.status === 200) {
-                        setItem(res.data.src)
-                    } else {
-                        setItem('')
-                    }
-                })
-            }
-            getImage();
+    const [item, setItem] = useState({ 
+        type: "",
+        base64: "",
+        size: 0,
+        exist: false
+     });
+
+    useEffect(() => { 
+        console.log('Debug: Checking if the viewer has already liked the post')
+        const getImage = () => {
+            axios
+            .get("/authors/" + authorId + "/posts/" + postId + "/image")
+            .then((res) => {
+                if (res.data.status === 200) {
+                    setItem({ ...item, image: res.data.src, exist: true})
+                }
+            })
         }
-    }, [url, viewerId])
+        getImage();
+    }, [item, postId, authorId])
 
     const share = async () => {
         /**
@@ -86,16 +80,33 @@ function SharePost({viewerId, post}) {
             unlisted: data.unlisted,
             postTo: data.postTo,
             image: post.image,
-            postId: post._id,
+            postId: postId,
             source: post.source,
             origin: post.origin,
             id: post.id,
             author: post.author
         }
+
+        let link = { postId: "" }
         
         await axios.post('/authors/' + viewerId + '/posts/' + postId + '/share', body)
-        .then((response) => { })
+        .then((response) => { 
+            if (response.status === 200) {
+                link.postId = response.data.id.split('/')[6];
+            }
+        })
         .catch((e) =>{ console.log(e); })
+
+        if (item.image !== "") {
+            axios.put('/authors/' + viewerId + '/posts/' + link.postId + "/image", {
+                method: 'put',
+                maxBodyLength: Infinity,
+                url: '/authors/' + viewerId + '/posts/' + link.postId + "/image",
+                headers: { 'Content-Type': 'multipart/form-data' },
+                image: item.image
+            }).then((res) => {}).catch((e) => { console.log(e); })  
+        }
+        setItem({ ...item, image: "" })
     }
 
     return (
@@ -103,7 +114,7 @@ function SharePost({viewerId, post}) {
             { post.title === "" ? null : <h1>{post.title}</h1> }
             { post.description === "" ? null : <h3>{ post.description }</h3> }
             { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-            <img className={"image"} src={item} alt=""/>
+            <img className={"image"} src={item.image} alt=""/>
 
             <p>{post.published}</p>
             <br></br>

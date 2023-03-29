@@ -112,6 +112,7 @@ function Posts(props) {
             } else if (err.response.status === 500) {
                 //TEMPORARY
                 setPosts([]);
+                navigate('/servererror')
             }
         });
         

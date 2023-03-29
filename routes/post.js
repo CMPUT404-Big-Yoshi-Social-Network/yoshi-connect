@@ -536,18 +536,7 @@ async function deletePost(token, authorId, postId) {
                                 'Content-Type': 'application/json'
                             }
                         };
-                    } else {
-                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
-                        var config = {
-                            host: node.url,
-                            url: node.url + '/authors/' + whoShared[i].authorId + '/posts/' + whoShared[i].postId,
-                            method: 'DELETE',
-                            headers: {
-                                'Authorization': auth,
-                                'Content-Type': 'application/json'
-                            }
-                        };              
-                    } else {
+                    } else {          
                         var config = {
                             host: node.url,
                             url: node.url + '/authors/' + whoShared[i].authorId + '/posts/' + whoShared[i].postId,
@@ -557,7 +546,6 @@ async function deletePost(token, authorId, postId) {
                                 'Content-Type': 'application/json'
                             }
                         };
-                    }
                     }
                     await axios.request(config)
                     .then(res => { })

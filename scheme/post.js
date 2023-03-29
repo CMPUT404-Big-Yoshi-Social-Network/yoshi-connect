@@ -40,6 +40,10 @@ const postScheme = new Schema({
     published: String,
     visibility: String,
     shared: Boolean,
+    whoShared: [{
+        authorId: String,
+        host: String
+    }],
     postTo: String,
     unlisted: Boolean,},
     {versionKey: false

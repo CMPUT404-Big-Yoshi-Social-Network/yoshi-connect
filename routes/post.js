@@ -236,6 +236,7 @@ async function createPost(token, authorId, postId, newPost) {
         likeCount: 0,
         commentCount: 0,
         published: published,
+        whoShared: [],
         visibility: visibility,
         unlisted: unlisted,
         shared: false,
@@ -324,6 +325,13 @@ async function sharePost(token, authorId, postId, newPost) {
 
     let source = newPost.author._id + '/posts/' + newPost.postId;
 
+    const originalPH = await PostHistory.findOne({authorId: newPost.author._id});
+    const originalPost = originalPH.posts.id(newPost.postId);
+    originalPost.whoShared.push({
+        authorId: authorId, 
+        host: process.env.DOMAIN_NAME
+    });
+
     let post = {
         _id: sharedPostId,
         title: title,
@@ -339,6 +347,7 @@ async function sharePost(token, authorId, postId, newPost) {
         published: published,
         visibility: visibility,
         unlisted: unlisted,
+        whoShared: [],
         shared: true,
         postTo: postTo,
         author: null

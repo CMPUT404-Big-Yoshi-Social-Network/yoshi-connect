@@ -126,9 +126,12 @@ async function addLike(like, authorId, postId){
         //Add a like to a post document
         likes = await LikeHistory.findOne({type: "post", Id: Id}).clone();
         let postHistory = await PostHistory.findOne({authorId: authorId});
+        let publicPost = await PublicPost.findOne({_id: Id});
         let post = postHistory.posts.id(Id);
-        post.like_count++;
+        publicPost.likeCount++;
+        post.likeCount++;
         await postHistory.save();
+        await publicPost.save();
     }
     else{ return [{}, 400]; }
 

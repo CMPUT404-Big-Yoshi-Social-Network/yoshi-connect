@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, sharePost, getImage, editImage } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, sharePost, getImage, editImage, createTombstone } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
 const { getAuthor } = require('../routes/author.js');
 const { getInbox } = require('../routes/inbox.js');
@@ -642,17 +642,24 @@ router.delete('/:postId', async (req, res) => {
  *        description: Ok -- Returns JSON the newly created post object
  */
 router.put('/:postId', async (req, res) => {
-  const authorId = req.params.authorId;
-  const postId = req.params.postId;
+  if (req.body.status != undefined) {
+    if (req.body.status === 'Tombstone') {
+      await createTombstone(req.body.authorId, req.body.postId);
+    }
 
-  if (!req.cookies.token) { return res.sendStatus(401); }
-
-  const [post, status] = await createPost(req.cookies.token, authorId, postId, req.body);
-
-  if (status == 200) {
-    return res.json(post);
   } else {
-    return res.sendStatus(status);
+    const authorId = req.params.authorId;
+    const postId = req.params.postId;
+  
+    if (!req.cookies.token) { return res.sendStatus(401); }
+  
+    const [post, status] = await createPost(req.cookies.token, authorId, postId, req.body);
+  
+    if (status == 200) {
+      return res.json(post);
+    } else {
+      return res.sendStatus(status);
+    }
   }
 })
 

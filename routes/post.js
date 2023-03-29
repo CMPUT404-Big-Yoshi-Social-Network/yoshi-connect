@@ -480,6 +480,24 @@ async function updatePost(token, authorId, postId, newPost) {
     return await getPost(postId, token, author[0]);
 }
 
+async function createTombstone(authorId, postId) {
+    const phShared = await PostHistory.findOne({authorId: authorId});
+
+    if (!phShared) { return [{}, 404]; }
+
+    const pShared = postHistory.posts.id(postId);
+
+    if(!pShared) { return [{}, 404]; }
+
+    pShared.title = 'Shared Post Deleted!'
+    pShared.description = 'Sorry, but the original post has been deleted! -- YoshiConnect'
+    pShared.contentType = 'text/plain'
+    pShared.content = 'RIP Shared Post'
+    // TODO: Need to address the image for the tombstone for a deleted shared post
+
+    await phShared.save();
+}
+
 async function deletePost(token, authorId, postId) {
     /**
     Description: 
@@ -545,21 +563,7 @@ async function deletePost(token, authorId, postId) {
                     .then(res => { })
                     .catch( error => { })
             } else {
-                const phShared = await PostHistory.findOne({authorId: whoShared[i].authorId});
-
-                if (!phShared) { return [{}, 404]; }
-            
-                const pShared = postHistory.posts.id(whoShared[i].postId);
-            
-                if(!pShared) { return [{}, 404]; }
-
-                pShared.title = 'Shared Post Deleted!'
-                pShared.description = 'Sorry, but the original post has been deleted! -- YoshiConnect'
-                pShared.contentType = 'text/plain'
-                pShared.content = 'RIP Shared Post'
-                // TODO: Need to address the image for the tombstone for a deleted shared post
-
-                await phShared.save();
+                await createTombstone(authorId, postId);
             }
         }
     }
@@ -824,5 +828,6 @@ module.exports={
     fetchOtherPosts,
     uploadImage,
     getImage,
-    editImage
+    editImage,
+    createTombstone
 }

@@ -20,11 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, getImage, editImage } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
-const { fetchFriendPosts } = require('../routes/friend');
-const { getAuthor } = require('../routes/author.js');
-const { getInbox } = require('../routes/inbox.js');
 
 // OpenAPI
 const {options} = require('../openAPI/options.js');
@@ -36,7 +32,6 @@ const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
-const { getLikes } = require('../routes/likes');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -99,7 +94,17 @@ router.get('/', async (req, res) => {
   let page = parseInt(req.query.page);
   let size = parseInt(req.query.size);
 
-  const [publicPosts, status] = await fetchPublicPosts(page, size); 
+  const [publicPosts, status] = await fetchPublicPosts(page, size, false); 
+
+  if(status != 200) return res.sendStatus(status);
+  return res.json(publicPosts);
+})
+
+router.get('/local', async (req, res) => { 
+  let page = parseInt(req.query.page);
+  let size = parseInt(req.query.size);
+
+  const [publicPosts, status] = await fetchPublicPosts(page, size, true); 
 
   if(status != 200) return res.sendStatus(status);
   return res.json(publicPosts);

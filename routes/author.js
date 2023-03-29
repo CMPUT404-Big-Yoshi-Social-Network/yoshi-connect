@@ -159,23 +159,29 @@ async function getProfile(req, res) {
 
     const username = req.params.username;
     const author = await Author.findOne({username: username})
+    let authorId = author._id.split("/");
+    authorId = authorId[authorId.length - 1];
+
+    let numPosts = await PostHistory.findOne({authorId: authorId}, "authorId num_posts");
+    numPosts = numPosts.num_posts;
+
+    let following = await Following.findOne({authorId: authorId});
+    let numFollowing = following.followings.length;
+    let followers = await Follower.findOne({authorId: authorId});
+    let numFollowers = followers.followers.length;
+
     if (!author) { 
         return res.sendStatus(404); 
-    } else if (author.username == login.username) {
+    } else{
         return res.json({
             viewed: author.username,
             viewedId: author._id,
             viewer: login.username,
             viewerId: login.authorId,
-            personal: true
-        });
-    } else if(author.username != login.username) {
-        return res.json({
-            viewed: author.username,
-            viewedId: author._id,
-            viewer: login.username,
-            viewerId: login.authorId,
-            personal: false
+            personal: author.username == login.username,
+            numPosts: numPosts,
+            numFollowing: numFollowing,
+            numFollowers: numFollowers
         });
     }
 }

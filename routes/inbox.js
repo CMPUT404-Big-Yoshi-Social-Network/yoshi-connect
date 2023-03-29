@@ -14,6 +14,7 @@ const crypto = require('crypto');
 const { addLike, addLiked } = require('./likes.js');
 const { createComment } = require('./comment.js');
 const { validateAuthorObject } = require('./author.js');
+const axios = require('axios');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
@@ -108,12 +109,33 @@ async function getInbox(token, authorId, page, size){
         posts = posts[0].posts_array
     }
 
+    let promiseQueue = [];
     for(let i = 0; i < posts.length; i++){
-        let post = posts[i];
+        promiseQueue.push(axios.get(posts[i]._id)
+        .then((response) => {
+            console.log(response.data);
+            return response.data
+        })
+        .catch((err) => {
+            console.log(err);
+        }))
+    }
+
+    for(let i = 0; i < posts.length; i++){
+        let updatedPost = await promiseQueue[i];
+        let post;
+        if(!updatedPost){
+            post = posts[i];
+        }
+        else{
+            post = updatedPost;
+            post.author._id = post.author.id;
+            post.commentCount = post.count
+        }
         posts[i] = {
             "type": "post",
             "title": post.title,
-            "id": post.author._id + '/posts/' + post._id,
+            "id": !updatedPost ? post.author._id + '/posts/' + post._id : post.id,
             "source": post.source,
             "origin": post.origin,
             "description": post.description,
@@ -130,7 +152,7 @@ async function getInbox(token, authorId, page, size){
             },
             "categories": post.categories,
             "count": post.commentCount,
-            "likeCount": post.likesCount,
+            "likeCount": post.likeCount,
             "comments": post.author._id + '/posts/' + post._id + '/comments/',
             "commentSrc": post.commentSrc,
             "published": post.published,

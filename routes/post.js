@@ -27,6 +27,7 @@ const { PostHistory, PublicPost, Post, Image, Inbox } = require('../scheme/post.
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
+const { OutgoingCredentials } = require('../scheme/server');
 
 
 // UUID
@@ -500,11 +501,67 @@ async function deletePost(token, authorId, postId) {
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
 
-    // Create tombstones for posts who shared this deleted post 
     if (post.whoShared != []) {
-        const whoShared = post.whoShared; 
-        // Go to each postHistory and create tombstone for their post 
-        // Go to public if the post was public, create tombstone there 
+            const whoShared = post.whoShared; 
+            const outgoings = await OutgoingCredentials.find().clone();
+            for (let i = 0; i < whoShared.length; i++) {
+                const node = outgoings.find(item => item.url === whoShared[i].host)
+                if (node != undefined && node.allowed) {
+                    const auth = node.auth === 'userpass' ? { username: node.displayName, password: node.password } : node.auth
+                    if (node.auth === 'userpass') {
+                        var config = {
+                            host: node.url,
+                            url: node.url + '/authors/' + whoShared[i].authorId + '/posts/' + whoShared[i].postId,
+                            method: 'DELETE',
+                            auth: auth,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    } else {
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                        var config = {
+                            host: node.url,
+                            url: node.url + '/authors/' + whoShared[i].authorId + '/posts/' + whoShared[i].postId,
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': auth,
+                                'Content-Type': 'application/json'
+                            }
+                        };              
+                    } else {
+                        var config = {
+                            host: node.url,
+                            url: node.url + '/authors/' + whoShared[i].authorId + '/posts/' + whoShared[i].postId,
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': auth,
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    }
+                    }
+                    await axios.request(config)
+                    .then(res => { })
+                    .catch( error => { })
+            } else {
+                const phShared = await PostHistory.findOne({authorId: whoShared[i].authorId});
+
+                if (!phShared) { return [{}, 404]; }
+            
+                const pShared = postHistory.posts.id(whoShared[i].postId);
+            
+                if(!pShared) { return [{}, 404]; }
+
+                pShared.title = 'Shared Post Deleted!'
+                pShared.description = 'Sorry, but the original post has been deleted! -- YoshiConnect'
+                pShared.contentType = 'text/plain'
+                pShared.content = 'RIP Shared Post'
+                // TODO: Need to address the image for the tombstone for a deleted shared post
+
+                await phShared.save();
+            }
+        }
     }
 
 

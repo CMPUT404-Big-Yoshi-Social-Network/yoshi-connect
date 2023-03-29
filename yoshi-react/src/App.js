@@ -54,6 +54,9 @@ import Errors from './components/user-error/errors.jsx';
 // API Docs
 import ApiDocs from "./components/apiDocs/apiDocs.jsx";
 
+// Image
+import Image from "./components/image/image.jsx";
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -122,6 +125,10 @@ const router = createBrowserRouter([
   {
     path: '/servererror/',
     element: <Errors/>
+  },
+  {
+    path: '/authors/:authorId/posts/:postId/image',
+    element: <Image/>
   }
 ])
   

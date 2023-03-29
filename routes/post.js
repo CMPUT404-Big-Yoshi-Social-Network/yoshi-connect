@@ -310,12 +310,9 @@ async function sharePost(token, authorId, postId, newPost) {
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
-    const originalPostId = postId;
     const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
     const origin = newPost.origin;
     const originalSource = newPost.source;
-    const id = newPost.id;
-    const originAuthor = newPost.author;
 
     if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
@@ -396,7 +393,7 @@ async function sharePost(token, authorId, postId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-    return await getPost(postId, authorId, author);
+    return await getPost(sharedPostId, authorId, author);
 }
 
 async function updatePost(token, authorId, postId, newPost) {

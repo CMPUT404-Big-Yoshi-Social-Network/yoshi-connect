@@ -93,7 +93,7 @@ function SharePost({viewerId, post}) {
             author: post.author
         }
         
-        await axios.post('/authors/' + authorId + '/posts/' + postId + '/share', body)
+        await axios.post('/authors/' + viewerId + '/posts/' + postId + '/share', body)
         .then((response) => { })
         .catch((e) =>{ console.log(e); })
     }

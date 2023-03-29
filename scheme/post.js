@@ -42,7 +42,8 @@ const postScheme = new Schema({
     shared: Boolean,
     whoShared: [{
         authorId: String,
-        host: String
+        host: String,
+        postId: String
     }],
     postTo: String,
     unlisted: Boolean,},

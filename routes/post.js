@@ -329,7 +329,8 @@ async function sharePost(token, authorId, postId, newPost) {
     const originalPost = originalPH.posts.id(newPost.postId);
     originalPost.whoShared.push({
         authorId: authorId, 
-        host: process.env.DOMAIN_NAME
+        host: process.env.DOMAIN_NAME,
+        postId: sharedPostId
     });
 
     let post = {
@@ -498,6 +499,14 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
+
+    // Create tombstones for posts who shared this deleted post 
+    if (post.whoShared != []) {
+        const whoShared = post.whoShared; 
+        // Go to each postHistory and create tombstone for their post 
+        // Go to public if the post was public, create tombstone there 
+    }
+
 
     const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
     const comments = CommentHistory.findOneAndDelete({postId: postId});

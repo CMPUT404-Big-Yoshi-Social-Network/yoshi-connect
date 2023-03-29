@@ -22,6 +22,7 @@ Foundation; All Rights Reserved
 // Functionality
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
+import FileBase64 from 'react-file-base64';
 import { useNavigate } from 'react-router-dom';
 
 // Child Component
@@ -49,8 +50,10 @@ function Settings() {
     const [newAuthor, setNewAuthor] = useState({
         newUsername: '',
         newPassword: '',
-        newEmail: ''
+        newEmail: '',
+        image: ""
     })
+
     const [viewer, setViewer] = useState('')
     
     useEffect(() => {
@@ -76,6 +79,8 @@ function Settings() {
                 let viewerId = response.data.authorId;
                 setNewAuthor({ newUsername: username })
                 setNewAuthor({ newEmail: email })
+                setNewAuthor({ image: response.data.profileImage })
+                
                 setViewer(viewerId)
             })
             .catch(err => { 
@@ -111,7 +116,8 @@ function Settings() {
                 id: viewer,
                 username: newAuthor.newUsername,
                 password: newAuthor.newPassword,
-                email: newAuthor.newEmail
+                email: newAuthor.newEmail, 
+                profileImage: newAuthor.image
             }
         }
 
@@ -140,7 +146,7 @@ function Settings() {
                 <div className='pubColM'>
                     <div className='settingColM'>
                         <div className='profile-heading'>
-                            <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/>
+                            {newAuthor.image === "" ? <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/> : <img className='ad-pubUserImg' alt='ad-pubUser' src={newAuthor.image} width={40}/> }
                         </div>
                         <Card.Body>
                             <Form className='account-details-form'>
@@ -168,6 +174,12 @@ function Settings() {
                                         onChange={(e) => {setNewAuthor({...newAuthor, newPassword: e.target.value})}}
                                         type="password" className='account-details-box'/>
                                 </Form.Group>
+                                <FileBase64
+                                    className={"postMenuImageInput"} name={"image"} id={"image"}
+                                    type="file"
+                                    multiple={false}
+                                    onDone={({ base64 }) => setNewAuthor({ image: base64 })}
+                                />
                                 <br></br>
                                 <Button onClick={modify} variant="warning" type="submit" className='save-setting'>Save</Button>
                                 </Form>

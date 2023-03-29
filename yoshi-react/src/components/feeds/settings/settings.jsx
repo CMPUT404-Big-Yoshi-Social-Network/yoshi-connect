@@ -23,7 +23,6 @@ Foundation; All Rights Reserved
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import FileBase64 from 'react-file-base64';
 
 // Child Component
 import TopNav from '../navs/top/nav.jsx';

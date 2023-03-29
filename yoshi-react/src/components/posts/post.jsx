@@ -44,7 +44,7 @@ function Post({viewerId, post, author}) {
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
     const [numComments, setNumComments] = useState(post.count);
-
+    const [commentCreated, setCommentCreated] = useState(0);
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
@@ -138,6 +138,7 @@ function Post({viewerId, post, author}) {
         })
         .then((response) => {
             setLike(true);
+            setNumLikes(numLikes + 1);
         })
         .catch((err) => {
             if (err.response.status === 401) {
@@ -195,7 +196,7 @@ function Post({viewerId, post, author}) {
         axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
         .then((response) => { 
             setNumComments(numComments + 1);
-            
+            setCommentCreated(commentCreated + 1);
         })
         .catch((err) => { 
             if (err.response.status === 401) {
@@ -213,7 +214,9 @@ function Post({viewerId, post, author}) {
     const getLikes = () => {
 
         axios.get(post.id + '/likes')
-        .then((response) => { setNumLikes(response.data.items.length); })
+        .then((response) => { 
+            //setNumLikes(response.data.items.length); 
+        })
         .catch((err) => { 
             if (err.response.status === 401) {
                 navigate('/unauthorized')
@@ -253,7 +256,7 @@ function Post({viewerId, post, author}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                           <Comments url={post.id + '/comments'}> </Comments> 
+                           <Comments key={commentCreated} url={post.id + '/comments'}> </Comments> 
                         </div>}
                         <br></br>
                     {

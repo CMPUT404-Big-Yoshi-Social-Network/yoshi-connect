@@ -68,7 +68,7 @@ function Posts(props) {
             .then((response) => {
                 let viewerId = response.data.authorId;
                 setViewerId(viewerId);
-                if (type === 'public') {
+                if (type === 'public/local') {
                     setUrl('/posts/' + type)
                 } else {
                     setUrl('/authors/' + viewerId + '/posts/' + type)

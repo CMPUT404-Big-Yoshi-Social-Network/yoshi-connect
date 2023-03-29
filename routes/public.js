@@ -126,15 +126,15 @@ async function fetchPublicPosts(page, size, isLocal) {
                 .then(res => {
                     let items = []
                     if (outgoings[i].auth === 'userpass') { 
-                        items = res.data.results.filter((i)=>i !== null && typeof i !== 'undefined');
+                        items = res.data.filter((i)=>i !== null && typeof i !== 'undefined');
                     } else {
-                        items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
+                        if (typeof(res.data) != string) {
+                            items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
+                        }
                     }
                     publicPosts = publicPosts.concat(items);
                 })
-                .catch( error => {
-                    console.log(error);
-                })
+                .catch( error => { })
             }
         }
     }

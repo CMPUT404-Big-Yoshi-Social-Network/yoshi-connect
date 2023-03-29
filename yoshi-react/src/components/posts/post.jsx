@@ -40,6 +40,7 @@ function Post({viewerId, post, author}) {
     postId = postId ? postId[postId.length - 1] : undefined;
     let authorId = post.author ? post.author.id.split('/') : undefined;
     authorId = authorId ? authorId[authorId.length - 1] : undefined;
+    let published = post.published.substring(0,10);
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
     const [numComments, setNumComments] = useState(post.count);
@@ -58,7 +59,6 @@ function Post({viewerId, post, author}) {
          */
     
     useEffect(() => {
-        
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             axios
@@ -193,7 +193,10 @@ function Post({viewerId, post, author}) {
         };
 
         axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
-        .then((response) => { setNumComments(response.data.numComments); })
+        .then((response) => { 
+            setNumComments(numComments + 1);
+            
+        })
         .catch((err) => { 
             if (err.response.status === 401) {
                 navigate('/unauthorized')
@@ -233,7 +236,7 @@ function Post({viewerId, post, author}) {
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
                     <img className={"image"} src={item} alt=""/>
 
-                    <p>{post.published}</p>
+                    <p>{published}</p>
                     <br></br>
                     { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons' onClick={removeLike}>Unlike</button></span>} 
                     <br></br>

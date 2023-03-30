@@ -168,12 +168,8 @@ router.post('/', async (req, res) => {
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
-
-		const [scheme, data] = authHeader.split(" ");
 		if(scheme === "Basic") {
-			const credential = Buffer.from(data, 'base64').toString('ascii');
-			const [serverName, password] = credential.split(":");
-			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
+			if( await IncomingCredentials.findOne({auth: authHeader})) {
 				authorized = true;
 			}
 		}
@@ -201,6 +197,7 @@ router.post('/', async (req, res) => {
 		}
 	}
 
+
 	//TODO fix this once and for all
 	if(!authorized && req.headers["x-requested-with"] != "XMLHttpRequest"){
 		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
@@ -209,6 +206,21 @@ router.post('/', async (req, res) => {
 	else if(!authorized){
 		return res.sendStatus(401);
 	}
+
+	/*
+	let idURL = req.params.authorId.split("/");
+	if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[2] == process.env.DOMAIN_NAME && idURL[3] == "authors" && !idURL[4]){
+		req.params.authorId = idURL[4];
+	}
+	else if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[3] == "authors" && !idURL[4]){
+		//Check if the host name is in mongo
+		//If not then 401
+		//Else send a post request to that server with the associated request
+	}
+	else if(idURL[0]){ 
+		//Treat as a author/authorUUID/inbox
+	}
+	*/
 
 	//NEED to fix req.body.author.id to the id of the inbox haver
 	const type = req.body.type;

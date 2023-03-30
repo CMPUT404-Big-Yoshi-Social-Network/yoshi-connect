@@ -29,28 +29,37 @@ import EditComment from "./editComment";
 // User Interface
 import Popup from 'reactjs-popup';
 
-function Comment({comment}) {
+function Comment({comment, author}) {
     /**
      * Description: Represents a Comment 
      * Functions: 
      *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
-    const deleteComment = () => {
-        axios.delete('/authors/' + comment.authorId + '/posts/' + comment.postId + '/comments' + comment._id)
-        .then((response) => { })
-        .catch((err) => { });
+
+    const likeComment = () => {
+        let body = {
+            type: "like",
+            summary: "DisplayName likes your post",
+            author: author,
+            object: comment.id
+        }
+
+        axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body)
+        .then((response) => {
+
+        })
+        .catch((err) => { 
+            
+        });
     }
 
     return (
         <div id='comment'>
             <h4>{ comment !== undefined ? comment.author.displayName : null}</h4>
             { comment ? comment.comment : null }
-            { comment && comment.commenter !== comment.viewerId ? null : 
-                <Popup className='post-buttons' trigger={<button>Edit</button>}><EditComment {...comment}/></Popup> }    
-            { comment && comment.commenter !== comment.viewerId ? null : 
-                <button className='post-buttons' onClick={deleteComment}>Delete</button> }    
+            { !comment ? null :
+                <button className='post-buttons' onClick={likeComment}>Like</button> }
         </div>
     )
 }

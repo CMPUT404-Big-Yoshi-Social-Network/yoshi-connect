@@ -214,17 +214,17 @@ router.post('/', async (req, res) => {
 	let response, status;
 	if(type === "post"){
 		//For other servers to send their authors posts to us
-		[response, status] = await postInboxPost(req.body, req.params.authorId);
+		[response, status] = await postInboxPost(req.body, req.body.author.id);
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
 		[response, status] = await postInboxFollow(req.body);
 	}
 	else if(type === "like"){
-		[response, status] = await postInboxLike(req.body, req.params.authorId);
+		[response, status] = await postInboxLike(req.body, req.body.author.id);
 	}
 	else if(type === "comment"){
-		[response, status] = await postInboxComment(req.body, req.params.authorId);
+		[response, status] = await postInboxComment(req.body, req.body.author.id);
 	}
 	else{
 		res.sendStatus(400);

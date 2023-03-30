@@ -48,7 +48,8 @@ function Post({viewerId, post, author}) {
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
-    const [item, setItem] = useState("");
+    const [image, setImage] = useState("");
+    const [items, setItems] = useState(undefined);
 
     const navigate = useNavigate();
 
@@ -65,9 +66,9 @@ function Post({viewerId, post, author}) {
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
             .then((res) => {
                 if (res.data.status === 200) {
-                    setItem(res.data.src)
+                    setImage(res.data.src)
                 } else {
-                    setItem('')
+                    setImage('')
                 }
             })
         }
@@ -97,7 +98,7 @@ function Post({viewerId, post, author}) {
         if(!numLikes){
             getLikes();
         }
-    })
+    }, []);
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
@@ -186,7 +187,7 @@ function Post({viewerId, post, author}) {
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')
-        let body = { 
+        let body = {
             type: "comment",
             author: viewerId,
             comment: comment.newComment,
@@ -194,7 +195,7 @@ function Post({viewerId, post, author}) {
         };
 
         axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
-        .then((response) => { 
+        .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);
         })
@@ -215,7 +216,17 @@ function Post({viewerId, post, author}) {
 
         axios.get(post.id + '/likes')
         .then((response) => { 
-            //setNumLikes(response.data.items.length); 
+            setNumLikes(response.data.items.length);
+            setItems(response.data.items);
+            let itemsCopy = response.data.items;
+            for(let i = 0; i < itemsCopy.length; i++){
+                let like = itemsCopy[i];
+                let likeAuthorId = like.author.id.split("/");
+                likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
+                if(likeAuthorId == viewerId){
+                    setLike(true);
+                }
+            }
         })
         .catch((err) => { 
             if (err.response.status === 401) {
@@ -237,7 +248,7 @@ function Post({viewerId, post, author}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    <img className={"image"} src={item} alt=""/>
+                    <img className={"image"} src={image} alt=""/>
 
                     <p>{published}</p>
                     <br></br>
@@ -256,7 +267,7 @@ function Post({viewerId, post, author}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                           <Comments key={commentCreated} url={post.id + '/comments'}> </Comments> 
+                           <Comments key={commentCreated} url={post.id + '/comments'}> </Comments>
                         </div>}
                         <br></br>
                     {

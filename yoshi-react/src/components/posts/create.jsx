@@ -113,6 +113,7 @@ function CreatePost() {
         }
 
         let link = { postId: "" }
+        let id = { id: "" }
         
         if (data.postTo === '') {
             await axios.post('/authors/' + data.authorId + '/posts/', body)
@@ -124,14 +125,13 @@ function CreatePost() {
             .catch((e) =>{ console.log(e); })
         } else {
             body.type = 'post'
-            axios
+            await axios
             .get('/authors/postTo/' + body.postTo)
             .then((response) => {
-                body.postTo = response.data._id;
+                id.id = response.data._id;
             })
             .catch(err => { });
-
-            axios.post('/authors/' + body.postTo + '/inbox', body)
+            await axios.post('/authors/' + body.postTo + '/inbox', body)
             .then((response) => { 
                 if (response.status === 200) {
                     link.postId = response.data.id.split('/')[6];

@@ -52,7 +52,7 @@ function CreatePost() {
         unlisted: false,
         image: '',
         authorId: '',
-        postTo: '',
+        postFrom: '',
         postId: ''
     })
     const [isOpen, setIsOpen] = useState(false);
@@ -106,7 +106,7 @@ function CreatePost() {
             likes: data.likes,
             comments: data.comments,
             unlisted: data.unlisted,
-            postTo: data.postTo,
+            postFrom: data.postFrom,
             image: data.image
         }
 
@@ -178,7 +178,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Message To:</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, postTo: e.target.value})
+                            setData({...data, postFrom: e.target.value})
                         }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>

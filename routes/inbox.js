@@ -231,7 +231,7 @@ async function postInboxPost(post, recieverAuthorId){
     const categories = post.categories;
     const count = post.count;
     const published = post.published;
-    const postTo = post.postTo // Need to discuss wherther other teams will follow this
+    const postFrom = post.postFrom // Need to discuss wherther other teams will follow this
     //Used to mark if this is a private message or a follower post.
     const visibility = post.visibility;
     const unlisted = post.unlisted;

@@ -201,7 +201,7 @@ async function createPost(token, authorId, postId, newPost) {
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const postTo = newPost.postTo;
+    const postFrom = newPost.postFrom;
 
     if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
@@ -237,7 +237,7 @@ async function createPost(token, authorId, postId, newPost) {
         published: published,
         visibility: visibility,
         unlisted: unlisted,
-        postTo: postTo
+        postFrom: postFrom
     };
 
     postHistory.posts.push(post);
@@ -343,7 +343,7 @@ async function updatePost(token, authorId, postId, newPost) {
             published: post.published,
             visibility: visibility,
             unlisted: unlisted,
-            postTo: post.postTo
+            postFrom: post.postFrom
         };
         await (new PublicPost(publicPost)).save();
     }

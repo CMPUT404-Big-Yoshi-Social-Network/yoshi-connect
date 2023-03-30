@@ -100,7 +100,8 @@ async function addLike(like, authorId, postId){
     const summary = like.summary;
     let object = like.object;
     const author = like.author;
-
+    author._id = author.id;
+    
     if(!type || !summary || !object){
         return [{}, 400];
     }
@@ -134,8 +135,6 @@ async function addLike(like, authorId, postId){
         await publicPost.save();
     }
     else{ return [{}, 400]; }
-
-    
 
     likes.likes.push(author);
     await likes.save();

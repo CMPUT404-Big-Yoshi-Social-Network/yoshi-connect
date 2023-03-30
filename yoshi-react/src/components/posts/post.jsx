@@ -74,30 +74,9 @@ function Post({viewerId, post, author}) {
         }
         getImage();
     }, [])
-    
-    /**
-         * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
-         * Request: POST
-         * Returns: N/A
-         */
-    /*
-    useEffect(() => {
-         
-        console.log('Debug: <TLDR what the function is doing>')
-        const hasLiked = () => {
-            axios
-            .get('/authors/' + authorId + '/posts/' + postId + '/liked')
-            .then((response) => { setLike(true) })
-            .catch(err => { setLike(false) });
-        }
-        hasLiked();
-    }, [])
-    */
 
-    useEffect(() => {
-        if(!numLikes){
-            getLikes();
-        }
+    useEffect(() => {    
+        getLikes();
     }, []);
     const toggleComments = () => { setShowComment(!showComment); }
 

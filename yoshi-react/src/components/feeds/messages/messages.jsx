@@ -96,7 +96,9 @@ function Messages() {
                 let messengers = []
                 if (response.data.items !== undefined && response.data.items.length !== 0) {
                     for (let i = 0; i < response.data.items.length; i++) {
-                        messengers.push(response.data.items[i].postFrom);
+                        if (response.data.items[i].postFrom !== undefined) {
+                            messengers.push(response.data.items[i].postFrom);
+                        }
                     }
                     setMessengers(messengers);
                     if (messengers.length !== 0) {

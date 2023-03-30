@@ -29,6 +29,7 @@ import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
     const username = props.username !== undefined ? props.username : props.displayName
+    const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
     const [requestButton, setRequestButton] = useState('Send Follow Request');
     /**
      * Description:     
@@ -55,7 +56,6 @@ function SearchCard(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                console.log(response)
                 let viewerId = response.data.authorId;
                 let viewer = response.data;
                 setViewerId(viewerId)
@@ -96,12 +96,43 @@ function SearchCard(props) {
         .then((response) => { })
         .catch(err => { });
     }
+
+    const seePosts = () => {
+        if (host === 'https://yoshi-connect.herokuapp.com/') {
+            navigate('/users/' + username);
+        } else {
+            let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/nodes/outgoing/authors/' + id + '/posts',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: 1,
+                    size: 5
+                }
+            }
+            axios
+            .get('/nodes/outgoing/authors/' + id + '/posts', config)
+            .then((response) => { 
+                navigate('/users/' + username, { state: { posts: response.data.items } })
+            })
+            .catch(err => { })
+        }
+    }
+
     return (
         <div>
             { !props && username === undefined ? null : 
                 <div>
                     {username}
-                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    <br></br>
+                    {host}
+                    <Button onClick={seePosts} type="submit">View Profile</Button>
+                    {
+                        host === 'https://yoshi-connect.herokuapp.com/' ? null : 
+                        <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    }
                 </div>
             }
         </div>

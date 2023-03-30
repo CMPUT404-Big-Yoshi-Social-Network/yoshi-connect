@@ -70,16 +70,29 @@ function SearchCard(props) {
 
     const sendRequest = () => {
         setRequestButton('Sent');
-        let id = props.id.replace(props.host + 'authors/', '');
-        let config = {
-            summary: viewer + " wants to follow " + username,
-            actor: viewer,
-            actorId: viewerId,
-            objectId: id,
-            object: props
+        let config = '';
+        let url = '';
+        if (props.host === 'https://yoshi-connect.herokuapp.com/') {
+            url = '/authors/' + authorId + '/inbox'
+            config = {
+                actor: {
+                    id: viewerId,
+                    status: 'local'
+                }
+            }
+        } else {
+            url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
+            let id = props.id.replace(props.host + 'authors/', '');
+            config = {
+                summary: viewer + " wants to follow " + username,
+                actor: viewer,
+                actorId: viewerId,
+                objectId: id,
+                object: props
+            }
         }
         axios
-        .post('/nodes/outgoing/authors/' + id + '/inbox/follow', config)
+        .post(url, config)
         .then((response) => { })
         .catch(err => { });
     }

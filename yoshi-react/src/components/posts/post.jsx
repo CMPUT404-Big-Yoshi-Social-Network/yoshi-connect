@@ -47,6 +47,7 @@ function Post({viewerId, post}) {
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
     const [item, setItem] = useState("");
+    const url = "/authors/" + authorId + "/posts/" + postId + "/image"
 
     const navigate = useNavigate();
 
@@ -56,20 +57,22 @@ function Post({viewerId, post}) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>') 
-        const getImage = () => {
-            axios
-            .get("/authors/" + authorId + "/posts/" + postId + "/image")
-            .then((res) => {
-                if (res.data.status === 200) {
-                    setItem(res.data.src)
-                } else {
-                    setItem('')
-                }
-            })
+        if (viewerId !== null) {
+            console.log('Debug: <TLDR what the function is doing>') 
+            const getImage = () => {
+                axios
+                .get(url)
+                .then((res) => {
+                    if (res.data.status === 200) {
+                        setItem(res.data.src)
+                    } else {
+                        setItem('')
+                    }
+                })
+            }
+            getImage();
         }
-        getImage();
-    }, [authorId, postId])
+    }, [url, viewerId])
 
     useEffect(() => {
         /**
@@ -79,10 +82,11 @@ function Post({viewerId, post}) {
          */
         console.log('Debug: <TLDR what the function is doing>')
         const hasLiked = () => {
-            axios
-            .get('/authors/' + authorId + '/posts/' + postId + '/liked')
-            .then((response) => { setLike(true) })
-            .catch(err => { setLike(false) });
+            // axios
+            // .get('/authors/' + authorId + '/posts/' + postId + '/liked')
+            // .then((response) => { setLike(true) })
+            // .catch(err => { setLike(false) });
+            console.log('In construction')
         }
         hasLiked();
     }, [authorId, postId])

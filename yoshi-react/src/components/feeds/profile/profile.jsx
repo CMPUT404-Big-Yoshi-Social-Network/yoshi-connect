@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
 import axios from 'axios';
@@ -30,6 +30,7 @@ import TopNav from '../navs/top/nav.jsx';
 import LeftNavBar from '../navs/left/nav.jsx';
 import RightNavBar from '../navs/right/nav.jsx';
 import Posts from '../../posts/posts.jsx';
+import RemotePosts from '../../posts/remotePosts.jsx';
 
 // Styling
 import './profile.css';
@@ -49,6 +50,8 @@ function Profile() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
+    const {state} = useLocation();
+    const { posts } = state;
     const { username } = useParams();
     const [personal, setPersonal] = useState({
         person: null,
@@ -81,65 +84,69 @@ function Profile() {
              * Request: GET
              * Returns: N/A
              */
-            console.log('Debug: <TLDR what the function is doing>')
-            axios
-            .get('/profile/' + username)
-            .then((response) => {
-                console.log('Debug: Profile Exists.')
-                person = response.data.personal
-                viewer = response.data.viewer
-                viewed = response.data.viewed
-                viewedId = response.data.viewedId
-                viewerId = response.data.viewerId
-                setPersonal(prevPersonal => ({...prevPersonal, person}))
-                setPersonal(prevViewer => ({...prevViewer, viewer}))
-                setPersonal(prevViewed => ({...prevViewed, viewed}))
-                setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
-                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
-
-                otherUrl = 'other/' + viewedId;
-                setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
-            })
-            .catch(err => {
-                if (err.response.status === 404) {
-                    navigate('/notfound'); 
-                }
-                else if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); 
-                }
-            });
+            if (!posts) {
+                console.log('Debug: <TLDR what the function is doing>')
+                axios
+                .get('/profile/' + username)
+                .then((response) => {
+                    console.log('Debug: Profile Exists.')
+                    person = response.data.personal
+                    viewer = response.data.viewer
+                    viewed = response.data.viewed
+                    viewedId = response.data.viewedId
+                    viewerId = response.data.viewerId
+                    setPersonal(prevPersonal => ({...prevPersonal, person}))
+                    setPersonal(prevViewer => ({...prevViewer, viewer}))
+                    setPersonal(prevViewed => ({...prevViewed, viewed}))
+                    setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
+                    setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+    
+                    otherUrl = 'other/' + viewedId;
+                    setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
+                })
+                .catch(err => {
+                    if (err.response.status === 404) {
+                        navigate('/notfound'); 
+                    }
+                    else if (err.response.status === 401) {
+                        console.log("Debug: Not authorized.");
+                        navigate('/unauthorized'); 
+                    }
+                });
+            }
         }
         isRealProfile();
-    }, [navigate, username])
+    }, [navigate, username, posts])
     useEffect(() => {
         /**
          * Description: Checks if the viewer has already sent a friend request
          * Request: POST
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
-        if (!personal.person && personal.viewerId != null && personal.viewedId != null) { 
-            console.log('Debug: Checking if the viewer has already sent a friend request.')
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
+        if (!posts) {
+            console.log('Debug: <TLDR what the function is doing>')
+            if (!personal.person && personal.viewerId != null && personal.viewedId != null) { 
+                console.log('Debug: Checking if the viewer has already sent a friend request.')
+                let config = {
+                    method: 'get',
+                    maxBodyLength: Infinity,
+                    url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
+                    headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    }
                 }
+                axios
+                .get('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
+                .then((response) => { 
+                    exists.current = true; 
+                    setRequestButton('Sent');
+                })
+                .catch(err => {
+                    if (err.response.status === 404) { exists.current = false; }
+                });
             }
-            axios
-            .get('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
-            .then((response) => { 
-                exists.current = true; 
-                setRequestButton('Sent');
-            })
-            .catch(err => {
-                if (err.response.status === 404) { exists.current = false; }
-            });
         }
-    }, [username, exists, personal]);
+    }, [username, exists, personal, posts]);
     useEffect(() => {
         /**
          * Description: Checks if the author is a follower or a friend
@@ -147,31 +154,33 @@ function Profile() {
          * Returns: N/A
          * REFACTOR: CHECK 
          */
-        console.log('Debug: <TLDR what the function is doing>')
-        if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
-            console.log('See if they are followers or friends.');
-            let config = {
-                method: 'post',
-                maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            }
-            axios
-            .post('/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)
-            .then((response) => {
-                if (response.data.status === 'Friends') {
-                    setRequestButton('Unfriend');
-                } else if (response.data.status === 'Follows') {
-                    setRequestButton('Unfollow');
-                } else if (response.data.status === 'Strangers') {
-                    setRequestButton('Add');
+        if (!posts) {
+            console.log('Debug: <TLDR what the function is doing>')
+            if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
+                console.log('See if they are followers or friends.');
+                let config = {
+                    method: 'post',
+                    maxBodyLength: Infinity,
+                    url: '/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 }
-            })
-            .catch(err => {
-                if (err.response.status === 500) { console.log('500 PAGE') }
-            });
+                axios
+                .post('/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)
+                .then((response) => {
+                    if (response.data.status === 'Friends') {
+                        setRequestButton('Unfriend');
+                    } else if (response.data.status === 'Follows') {
+                        setRequestButton('Unfollow');
+                    } else if (response.data.status === 'Strangers') {
+                        setRequestButton('Add');
+                    }
+                })
+                .catch(err => {
+                    if (err.response.status === 500) { console.log('500 PAGE') }
+                });
+            }
         }
-    }, [username, personal, exists, requestButton])
+    }, [username, personal, exists, requestButton, posts])
 
     const SendRequest = () => {
         /**
@@ -269,14 +278,19 @@ function Profile() {
                 </div>
                 <div className='profColM'>
                     <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>
-                    { personal.person ? null : 
+                    { personal.person || posts ? null : 
                         <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
                     <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    { (personal.person === null) ? null:
+                    { personal.person === null || posts ? null :
                         (personal.person === true ?
                         <Posts type={'personal'}/> : 
                         <Posts type={otherUrl}/>) 
                     }   
+                    <div>
+                        { posts ? 
+                            <RemotePosts type={posts}/> : 
+                        null }
+                    </div>
                 </div>
                 <div className='profColR'>
                     <RightNavBar/>

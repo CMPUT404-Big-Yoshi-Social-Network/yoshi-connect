@@ -412,10 +412,7 @@ router.get('/postTo/:username', async (req, res) => {
  */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  let authors = await Author.find({username: username}).clone();
-  if (!authors) { 
-    return res.sendStatus(404)
-  }
+  let authors = []
 
   const outgoings = await OutgoingCredentials.find().clone();
 
@@ -433,7 +430,18 @@ router.get('/search/:username', async (req, res) => {
                   }
               };
           } else {
-              var config = {
+            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                var config = {
+                  host: outgoings[i].url,
+                  url: outgoings[i].url + '/authors/',
+                  method: 'GET',
+                  headers: {
+                      'Authorization': auth,
+                      'Content-Type': 'application/json'
+                  }
+                };              
+            } else {
+                var config = {
                   host: outgoings[i].url,
                   url: outgoings[i].url + '/authors',
                   method: 'GET',
@@ -441,7 +449,8 @@ router.get('/search/:username', async (req, res) => {
                       'Authorization': auth,
                       'Content-Type': 'application/json'
                   }
-              };
+                };
+            }
           }
     
           await axios.request(config)

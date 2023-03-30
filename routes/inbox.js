@@ -6,6 +6,7 @@ mongoose.set('strictQuery', true);
 const { Post, Inbox, PostHistory } = require('../scheme/post.js');
 const { Like, Comment, CommentHistory } = require('../scheme/interactions.js');
 const { Request } = require('../scheme/relations.js');
+const { Author } = require('../scheme/author.js');
 
 // UUID
 const crypto = require('crypto');

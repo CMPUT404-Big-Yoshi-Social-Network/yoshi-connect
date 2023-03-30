@@ -29,6 +29,8 @@ import TopNav from '../navs/top/nav.jsx';
 import LeftNavBar from '../navs/left/nav.jsx';
 import RightNavBar from '../navs/right/nav.jsx';
 import Post from "../../posts/post.jsx";
+import { Pagination } from "react-bootstrap";
+
 
 function Messages() {
     /**
@@ -42,7 +44,7 @@ function Messages() {
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewer] = useState({ viewerId: '' });
     const [messengers, setMessengers] = useState([]);
-    const [currentMessenger, setCurrentMessenger] = useState(null);
+    const [currentMessenger, setCurrentMessenger] = useState('');
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState([]);
@@ -57,85 +59,81 @@ function Messages() {
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
-        let viewerId = null;
         const getAuthor = () => {
             axios
             .get('/userinfo')
             .then((response) => {
-                viewerId = response.data.authorId;
+                let viewerId = response.data.authorId;
                 setViewer({ viewerId: viewerId })
             })
-            .catch(err => { 
-                if (err.response.status === 404) { 
-                    setViewer({ viewerId: '' })
-                } else if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                }
-            });
+            .catch(err => { });
         }
 
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: '/authors/' + viewerId + '/inbox',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            params: {
-                page: 1,
-                size: size
-            }
-        }
+        getAuthor();
+    }, [navigate])
+
+    useEffect(() => {
+        /**
+         * Description: Before render, checks the author's account details
+         * Request: POST
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
         const getPrivatePosts = () => {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/authors/' + viewer.viewerId + '/inbox',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: 1,
+                    size: size
+                }
+            }
             axios
-            .get('/authors/' + viewerId + '/inbox', config)
+            .get('/authors/' + viewer.viewerId + '/inbox', config)
             .then((response) => {
-                console.log(response.data.items)
                 let messengers = []
                 if (response.data.items !== undefined && response.data.items.length !== 0) {
                     for (let i = 0; i < response.data.items.length; i++) {
                         messengers.push(response.data.items[i].postFrom);
                     }
                     setMessengers(messengers);
-                    setCurrentMessenger(messengers[0]);
+                    if (messengers.length !== 0) {
+                        setCurrentMessenger(messengers[0]);
+                    }
                 }
-                setPosts(response.data.items.filter(post => post.postFrom === messengers[0]))
+                setPosts((response.data.items).filter(post => post.postFrom !== undefined && post.postFrom === messengers[0]))
+            })
+            .catch(err => { });
+
+            config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/authors/' + viewer.viewerId + '/inbox',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: 2,
+                    size: size
+                }
+            }
+            axios
+            .get('/authors/' + viewer.viewerId + '/inbox', config)
+            .then((response) => { 
+                if (response.data.items !== undefined) { 
+                    const nextSet = response.data.items.filter(post => post.postFrom === currentMessenger);
+                    if (nextSet.length !== 0) {
+                        setSeeMore(true); 
+                    }
+                }
             })
             .catch(err => { });
         }
 
-        config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: '/authors/' + viewerId + '/inbox',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            params: {
-                page: 2,
-                size: size
-            }
+        if (viewer.viewerId !== '') {
+            getPrivatePosts();
         }
-
-        axios
-        .get('/authors/' + viewerId + '/inbox', config)
-        .then((response) => { 
-            if (response.data.items !== undefined) { 
-                const nextSet = response.data.items.filter(post => post.postFrom === messengers[0]);
-                if (nextSet.length !== 0) {
-                    setSeeMore(true); 
-                }
-            }
-        })
-        .catch(err => {
-            if (err.response.status === 500) {
-                setPosts([]);
-            } else if (err.response.status === 404) {
-                setSeeMore(true);
-            } else if (err.response.status === 401) {
-                navigate('/unauthorized');
-            }
-        });
-
-        getAuthor();
-        getPrivatePosts();
-    }, [navigate])
+    }, [currentMessenger, viewer.viewerId])
 
     const getMore = () => {
         /**
@@ -161,7 +159,7 @@ function Messages() {
             axios
             .get('/authors/' + viewer.viewerId + '/inbox', config)
             .then((response) => { 
-                const nextSet = response.data.items.filter(post => post.postFrom === currentMessenger);
+                const nextSet = (response.data.items).filter(post => post.postFrom !== undefined && post.postFrom === currentMessenger);
                 if (nextSet.length !== 0) {
                     setPosts(posts.concat(nextSet));
                 }
@@ -217,7 +215,7 @@ function Messages() {
                             </div> : 
                             <div> 
                                 <Pagination>
-                                    {Object.keys(getCurrPrivatePosts(currentMessenger)).map((post, idx) => (
+                                    {Object.keys(posts).map((post, idx) => (
                                         <Post key={idx} viewerId={viewer.viewerId} post={posts[post]}/>
                                     ))}  
                                     { seeMore ? null :

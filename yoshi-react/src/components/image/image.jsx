@@ -25,7 +25,7 @@ import React, { useState, useEffect } from 'react';
 
 export default function Image(prop) {
     const url = window.location.pathname
-    const [host, link] = url.split("authors")
+    const link = url.split("authors")[1]
     const [item, setItem] = useState("");
 
     useEffect(() => {

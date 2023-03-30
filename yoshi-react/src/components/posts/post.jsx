@@ -111,7 +111,7 @@ function Post({viewerId, post, author}) {
             object: post.id
         }
 
-        axios.post(post.author.id + '/inbox', body, {
+        axios.post('/authors/' + post.author.id + '/inbox', body, {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
             }
@@ -142,8 +142,8 @@ function Post({viewerId, post, author}) {
          */
         console.log('Debug: <TLDR what the function is doing>')
         axios.delete('/authors/' + authorId + '/posts/' + postId + '/likes')
-        .then((response) => { 
-            setNumLikes(response.data.numLikes); 
+        .then((response) => {
+            setNumLikes(response.data.numLikes);
             setLike(false);
         })
         .catch((err) => {
@@ -173,20 +173,20 @@ function Post({viewerId, post, author}) {
             contentType: "text/plaintext",
         };
 
-        axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
+        axios.post('/authors/' + authorId + '/inbox', body)
         .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);
         })
         .catch((err) => { 
             if (err.response.status === 401) {
-                navigate('/unauthorized')
+                navigate('/unauthorized');
             } else if (err.response.status === 400) {
-                navigate('/badrequest')
+                navigate('/badrequest');
             } else if (err.response.status === 404) {
-                navigate('/notfound')
+                navigate('/notfound');
             } else if (err.response.status === 500) {
-                console.log('500 PAGE')
+                console.log('500 PAGE');
             }
          });
     }
@@ -246,7 +246,7 @@ function Post({viewerId, post, author}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                           <Comments key={commentCreated} url={post.id + '/comments'}> </Comments>
+                           <Comments key={commentCreated} url={post.id + '/comments'} author={author}> </Comments>
                         </div>}
                         <br></br>
                     {

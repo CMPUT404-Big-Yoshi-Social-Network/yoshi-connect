@@ -40,7 +40,7 @@ function Messenger(props) {
     }, [props]);
     return (
         <div id='messenger'>
-            {author.displayName}
+            {author?.displayName !== undefined ? author.displayName : null }
         </div>
     )
 }

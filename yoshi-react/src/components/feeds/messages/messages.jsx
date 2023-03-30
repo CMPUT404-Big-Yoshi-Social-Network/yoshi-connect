@@ -79,7 +79,7 @@ function Messages({currMess}) {
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
-        const getPrivatePosts = () => {
+        const getPrivatePosts = async () => {
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
@@ -90,24 +90,38 @@ function Messages({currMess}) {
                     size: size
                 }
             }
-            axios
+            let messengers = []
+            let curr = '';
+            let posts = []
+            await axios
             .get('/authors/' + viewer.viewerId + '/inbox', config)
             .then((response) => {
-                let messengers = []
+                posts = response.data.items;
                 if (response.data.items !== undefined && response.data.items.length !== 0) {
                     for (let i = 0; i < response.data.items.length; i++) {
                         if (response.data.items[i].postFrom !== undefined) {
                             messengers.push(response.data.items[i].postFrom);
                         }
                     }
-                    setMessengers(messengers);
                     if (messengers.length !== 0 && currMess === undefined) {
-                        setCurrentMessenger(messengers[0]);
+                        curr = messengers[0]
+                    } else {
+                        curr = currMess
                     }
                 }
-                setPosts((response.data.items).filter(post => post.postFrom !== undefined && post.postFrom === currMess))
             })
             .catch(err => { });
+
+
+            if (messengers.length !== 0) {
+                if (curr !== '') {
+                    setPosts((posts).filter(post => post.postFrom !== undefined && post.postFrom === curr))
+                } else {
+                    setPosts((posts).filter(post => post.postFrom !== undefined && post.postFrom === currMess))
+                }
+            }
+            setMessengers(messengers);
+            setCurrentMessenger(curr);
 
             config = {
                 method: 'get',
@@ -123,7 +137,7 @@ function Messages({currMess}) {
             .get('/authors/' + viewer.viewerId + '/inbox', config)
             .then((response) => { 
                 if (response.data.items !== undefined) { 
-                    const nextSet = response.data.items.filter(post => post.postFrom === currentMessenger);
+                    const nextSet = response.data.items.filter(post => post.postFrom === curr);
                     if (nextSet.length !== 0) {
                         setSeeMore(true); 
                     }

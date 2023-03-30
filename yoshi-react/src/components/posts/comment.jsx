@@ -20,8 +20,9 @@ Foundation; All Rights Reserved
 */
 
 // Functionality 
-import React from "react";
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Child Components
 import EditComment from "./editComment";
@@ -29,28 +30,62 @@ import EditComment from "./editComment";
 // User Interface
 import Popup from 'reactjs-popup';
 
-function Comment({comment}) {
+function Comment({viewerId, comment, author}) {
     /**
      * Description: Represents a Comment 
      * Functions: 
      *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
-    const deleteComment = () => {
-        axios.delete('/authors/' + comment.authorId + '/posts/' + comment.postId + '/comments' + comment._id)
-        .then((response) => { })
-        .catch((err) => { });
+
+    const [liked, setLiked] = useState(true);
+
+    const likeComment = () => {
+        let body = {
+            type: "like",
+            summary: "DisplayName likes your comment",
+            author: author,
+            object: comment.id
+        }
+
+        axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body)
+        .then((response) => {
+
+        })
+        .catch((err) => { 
+            
+        });
     }
+
+   useEffect(() => {
+
+        axios.get(comment.id + '/likes')
+        .then((response) => {
+            console.log(response);
+            let likes = response.data.likes;
+            for(let i = 0; i < likes.length; i++){
+                let like = likes[i];
+                let likeAuthorId = like.author.id.split("/");
+                likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
+                if(likeAuthorId == viewerId){
+                    setLiked(true);
+                    return
+                }
+            }
+            setLiked(false);
+            return
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    },[]);
 
     return (
         <div id='comment'>
             <h4>{ comment !== undefined ? comment.author.displayName : null}</h4>
             { comment ? comment.comment : null }
-            { comment && comment.commenter !== comment.viewerId ? null : 
-                <Popup className='post-buttons' trigger={<button>Edit</button>}><EditComment {...comment}/></Popup> }    
-            { comment && comment.commenter !== comment.viewerId ? null : 
-                <button className='post-buttons' onClick={deleteComment}>Delete</button> }    
+            { !liked ? <button className='post-buttons' >Already Liked</button> :
+                <button className='post-buttons' onClick={likeComment}>Like</button> }
         </div>
     )
 }

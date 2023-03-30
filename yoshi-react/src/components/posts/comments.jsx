@@ -53,7 +53,7 @@ function Comments(params) {
                 <div> 
                     <Pagination>
                         {Object.keys(comments).map((comment, idx) => (
-                            <Comment comment={comments[comment]}/>
+                            <Comment key={idx} comment={comments[comment]} author={params.author}/>
                         ))}  
                     </Pagination>  
                 </div>

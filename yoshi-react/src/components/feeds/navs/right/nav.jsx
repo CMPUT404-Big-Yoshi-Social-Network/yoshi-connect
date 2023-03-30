@@ -58,7 +58,7 @@ function RightNavBar() {
             });
         }
         getId();
-    }, [profile, navigate])
+    }, [navigate])
 
     return (
         <Navbar className="right-column">

@@ -412,7 +412,7 @@ router.get('/postTo/:username', async (req, res) => {
  */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  const localAuthor = await Author.findOne({usename: username});
+  const localAuthor = await Author.findOne({username: username}); 
   let authors = []
   if (localAuthor !== undefined) {
     const sanitizedAuthor = {

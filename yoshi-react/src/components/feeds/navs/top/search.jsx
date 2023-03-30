@@ -77,9 +77,10 @@ function SearchCard(props) {
             url = '/authors/' + id + '/inbox'
             config = {
                 actor: {
-                    id: viewerId,
+                    id: props.host + 'authors/' + viewerId,
                     status: 'local'
-                }
+                },
+                type: 'follow'
             }
         } else {
             url = '/nodes/outgoing/authors/' + id + '/inbox/follow'

@@ -443,5 +443,6 @@ module.exports = {
     deleteInbox,
     postInboxPost,
     postInboxLike,
-    postInboxComment
+    postInboxComment,
+    postInboxRequest
 }

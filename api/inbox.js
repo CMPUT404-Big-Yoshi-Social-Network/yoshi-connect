@@ -36,6 +36,7 @@ const openapiSpecification = swaggerJsdoc(options);
 const express = require('express'); 
 const { IncomingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
+const { Author } = require('../scheme/author');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -223,7 +224,10 @@ router.post('/', async (req, res) => {
 		//For local/remote authors to server 
 		let actor = null;
 		if (req.body.actor.status !== undefined) {
-			const actorDoc = await Author.findOne({_id: req.body.actor.id});
+			let actorId = req.body.actor.id;
+			actorId = actorId.split("/");
+			actorId = actorId[actorId.length - 1];
+			const actorDoc = await Author.findOne({_id: actorId});
 			actor = {
 				id: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
 				host: process.env.DOMAIN_NAME,

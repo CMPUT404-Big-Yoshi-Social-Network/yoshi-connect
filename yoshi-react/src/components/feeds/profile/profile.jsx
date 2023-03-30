@@ -195,7 +195,8 @@ function Profile() {
                 actor: {
                     id: personal.viewerId,
                     status: 'local'
-                }
+                },
+                type: 'follow'
             }
             axios
             .post('/authors/' + personal.viewedId + '/inbox', body)

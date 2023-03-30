@@ -72,8 +72,9 @@ function SearchCard(props) {
         setRequestButton('Sent');
         let config = '';
         let url = '';
+        let id = props.id.replace(props.host + 'authors/', '');
         if (props.host === 'https://yoshi-connect.herokuapp.com/') {
-            url = '/authors/' + authorId + '/inbox'
+            url = '/authors/' + id + '/inbox'
             config = {
                 actor: {
                     id: viewerId,
@@ -82,7 +83,6 @@ function SearchCard(props) {
             }
         } else {
             url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
-            let id = props.id.replace(props.host + 'authors/', '');
             config = {
                 summary: viewer + " wants to follow " + username,
                 actor: viewer,

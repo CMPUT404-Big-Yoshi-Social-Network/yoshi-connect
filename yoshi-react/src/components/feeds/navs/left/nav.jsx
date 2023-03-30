@@ -39,7 +39,6 @@ function LeftNavBar(props) {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
-    console.log(props)
     const url = window.location.pathname;
     const { username } = useParams();
     let url1 = ''

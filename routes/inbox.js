@@ -13,7 +13,7 @@ const crypto = require('crypto');
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
 const { createComment } = require('./comment.js');
-const { validateAuthorObject } = require('./author.js');
+const { validateAuthorObject, getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
@@ -213,14 +213,22 @@ async function postInboxPost(post, recieverAuthorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    const type = post.type;
+    let local = false;
+    const type = 'post';
     const title = post.title;
+    if (post.id === undefined) {
+        post.id = post._id = String(crypto.randomUUID()).replace(/-/g, "");
+    }
     const id = post.id;
     const source = post.source;
     const origin = post.origin;
     const description = post.description;
     const contentType = post.contentType;
     const content = post.content;
+    if (post.author === undefined) {
+        post.author = await getAuthor(post.authorId);
+        local = true;
+    } 
     const authorType = post.author.type;
     const authorId = post.author.id;
     const authorHost = post.author.host;
@@ -244,6 +252,10 @@ async function postInboxPost(post, recieverAuthorId){
     }
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
+
+    if (local) {
+        await createPost(null, post.authorId, post.id, post);
+    }
 
     post._id = id
     inbox.posts.push(post);

@@ -189,7 +189,9 @@ async function createPost(token, authorId, postId, newPost) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if(! (await authLogin(token, authorId))){ return [[], 401]; }
+    if (token !== null) {
+        if(! (await authLogin(token, authorId))){ return [[], 401]; }
+    }
 
     let authorPromise = getAuthor(authorId);
 

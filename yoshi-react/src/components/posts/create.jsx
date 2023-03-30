@@ -131,7 +131,7 @@ function CreatePost() {
             })
             .catch(err => { });
 
-            await axios.post('/authors/' + data.postTo + '/inbox', body)
+            axios.post('/authors/' + body.postTo + '/inbox', body)
             .then((response) => { 
                 if (response.status === 200) {
                     link.postId = response.data.id.split('/')[6];

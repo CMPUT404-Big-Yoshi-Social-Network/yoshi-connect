@@ -101,7 +101,7 @@ function Messages({currMess}) {
                         }
                     }
                     setMessengers(messengers);
-                    if (messengers.length !== 0 && currMess !== undefined) {
+                    if (messengers.length !== 0 && currMess === undefined) {
                         setCurrentMessenger(messengers[0]);
                     }
                 }

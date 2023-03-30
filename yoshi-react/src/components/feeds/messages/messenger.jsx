@@ -20,7 +20,8 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 function Messenger(props) {
     /**
@@ -28,9 +29,18 @@ function Messenger(props) {
      * Returns: 
      */
     console.log('Debug: <TLDR what the function is doing>')
+    const [author, setAuthor] = useState()
+    useEffect(() => {
+        axios
+        .get('/authors/' + props.currentMessenger)
+        .then((response) => {
+            setAuthor(response.data)
+        })
+        .catch(err => { });
+    }, [props]);
     return (
         <div id='messenger'>
-            Something.
+            {author.displayName}
         </div>
     )
 }

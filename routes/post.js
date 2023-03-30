@@ -524,37 +524,11 @@ async function deletePost(token, authorId, postId) {
             const outgoings = await OutgoingCredentials.find().clone();
             for (let i = 0; i < whoShared.length; i++) {
                 const node = outgoings.find(item => item.url === whoShared[i].host)
-                if (node != undefined && node.allowed) {
-                    const auth = node.auth === 'userpass' ? { username: node.displayName, password: node.password } : node.auth
-                    if (node.auth === 'userpass') {
-                        var config = {
-                            host: node.url,
-                            url: node.url + '/authors/' + whoShared[i].authorId + '/posts/' + whoShared[i].postId,
-                            method: 'DELETE',
-                            auth: auth,
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        };
-                    } else {          
-                        var config = {
-                            host: node.url,
-                            url: node.url + '/authors/' + whoShared[i].authorId + '/posts/' + whoShared[i].postId,
-                            method: 'DELETE',
-                            headers: {
-                                'Authorization': auth,
-                                'Content-Type': 'application/json'
-                            }
-                        };
-                    }
-                    await axios.request(config)
-                    .then(res => { })
-                    .catch( error => { })
-            } else {
-                await createTombstone(authorId, postId);
+                if (node === undefined) {
+                    await createTombstone(authorId, postId);
+                }
             }
         }
-    }
 
 
     const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});

@@ -20,8 +20,9 @@ Foundation; All Rights Reserved
 */
 
 // Functionality 
-import React from "react";
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Child Components
 import EditComment from "./editComment";
@@ -29,7 +30,7 @@ import EditComment from "./editComment";
 // User Interface
 import Popup from 'reactjs-popup';
 
-function Comment({comment, author}) {
+function Comment({viewerId, comment, author}) {
     /**
      * Description: Represents a Comment 
      * Functions: 
@@ -37,10 +38,12 @@ function Comment({comment, author}) {
      * Returns: N/A
      */
 
+    const [liked, setLiked] = useState(true);
+
     const likeComment = () => {
         let body = {
             type: "like",
-            summary: "DisplayName likes your post",
+            summary: "DisplayName likes your comment",
             author: author,
             object: comment.id
         }
@@ -54,11 +57,34 @@ function Comment({comment, author}) {
         });
     }
 
+   useEffect(() => {
+
+        axios.get(comment.id + '/likes')
+        .then((response) => {
+            console.log(response);
+            let likes = response.data.likes;
+            for(let i = 0; i < likes.length; i++){
+                let like = likes[i];
+                let likeAuthorId = like.author.id.split("/");
+                likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
+                if(likeAuthorId == viewerId){
+                    setLiked(true);
+                    return
+                }
+            }
+            setLiked(false);
+            return
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    },[]);
+
     return (
         <div id='comment'>
             <h4>{ comment !== undefined ? comment.author.displayName : null}</h4>
             { comment ? comment.comment : null }
-            { !comment ? null :
+            { !liked ? <button className='post-buttons' >Already Liked</button> :
                 <button className='post-buttons' onClick={likeComment}>Like</button> }
         </div>
     )

@@ -168,12 +168,12 @@ function Post({viewerId, post, author}) {
         console.log('Debug: <TLDR what the function is doing>')
         let body = {
             type: "comment",
-            author: viewerId,
+            author: author,
             comment: comment.newComment,
             contentType: "text/plaintext",
         };
 
-        axios.post('/authors/' + authorId + '/inbox', body)
+        axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
         .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);
@@ -246,7 +246,7 @@ function Post({viewerId, post, author}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                           <Comments key={commentCreated} url={post.id + '/comments'} author={author}> </Comments>
+                           <Comments key={commentCreated} viewerId={viewerId} url={post.id + '/comments'} author={author}> </Comments>
                         </div>}
                         <br></br>
                     {

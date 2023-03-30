@@ -209,22 +209,23 @@ router.post('/', async (req, res) => {
 	else if(!authorized){
 		return res.sendStatus(401);
 	}
-	
+
+	//NEED to fix req.body.author.id to the id of the inbox haver
 	const type = req.body.type;
 	let response, status;
 	if(type === "post"){
 		//For other servers to send their authors posts to us
-		[response, status] = await postInboxPost(req.body, req.body.author.id);
+		[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
 		[response, status] = await postInboxFollow(req.body);
 	}
 	else if(type === "like"){
-		[response, status] = await postInboxLike(req.body, req.body.author.id);
+		[response, status] = await postInboxLike(req.body, req.params.authorId);
 	}
 	else if(type === "comment"){
-		[response, status] = await postInboxComment(req.body, req.body.author.id);
+		[response, status] = await postInboxComment(req.body, req.params.authorId);
 	}
 	else{
 		res.sendStatus(400);

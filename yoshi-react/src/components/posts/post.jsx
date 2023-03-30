@@ -202,7 +202,7 @@ function Post({viewerId, post, author}) {
                 let like = itemsCopy[i];
                 let likeAuthorId = like.author.id.split("/");
                 likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
-                if(likeAuthorId == viewerId){
+                if(likeAuthorId === viewerId){
                     setLike(true);
                 }
             }
@@ -227,7 +227,7 @@ function Post({viewerId, post, author}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { item === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"}><img className={"image"} src={item} alt=""/></a>}
+                    { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" ><img className={"image"} src={image} alt=""/></a>}
 
                     <p>{published}</p>
                     <br></br>

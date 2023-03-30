@@ -225,6 +225,10 @@ async function postInboxLike(like, authorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
+
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
     if(!validateAuthorObject(author)){

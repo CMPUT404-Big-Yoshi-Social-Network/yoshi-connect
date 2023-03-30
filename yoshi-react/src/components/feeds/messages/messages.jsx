@@ -32,7 +32,7 @@ import Post from "../../posts/post.jsx";
 import { Pagination } from "react-bootstrap";
 
 
-function Messages() {
+function Messages({currMess}) {
     /**
      * Description: Represents the Messages page that authors will keep their private posts with specific authors 
      * Functions: 
@@ -44,7 +44,7 @@ function Messages() {
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewer] = useState({ viewerId: '' });
     const [messengers, setMessengers] = useState([]);
-    const [currentMessenger, setCurrentMessenger] = useState('');
+    const [currentMessenger, setCurrentMessenger] = useState(currMess);
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState([]);
@@ -101,11 +101,11 @@ function Messages() {
                         }
                     }
                     setMessengers(messengers);
-                    if (messengers.length !== 0) {
+                    if (messengers.length !== 0 && currMess !== undefined) {
                         setCurrentMessenger(messengers[0]);
                     }
                 }
-                setPosts((response.data.items).filter(post => post.postFrom !== undefined && post.postFrom === messengers[0]))
+                setPosts((response.data.items).filter(post => post.postFrom !== undefined && post.postFrom === currMess))
             })
             .catch(err => { });
 
@@ -135,7 +135,7 @@ function Messages() {
         if (viewer.viewerId !== '') {
             getPrivatePosts();
         }
-    }, [currentMessenger, viewer.viewerId])
+    }, [currentMessenger, viewer.viewerId, currMess])
 
     const getMore = () => {
         /**

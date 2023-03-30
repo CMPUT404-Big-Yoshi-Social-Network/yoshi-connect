@@ -52,7 +52,7 @@ function CreatePost() {
         unlisted: false,
         image: '',
         authorId: '',
-        postFrom: '',
+        postTo: '',
         postId: ''
     })
     const [isOpen, setIsOpen] = useState(false);
@@ -106,19 +106,32 @@ function CreatePost() {
             likes: data.likes,
             comments: data.comments,
             unlisted: data.unlisted,
-            postFrom: data.postFrom,
-            image: data.image
+            postTo: data.postTo,
+            image: data.image,
+            type: '',
+            authorId: data.authorId
         }
 
         let link = { postId: "" }
         
-        await axios.post('/authors/' + data.authorId + '/posts/', body)
-        .then((response) => { 
-            if (response.status === 200) {
-                link.postId = response.data.id.split('/')[6];
-            }
-        })
-        .catch((e) =>{ console.log(e); })
+        if (data.postTo === '') {
+            await axios.post('/authors/' + data.authorId + '/posts/', body)
+            .then((response) => { 
+                if (response.status === 200) {
+                    link.postId = response.data.id.split('/')[6];
+                }
+            })
+            .catch((e) =>{ console.log(e); })
+        } else {
+            body.type = 'post'
+            await axios.post('/authors/' + data.postTo + '/inbox', body)
+            .then((response) => { 
+                if (response.status === 200) {
+                    link.postId = response.data.id.split('/')[6];
+                }
+            })
+            .catch((e) =>{ console.log(e); })
+        }
 
         if (item.image !== "") {
             axios.put('/authors/' + data.authorId + '/posts/' + link.postId + "/image", {
@@ -178,7 +191,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Message To:</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, postFrom: e.target.value})
+                            setData({...data, postTo: e.target.value})
                         }}></input>
 
                         <label><p style={{color:"white"}}>Title</p></label>

@@ -186,8 +186,12 @@ router.post('/', async (req, res) => {
 			return res.sendStatus(401);
 		}
 		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
-			authorId = req.body.author.id.split("/");
-			authorId = authorId[authorId.length - 1];
+			if (req.body.author.id !== undefined) {
+				authorId = req.body.author.id.split("/");
+				authorId = authorId[authorId.length - 1];
+			} else {
+				authorId = req.body.authorId;
+			}
 		}
 		else if(req.body.type == "follow"){
 			authorId = req.body.actor.id;

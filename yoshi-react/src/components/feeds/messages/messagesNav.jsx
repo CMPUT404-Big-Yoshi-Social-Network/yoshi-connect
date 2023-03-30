@@ -21,18 +21,23 @@ Foundation; All Rights Reserved
 
 // Functionality 
 import React from "react";
+import { Button } from 'react-bootstrap';
 
 // Child Component 
 import Messenger from './messenger.jsx';
+import Messages from "./messages.jsx";
 
 function MessagesNav({authorId, messengers, currentMessenger}) {
+    const selectedMessenger = (messenger) => { 
+        Messages(messenger);
+    }
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
             <h3>Messenges</h3>
             { messengers === undefined || messengers.length === 0 ? null :
                 <div>
                     {Object.keys(messengers).map((messenger, idx) => (
-                        <Messenger key={idx} authorId={authorId} currentMessenger={currentMessenger} {...messengers[messenger]}/>
+                        <Button onClick={() => selectedMessenger(messenger)}><Messenger key={idx} authorId={authorId} currentMessenger={currentMessenger} {...messengers[messenger]}/></Button>
                     ))}
                 </div>
             }

@@ -17,6 +17,7 @@ const { validateAuthorObject, getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
+const { createPost } = require('./post.js');
 
 async function getInbox(token, authorId, page, size){
     /**
@@ -213,52 +214,39 @@ async function postInboxPost(post, recieverAuthorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    let local = false;
-    const type = 'post';
-    const title = post.title;
+    const postFrom = post.authorId // Need to discuss wherther other teams will follow this
     if (post.id === undefined) {
-        post.id = post._id = String(crypto.randomUUID()).replace(/-/g, "");
+        post = (await createPost(null, post.authorId, post.id, {...post, postFrom: postFrom}))[0];
     }
+    const type = post.type;
+    const title = post.title;
     const id = post.id;
     const source = post.source;
     const origin = post.origin;
     const description = post.description;
     const contentType = post.contentType;
     const content = post.content;
-    if (post.author === undefined) {
-        post.author = await getAuthor(post.authorId);
-        local = true;
-    } 
     const authorType = post.author.type;
     const authorId = post.author.id;
     const authorHost = post.author.host;
     const authorDisplayName = post.author.displayName;
     const authorUrl = post.author.url;
-    const authorGithub = post.author.github;
-    const authorProfileImage = post.author.profileImage;
     const categories = post.categories;
-    const count = post.count;
     const published = post.published;
-    const postFrom = post.postFrom // Need to discuss wherther other teams will follow this
     //Used to mark if this is a private message or a follower post.
     const visibility = post.visibility;
-    const unlisted = post.unlisted;
 
     if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||
-        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || !count || 
-        !published || !visibility || !unlisted)
+        !authorHost || !authorDisplayName || !authorUrl || !categories || 
+        !published || !visibility)
     {
         return [{}, 400];
     }
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
-
-    if (local) {
-        await createPost(null, post.authorId, post.id, post);
-    }
-
+    
     post._id = id
-    inbox.posts.push(post);
+    inbox.posts.push({...post, postFrom: postFrom});
     await inbox.save();
     delete post._id;
     return [post, 200]

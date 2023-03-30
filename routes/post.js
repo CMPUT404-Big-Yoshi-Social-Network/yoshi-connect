@@ -261,7 +261,7 @@ async function createPost(token, authorId, postId, newPost) {
     let [author, status] = await authorPromise;
     if (status != 200) return [{}, 500];
 
-    if (visibility == 'PUBLIC') {
+    if (visibility == 'PUBLIC' && (postFrom == '' || postFrom == undefined)) {
         post.author = {
             _id: author.id,
             displayName: author.displayName,
@@ -274,7 +274,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if(unlisted == "false" || unlisted == false){
+    if((postFrom == '' || postFrom == undefined) && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;

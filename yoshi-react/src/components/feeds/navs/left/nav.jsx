@@ -27,6 +27,7 @@ import { useParams } from 'react-router-dom';
 // Child Component
 import Following from '../../follows/following.jsx';
 import Friends from '../../friends/friends.jsx';
+import MessagesNav from '../../messages/messagesNav.jsx';
 import SettingsNav from '../../settings/nav.jsx';
 
 // User Interface
@@ -38,6 +39,7 @@ function LeftNavBar(props) {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
+    console.log(props)
     const url = window.location.pathname;
     const { username } = useParams();
     let url1 = ''
@@ -49,7 +51,7 @@ function LeftNavBar(props) {
             { url === '/feed' || url === url1 ? <Following authorId={props.authorId}/> :
                 url === '/friends' ? <Friends authorId={props.authorId}/> : 
                 url === '/settings' ? <SettingsNav/> : 
-                url === '/messages' ? <h2 style={{paddingLeft: '1em'}}>Messages</h2> : null
+                url === '/messages' ? <MessagesNav authorId={props.authorId} currentMessenger={props.currentMessenger} messengers={props.messengers}/> : null
             }
         </div>
     )

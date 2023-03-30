@@ -168,10 +168,8 @@ router.post('/', async (req, res) => {
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
-		if(scheme === "Basic") {
-			if( await IncomingCredentials.findOne({auth: authHeader})) {
-				authorized = true;
-			}
+		if( await IncomingCredentials.findOne({auth: authHeader})) {
+			authorized = true;
 		}
 	}
 
@@ -221,6 +219,7 @@ router.post('/', async (req, res) => {
 	}
 	else{
 		res.sendStatus(400);
+		return;
 	}
 
 	if(status != 200){

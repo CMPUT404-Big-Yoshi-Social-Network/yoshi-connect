@@ -301,7 +301,7 @@ function validateAuthorObject(author){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
+    if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github){
         return false;
     }
 

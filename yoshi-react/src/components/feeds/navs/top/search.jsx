@@ -39,6 +39,7 @@ function SearchCard(props) {
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
     const navigate = useNavigate();
+    let id = props.id.replace(props.host + 'authors/', '');
 
     useEffect(() => {
         /**
@@ -72,7 +73,6 @@ function SearchCard(props) {
         setRequestButton('Sent');
         let config = '';
         let url = '';
-        let id = props.id.replace(props.host + 'authors/', '');
         if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
             url = '/authors/' + id + '/inbox'
             config = {
@@ -98,7 +98,7 @@ function SearchCard(props) {
     }
 
     const seePosts = () => {
-        if (host === 'https://yoshi-connect.herokuapp.com/') {
+        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
             navigate('/users/' + username);
         } else {
             let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
@@ -129,7 +129,9 @@ function SearchCard(props) {
                     <br></br>
                     {host}
                     <Button onClick={seePosts} type="submit">View Profile</Button>
-                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    { id === viewerId ? null : 
+                        <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    }
                 </div>
             }
         </div>

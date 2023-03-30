@@ -168,12 +168,8 @@ router.post('/', async (req, res) => {
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
-
-		const [scheme, data] = authHeader.split(" ");
 		if(scheme === "Basic") {
-			const credential = Buffer.from(data, 'base64').toString('ascii');
-			const [serverName, password] = credential.split(":");
-			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
+			if( await IncomingCredentials.findOne({auth: authHeader})) {
 				authorized = true;
 			}
 		}

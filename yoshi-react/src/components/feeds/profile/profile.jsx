@@ -51,7 +51,7 @@ function Profile() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const {state} = useLocation();
-    const { posts } = state;
+    const { posts } = state || [];
     const { username } = useParams();
     const [personal, setPersonal] = useState({
         person: null,

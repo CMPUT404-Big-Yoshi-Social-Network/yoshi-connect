@@ -347,6 +347,15 @@ router.post('/:authorId', async (req, res) => {
   if (status == 404 || status == 401) { return res.sendStatus(status); }
 })
 
+router.get('/postTo/:username', async (req, res) => {
+  const username = req.params.username;
+  let author = await Author.findOne({username: username}).clone();
+  if (!author) { 
+    return res.sendStatus(404)
+  }  
+  return res.json(author);
+})
+
 /**
  * @openapi
  * /search/:username:

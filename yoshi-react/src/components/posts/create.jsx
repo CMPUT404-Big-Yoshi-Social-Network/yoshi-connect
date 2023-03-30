@@ -124,6 +124,13 @@ function CreatePost() {
             .catch((e) =>{ console.log(e); })
         } else {
             body.type = 'post'
+            axios
+            .get('/authors/postTo/' + body.postTo)
+            .then((response) => {
+                body.postTo = response.data._id;
+            })
+            .catch(err => { });
+
             await axios.post('/authors/' + data.postTo + '/inbox', body)
             .then((response) => { 
                 if (response.status === 200) {

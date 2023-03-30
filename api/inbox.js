@@ -186,7 +186,7 @@ router.post('/', async (req, res) => {
 			return res.sendStatus(401);
 		}
 		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
-			if (req.body.author.id !== undefined) {
+			if (req.body.author !== undefined) {
 				authorId = req.body.author.id.split("/");
 				authorId = authorId[authorId.length - 1];
 			} else {

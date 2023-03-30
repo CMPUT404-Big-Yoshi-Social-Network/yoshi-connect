@@ -241,8 +241,11 @@ async function postInboxLike(like, authorId){
     };
 
     //Add a like to the authors post/comment
+    if(await addLiked(author._id, like.object)){
+        return [like, 403];
+    }
     await addLike(like, authorId);
-    await addLiked(author._id, like.object);
+    
     
     //TODO Unliking should also be added
 
@@ -344,7 +347,7 @@ async function deleteInbox(token, authorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if (! (await authLogin(token, authorId))) { return 401; }
+    if (!(await authLogin(token, authorId))) { return 401; }
 
     const responses = await Inbox.updateOne({authorId: authorId},{requests: [], likes: [], posts: [], comments: []}).clone();
     

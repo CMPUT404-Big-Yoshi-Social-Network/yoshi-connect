@@ -195,6 +195,8 @@ router.post('/', async (req, res) => {
 		}
 		else if(req.body.type == "follow"){
 			authorId = req.body.actor.id;
+			authorId = authorId.split("/");
+			authorId = authorId[authorId.length - 1];
 		}
 		else{
 			return res.sendStatus(400);
@@ -219,7 +221,22 @@ router.post('/', async (req, res) => {
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
-		[response, status] = await postInboxFollow(req.body);
+		let actor = null;
+		if (req.body.actor.status !== undefined) {
+			const actorDoc = await Author.findOne({_id: req.body.actor.id});
+			actor = {
+				id: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
+				host: process.env.DOMAIN_NAME,
+				displayName: actorDoc.username,
+				url: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
+				github: actorDoc.github,
+				profileImage: actorDoc.profileImage
+			}
+		} else {
+			// remote
+			actor = req.body.actor;
+		}
+		[response, status] = await postInboxRequest(actor, req.params.authorId);
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);
@@ -238,7 +255,13 @@ router.post('/', async (req, res) => {
 	if(type === "post"){
 		//[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	else if(type === "follow"){
+	else if (type === "follow") {
+		response = {
+			type: "follow",
+			summary: response.summary,
+			actor: response.actor,
+			object: response.object
+		}
 	}
 	else if(type === "comment"){
 		response = {

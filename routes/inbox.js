@@ -371,6 +371,53 @@ async function postInboxComment(newComment, recieverAuthorId){
     return [comment, 200];
 }
 
+async function postInboxRequest(actor, receiverAuthorId) {
+    const object = await Author.findOne({_id: receiverAuthorId});
+
+    let summary = actor.displayName + ' wants to follow ' + object.username;
+
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+    let authorId = actor.id;
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
+    const request = {
+        _id: uuid,
+        actor: actor.displayName,
+        actorId: authorId,
+        objectId: object._id,
+        object: object.username
+    }
+
+    const inbox = await Inbox.findOne({authorId: receiverAuthorId});
+    inbox.requests.push(request);
+    inbox.save();
+
+    const jsonRequest = {
+        summary: summary, 
+        actor: {
+            type: 'author',
+            id: actor.id,
+            host: actor.host,
+            displayName: actor.displayName,
+            url: actor.url,
+            github: actor.github,
+            profileImage: actor.profileImage
+        }, 
+        object: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage 
+        }
+    }
+
+    return [jsonRequest, 200];
+}
+
 async function deleteInbox(token, authorId){
     /**
     Description: 

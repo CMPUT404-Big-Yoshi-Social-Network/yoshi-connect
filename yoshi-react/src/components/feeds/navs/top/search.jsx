@@ -73,7 +73,7 @@ function SearchCard(props) {
         let config = '';
         let url = '';
         let id = props.id.replace(props.host + 'authors/', '');
-        if (props.host === 'https://yoshi-connect.herokuapp.com/') {
+        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
             url = '/authors/' + id + '/inbox'
             config = {
                 actor: {
@@ -129,10 +129,7 @@ function SearchCard(props) {
                     <br></br>
                     {host}
                     <Button onClick={seePosts} type="submit">View Profile</Button>
-                    {
-                        host === 'https://yoshi-connect.herokuapp.com/' ? null : 
-                        <Button onClick={sendRequest} type="submit">{requestButton}</Button>
-                    }
+                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }
         </div>

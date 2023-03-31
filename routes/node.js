@@ -34,11 +34,19 @@ const crypto_js = require('crypto-js');
 
 async function getCreds(res, page, size, token, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets all incoming nodes which remote servers use to communicate
+    Associated Endpoint: /nodes/incoming
+						 /nodes/outgoing
+    Request Type: GET
+    Request Body: { token: 5yy7bCMPrSXSv9knpS4gfz }
+    Return: 403 Status (Forbidden) -- Author does not have access rights
+			200 Status (OK) -- Returns a JSON containing an empty array or array with sanitized nodes
+								{ type: nodes,
+								items: [ { type": "node",
+                						    	"id" : process.env.DOMAIN_NAME + "nodes/" + item._id,
+												"host": process.env.DOMAIN_NAME,
+												"displayName": item.displayName,
+												"url":  process.env.DOMAIN_NAME + "nodes/" + item._id } ]
     */
 	let coll = null
 	if (type == 'incoming') {

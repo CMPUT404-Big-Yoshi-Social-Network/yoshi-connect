@@ -222,6 +222,13 @@ function Post({viewerId, post}) {
                             )}
                         </div>}
                         <br></br>
+                        <div>
+                            { post.categories.map((category, idx) => (
+                                <div key={idx}>
+                                    <span class='category'>{category}</span>
+                                </div> 
+                            ))}
+                        </div>
                     {
                         post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
                     }    

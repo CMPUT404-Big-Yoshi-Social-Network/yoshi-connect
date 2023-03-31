@@ -182,11 +182,25 @@ async function getProfile(req, res) {
 
 async function getAuthor(authorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Retrives the Author from database
+    Associated Endpoint: /authors/:authorId
+                         /authors/:authorId/posts
+    Request Type: GET 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Author was not found in database
+            500 Status (Internal Server Error) -- Unable to retreive author from database 
+            200 Status (OK) -- Returns a JSON that contains 
+                                { type: author
+                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+                                    authorId: 29c546d45f564a27871838825e3dbecb,
+                                    host: https://yoshi-connect.herokuapp.com/,
+                                    displayName: abc, 
+                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
+                                    email: 123@aulenrta.ca,  
+                                    github: "https://github.com/name",
+                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
+                                    about: "author bio",
+                                    pronouns: "they/them" }
     */
     const author = await Author.findOne({_id: authorId}, function (err, author) {
         if (err) { return "server failure"; }
@@ -301,7 +315,7 @@ function validateAuthorObject(author){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github){
+    if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
         return false;
     }
 

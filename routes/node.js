@@ -135,12 +135,20 @@ async function getCred(res, token, credId, type) {
 
 async function postCred(req, res, token, type) {
 	/**
-    Description: Adds a new incoming / outgoing node to the database
+    Description: Stores incoming / outgoing node (nodes used to communicate with our server)
     Associated Endpoint: /nodes/incoming
 						 /nodes/outgoing
     Request Type: POST
-    Request Body: { username: kc, email: 123@aulenrta.ca }
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Request Body: { auth: "Basic abc:abc" }
+    Return: 403 Status (Forbidden) -- Author does not have access rights
+			200 Status (OK) -- Returns JSON with
+									{ type: 'node',
+										node: { _id: 67c43c5cc6484d4c9197153328849d0f
+												displayName: "abc"
+												url: "http://localhost:3000/api"
+												pasword: "abc"
+												allowed: false
+												auth: "Basic 29c546d45f564a27871838825e3dbecb" } }
     */
 	let coll = null
 	let auth = null
@@ -209,11 +217,14 @@ async function putCred(req, res, credId, token, type) {
 
 async function deleteCred(token, credId, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
+    Description: Deletes an existing incoming / outgoing node from the database
+    Associated Endpoint: /nodes/incoming/:credId
+						 /nodes/outgoing/:credId
     Request Type: DELETE
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Request Body: { _id: 67c43c5cc6484d4c9197153328849d0f }
+    Return: 403 Status (Forbidden) --  Author does not have access rights
+			500 Status (Internal Server Error) -- Unable to delete Cred from database
+			204 Status (No Content) -- Cred was successfully deleted from database
     */
 	let coll = null
 	if (type == 'incoming') {

@@ -40,35 +40,93 @@ async function senderAdded(authorId, foreignId, req, res) {
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     let success = true;
-
+    let isLocal = true;
     const actor = await Author.findOne({_id: authorId});
+    if (actor === null || actor === undefined) {
+        // Must be from another server
+        const outgoings = await OutgoingCredentials.find().clone();
+
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].allowed) {
+                const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+                if (outgoings[i].auth === 'userpass') {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors/' + authorId + '/',
+                        method: 'GET',
+                        auth: auth,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                } else {
+                  if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                      var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors/' + authorId + '/',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                      };              
+                  } else {
+                      var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors' + authorId + '/',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                      };
+                  }
+                }
+          
+                await axios.request(config)
+                .then( res => {
+                    actor = res.data 
+                })
+                .catch( error => { })
+            }
+        }
+        isLocal = false;
+    }
     const object = await Author.findOne({_id: foreignId});
     let uuidFollow = String(crypto.randomUUID()).replace(/-/g, "");
     let uuidF = String(crypto.randomUUID()).replace(/-/g, "");
 
-    await Following.findOne({authorId: authorId}, async function(err, following){
-        if (following) {
-            following.followings.push({_id: uuidFollow, authorId: foreignId, username: object.username});
-            await following.save();
-        } else {
-            let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
-            var following = {
-                _id: uuidFollowing,
-                username: actor.username,
-                authorId: authorId,
-                followings: [{
-                    _id: uuidFollow,
-                    username: object.username,
-                    authorId: foreignId
-                }]
-            };
-            following.save(async (err, following, next) => { if (err) { success = false; } })
-        }
-    }).clone();
+    if (isLocal) {
+        await Following.findOne({authorId: authorId}, async function(err, following){
+            if (following) {
+                following.followings.push({_id: uuidFollow, authorId: foreignId, username: object.username});
+                await following.save();
+            } else {
+                let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
+                var following = {
+                    _id: uuidFollowing,
+                    username: actor.username,
+                    authorId: authorId,
+                    followings: [{
+                        _id: uuidFollow,
+                        username: object.username,
+                        authorId: foreignId
+                    }]
+                };
+                following.save(async (err, following, next) => { if (err) { success = false; } })
+            }
+        }).clone();
+    }
 
     await Follower.findOne({authorId: foreignId}, async function(err, follower){
+        let actorUsername = '';
+        if (actor.username === undefined) {
+            actorUsername = actor.displayName
+        } else {
+            actorUsername = actor.username
+        }
         if (follower) {
-            follower.followers.push({_id: uuidF, username: actor.username, authorId: authorId});
+            follower.followers.push({_id: uuidF, username: actorUsername, authorId: authorId});
             await follower.save();
         } else {
             let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
@@ -78,7 +136,7 @@ async function senderAdded(authorId, foreignId, req, res) {
                 authorId: foreignId,
                 followers: [{
                     _id: uuidF,
-                    username: actor.username,
+                    username: actorUsername,
                     authorId: authorId
                 }]
             });
@@ -87,7 +145,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     }).clone()
 
     if (success) {
-        await deleteRequest(authorId, foreignId, res);
+        await deleteRequest(res, actor, object, foreignId, authorId, 'accept');
     } else {
         return res.sendStatus(500);
     }
@@ -163,7 +221,7 @@ async function sendRequest(authorId, foreignId, res) {
     }
 }
 
-async function deleteRequest(authorId, foreignId, res) {
+async function deleteRequest(res, actor, object, foreignId, authorId, status) {
     /**
     Description: 
     Associated Endpoint: (for example: /authors/:authorid)
@@ -171,32 +229,90 @@ async function deleteRequest(authorId, foreignId, res) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    const actor = await Author.findOne({_id: authorId});  
-    const object = await Author.findOne({_id: foreignId});
+    if (actor === null || actor === undefined) {
+        actor = await Author.findOne({_id: authorId});
+        if (actor === null || actor === undefined) {
+            // Must be from another server
+            const outgoings = await OutgoingCredentials.find().clone();
+
+            for (let i = 0; i < outgoings.length; i++) {
+                if (outgoings[i].allowed) {
+                    const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+                    if (outgoings[i].auth === 'userpass') {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors/' + authorId + '/',
+                            method: 'GET',
+                            auth: auth,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    } else {
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors/' + authorId + '/',
+                            method: 'GET',
+                            headers: {
+                                'Authorization': auth,
+                                'Content-Type': 'application/json'
+                            }
+                        };              
+                    } else {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors' + authorId + '/',
+                            method: 'GET',
+                            headers: {
+                                'Authorization': auth,
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    }
+                    }
+            
+                    await axios.request(config)
+                    .then( res => {
+                        actor = res.data 
+                    })
+                    .catch( error => { })
+                }
+            }
+        } else {
+            actor = {
+                type: 'author',
+                id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+                host: process.env.DOMAIN_NAME,
+                displayName: actor.username,
+                url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }
+        }
+    }
+
+    if (object === null || object === undefined) {
+        object = await Author.findOne({_id: foreignId});
+    }
 
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
-
-    if (!actor && !object) { return 500 }
 
     let summary = '';
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
     const request = inbox.requests[idx]
     inbox.requests.splice(idx, 1);
     inbox.save();
-    summary = actor.username + " wants to undo " + request.type + " request to " + object.username;  
+    if (status !== 'accept') {
+        summary = actor.displayName + " wants to undo " + request.type + " request to " + object.username; 
+    } else {
+        summary = object.username + " accepted request from " + actor.displayName; 
+    }
 
     return res.json({
-        type: request.type,
+        type: status,
         summary: summary,
-        actor: {
-            type: 'author',
-            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
-            host: process.env.DOMAIN_NAME,
-            displayName: actor.username,
-            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
-            github: actor.github,
-            profileImage: actor.profileImage
-        },
+        actor: actor,
         object: {
             type: 'author',
             id: process.env.DOMAIN_NAME + "authors/" + object._id,

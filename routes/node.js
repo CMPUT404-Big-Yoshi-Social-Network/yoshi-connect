@@ -243,10 +243,11 @@ async function deleteCred(token, credId, type) {
 async function allowNode(res, credId, type){
 	/**
     Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Associated Endpoint: /nodes/incoming/:credId
+						 /nodes/outgoing/:credId
+    Request Type: PUT
+    Request Body: { _id: 67c43c5cc6484d4c9197153328849d0f }
+    Return: 200 Status (OK) -- Cred was successfully enabled / disabled
     */
 	let coll = null
 	if (type == 'incoming') {

@@ -71,6 +71,7 @@ Foundation; All Rights Reserved
     border-radius: 0.50em;
     padding: .4em 1.5em;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .search-card {
@@ -96,6 +97,7 @@ Foundation; All Rights Reserved
     border-radius: 0.50em;
     padding: .2em .5em;
     text-decoration: none;
+    cursor: pointer;
 }
 .search-next{
     position: relative;
@@ -107,6 +109,7 @@ Foundation; All Rights Reserved
     border-radius: 0.50em;
     padding: .2em .5em;
     text-decoration: none;
+    cursor: pointer;
 }
 .search-username{
     display: inline-block;

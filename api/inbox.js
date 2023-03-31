@@ -285,43 +285,6 @@ router.post('/', async (req, res) => {
 /**
  * @openapi
  * /authors/:authorId/inbox/requests/:foreignAuthorId:
- *  put:
- *    summary: creates a request and saves it into the inbox
- *    tags:
- *      - inbox 
- *    parameters:
- *      - in: path
- *        name: authorId
- *        schema:
- *          type: string
- *        description: id of an Author
- *      - in: path
- *        name: foreignAuthorId
- *        schema:
- *          type: string
- *        description: id of an foreign Author
- *    responses:
- *      200: 
- *        description: OK, successfully saves the request to the Inbox
- */
-router.put('/requests/:foreignAuthorId', async (req, res) => {
-	const authorId = req.params.authorId;
-	const foreignId = req.params.foreignAuthorId;
-  
-	const request = await sendRequest(authorId, foreignId, res);
-  
-	return res.json({
-	  "type": request.type,
-	  "summary": request.summary,
-	  "actor": request.actor,
-	  "object": request.object
-	})
-})
-
-// TBA 200
-/**
- * @openapi
- * /authors/:authorId/inbox/requests/:foreignAuthorId:
  *  get:
  *    summary: creates a request and saves it into the inbox
  *    tags:

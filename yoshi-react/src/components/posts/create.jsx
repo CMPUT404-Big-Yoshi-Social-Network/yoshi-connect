@@ -41,6 +41,18 @@ function CreatePost() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
+    const [categories, setCategories] = useState([])
+
+    function saveCategory(e) {
+        if (e.key !== 'Enter') {
+            return
+        } 
+        const category = e.target.value;
+        if (!category.trim()) {
+            return
+        }
+        setCategories([...categories, category]);
+    }
     const [data, setData] = useState({
         title: "",
         description: "",
@@ -106,6 +118,7 @@ function CreatePost() {
             likes: data.likes,
             comments: data.comments,
             unlisted: data.unlisted,
+            categories: categories,
             postTo: data.postTo,
             image: data.image,
             type: '',
@@ -234,6 +247,15 @@ function CreatePost() {
                         <div style={{color:"white", textAlign:"right"}}>
                             {item.size} of 10MB
                         </div>
+
+                        <p>Categories</p>
+                        { categories.map((category, idx) => (
+                            <div idx={idx}>
+                                <span class='category'>{category}</span>
+                                <span class='close'>&times;</span>
+                            </div> 
+                        ))}
+                        <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
 
                         <button className={"createPostButton"} type={"button"} onClick={savePost}>Create Post</button>
                     </form>

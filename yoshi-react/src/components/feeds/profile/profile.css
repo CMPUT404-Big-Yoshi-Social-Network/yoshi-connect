@@ -36,13 +36,13 @@ Foundation; All Rights Reserved
 .profile-image{
     position: absolute;
     width: 150px;
-    margin: 3em 0em 0em 4em;
+    margin: 3em 0em 0em 6em;
     display: inline-flex;
 }
 .profile-username{
     position: relative;
     margin-top: 1.5em;
-    margin-left: 8em;
+    margin-left: 9em;
     position: relative;
     color: #63d8f8;
     display: inline-flex;
@@ -60,6 +60,7 @@ Foundation; All Rights Reserved
     border: #735DFA;
     border-radius: .5em;
     cursor: pointer;
+    margin: 0em 10em 0em 0em;
 }
 .profile-buttons:hover{
     background-color: #a7e7f8;
@@ -67,7 +68,12 @@ Foundation; All Rights Reserved
 }
 .profile-about{
     position: relative;
-    margin: 5em 0em 2em 16em;
+    margin: 5em 0em 2em 18em;
+}
+.profile-nums {
+    position: relative;
+    display: inline-flex;
+    margin: 3em 0em 0em 6em;
 }
 hr {
     position: relative;

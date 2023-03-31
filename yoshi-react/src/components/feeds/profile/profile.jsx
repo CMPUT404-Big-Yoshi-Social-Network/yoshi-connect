@@ -79,6 +79,9 @@ function Profile() {
         let viewed = '';
         let viewedId = '';
         let viewerId = '';
+        let numPosts = '';
+        let numFollowing = '';
+        let numFollowers = '';
         let otherUrl = '';
 
         const isRealProfile = () => {
@@ -97,12 +100,18 @@ function Profile() {
                 viewed = response.data.viewed
                 viewedId = response.data.viewedId
                 viewerId = response.data.viewerId
+                numPosts = response.data.numPosts
+                numFollowing = response.data.numFollowing
+                numFollowers = response.data.numFollowers
                 console.log("Everything", response.data)
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
                 setPersonal(prevViewer => ({...prevViewer, viewer}))
                 setPersonal(prevViewed => ({...prevViewed, viewed}))
                 setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
                 setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+                setPersonal(prevNumPosts => ({...prevNumPosts, numPosts}))
+                setPersonal(prevNumFollowing => ({...prevNumFollowing, numFollowing}))
+                setPersonal(prevNumFollowers => ({...prevNumFollowers, numFollowers}))
 
                 otherUrl = 'other/' + viewedId;
                 setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
@@ -327,6 +336,9 @@ function Profile() {
                     <p className='profile-pronouns' >{profileInfo.pronouns}</p>
                     { personal.person ? null : 
                         <button style={{marginLeft: '1.8em'}} className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
+                    <p className='profile-nums'>{personal.numPosts} Posts</p> 
+                    <p className='profile-nums'>{personal.numFollowing} Following</p> 
+                    <p className='profile-nums'>{personal.numFollowers} Followers</p>
                     <p className='profile-about'>{profileInfo.about}</p>
                     
                     <hr/>

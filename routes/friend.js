@@ -61,11 +61,11 @@ async function getFollowings(id){
 
 async function getFriends(id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets friends list associated with authorId
+    Associated Endpoint: /authors/:authorId/friends
+    Request Type: GET
+    Request Body: N/A
+    Return: 200 Status (OK) -- Returns array of Friends
     */
     const following = await Following.aggregate([
         {

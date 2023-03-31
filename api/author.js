@@ -414,7 +414,7 @@ router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
   const localAuthor = await Author.findOne({username: username}); 
   let authors = []
-  if (localAuthor !== undefined) {
+  if (localAuthor !== undefined && localAuthor !== null) {
     const sanitizedAuthor = {
       "type": "author",
       "id" : process.env.DOMAIN_NAME + "authors/" + localAuthor._id,

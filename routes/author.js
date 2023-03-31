@@ -337,11 +337,11 @@ async function getAuthors(page, size){
 
 function validateAuthorObject(author){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Validates the Author from the database 
+    Associated Endpoint: N/A
+    Request Type: N/A
+    Request Body: N/A
+    Return: N/A
     */
     if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
         return false;

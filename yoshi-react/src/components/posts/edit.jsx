@@ -204,13 +204,15 @@ function EditPost({viewerId, post}) {
                 </div>
 
                 <p>Categories</p>
+                <div>
                     { categories.map((category, idx) => (
                         <div idx={idx}>
                             <span class='category'>{category}</span>
                             <span class='close'>&times;</span>
                         </div> 
                     ))}
-                <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
+                    <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
+                </div>
 
                 <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Post</button>
             </form>

@@ -30,6 +30,7 @@ import { Nav } from 'react-bootstrap';
 // Styling
 import './create.css';
 
+//Reference for tagging: https://www.youtube.com/watch?v=l8Jd7Ub4yJE&ab_channel=AngleBrace
 function CreatePost() {
     /**
      * Description: Represents the CreatePost Form 
@@ -249,13 +250,16 @@ function CreatePost() {
                         </div>
 
                         <p>Categories</p>
-                        { categories.map((category, idx) => (
-                            <div idx={idx}>
-                                <span class='category'>{category}</span>
-                                <span class='close'>&times;</span>
-                            </div> 
-                        ))}
-                        <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
+                        
+                        <div>
+                            { categories.map((category, idx) => (
+                                <div idx={idx}>
+                                    <span class='category'>{category}</span>
+                                    <span class='close'>&times;</span>
+                                </div> 
+                            ))}
+                            <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
+                        </div>
 
                         <button className={"createPostButton"} type={"button"} onClick={savePost}>Create Post</button>
                     </form>

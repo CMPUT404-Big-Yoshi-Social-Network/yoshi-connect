@@ -189,7 +189,7 @@ async function getAuthor(authorId){
     Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
     Return: 404 Status (Not Found) -- Author was not found in database
             500 Status (Internal Server Error) -- Unable to retreive author from database 
-            200 Status (OK) -- Returns a JSON that contains 
+            200 Status (OK) -- Returns a JSON of sanitized Author 
                                 { type: author
                                     id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
                                     authorId: 29c546d45f564a27871838825e3dbecb,
@@ -230,11 +230,26 @@ async function getAuthor(authorId){
 
 async function updateAuthor(token, author){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
+    Description: Updates the Author in the database
+    Associated Endpoint: /settings
+                         /authors/:authorId                        
+    Request Type: POST
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Return: 401 Status (Unathorized) -- Author token is not authenticated
+            404 Status (Not Found) -- Author was not found in database
+            400 Status (Bad Request) -- Type, authorId, host, or username are incorrect
+            200 Status (OK) -- Returns JSON of sanitized Author 
+                                { type: author
+                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+                                    authorId: 29c546d45f564a27871838825e3dbecb,
+                                    host: https://yoshi-connect.herokuapp.com/,
+                                    displayName: abc, 
+                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
+                                    email: 123@aulenrta.ca,  
+                                    github: "https://github.com/name",
+                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
+                                    about: "author bio",
+                                    pronouns: "they/them" }
     */
     if (await checkExpiry(token)) { return [null, 401]; }
 

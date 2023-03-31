@@ -39,7 +39,10 @@ function RightNavBar() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
-    const [username, setUsername] = useState('');
+    const [profile, setProfile] = useState({
+        username: "", 
+        pic: ""
+    });
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -47,16 +50,15 @@ function RightNavBar() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let username = response.data.displayName;
-                setUsername(username)
+                setProfile({...profile, username: response.data.displayName, pic: response.data.profileImage})
             })
             .catch(err => { if (err.response.status === 404) { 
-                setUsername('')
+                setProfile({...profile, username: ""})
             } 
             });
         }
         getId();
-    }, [username, navigate])
+    }, [navigate])
 
     return (
         <Navbar className="right-column">
@@ -64,8 +66,8 @@ function RightNavBar() {
                 <Nav>
                     <div className='rn-div'>
                     {/* TODO: Needs to fetch username  */}
-                        <img className='rn-pubUserImg' alt='rn-pubUser' src='/images/public/icon_profile.png' width={40}/>
-                        <Nav.Link className='rn-user' href={`/users/${username}`}>{username}</Nav.Link> 
+                    {profile.pic === "" ? <img className='rn-pubUserImg' alt='rn-pubUser' src='/images/public/icon_profile.png' width={40}/> : <img className='rn-pubUserImg' alt='rn-pubUser' src={profile.pic} width={40}/>}
+                        <Nav.Link className='rn-user' href={`/users/${profile.username}`}>{profile.username}</Nav.Link> 
                     </div>
                     <div className='rn-div'>
                         <img className='rn-pubFeedImg' alt='rn-pubFeedImg' src='/images/public/icon_public_feed.png' width={25}/>

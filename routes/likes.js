@@ -100,7 +100,8 @@ async function addLike(like, authorId, postId){
     const summary = like.summary;
     let object = like.object;
     const author = like.author;
-
+    author._id = author.id;
+    
     if(!type || !summary || !object){
         return [{}, 400];
     }
@@ -135,8 +136,6 @@ async function addLike(like, authorId, postId){
     }
     else{ return [{}, 400]; }
 
-    
-
     likes.likes.push(author);
     await likes.save();
     return [{}, 200];
@@ -155,8 +154,8 @@ async function addLiked(authorId, objectId){
     let authorUUID = authorId.split("/")
     authorUUID = authorUUID[authorUUID.length - 1]; 
     const liked = await LikedHistory.findOne({authorId: authorUUID});
-    if(!liked){
-        return;
+    if(!liked || liked.liked.id(objectId)){
+        return 1;
     }
 
     let object = objectId.split("/");
@@ -165,7 +164,7 @@ async function addLiked(authorId, objectId){
     liked.liked.push({type: (type == "posts") ? "post" : "comment", _id: objectId});
     liked.numObjects++;
     await liked.save();
-    return;
+    return 0;
 }
 
 //TODO Refactor this to work

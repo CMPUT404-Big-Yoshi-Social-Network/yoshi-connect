@@ -239,6 +239,7 @@ async function updateAuthor(token, author){
     if (author.github != undefined) { authorProfile.github = author.github; }
     if (author.password != undefined) { authorProfile.password = crypto_js.SHA256(author.password); }
     if (author.admin != undefined) { authorProfile.admin = author.admin; }
+    if (author.profileImage != undefined) { authorProfile.profileImage = author.profileImage; }
 
     await authorProfile.save();
 

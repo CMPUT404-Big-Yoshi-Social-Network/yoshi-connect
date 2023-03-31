@@ -225,6 +225,10 @@ async function postInboxLike(like, authorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
+
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
     if(!validateAuthorObject(author)){
@@ -236,13 +240,16 @@ async function postInboxLike(like, authorId){
         host: author.host,
         displayName: author.displayName,
         url: author.url,
-        github: author.github, //TODO I don't think we need this but I'll leave it here for later consideration
+        github: author.github, 
         profileImage: author.profileImage
     };
 
     //Add a like to the authors post/comment
+    if(await addLiked(author._id, like.object)){
+        return [like, 403];
+    }
     await addLike(like, authorId);
-    await addLiked(author._id, like.object);
+    
     
     //TODO Unliking should also be added
 
@@ -307,7 +314,9 @@ async function postInboxComment(newComment, recieverAuthorId){
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const post = postHistory.posts.id(postId);
     if(!post){ return [{}, 404]; }
-
+    post.commentCount++;
+    await postHistory.save();
+    
     const commentHistory = await CommentHistory.findOne({postId: postId});
     if(!commentHistory){ return [{}, 500]; }
     if(commentHistory.comments.id(commentId)){ return [{}, 400]; }
@@ -344,7 +353,7 @@ async function deleteInbox(token, authorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if (! (await authLogin(token, authorId))) { return 401; }
+    if (!(await authLogin(token, authorId))) { return 401; }
 
     const responses = await Inbox.updateOne({authorId: authorId},{requests: [], likes: [], posts: [], comments: []}).clone();
     

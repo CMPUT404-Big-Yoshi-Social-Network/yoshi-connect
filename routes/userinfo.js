@@ -25,12 +25,14 @@ const { getAuthor } = require('./author.js')
 
 async function getUserInfo(token){
     /**
-    Description: Gets the Author's information 
+    Description: Gets the Author's user information 
     Associated Endpoint: /userinfo
     Request Type: GET
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
     Return: 401 Status (Unauthorized) -- Author token is not authenticated
-            200 Status (OK) -- Returns JSON 
+            404 Status (Not Found) -- Author was not found in database
+            500 Status (Internal Server Error) -- Unable to retreive author from database
+            200 Status (OK) -- Returns Author's authorId  
     */
     if (await checkExpiry(token)) { return [{}, 401]; }
     

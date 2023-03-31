@@ -56,6 +56,11 @@ async function fetchPublicPosts(page, size) {
             }
         },
         {
+            $match: {
+                'unlisted': false
+            }
+        },
+        {
             $sort: { "published": -1 }
         },
         {

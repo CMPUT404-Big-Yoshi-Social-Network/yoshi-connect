@@ -125,4 +125,15 @@ Foundation; All Rights Reserved
     border-radius: .5em; */
     cursor: pointer;
 }
+.notif-card{
+    position: fixed;
+    padding: 1em;
+    width: 15%;
+    height: auto;
+    background-color: #090D0E;
+    border: #24292F 0.1em solid;
+    border-radius: .5em;
+    right: 18.3em;
+    top: 4em;
+}
 

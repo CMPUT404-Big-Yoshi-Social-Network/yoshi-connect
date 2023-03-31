@@ -33,7 +33,7 @@ const { PostHistory, PublicPost } = require('../scheme/post.js');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
 
-async function fetchPublicPosts(page, size) {
+async function fetchPublicPosts(page, size, isLocal) {
     /**
     Description: 
     Associated Endpoint: (for example: /authors/:authorid)
@@ -53,6 +53,11 @@ async function fetchPublicPosts(page, size) {
                 "published": {
                     $dateFromString: { dateString: "$published" }
                 }
+            }
+        },
+        {
+            $match: {
+                'unlisted': false
             }
         },
         {
@@ -88,163 +93,67 @@ async function fetchPublicPosts(page, size) {
     response = {
         items: publicPosts
     }
-    
-    return [response, 200];
-    // const outgoings = await OutgoingCredentials.find().clone();
 
-    // for (let i = 0; i < outgoings.length; i++) {
-    //     if (outgoings[i].allowed) {
-    //         const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
-    //         if (outgoings[i].auth === 'userpass') {
-    //             var config = {
-    //                 host: outgoings[i].url,
-    //                 url: outgoings[i].url + '/posts/public',
-    //                 method: 'GET',
-    //                 auth: auth,
-    //                 headers: {
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             };
-    //         } else {
-    //             var config = {
-    //                 host: outgoings[i].url,
-    //                 url: outgoings[i].url + '/posts/public',
-    //                 method: 'GET',
-    //                 headers: {
-    //                     'Authorization': auth,
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             };
-    //         }
-      
-    //         await axios.request(config)
-    //         .then( res => {
-    //             let items = []
-    //             if (outgoings[i].auth === 'userpass') {
-    //                 items = res.data.results
-    //             } else {
-    //                 items = res.data.items
-    //             }
-    //             for (let j = 0; j < items.length; j++) {
-    //                 publicPosts.push(items[j]);
-    //             }
-    //         })
-    //         .catch( error => {
-    //             console.log(error);
-    //         })
-    //     }
-    // }
-    /* 
-    var config = {
-        host: 'http://www.distribution.social/api',
-        url: 'http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts',
-        method: 'GET',
-        headers: {
-            'Authorization': 'Basic eW9zaGk6eW9zaGkxMjM=',
-            'Content-Type': 'application/json'
-        }
-    };
-    await axios.request(config)
-    .then( res => { })
-    .catch( error => {  })
+    if (isLocal) {
+        const outgoings = await OutgoingCredentials.find().clone();
 
-    var config = {
-        host: 'https://sociallydistributed.herokuapp.com',
-        url: 'https://sociallydistributed.herokuapp.com/posts/authors/546de5fe-77ea-4cc2-93f9-7a3825132d68/posts/',
-        method: 'GET',
-        auth: { username: 'Yoshi_Connects', password: 'MinionConnector1' },
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-    await axios.request(config)
-    .then( res => { 
-        publicPosts = publicPosts.concat(res.data.results) 
-    })
-    .catch( error => { })
-
-    var config = {
-        host: 'https://bigger-yoshi.herokuapp.com/api',
-        url: 'https://bigger-yoshi.herokuapp.com/api/authors/6421fdb1000041ba410007/posts/',
-        method: 'GET',
-        headers: {
-            'Authorization': 'Basic bWFuOjEyMw==',
-            'Content-Type': 'application/json'
-        }
-    };
-    await axios.request(config)
-    .then( res => {
-        publicPosts = publicPosts.concat(res.data.items) 
-    })
-    .catch( error => {
-        console.log('Error')
-    })
-
-    
-    
-    /*
-    const outgoings = await OutgoingCredentials.find().clone();
-    
-    // TODO: WORKING ON THIS WIP
-    let fposts = [];
-    /*
-    for (let i = 0; i < 1; i++) {
-        var config = {
-            host: outgoings[i].url,
-            url: outgoings[i].url + "/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts",
-            method: 'GET',
-            headers: {
-                'Authorization': outgoings[i].auth,
-                'Content-Type': 'application/json'
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].allowed || outgoings[i].url !== 'https://bigger-yoshi.herokuapp.com/api') {
+                const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+                if (outgoings[i].auth === 'userpass') {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/posts/public/',
+                        method: 'GET',
+                        auth: auth,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        params: {
+                            page: page,
+                            size: size
+                        },
+                        data: {
+                            local: false
+                        }
+                    };
+                } else {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/posts/public',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        },
+                        params: {
+                            page: page,
+                            size: size
+                        }
+                    };
+                }
+          
+                await axios.request(config)
+                .then(res => {
+                    let items = []
+                    if (outgoings[i].auth === 'userpass') { 
+                        items = res.data.filter((i)=>i !== null && typeof i !== 'undefined');
+                    } else {
+                        if (typeof(res.data) != string) {
+                            items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
+                        }
+                    }
+                    publicPosts = publicPosts.concat(items);
+                })
+                .catch( error => { })
             }
-        };
-        console.log(config)
-        await axios.request(config)
-        .then( res => {
-            let items = res.data.items
-            fposts = fposts.concat(items);
-        })
-        .catch( error => {
-            console.log(error);
-        })
-    }
-    */
-    /*
-    let response = await axios.get('http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts', {
-        headers: {
-            'Authorization': 'Basic eW9zaGk6eW9zaGkxMjM=',
-            'Content-Type': 'application/json'
         }
-    })
-
-    let allPosts = null;
-    if (publicPosts[0] != undefined && posts != undefined) {
-        allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
-    } else if (posts != undefined && posts[0]?.posts_array != undefined) {
-        allPosts = posts[0].posts_array;
-    } else if (publicPosts[0] != undefined) {
-        allPosts = publicPosts[0].publicPosts;
-    } else {
-        allPosts = [];
-    }
-    */
-    // Remove duplicates (https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects)
-    //allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
-
-    /*WIP*/
-    /*
-    for(let i = 0; i < response.data.items.length; i++){
-        allPosts.push(response.data.items[i]);
     }
 
-    if (allPosts && isPublicExists){
-        return res.json({
-            type: "posts",
-            items: allPosts
-          });
+    response = {
+        items: publicPosts
     }
-    */
-
+    return [response, 200];
 }
 
 module.exports={

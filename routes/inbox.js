@@ -6,6 +6,7 @@ mongoose.set('strictQuery', true);
 const { Post, Inbox, PostHistory } = require('../scheme/post.js');
 const { Like, Comment, CommentHistory } = require('../scheme/interactions.js');
 const { Request } = require('../scheme/relations.js');
+const { Author } = require('../scheme/author.js');
 
 // UUID
 const crypto = require('crypto');
@@ -13,11 +14,11 @@ const crypto = require('crypto');
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
 const { createComment } = require('./comment.js');
-const { validateAuthorObject } = require('./author.js');
-const axios = require('axios');
+const { validateAuthorObject, getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
+const { createPost } = require('./post.js');
 
 async function getInbox(token, authorId, page, size){
     /**
@@ -178,6 +179,10 @@ async function postInboxPost(post, recieverAuthorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
+    const postFrom = post.authorId // Need to discuss wherther other teams will follow this
+    if (post.id === undefined) {
+        post = (await createPost(null, post.authorId, post.id, {...post, postFrom: postFrom}))[0];
+    }
     const type = post.type;
     const title = post.title;
     const id = post.id;
@@ -191,27 +196,22 @@ async function postInboxPost(post, recieverAuthorId){
     const authorHost = post.author.host;
     const authorDisplayName = post.author.displayName;
     const authorUrl = post.author.url;
-    const authorGithub = post.author.github;
-    const authorProfileImage = post.author.profileImage;
     const categories = post.categories;
-    const count = post.count;
     const published = post.published;
-    const postTo = post.postTo // Need to discuss wherther other teams will follow this
     //Used to mark if this is a private message or a follower post.
     const visibility = post.visibility;
-    const unlisted = post.unlisted;
 
     if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||
-        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || !count || 
-        !published || !visibility || !unlisted)
+        !authorHost || !authorDisplayName || !authorUrl || !categories || 
+        !published || !visibility)
     {
         return [{}, 400];
     }
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
-
+    
     post._id = id
-    inbox.posts.push(post);
+    inbox.posts.push({...post, postFrom: postFrom});
     await inbox.save();
     delete post._id;
     return [post, 200]
@@ -345,6 +345,53 @@ async function postInboxComment(newComment, recieverAuthorId){
     return [comment, 200];
 }
 
+async function postInboxRequest(actor, receiverAuthorId) {
+    const object = await Author.findOne({_id: receiverAuthorId});
+
+    let summary = actor.displayName + ' wants to follow ' + object.username;
+
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+    let authorId = actor.id;
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
+    const request = {
+        _id: uuid,
+        actor: actor.displayName,
+        actorId: authorId,
+        objectId: object._id,
+        object: object.username
+    }
+
+    const inbox = await Inbox.findOne({authorId: receiverAuthorId});
+    inbox.requests.push(request);
+    inbox.save();
+
+    const jsonRequest = {
+        summary: summary, 
+        actor: {
+            type: 'author',
+            id: actor.id,
+            host: actor.host,
+            displayName: actor.displayName,
+            url: actor.url,
+            github: actor.github,
+            profileImage: actor.profileImage
+        }, 
+        object: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage 
+        }
+    }
+
+    return [jsonRequest, 200];
+}
+
 async function deleteInbox(token, authorId){
     /**
     Description: 
@@ -369,5 +416,6 @@ module.exports = {
     deleteInbox,
     postInboxPost,
     postInboxLike,
-    postInboxComment
+    postInboxComment,
+    postInboxRequest
 }

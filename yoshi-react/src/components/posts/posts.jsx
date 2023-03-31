@@ -101,8 +101,7 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => {
-            console.log(response.data)
-            setPosts(posts.concat(response.data.items));
+            setPosts(response.data.items);
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -110,7 +109,6 @@ function Posts(props) {
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                //TEMPORARY
                 setPosts([]);
                 navigate('/servererror')
             }
@@ -144,7 +142,7 @@ function Posts(props) {
         });
         
        } 
-    }, [url, navigate]);
+    }, [url, navigate, page, size]);
 
     const getMore = () => {
         /**

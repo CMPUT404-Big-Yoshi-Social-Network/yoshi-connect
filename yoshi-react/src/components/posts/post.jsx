@@ -48,32 +48,50 @@ function Post({viewerId, post, author}) {
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
-    const [image, setImage] = useState("");
-    const [items, setItems] = useState(undefined);
+    const [item, setItem] = useState("");
+    const url = "/authors/" + authorId + "/posts/" + postId + "/image"
 
     const navigate = useNavigate();
 
+    useEffect(() => {
     /**
          * Description:  
          * Request: (if axios is used)    
          * Returns: 
          */
-    
-    useEffect(() => {
-        console.log('Debug: <TLDR what the function is doing>') 
-        const getImage = () => {
-            axios
-            .get("/authors/" + authorId + "/posts/" + postId + "/image")
-            .then((res) => {
-                if (res.data.status === 200) {
-                    setImage(res.data.src)
-                } else {
-                    setImage('')
-                }
-            })
+        if (viewerId !== null) {
+            console.log('Debug: <TLDR what the function is doing>') 
+            const getImage = () => {
+                axios
+                .get(url)
+                .then((res) => {
+                    if (res.data.status === 200) {
+                        setItem(res.data.src)
+                    } else {
+                        setItem('')
+                    }
+                })
+            }
+            getImage();
         }
-        getImage();
-    }, [])
+    }, [url, viewerId])
+
+    useEffect(() => {
+        /**
+         * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
+         * Request: POST
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        const hasLiked = () => {
+            // axios
+            // .get('/authors/' + authorId + '/posts/' + postId + '/liked')
+            // .then((response) => { setLike(true) })
+            // .catch(err => { setLike(false) });
+            console.log('In construction')
+        }
+        hasLiked();
+    }, [authorId, postId])
 
     useEffect(() => {    
         getLikes();
@@ -222,40 +240,54 @@ function Post({viewerId, post, author}) {
 
     return (
         <div className="post">
-            {!post.unlisted &&
-                <div>
-                    { post.title === "" ? null : <h1>{post.title}</h1> }
-                    { post.description === "" ? null : <h3>{ post.description }</h3> }
-                    { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" ><img className={"image"} src={image} alt=""/></a>}
+            <div>
+                { post.title === "" ? null : <h1>{post.title}</h1> }
+                { post.description === "" ? null : <h3>{ post.description }</h3> }
+                { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
+                <img className={"image"} src={item} alt=""/>
 
-                    <p>{published}</p>
+                <p>{post.published}</p>
+                <br></br>
+                { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons' onClick={removeLike}>Unlike</button></span>} 
+                <br></br>
+                {numComments}
+                { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
+
+                {showComment && 
+                    <div>
+                        <h3>Comments</h3>
+
+                        <form >
+                            <input type="text" id="newComment" name="newComment" onChange={(e) => {
+                                setComment({...comment, newComment: e.target.value})
+                            }}/>
+                            <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
+                        </form>
+                        {
+                            Object.keys(post.comments).map((comment, idx) => (
+                            <Comment key={idx} authorId={authorId} viewerId={viewerId} postId={postId} {...post.comments[comment]}/>
+                            )
+                        )}
+                    </div>}
                     <br></br>
-                    { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons' onClick={removeLike}>Unlike</button></span>} 
-                    <br></br>
-                    {numComments}
-                    { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
+                    <div>
 
-                    {showComment && 
-                        <div>
-                            <h3>Comments</h3>
-
-                            <form >
-                                <input type="text" id="newComment" name="newComment" onChange={(e) => {
-                                    setComment({...comment, newComment: e.target.value})
-                                }}/>
-                                <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
-                            </form>
-                           <Comments key={commentCreated} viewerId={viewerId} url={post.id + '/comments'} author={author}> </Comments>
-                        </div>}
-                        <br></br>
-                    {
-                        post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
-                    }    
-                    {
-                        post.authorId !== viewerId ? null : <button className='post-buttons' onClick={deletePost}>Delete</button>
-                    }    
-                </div>}
+                        { post.categories !== undefined ? 
+                            post.categories.map((category, idx) => (
+                                <div key={idx}>
+                                    <span class='category'>{category}</span>
+                                </div> 
+                            )) : 
+                            null
+                        }
+                    </div>
+                {
+                    post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
+                }    
+                {
+                    post.authorId !== viewerId ? null : <button className='post-buttons' onClick={deletePost}>Delete</button>
+                }    
+            </div>
         </div>
     )
 }

@@ -20,19 +20,29 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
-function Follow(props) {
+function Messenger(props) {
     /**
-     * Description:   
+     * Description:    
      * Returns: 
      */
     console.log('Debug: <TLDR what the function is doing>')
+    const [author, setAuthor] = useState()
+    useEffect(() => {
+        axios
+        .get('/authors/' + props.currentMessenger)
+        .then((response) => {
+            setAuthor(response.data)
+        })
+        .catch(err => { });
+    }, [props]);
     return (
-        <div id='follow'>
-            { props.displayName || props.displayname }
+        <div id='messenger'>
+            {author?.displayName !== undefined ? author.displayName : null }
         </div>
     )
 }
 
-export default Follow;
+export default Messenger;

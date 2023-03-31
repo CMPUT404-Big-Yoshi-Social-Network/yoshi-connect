@@ -21,18 +21,33 @@ Foundation; All Rights Reserved
 
 // Functionality
 import React from "react";
+import Pagination from 'react-bootstrap/Pagination';
 
-function Follow(props) {
+// Child Component
+import Post from './post.jsx';
+
+function RemotePosts(props) { 
     /**
-     * Description:   
+     * Description:  
+     * Request: (if axios is used)    
      * Returns: 
      */
     console.log('Debug: <TLDR what the function is doing>')
+
     return (
-        <div id='follow'>
-            { props.displayName || props.displayname }
+        <div>
+            { props.type.length !== 0 ? 
+                <Pagination>
+                    {Object.keys(props.type).map((post, idx) => (
+                        <Post key={idx} viewerId={null} post={props.type[post]}/>
+                    ))}
+                </Pagination> :
+                <div>
+                    <h4>No posts to show.</h4>
+                </div>
+            }
         </div>
     )
 }
 
-export default Follow;
+export default RemotePosts;

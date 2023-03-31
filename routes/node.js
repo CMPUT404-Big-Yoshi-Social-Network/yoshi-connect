@@ -105,7 +105,7 @@ async function getCred(res, token, credId, type) {
 			200 Status (OK) -- Returns JSON with
 									{ type: 'node',
 										node: { _id: 67c43c5cc6484d4c9197153328849d0f
-												displayName: 
+												displayName: "abc"
 												url: ""
 												pasword: "abc"
 												allowed: false
@@ -169,11 +169,22 @@ async function postCred(req, res, token, type) {
 
 async function putCred(req, res, credId, token, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Modifies an existing node that communicates with other servers or enables / disables this node
+    Associated Endpoint: /nodes/outgoing/:credId
+    Request Type: PUT
+    Request Body: { displayName: "abc"
+					password: "abc"
+					url = "" })
+    Return: 403 Status (Forbidden) --  Author does not have access rights
+			404 Status (Not Found) -- Cred not found in database
+			200 Status (OK) -- Returns JSON with
+									{ type: 'node',
+										node: { _id: 67c43c5cc6484d4c9197153328849d0f
+												displayName: "abc"
+												url: ""
+												pasword: "abc"
+												allowed: false
+												auth: "Basic oJzOPEOFnoOWNfdNZsafNE39t" } }
     */
 	let coll = null
 	if (type == 'incoming') {

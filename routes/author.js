@@ -189,7 +189,7 @@ async function getAuthor(authorId){
     Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
     Return: 404 Status (Not Found) -- Author was not found in database
             500 Status (Internal Server Error) -- Unable to retreive author from database 
-            200 Status (OK) -- Returns a JSON of sanitized Author 
+            200 Status (OK) -- Returns sanitized Author 
                                 { type: author
                                     id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
                                     authorId: 29c546d45f564a27871838825e3dbecb,
@@ -238,7 +238,7 @@ async function updateAuthor(token, author){
     Return: 401 Status (Unathorized) -- Author token is not authenticated
             404 Status (Not Found) -- Author was not found in database
             400 Status (Bad Request) -- Type, authorId, host, or username are incorrect
-            200 Status (OK) -- Returns JSON of sanitized Author 
+            200 Status (OK) -- Returns sanitized Author 
                                 { type: author
                                     id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
                                     authorId: 29c546d45f564a27871838825e3dbecb,

@@ -25,11 +25,12 @@ const { getAuthor } = require('./author.js')
 
 async function getUserInfo(token){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
+    Description: Gets the Author's information 
+    Associated Endpoint: /userinfo
+    Request Type: GET
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Return: 401 Status (Unauthorized) -- Author token is not authenticated
+            200 Status (OK) -- Returns JSON 
     */
     if (await checkExpiry(token)) { return [{}, 401]; }
     

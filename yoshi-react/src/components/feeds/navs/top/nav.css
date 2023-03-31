@@ -49,26 +49,77 @@ Foundation; All Rights Reserved
 }
 .topNavSearch{
     display: inline-block;
-    margin-left: 6.5em;
 }
 .topSearch{
-    /* position: relative; */
-    width: 200%;
+    /* position: absolute; */
+    margin-left: 5em;
+    width: 31.3em;
     text-decoration: none;
     background: #090D0E;
     color: white;
     border: #4A5460 0.1em solid;
     border-radius: .5em;
     padding: .5em;
+    
+}
+.search-button{
+    /* position: absolute; */
+    color: white;
+    margin: 0em 1em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: 0.50em;
+    padding: .4em 1.5em;
+    text-decoration: none;
+}
+
+.search-card {
+    position: fixed;
+    padding: 1em;
+    width: 20.1%;
+    height: auto;
+    background-color: #090D0E;
+    border: #24292F 0.1em solid;
+    border-radius: .5em;
+    left: 18.3em;
+    top: 4em;
+}
+
+.search-prev{
+    position: relative;
+    display: inline-block;
+    color: white;
+    margin-left: -8%;
+    margin-top: 10%;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: 0.50em;
+    padding: .2em .5em;
+    text-decoration: none;
+}
+.search-next{
+    position: relative;
+    display: inline-block;
+    color: white;
+    margin-left: 75%;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: 0.50em;
+    padding: .2em .5em;
+    text-decoration: none;
+}
+.search-username{
+    display: inline-block;
 }
 .topNavNotif{
-    /* position: relative; */
-    margin-left: 15em;
+    position: absolute;
+    right: 20em;
+    top: 1em;
     text-decoration: none;
-    display: inline-block;
 }
 .topNavNotif:hover{
     /* border: #4A5460 solid;
     border-radius: .5em; */
     cursor: pointer;
 }
+

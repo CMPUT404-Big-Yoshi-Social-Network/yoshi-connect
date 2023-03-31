@@ -87,8 +87,8 @@ function SearchCard(props) {
         <div>
             { !props && username === undefined ? null : 
                 <div>
-                    {username}
-                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    <p className='search-username'>{username}</p>
+                    <Button className='search-button' onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }
         </div>

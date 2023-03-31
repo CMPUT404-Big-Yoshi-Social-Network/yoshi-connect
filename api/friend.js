@@ -96,7 +96,7 @@ const router = express.Router({mergeParams: true});
  */
 router.get('/', async (req, res) => {
   const authorId = req.params.authorId;
-  const friends = await getFriends(authorId);
+  const friends = await (authorId);
 
   if (friends == 404) { return res.sendStatus(404); }
 

@@ -212,11 +212,11 @@ async function isFriend(authorId, foreignId, res) {
 
 async function fetchFriendPosts(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the Friend's posts associated with authorId
+    Associated Endpoint: /authors/:authorId/posts/friends-posts
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 200 Status (OK) -- Returns JSON with array of the Friend's posts associated with authorId
     */
     const friends = await getFriends(req.params.authorId);
 

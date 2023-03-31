@@ -284,11 +284,24 @@ async function updateAuthor(token, author){
 
 async function getAuthors(page, size){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets a paginated list of Authors
+    Associated Endpoint: /authors
+    Request Type: GET
+    Request Body: N/A
+    Return: 500 Status (Internal Server Error) -- Unable to retreive Authors from database
+            400 Status (Bad Request) -- Incorrect paging requested from the user
+            200 Status (OK) -- Returns sanitized paginated list of Authors 
+                                { type: author
+                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+                                    authorId: 29c546d45f564a27871838825e3dbecb,
+                                    host: https://yoshi-connect.herokuapp.com/,
+                                    displayName: abc, 
+                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
+                                    email: 123@aulenrta.ca,  
+                                    github: "https://github.com/name",
+                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
+                                    about: "author bio",
+                                    pronouns: "they/them" }
     */
     let authors = undefined;
 

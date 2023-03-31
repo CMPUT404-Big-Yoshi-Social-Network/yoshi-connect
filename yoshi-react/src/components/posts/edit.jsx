@@ -39,6 +39,7 @@ function EditPost({viewerId, post}) {
             return
         }
         setCategories([...categories, category]);
+        e.target.value = '';
     }
 
     const [item, setItem] = useState({ 
@@ -208,7 +209,7 @@ function EditPost({viewerId, post}) {
                     { categories.map((category, idx) => (
                         <div idx={idx}>
                             <span class='category'>{category}</span>
-                            <span class='close'>&times;</span>
+                            <span class='close'>x</span>
                         </div> 
                     ))}
                     <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>

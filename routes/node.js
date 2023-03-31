@@ -106,10 +106,10 @@ async function getCred(res, token, credId, type) {
 									{ type: 'node',
 										node: { _id: 67c43c5cc6484d4c9197153328849d0f
 												displayName: "abc"
-												url: ""
+												url: "http://localhost:3000/api"
 												pasword: "abc"
 												allowed: false
-												auth: "Basic oJzOPEOFnoOWNfdNZsafNE39t" } }
+												auth: "Basic 29c546d45f564a27871838825e3dbecb" } }
     */
 	let coll = null
 	if (type == 'incoming') {
@@ -135,10 +135,11 @@ async function getCred(res, token, credId, type) {
 
 async function postCred(req, res, token, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Description: Adds a new incoming / outgoing node to the database
+    Associated Endpoint: /nodes/incoming
+						 /nodes/outgoing
+    Request Type: POST
+    Request Body: { username: kc, email: 123@aulenrta.ca }
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
 	let coll = null
@@ -181,7 +182,7 @@ async function putCred(req, res, credId, token, type) {
 									{ type: 'node',
 										node: { _id: 67c43c5cc6484d4c9197153328849d0f
 												displayName: "abc"
-												url: ""
+												url: "http://localhost:3000/api"
 												pasword: "abc"
 												allowed: false
 												auth: "Basic oJzOPEOFnoOWNfdNZsafNE39t" } }
@@ -210,7 +211,7 @@ async function deleteCred(token, credId, type) {
 	/**
     Description: 
     Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
+    Request Type: DELETE
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */

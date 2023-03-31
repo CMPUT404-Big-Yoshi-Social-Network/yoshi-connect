@@ -42,6 +42,10 @@ function EditPost({viewerId, post}) {
         e.target.value = '';
     }
 
+    function removeCategory(idx) {
+        setCategories(categories.filter((category,i) => i !== idx))
+    }
+
     const [item, setItem] = useState({ 
         type: "",
         base64: "",
@@ -207,9 +211,9 @@ function EditPost({viewerId, post}) {
                 <p>Categories</p>
                 <div>
                     { categories.map((category, idx) => (
-                        <div idx={idx}>
+                        <div key={idx}>
                             <span class='category'>{category}</span>
-                            <span class='close'>x</span>
+                            <span class='close' onClick={() => removeCategory(idx)}>x</span>
                         </div> 
                     ))}
                     <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>

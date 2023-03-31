@@ -42,11 +42,11 @@ async function getCreds(res, page, size, token, type) {
     Return: 403 Status (Forbidden) -- Author does not have access rights
 			200 Status (OK) -- Returns a JSON containing an empty array or array with sanitized nodes
 								{ type: nodes,
-								items: [ { type": "node",
-                						    	"id" : process.env.DOMAIN_NAME + "nodes/" + item._id,
-												"host": process.env.DOMAIN_NAME,
-												"displayName": item.displayName,
-												"url":  process.env.DOMAIN_NAME + "nodes/" + item._id } ]
+								items: [ { "type": "node",
+                						    	"id" : https://yoshi-connect.herokuapp.com/nodes/29c546d45f564a27871838825e3dbecb
+												"host": https://yoshi-connect.herokuapp.com/,
+												"displayName": abc,
+												"url":  https://yoshi-connect.herokuapp.com/nodes/29c546d45f564a27871838825e3dbecb } ]
     */
 	let coll = null
 	if (type == 'incoming') {
@@ -96,11 +96,20 @@ async function getCreds(res, page, size, token, type) {
 
 async function getCred(res, token, credId, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets a specific incoming or outgoing node to communicate with a specific server
+    Associated Endpoint: /nodes/incoming/:credId
+						 /nodes/outgoing/:credId
+    Request Type: GET
+    Request Body: { token: 5yy7bCMPrSXSv9knpS4gfz, _id: 67c43c5cc6484d4c9197153328849d0f })
+    Return: 403 Status (Forbidden) -- Author does not have access rights
+			200 Status (OK) -- Returns JSON with
+									{ type: 'node',
+										node: { _id: 67c43c5cc6484d4c9197153328849d0f
+												displayName: 
+												url: ""
+												pasword: "abc"
+												allowed: false
+												auth: "Basic oJzOPEOFnoOWNfdNZsafNE39t" } }
     */
 	let coll = null
 	if (type == 'incoming') {

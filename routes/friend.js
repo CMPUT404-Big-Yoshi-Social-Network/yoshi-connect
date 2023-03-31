@@ -35,11 +35,11 @@ const {authLogin} = require('./auth.js');
 
 async function getFollowers(id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets a specific Author using foreignAuthorId params associated by authorId params 
+    Associated Endpoint: /authors/:authorId/followers/:foreignAuthorId
+    Request Type: GET 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Follower associated with Author was not found
     */
     const followers = await Follower.findOne({authorId: id});
     if (!followers) { return 404; }

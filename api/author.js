@@ -485,9 +485,7 @@ router.get('/search/:username', async (req, res) => {
                 }
               }
           })
-          .catch( error => {
-              console.log(error);
-          })
+          .catch( error => { })
       }
   }
   return res.json({

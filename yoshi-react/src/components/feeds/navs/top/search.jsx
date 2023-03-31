@@ -39,7 +39,8 @@ function SearchCard(props) {
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
     const navigate = useNavigate();
-    let id = props.id.replace(props.host + 'authors/', '');
+    let id = props.id.split('/')
+    id = id[id.length - 1]
 
     useEffect(() => {
         /**
@@ -83,6 +84,7 @@ function SearchCard(props) {
                 type: 'follow'
             }
         } else {
+            console.log(id)
             url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
             config = {
                 summary: viewer + " wants to follow " + username,

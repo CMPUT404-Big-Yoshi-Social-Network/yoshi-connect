@@ -156,11 +156,18 @@ async function deleteFollowing(authorId, foreignId){
 
 async function isFriend(authorId, foreignId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Checks if the Author associated with foreignId is true friends with Author associated with authorId
+    Associated Endpoint: /authors/:authorId/friends/:foreignId
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 200 Status (OK) -- Returns JSON with 
+                                    { type: "relation",
+                                        "aId" : https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                        "actorId" : authorId,
+                                        "host": https://yoshi-connect.herokuapp.com/,
+                                        "oId" : https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                        "objectId" : 29c546d45f564a27871838825e3dbecb,
+                                        status: 'Follows' }
     */
     let actorFollows = false;
     let objectFollows = false;

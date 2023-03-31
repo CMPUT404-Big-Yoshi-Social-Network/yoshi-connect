@@ -120,11 +120,11 @@ async function getFriends(id){
 
 async function addFollower(token, authorId, foreignId, body, req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
+    Associated Endpoint: /authors/:authorId/followers/:foreignAuthorId
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Unable to find a request object from the foreignAuthorId to the authorId
     */
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
@@ -135,11 +135,11 @@ async function addFollower(token, authorId, foreignId, body, req, res){
 
 async function deleteFollowing(authorId, foreignId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes a specific Author associated with foreignAuthorId contained in Author followings list associated with authorIdi
+    Associated Endpoint: /authors/:authorId/followings/:foreignAuthorId
+    Request Type: DELETE
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb })
+    Return: 204 Status (No Content) -- Following foreign Author was deleted from followings list associated with authorId
     */
     const followings = await Following.findOne({authorId: authorId});
     for(let i = 0; i < followings.followings.length; i++){

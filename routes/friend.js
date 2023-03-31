@@ -48,11 +48,11 @@ async function getFollowers(id){
 
 async function getFollowings(id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the followings list for Author associated with authorId
+    Associated Endpoint: /authors/:authorId/followings
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Author associated with authorId does not have a followings list 
     */
     const following = await Following.findOne({authorId: id});
     if (!following) { return 404; }

@@ -38,8 +38,7 @@ function Notifications(props) {
         <div>
             <h3>Notifications</h3>
             <div><Requests authorId={props.authorId}/></div>
-            {/* Friend Requests: accepted notification
-            Likes received from own posts from other users
+            {/* Likes received from own posts from other users
             Comments received from own posts from other users */}
         </div>
     )

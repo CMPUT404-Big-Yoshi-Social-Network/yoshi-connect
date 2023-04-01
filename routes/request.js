@@ -326,7 +326,7 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status) {
                     var config = {
                         host: outgoings[i].url,
                         url: actor.id + '/inbox',
-                        method: 'PUT',
+                        method: 'POST',
                         headers: {
                             'Authorization': auth,
                             'Content-Type': 'application/json'

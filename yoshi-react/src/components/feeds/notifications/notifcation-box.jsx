@@ -21,6 +21,7 @@ Foundation; All Rights Reserved
 
 // Functionality
 import React, { useEffect } from "react";
+import RequestFeedbacks from "./reqResponses.jsx";
 
 // Child Component
 import Requests from './requests/requests.jsx';
@@ -33,14 +34,6 @@ function Notifications(props) {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
-    useEffect(() => {
-        /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
-         */
-        console.log('Debug: <TLDR what the function is doing>')
-     });
     return (
         <div>
             <h3>Notifications</h3>

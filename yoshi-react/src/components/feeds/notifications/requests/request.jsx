@@ -86,9 +86,16 @@ function Request(props) {
     }
     return (
         <div id='request'>
-            { props.actor }
-            <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
-            <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
+            { props.type !== 'accept' && props.type !== 'reject' ? 
+                <div>
+                    { props.actor }
+                    <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
+                    <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
+                </div> :
+                props.type === 'accept' ? 
+                    <div>{ props.object } accepted your request!</div> :
+                    null
+            }
         </div>
     )
 }

@@ -185,7 +185,7 @@ async function sendRequest(authorId, foreignId, res) {
 
     const request = {
         _id: uuid,
-        goal: type,
+        type: type,
         summary: summary,
         actor: actor.username,
         actorId: actor._id,
@@ -301,9 +301,16 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status) {
 
     let summary = '';
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
-    const request = inbox.requests[idx]
+    let request = inbox.requests[idx]
     inbox.requests.splice(idx, 1);
     inbox.save();
+
+    if (isLocal) {
+        const actorInbox = await Inbox.findOne({authorId: authorId}, '_id requests');
+        request.type = status;
+        actorInbox.requests.push(request);
+        actorInbox.save();
+    }
     if (status !== 'accept') {
         summary = actor.displayName + " wants to undo " + request.type + " request to " + object.username; 
     } else {

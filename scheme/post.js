@@ -39,7 +39,7 @@ const postScheme = new Schema({
     commentCount: Number,
     published: String,
     visibility: String,
-    postFrom: String,
+    postTo: String,
     unlisted: Boolean,},
     {versionKey: false
 });
@@ -73,7 +73,7 @@ const publicScheme = new Schema({
     commentCount: Number,
     published: String,
     visibility: String,
-    postFrom: String,
+    postTo: String,
     unlisted: Boolean,},
     {versionKey: false
 })
@@ -108,7 +108,7 @@ inboxPostScheme = new Schema({
         commentCount: Number,
         published: String,
         visibility: String,
-        postFrom: String,
+        postTo: String,
         unlisted: Boolean,},
         {versionKey: false
 })

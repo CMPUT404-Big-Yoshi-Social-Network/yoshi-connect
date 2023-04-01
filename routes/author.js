@@ -207,11 +207,11 @@ async function getAuthor(authorId){
 
     const sanitizedAuthor = {
         "type": "author",
-        "id" : 'https://yoshi-connect.herokuapp.com/' + "authors/" + author._id,
+        "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
         "authorId" : author._id,
-        "host": 'https://yoshi-connect.herokuapp.com/',
+        "host": process.env.DOMAIN_NAME,
         "displayName": author.username,
-        "url":  'https://yoshi-connect.herokuapp.com/' + "authors/" + author._id,
+        "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
         "github": author.github,
         "profileImage": author.profileImage,
         "about": author.about,

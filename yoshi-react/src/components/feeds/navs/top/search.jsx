@@ -29,7 +29,6 @@ import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
     const username = props.username !== undefined ? props.username : props.displayName
-    const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
     const [requestButton, setRequestButton] = useState('Send Follow Request');
     /**
      * Description:     
@@ -39,8 +38,6 @@ function SearchCard(props) {
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
     const navigate = useNavigate();
-    let id = props.id.split('/')
-    id = id[id.length - 1]
 
     useEffect(() => {
         /**
@@ -58,6 +55,7 @@ function SearchCard(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
+                console.log(response)
                 let viewerId = response.data.authorId;
                 let viewer = response.data;
                 setViewerId(viewerId)
@@ -72,68 +70,25 @@ function SearchCard(props) {
 
     const sendRequest = () => {
         setRequestButton('Sent');
-        let config = '';
-        let url = '';
-        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
-            url = '/authors/' + id + '/inbox'
-            config = {
-                actor: {
-                    id: props.host + 'authors/' + viewerId,
-                    status: 'local'
-                },
-                type: 'follow'
-            }
-        } else {
-            console.log(id)
-            url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
-            config = {
-                summary: viewer + " wants to follow " + username,
-                actor: viewer,
-                actorId: viewerId,
-                objectId: id,
-                object: props
-            }
+        let id = props.id.replace(props.host + 'authors/', '');
+        let config = {
+            summary: viewer + " wants to follow " + username,
+            actor: viewer,
+            actorId: viewerId,
+            objectId: id,
+            object: props
         }
         axios
-        .post(url, config)
+        .post('/nodes/outgoing/authors/' + id + '/inbox/follow', config)
         .then((response) => { })
         .catch(err => { });
     }
-
-    const seePosts = () => {
-        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
-            navigate('/users/' + username);
-        } else {
-            let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/nodes/outgoing/authors/' + id + '/posts',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                params: {
-                    page: 1,
-                    size: 5
-                }
-            }
-            axios
-            .get('/nodes/outgoing/authors/' + id + '/posts', config)
-            .then((response) => { 
-                navigate('/users/' + username, { state: { posts: response.data.items } })
-            })
-            .catch(err => { })
-        }
-    }
-
     return (
         <div>
             { !props && username === undefined ? null : 
                 <div>
-                    <p className='search-username'>{host}</p>
                     <p className='search-username'>{username}</p>
-                    <Button className='search-button' onClick={seePosts} type="submit">View Profile</Button>
-                    { id === viewerId ? null : 
-                        <Button className='search-button' onClick={sendRequest} type="submit">{requestButton}</Button>
-                    }
+                    <Button className='search-button' onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }
         </div>

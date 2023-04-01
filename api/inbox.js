@@ -36,7 +36,6 @@ const openapiSpecification = swaggerJsdoc(options);
 const express = require('express'); 
 const { IncomingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
-const { Author } = require('../scheme/author');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -183,17 +182,11 @@ router.post('/', async (req, res) => {
 			return res.sendStatus(401);
 		}
 		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
-			if (req.body.author !== undefined) {
-				authorId = req.body.author.id.split("/");
-				authorId = authorId[authorId.length - 1];
-			} else {
-				authorId = req.body.authorId;
-			}
+			authorId = req.body.author.id.split("/");
+			authorId = authorId[authorId.length - 1];
 		}
 		else if(req.body.type == "follow"){
 			authorId = req.body.actor.id;
-			authorId = authorId.split("/");
-			authorId = authorId[authorId.length - 1];
 		}
 		else{
 			return res.sendStatus(400);
@@ -238,25 +231,7 @@ router.post('/', async (req, res) => {
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
-		let actor = null;
-		if (req.body.actor.status !== undefined) {
-			let actorId = req.body.actor.id;
-			actorId = actorId.split("/");
-			actorId = actorId[actorId.length - 1];
-			const actorDoc = await Author.findOne({_id: actorId});
-			actor = {
-				id: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
-				host: process.env.DOMAIN_NAME,
-				displayName: actorDoc.username,
-				url: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
-				github: actorDoc.github,
-				profileImage: actorDoc.profileImage
-			}
-		} else {
-			// remote
-			actor = req.body.actor;
-		}
-		[response, status] = await postInboxRequest(actor, req.params.authorId);
+		[response, status] = await postInboxFollow(req.body);
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);
@@ -275,13 +250,7 @@ router.post('/', async (req, res) => {
 	if(type === "post"){
 		//[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	else if (type === "follow") {
-		response = {
-			type: "follow",
-			summary: response.summary,
-			actor: response.actor,
-			object: response.object
-		}
+	else if(type === "follow"){
 	}
 	else if(type === "comment"){
 		response = {
@@ -295,6 +264,43 @@ router.post('/', async (req, res) => {
 	}
 
 	return res.json(response);
+})
+
+// TBA 200
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests/:foreignAuthorId:
+ *  put:
+ *    summary: creates a request and saves it into the inbox
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      200: 
+ *        description: OK, successfully saves the request to the Inbox
+ */
+router.put('/requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	const request = await sendRequest(authorId, foreignId, res);
+  
+	return res.json({
+	  "type": request.type,
+	  "summary": request.summary,
+	  "actor": request.actor,
+	  "object": request.object
+	})
 })
 
 // TBA 200

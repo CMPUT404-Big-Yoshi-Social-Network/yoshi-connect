@@ -39,7 +39,7 @@ function Posts(props) {
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
-    const size = 20;
+    const size = 10;
     const navigate = useNavigate();
     const [url, setUrl] = useState('');
     const [viewerId, setViewerId] = useState('');
@@ -77,7 +77,7 @@ function Posts(props) {
             });
         }
         getId();
-        if (type === 'public/local') {
+        if (type === 'public') {
             setUrl('/posts/' + type)
         } else {
             setUrl('/authors/' + id + '/posts/' + type)

@@ -93,6 +93,7 @@ async function getPublicPostsXServer(page, size){
     let [response, statusCode] = await getPublicLocalPosts(page, size)
     const outgoings = await OutgoingCredentials.find().clone();
     
+    let promiseQueue = [];
     for(let i = 0; i < outgoings.length; i++) {
         const outgoing = outgoings[i];
         const host = outgoing.url;
@@ -122,17 +123,23 @@ async function getPublicPostsXServer(page, size){
             }
         }
 
-        await axios.request(config)
-        .then((res) => {
-            if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
-                response.items = response.items.concat(res.data.items);
-            }
-            else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
-                response.items = response.items.concat(res.data);
-            }
-        })
-        .catch((err) => {
-        })
+        promiseQueue.push(
+            axios.request(config)
+            .then((res) => {
+                if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
+                    response.items = response.items.concat(res.data.items);
+                }
+                else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
+                    response.items = response.items.concat(res.data);
+                }
+            })
+            .catch((err) => {
+            })
+        )
+    }
+
+    for(let i = 0; i < promiseQueue.length; i++){
+        await promiseQueue[i];
     }
 
     response.items.sort((post1, post2) => {

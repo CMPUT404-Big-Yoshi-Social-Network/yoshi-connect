@@ -31,7 +31,6 @@ import CreatePost from '../../../posts/create.jsx';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import Button from 'react-bootstrap/Button';
 import './nav.css';
 
 function RightNavBar() {
@@ -44,9 +43,8 @@ function RightNavBar() {
         username: "", 
         pic: ""
     });
-    const [logged, setLogged] = useState(false);
     const navigate = useNavigate();
-
+    
     useEffect(() => {
         const getId = () => {
             axios
@@ -56,6 +54,7 @@ function RightNavBar() {
             })
             .catch(err => { if (err.response.status === 404) { 
                 setProfile({...profile, username: ""})
+            } 
             });
         }
         getId();
@@ -63,7 +62,7 @@ function RightNavBar() {
 
     return (
         <Navbar className="right-column">
-            {logged === true? <Container>
+            <Container>
                 <Nav>
                     <div className='rn-div'>
                     {/* TODO: Needs to fetch username  */}
@@ -92,12 +91,7 @@ function RightNavBar() {
                         <img className='rn-pubCogImg' alt='rn-pubCogImg' src='/images/public/icon_settings.png' width={25}/>
                     </a>
                 </div>
-            </Container> :             
-            <div>
-                <Button className='welcome-button' href='/signup' data-testid="signup">Sign Up</Button>
-                <Button className='welcome-button' href='/login' data-testid="login">Log In</Button>
-            </div>
-            }
+            </Container>
         </Navbar>
     )
 }

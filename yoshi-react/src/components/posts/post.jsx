@@ -34,7 +34,6 @@ import './post.css';
 
 // User Interface
 import Popup from 'reactjs-popup';
-import SharePost from "./sharePost";
 
 function Post({viewerId, post, author}) {
     let postId = post.id ? post.id.split('/') : undefined;
@@ -242,7 +241,6 @@ function Post({viewerId, post, author}) {
     return (
         <div className="post">
             <div>
-                { post.shared ? <h4>Shared Post</h4> : null }
                 { post.title === "" ? null : <h1>{post.title}</h1> }
                 { post.description === "" ? null : <h3>{ post.description }</h3> }
                 { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
@@ -273,6 +271,7 @@ function Post({viewerId, post, author}) {
                     </div>}
                     <br></br>
                     <div>
+
                         { post.categories !== undefined ? 
                             post.categories.map((category, idx) => (
                                 <div key={idx}>

@@ -135,6 +135,7 @@ function SearchCard(props) {
                     { id === viewerId ? null : 
                         <Button className='search-button' onClick={sendRequest} type="submit">{requestButton}</Button>
                     }
+                    
                 </div>
             }
         </div>

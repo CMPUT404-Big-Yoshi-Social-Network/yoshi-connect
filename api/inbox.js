@@ -139,7 +139,7 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
   
-	await deleteRequest(res, null, null, foreignId, authorId, 'reject', true)
+	await deleteRequest(authorId, foreignId, res);
 })
 
 // TBA 200
@@ -331,7 +331,7 @@ router.get('/requests/:foreignAuthorId', async (req, res) => {
 	if (!request) { return res.sendStatus(404); }
   
 	return res.json({
-	  "type": request.goal,
+	  "type": request.type,
 	  "summary": request.summary,
 	  "actor": request.actor,
 	  "object": request.object

@@ -93,39 +93,89 @@ function Profile() {
              * Request: GET
              * Returns: N/A
              */
-            if (!posts) {
-                console.log('Debug: <TLDR what the function is doing>')
-                axios
-                .get('/profile/' + username)
-                .then((response) => {
-                    console.log('Debug: Profile Exists.')
-                    person = response.data.personal
-                    viewer = response.data.viewer
-                    viewed = response.data.viewed
-                    viewedId = response.data.viewedId
-                    viewerId = response.data.viewerId
-                    setPersonal(prevPersonal => ({...prevPersonal, person}))
-                    setPersonal(prevViewer => ({...prevViewer, viewer}))
-                    setPersonal(prevViewed => ({...prevViewed, viewed}))
-                    setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
-                    setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
-    
-                    otherUrl = 'other/' + viewedId;
-                    setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
-                })
-                .catch(err => {
-                    if (err.response.status === 404) {
-                        navigate('/notfound'); 
-                    }
-                    else if (err.response.status === 401) {
-                        console.log("Debug: Not authorized.");
-                        navigate('/unauthorized'); 
-                    }
-                });
-            }
+            console.log('Debug: <TLDR what the function is doing>')
+            axios
+            .get('/profile/' + username)
+            .then((response) => {
+                console.log('Debug: Profile Exists.')
+                person = response.data.personal
+                viewer = response.data.viewer
+                viewed = response.data.viewed
+                viewedId = response.data.viewedId
+                viewerId = response.data.viewerId
+                numPosts = response.data.numPosts
+                numFollowing = response.data.numFollowing
+                numFollowers = response.data.numFollowers
+                console.log("Everything", response.data)
+                setPersonal(prevPersonal => ({...prevPersonal, person}))
+                setPersonal(prevViewer => ({...prevViewer, viewer}))
+                setPersonal(prevViewed => ({...prevViewed, viewed}))
+                setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
+                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+                setPersonal(prevNumPosts => ({...prevNumPosts, numPosts}))
+                setPersonal(prevNumFollowing => ({...prevNumFollowing, numFollowing}))
+                setPersonal(prevNumFollowers => ({...prevNumFollowers, numFollowers}))
+
+                otherUrl = 'other/' + viewedId;
+                setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    navigate('/notfound'); 
+                }
+                else if (err.response.status === 401) {
+                    console.log("Debug: Not authorized.");
+                    navigate('/unauthorized'); 
+                }
+            });
         }
         isRealProfile();
     }, [navigate, username, posts])
+
+    useEffect(() => {
+        let github = '';
+        let profileImage = '';
+        let about = '';
+        let pronouns = '';
+
+        if (personal.viewedId) {
+            const getProfileInfo = () => {
+                /**
+                 * Description: Gets account details of author
+                 * Request: GET
+                 * Returns: N/A
+                 */
+                console.debug("Debug: Getting user profile info");
+                axios
+                .get('/authors/' + personal.viewedId)
+                .then((response) => {
+                    console.log("Debug: Received user profile info");
+                    console.log("Profile Info", response.data);
+                    github = response.data.github
+                    profileImage = response.data.profileImage
+                    about = response.data.about
+                    pronouns = response.data.pronouns
+                    setProfileInfo(prevGithub => ({...prevGithub, github}))
+                    setProfileInfo(prevProfileImage => ({...prevProfileImage, profileImage}))
+                    setProfileInfo(prevAbout => ({...prevAbout, about}))
+                    setProfileInfo(prevPronouns => ({...prevPronouns, pronouns}))
+                })
+                .catch(err => {
+                    if (err.response.status === 404) {
+                        navigate('/notfound');
+                    }
+                    else if (err.response.status === 401) {
+                        navigate('/notauthorized');
+                    }
+                    else if (err.response.status === 500) {
+                        navigate('/servererror');
+                    }
+                })
+            }
+            getProfileInfo();
+        }
+    }, [navigate, personal])
+
     useEffect(() => {
         /**
          * Description: Checks if the viewer has already sent a friend request
@@ -299,7 +349,6 @@ function Profile() {
                     
                     <hr/>
                     <br/>
-
                     { personal.person === null || posts ? null :
                         (personal.person === true ?
                         <Posts type={'personal'}/> : 

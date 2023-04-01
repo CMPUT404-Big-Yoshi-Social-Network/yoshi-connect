@@ -56,6 +56,7 @@ function Posts(props) {
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
+        let id = ''
         const getId = () => {
             /**
              * Description: Sends a POST request to get the current author's id 
@@ -66,16 +67,22 @@ function Posts(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let viewerId = response.data.authorId;
-                setViewerId(viewerId);
-                setUrl('/authors/' + viewerId + '/posts/' + type)
+                id = response.data.authorId;
+                setViewerId(id);
             })
             .catch(err => { 
-                console.log(err)
+                if (err.response.status === 401 || err.response.status === 404) { 
+                    setViewerId('') 
+                }
             });
         }
         getId();
-    }, [navigate, props, type]);
+        if (type === 'public/local') {
+            setUrl('/posts/' + type)
+        } else {
+            setUrl('/authors/' + id + '/posts/' + type)
+        }
+    }, [type]);
 
     useEffect(() => {
         /**

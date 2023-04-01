@@ -27,13 +27,11 @@ mongoose.set('strictQuery', true);
 const crypto = require('crypto');
 
 // Schemas
-const { Login } = require('../scheme/author.js');
-const { Following } = require('../scheme/relations.js');
-const { PostHistory, PublicPost } = require('../scheme/post.js');
+const { PublicPost } = require('../scheme/post.js');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
 
-async function fetchPublicPosts(page, size) {
+async function getPublicLocalPosts(page, size) {
     /**
     Description: 
     Associated Endpoint: (for example: /authors/:authorid)
@@ -89,11 +87,69 @@ async function fetchPublicPosts(page, size) {
     }
 
     response = {
+        page: page,
+        size: size,
         items: publicPosts
     }
     return [response, 200];
 }
 
+async function getPublicPostsXServer(page, size){
+    let [response, statusCode] = await getPublicLocalPosts(page, size)
+    const outgoings = await OutgoingCredentials.find().clone();
+    
+    for(let i = 0; i < outgoings.length; i++) {
+        const outgoing = outgoings[i];
+        const host = outgoing.url;
+        let endpoint = "";
+        if(host == "http://www.distribution.social"){
+            endpoint = "/api/posts/public"
+        }
+        else if(host == "https://sociallydistributed.herokuapp.com"){
+            endpoint = "/posts/public"
+        }
+        else if(host == "https://bigger-yoshi.herokuapp.com"){
+            endpoint = "/api/posts/public";
+        }
+        const auth = outgoing.auth;
+        var config = {
+            url: host + endpoint,
+            method: 'GET',
+            host: host,
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': auth,
+                'Accept': 'application/json'
+            },
+            params: {
+                page: page,
+                size: size,
+            }
+        }
+
+        await axios.request(config)
+        .then((res) => {
+            if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
+                response.items = response.items.concat(res.data.items);
+            }
+            else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
+                response.items = response.items.concat(res.data);
+            }
+        })
+        .catch((err) => {
+        })
+    }
+
+    response.items.sort((post1, post2) => {
+        return new Date(post2.published) - new Date(post1.published);
+    })
+
+    response.items = response.items.slice(1, size + 1);
+
+    return [response, statusCode]
+}
+
 module.exports={
-    fetchPublicPosts
+    getPublicLocalPosts,
+    getPublicPostsXServer
 }

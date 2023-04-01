@@ -159,10 +159,7 @@ function Profile() {
             if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
                 console.log('See if they are followers or friends.');
                 let config = {
-                    method: 'post',
-                    maxBodyLength: Infinity,
-                    url: '/authors/' + personal.viewerId + '/friends/' + personal.viewedId,
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    isLocal: true
                 }
                 axios
                 .post('/authors/' + personal.viewerId + '/friends/' + personal.viewedId, config)

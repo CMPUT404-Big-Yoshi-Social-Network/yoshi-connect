@@ -77,8 +77,11 @@ function SearchCard(props) {
          */
         console.log('Debug: <TLDR what the function is doing>')
         if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
+            let config = {
+                isLocal: (host === 'https://yoshi-connect.herokuapp.com/') || (host === 'https://yoshi-connect.herokuapp.com') || host === ('http://localhost:3000/')
+            }
             axios
-            .post('/authors/' + viewerId + '/friends/' + id)
+            .post('/authors/' + viewerId + '/friends/' + id, config)
             .then((response) => {
                 if (response.data.status === 'Friends') {
                     setRequestButton('Unfriend');
@@ -92,7 +95,7 @@ function SearchCard(props) {
                 if (err.response.status === 500) { console.log('500 PAGE') }
             });
         }
-    }, [id, viewerId]);
+    }, [id, viewerId, host]);
 
     const sendRequest = () => {
         setRequestButton('Sent');

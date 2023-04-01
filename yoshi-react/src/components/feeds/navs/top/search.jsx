@@ -97,15 +97,28 @@ function SearchCard(props) {
         }
     }, [id, viewerId, host]);
 
+    useEffect(() => {
+        if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
+            axios
+            .get('/authors/' + viewerId + '/inbox/requests/' + id)
+            .then((response) => { 
+                setRequestButton('Sent');
+            })
+            .catch(err => {
+                if (err.response.status === 404) { }
+            });
+        }
+    }, [viewerId, id, host]);
+
     const sendRequest = () => {
         setRequestButton('Sent');
         let config = '';
         let url = '';
-        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
+        if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
             url = '/authors/' + id + '/inbox'
             config = {
                 actor: {
-                    id: props.host + 'authors/' + viewerId,
+                    id: host + 'authors/' + viewerId,
                     status: 'local'
                 },
                 type: 'follow'

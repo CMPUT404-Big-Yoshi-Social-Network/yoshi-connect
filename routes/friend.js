@@ -204,7 +204,6 @@ async function isFriend(isLocal, authorId, foreignId, res) {
                             'Content-Type': 'application/json'
                         }
                     };
-                    console.log(config)
                 }
                 await axios.request(config)
                 .then( res => {

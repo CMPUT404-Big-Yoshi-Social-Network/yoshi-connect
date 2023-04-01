@@ -30,7 +30,7 @@ import { Button } from 'react-bootstrap';
 function SearchCard(props) {
     const username = props.username !== undefined ? props.username : props.displayName
     const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
-    const [requestButton, setRequestButton] = useState('Send Follow Request');
+    const [requestButton, setRequestButton] = useState('Add');
     /**
      * Description:     
      * Returns: 
@@ -69,6 +69,30 @@ function SearchCard(props) {
         }
         getId();
     }, [navigate]);
+
+    useEffect(() => {
+        /**
+         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
+            axios
+            .post('/authors/' + viewerId + '/friends/' + id)
+            .then((response) => {
+                if (response.data.status === 'Friends') {
+                    setRequestButton('Unfriend');
+                } else if (response.data.status === 'Follows') {
+                    setRequestButton('Unfollow');
+                } else if (response.data.status === 'Strangers') {
+                    setRequestButton('Add');
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 500) { console.log('500 PAGE') }
+            });
+        }
+    }, [id, viewerId]);
 
     const sendRequest = () => {
         setRequestButton('Sent');

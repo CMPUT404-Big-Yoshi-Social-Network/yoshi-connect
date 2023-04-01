@@ -77,7 +77,7 @@ function Post({viewerId, post, author}) {
 
     useEffect(() => {    
         getLikes();
-    });
+    }, []);
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {

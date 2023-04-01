@@ -269,9 +269,9 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status, is
                             }
                         };
                     } else {
-                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
                         var config = {
-                            host: outgoings[i].url,
+                            host: outgoings[i].url + '/api',
                             url: outgoings[i].url + '/authors/' + authorId + '/',
                             method: 'GET',
                             headers: {

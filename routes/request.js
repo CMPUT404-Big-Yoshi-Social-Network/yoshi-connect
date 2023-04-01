@@ -304,15 +304,21 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status, is
     inbox.save();
 
     if (isLocal) {
-        console.log(authorId)
         const actorInbox = await Inbox.findOne({authorId: authorId}, '_id requests');
-        request.type = status;
-        console.log(request)
-        actorInbox.requests.push(request);
+        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+        const newRequest = {
+            _id: uuid,
+            goal: status,
+            actor: request.actor,
+            actorId: request.actorId,
+            objectId: request.objectId,
+            object: request.object
+        }
+        actorInbox.requests.push(newRequest);
         actorInbox.save();
     }
     if (status !== 'accept') {
-        summary = actor.displayName + " wants to undo " + request.type + " request to " + object.username; 
+        summary = actor.displayName + " wants to undo " + request.goal + " request to " + object.username; 
     } else {
         summary = object.username + " accepted request from " + actor.displayName; 
     }
@@ -349,9 +355,7 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status, is
                 }
         
                 await axios.request(config)
-                .then( res => {
-                    actor = res.data 
-                })
+                .then( res => { })
                 .catch( error => { })
             }
     } else {

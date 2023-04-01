@@ -99,7 +99,15 @@ async function senderAdded(authorId, foreignId, req, res) {
     if (isLocal) {
         await Following.findOne({authorId: authorId}, async function(err, following){
             if (following) {
-                following.followings.push({_id: uuidFollow, authorId: foreignId, username: object.username});
+                const newF = {
+                    _id: uuidFollow,
+                    id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                    authorId: foreignId,
+                    displayName: object.username,
+                    github: object.github,
+                    profileImage: object.profileImage
+                }
+                following.followings.push(newF);
                 await following.save();
             } else {
                 let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
@@ -109,8 +117,11 @@ async function senderAdded(authorId, foreignId, req, res) {
                     authorId: authorId,
                     followings: [{
                         _id: uuidFollow,
-                        username: object.username,
-                        authorId: foreignId
+                        id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                        authorId: foreignId,
+                        displayName: object.username,
+                        github: object.github,
+                        profileImage: object.profileImage
                     }]
                 };
                 following.save(async (err, following, next) => { if (err) { success = false; } })
@@ -119,14 +130,28 @@ async function senderAdded(authorId, foreignId, req, res) {
     }
 
     await Follower.findOne({authorId: foreignId}, async function(err, follower){
-        let actorUsername = '';
+        const newFollower = {}
         if (actor.username === undefined) {
-            actorUsername = actor.displayName
+            newFollower = {
+                _id: uuidF,
+                id: actor.id,
+                authorId: authorId,
+                displayName: actor.displayName,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }
         } else {
-            actorUsername = actor.username
+            newFollower = {
+                _id: uuidF,
+                id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+                authorId: authorId,
+                displayName: actor.username,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }
         }
         if (follower) {
-            follower.followers.push({_id: uuidF, username: actorUsername, authorId: authorId});
+            follower.followers.push(newFollower);
             await follower.save();
         } else {
             let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
@@ -134,11 +159,7 @@ async function senderAdded(authorId, foreignId, req, res) {
                 _id: uuidFollower,
                 username: object.username,
                 authorId: foreignId,
-                followers: [{
-                    _id: uuidF,
-                    username: actorUsername,
-                    authorId: authorId
-                }]
+                followers: [newFollower]
             });
             follower.save(async (err, follower, next) => { if (err) { success = false; } })
         }

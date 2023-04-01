@@ -444,9 +444,9 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
                     }
                 };
             } else {
-              if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
                   var config = {
-                    host: outgoings[i].url,
+                    host: outgoings[i].url + '/api',
                     url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts/',
                     method: 'GET',
                     headers: {
@@ -991,9 +991,9 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                     }
                 };
             } else {
-              if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
                 var config = {
-                host: outgoings[i].url,
+                host: outgoings[i].url + '/api',
                 url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox/',
                 method: 'POST',
                 headers: {

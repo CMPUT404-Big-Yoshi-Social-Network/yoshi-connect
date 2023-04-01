@@ -32,6 +32,8 @@ const { senderAdded } = require('./request.js');
 
 // Additional Functions
 const {authLogin} = require('./auth.js');
+const { OutgoingCredentials } = require('../scheme/server.js');
+const axios = require('axios');
 
 async function getFollowers(id){
     /**
@@ -193,9 +195,9 @@ async function isFriend(isLocal, authorId, foreignId, res) {
                         }
                     };
                 } else {
-                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
-                      var config = {
-                        host: outgoings[i].url,
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
+                    var config = {
+                        host: outgoings[i].url + '/api',
                         url: outgoings[i].url + '/authors' + foreignId + '/followers/',
                         method: 'GET',
                         headers: {

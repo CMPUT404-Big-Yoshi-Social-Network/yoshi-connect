@@ -60,9 +60,9 @@ async function senderAdded(authorId, foreignId, req, res) {
                         }
                     };
                 } else {
-                  if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
-                      var config = {
-                        host: outgoings[i].url,
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
+                    var config = {
+                        host: outgoings[i].url + '/api',
                         url: outgoings[i].url + '/authors/' + authorId + '/',
                         method: 'GET',
                         headers: {

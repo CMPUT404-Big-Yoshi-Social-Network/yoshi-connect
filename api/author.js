@@ -446,16 +446,16 @@ router.get('/search/:username', async (req, res) => {
                   }
               };
           } else {
-            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
                 var config = {
-                  host: outgoings[i].url,
-                  url: outgoings[i].url + '/authors/',
+                  host: outgoings[i].url + '/api',
+                  url: outgoings[i].url + '/api' + '/authors/',
                   method: 'GET',
                   headers: {
                       'Authorization': auth,
                       'Content-Type': 'application/json'
                   }
-                };              
+                };          
             } else {
                 var config = {
                   host: outgoings[i].url,
@@ -476,6 +476,9 @@ router.get('/search/:username', async (req, res) => {
                   items = res.data.results
               } else {
                   items = res.data.items
+                  if (items === undefined) {
+                    items = res.data.data
+                  }
               }
               if (items !== undefined) {
                 for (let j = 0; j < items.length; j++) {

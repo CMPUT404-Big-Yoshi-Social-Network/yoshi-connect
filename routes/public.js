@@ -33,7 +33,7 @@ const { PostHistory, PublicPost } = require('../scheme/post.js');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
 
-async function fetchPublicPosts(page, size, isLocal) {
+async function getPublicLocalPosts(page, size) {
     /**
     Description: 
     Associated Endpoint: (for example: /authors/:authorid)
@@ -83,68 +83,123 @@ async function fetchPublicPosts(page, size, isLocal) {
         }
     }
 
-    if (isLocal) {
-        const outgoings = await OutgoingCredentials.find().clone();
-
-        for (let i = 0; i < outgoings.length; i++) {
-            if (outgoings[i].allowed || outgoings[i].url !== 'https://bigger-yoshi.herokuapp.com/api') {
-                const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
-                if (outgoings[i].auth === 'userpass') {
-                    var config = {
-                        host: outgoings[i].url,
-                        url: outgoings[i].url + '/posts/public/',
-                        method: 'GET',
-                        auth: auth,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        params: {
-                            page: page,
-                            size: size
-                        },
-                        data: {
-                            local: false
-                        }
-                    };
-                } else {
-                    var config = {
-                        host: outgoings[i].url,
-                        url: outgoings[i].url + '/posts/public',
-                        method: 'GET',
-                        headers: {
-                            'Authorization': auth,
-                            'Content-Type': 'application/json'
-                        },
-                        params: {
-                            page: page,
-                            size: size
-                        }
-                    };
-                }
-          
-                await axios.request(config)
-                .then(res => {
-                    let items = []
-                    if (outgoings[i].auth === 'userpass') { 
-                        items = res.data.filter((i)=>i !== null && typeof i !== 'undefined');
-                    } else {
-                        if (typeof(res.data) != string) {
-                            items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
-                        }
-                    }
-                    publicPosts = publicPosts.concat(items);
-                })
-                .catch( error => { })
-            }
-        }
-    }
-
     response = {
+        page: page,
+        size: size,
         items: publicPosts
     }
     return [response, 200];
 }
 
+async function getPublicPostsXServer(page, size){
+    let [response, statusCode] = await getPublicLocalPosts(page, size)
+    let publicPosts = response.items;
+    const outgoings = await OutgoingCredentials.find().clone();
+    /*
+    for (let i = 0; i < outgoings.length; i++) {
+        if (outgoings[i].allowed || outgoings[i].url !== 'https://bigger-yoshi.herokuapp.com/api') {
+            const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+            if (outgoings[i].auth === 'userpass') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/posts/public/',
+                    method: 'GET',
+                    auth: auth,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: page,
+                        size: size
+                    },
+                    data: {
+                        local: false
+                    }
+                };
+            } else {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/posts/public',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': auth,
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: page,
+                        size: size
+                    }
+                };
+            }
+        
+            await axios.request(config)
+            .then(res => {
+                let items = []
+                if (outgoings[i].auth === 'userpass') { 
+                    items = res.data.filter((i)=>i !== null && typeof i !== 'undefined');
+                } else {
+                    if (typeof(res.data) != string) {
+                        items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
+                    }
+                }
+                publicPosts = publicPosts.concat(items);
+            })
+            .catch( error => { console.log(config) })
+        }
+    }
+    */
+    for(let i = 0; i < outgoings.length; i++) {
+        const outgoing = outgoings[i];
+        const host = outgoing.url;
+        let endpoint = "";
+        if(host == "http://www.distribution.social"){
+            endpoint = "/api/posts/public"
+        }
+        else if(host == "https://sociallydistributed.herokuapp.com"){
+            endpoint = "/posts/public"
+        }
+        else if(host == "https://bigger-yoshi.herokuapp.com"){
+            endpoint = "/api/posts/public";
+        }
+        const auth = outgoing.auth;
+        var config = {
+            url: host + endpoint,
+            method: 'GET',
+            host: host,
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': auth,
+                'Accept': 'application/json'
+            },
+            params: {
+                page: page,
+                size: size,
+            }
+        }
+
+        await axios.request(config)
+        .then((res) => {
+            if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
+                response.items = response.items.concat(res.data.items);
+            }
+            else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
+                response.items = response.items.concat(res.data);
+            }
+        })
+        .catch((err) => {
+        })
+    }
+
+    response.items.sort((post1, post2) => {
+        return new Date(post2.published) - new Date(post1.published);
+    })
+
+    response.items = response.items.slice(1, size + 1);
+
+    return [response, statusCode]
+}
+
 module.exports={
-    fetchPublicPosts
+    getPublicLocalPosts,
+    getPublicPostsXServer
 }

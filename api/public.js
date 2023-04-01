@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { fetchPublicPosts } = require('../routes/public');
+const { getPublicLocalPosts, getPublicPostsXServer } = require('../routes/public');
 
 // OpenAPI
 const {options} = require('../openAPI/options.js');
@@ -90,21 +90,29 @@ const router = express.Router({mergeParams: true});
  *                  postTo: ""
  *                  unlisted: false
  */
-router.get('/', async (req, res) => { 
-  let page = parseInt(req.query.page);
-  let size = parseInt(req.query.size);
+router.get('/', async (req, res) => {
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let size = req.query.size ? parseInt(req.query.size) : 5;
 
-  const [publicPosts, status] = await fetchPublicPosts(page, size, false); 
+  if(page < 1 || size < 1){
+    return res.sendStatus(400);
+  }
+
+  const [publicPosts, status] = await getPublicPostsXServer(page, size); 
 
   if(status != 200) return res.sendStatus(status);
   return res.json(publicPosts);
 })
 
 router.get('/local', async (req, res) => { 
-  let page = parseInt(req.query.page);
-  let size = parseInt(req.query.size);
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let size = req.query.size ? parseInt(req.query.size) : 5;
 
-  const [publicPosts, status] = await fetchPublicPosts(page, size, true); 
+  if(page < 1 || size < 1){
+    return res.sendStatus(400);
+  }
+
+  const [publicPosts, status] = await getPublicLocalPosts(page, size); 
 
   if(status != 200) return res.sendStatus(status);
   return res.json(publicPosts);

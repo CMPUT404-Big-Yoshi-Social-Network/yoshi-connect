@@ -145,7 +145,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     }).clone()
 
     if (success) {
-        await deleteRequest(res, actor, object, foreignId, authorId, 'accept');
+        await deleteRequest(res, actor, object, foreignId, authorId, 'accept', isLocal);
     } else {
         return res.sendStatus(500);
     }
@@ -185,8 +185,7 @@ async function sendRequest(authorId, foreignId, res) {
 
     const request = {
         _id: uuid,
-        type: type,
-        summary: summary,
+        goal: type,
         actor: actor.username,
         actorId: actor._id,
         objectId: object._id,
@@ -221,7 +220,7 @@ async function sendRequest(authorId, foreignId, res) {
     }
 }
 
-async function deleteRequest(res, actor, object, foreignId, authorId, status) {
+async function deleteRequest(res, actor, object, foreignId, authorId, status, isLocal) {
     /**
     Description: 
     Associated Endpoint: (for example: /authors/:authorid)
@@ -229,7 +228,6 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-   isLocal = true;
     if (actor === null || actor === undefined) {
         actor = await Author.findOne({_id: authorId});
         if (actor === null || actor === undefined) {
@@ -306,8 +304,10 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status) {
     inbox.save();
 
     if (isLocal) {
+        console.log(authorId)
         const actorInbox = await Inbox.findOne({authorId: authorId}, '_id requests');
         request.type = status;
+        console.log(request)
         actorInbox.requests.push(request);
         actorInbox.save();
     }

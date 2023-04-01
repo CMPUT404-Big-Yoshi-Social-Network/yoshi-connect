@@ -384,6 +384,7 @@ async function postInboxRequest(actor, receiverAuthorId) {
 
     const request = {
         _id: uuid,
+        goal: 'follow',
         actor: actor.displayName,
         actorId: authorId,
         objectId: object._id,

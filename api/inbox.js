@@ -139,7 +139,7 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
   
-	await deleteRequest(res, null, null, foreignId, authorId, 'reject')
+	await deleteRequest(res, null, null, foreignId, authorId, 'reject', true)
 })
 
 // TBA 200

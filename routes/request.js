@@ -229,12 +229,13 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
+   isLocal = true;
     if (actor === null || actor === undefined) {
         actor = await Author.findOne({_id: authorId});
         if (actor === null || actor === undefined) {
             // Must be from another server
             const outgoings = await OutgoingCredentials.find().clone();
-
+            isLocal = false;
             for (let i = 0; i < outgoings.length; i++) {
                 if (outgoings[i].allowed) {
                     const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
@@ -309,20 +310,59 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status) {
         summary = object.username + " accepted request from " + actor.displayName; 
     }
 
-    return res.json({
-        type: status,
-        summary: summary,
-        actor: actor,
-        object: {
-            type: 'author',
-            id: process.env.DOMAIN_NAME + "authors/" + object._id,
-            host: process.env.DOMAIN_NAME,
-            displayName: object.username,
-            url: process.env.DOMAIN_NAME + "authors/" + object._id,
-            github: object.github,
-            profileImage: object.profileImage
-        }
-    })
+    if (!isLocal) {
+        // Must be from another server
+        const outgoings = await OutgoingCredentials.find().clone();
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].allowed && outgoings[i].host === actor.host) {
+                const auth = outgoings[i].auth
+                    var config = {
+                        host: outgoings[i].url,
+                        url: actor.id + '/inbox',
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        },
+                        data: {
+                            type: status,
+                            summary: summary,
+                            actor: actor,
+                            object: {
+                                type: 'author',
+                                id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                                host: process.env.DOMAIN_NAME,
+                                displayName: object.username,
+                                url: process.env.DOMAIN_NAME + "authors/" + object._id,
+                                github: object.github,
+                                profileImage: object.profileImage
+                            }
+                        }
+                    };
+                }
+        
+                await axios.request(config)
+                .then( res => {
+                    actor = res.data 
+                })
+                .catch( error => { })
+            }
+    } else {
+        return res.json({
+            type: status,
+            summary: summary,
+            actor: actor,
+            object: {
+                type: 'author',
+                id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                host: process.env.DOMAIN_NAME,
+                displayName: object.username,
+                url: process.env.DOMAIN_NAME + "authors/" + object._id,
+                github: object.github,
+                profileImage: object.profileImage
+            }
+        })
+    }
 }
 
 async function getRequests(authorId, res) {

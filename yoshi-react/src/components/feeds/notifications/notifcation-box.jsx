@@ -20,8 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React, { useEffect } from "react";
-import RequestFeedbacks from "./reqResponses.jsx";
+import React from "react";
 
 // Child Component
 import Requests from './requests/requests.jsx';

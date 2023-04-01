@@ -97,15 +97,27 @@ router.get('/outgoing/authors', async (req, res) => {
                     }
                 };
             } else {
-                var config = {
-                    host: outgoings[i].url,
-                    url: outgoings[i].url + '/authors',
-                    method: 'GET',
-                    headers: {
-                        'Authorization': auth,
-                        'Content-Type': 'application/json'
-                    }
-                };
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                    var config = {
+                      host: outgoings[i].url,
+                      url: outgoings[i].url + '/authors/',
+                      method: 'GET',
+                      headers: {
+                          'Authorization': auth,
+                          'Content-Type': 'application/json'
+                      }
+                    };          
+                } else {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                }
             }
     
             await axios.request(config)
@@ -281,15 +293,27 @@ router.get('/outgoing/authors/:authorId', async (req, res) => {
 
     for (let i = 0; i < outgoings.length; i++) {
         if (outgoings[i].allowed) {
-            var config = {
-                host: outgoings[i].url,
-                url: outgoings[i].url + '/authors' + req.params.authorId,
-                method: 'GET',
-                headers: {
-                    'Authorization': outgoings[i].auth,
-                    'Content-Type': 'application/json'
-                }
-            };
+            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors' + req.params.authorId,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': outgoings[i].auth,
+                        'Content-Type': 'application/json'
+                    }
+                }; 
+            } else {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors' + req.params.authorId,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': outgoings[i].auth,
+                        'Content-Type': 'application/json'
+                    }
+                };
+            }
     
             await axios.request(config)
             .then( res => {
@@ -444,9 +468,9 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
                     }
                 };
             } else {
-                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
                   var config = {
-                    host: outgoings[i].url + '/api',
+                    host: outgoings[i].url,
                     url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts/',
                     method: 'GET',
                     headers: {
@@ -991,20 +1015,20 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                     }
                 };
             } else {
-                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
                 var config = {
-                host: outgoings[i].url + '/api',
-                url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox/',
-                method: 'POST',
-                headers: {
-                    'Authorization': auth,
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    type: req.params.type,
-                    ...req.body
-                }
-                };              
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox/',
+                    method: 'POST',
+                    headers: {
+                        'Authorization': auth,
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        type: req.params.type,
+                        ...req.body
+                    }
+                };         
               } else {
                   var config = {
                     host: outgoings[i].url,

@@ -111,10 +111,9 @@ function SearchCard(props) {
                 type: 'follow'
             }
         } else {
-            console.log(id)
             url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
             config = {
-                summary: viewer + " wants to follow " + username,
+                summary: viewer.displayName + " wants to follow " + username,
                 actor: viewer,
                 actorId: viewerId,
                 objectId: id,

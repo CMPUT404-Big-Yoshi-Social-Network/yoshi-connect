@@ -183,39 +183,28 @@ async function isFriend(isLocal, authorId, foreignId, res) {
     
         for (let i = 0; i < outgoings.length; i++) {
             if (outgoings[i].allowed) {
-                const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
-                if (outgoings[i].auth === 'userpass') {
+                const auth = outgoings[i].auth
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
                     var config = {
                         host: outgoings[i].url,
-                        url: outgoings[i].url + '/authors' + foreignId + '/followers/',
-                        method: 'GET',
-                        auth: auth,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    };
-                } else {
-                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
-                    var config = {
-                        host: outgoings[i].url + '/api',
                         url: outgoings[i].url + '/authors' + foreignId + '/followers/',
                         method: 'GET',
                         headers: {
                             'Authorization': auth,
                             'Content-Type': 'application/json'
                         }
-                      };              
-                    } else {
-                        var config = {
-                          host: outgoings[i].url,
-                          url: outgoings[i].url + '/authors' + foreignId + '/followers',
-                          method: 'GET',
-                          headers: {
-                              'Authorization': auth,
-                              'Content-Type': 'application/json'
-                          }
-                        };
-                    }
+                    };              
+                } else {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors' + foreignId + '/followers',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                    console.log(config)
                 }
                 await axios.request(config)
                 .then( res => {

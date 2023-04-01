@@ -446,10 +446,10 @@ router.get('/search/:username', async (req, res) => {
                   }
               };
           } else {
-            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com') {
+            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
                 var config = {
-                  host: outgoings[i].url + '/api',
-                  url: outgoings[i].url + '/api' + '/authors/',
+                  host: outgoings[i].url,
+                  url: outgoings[i].url + '/authors/',
                   method: 'GET',
                   headers: {
                       'Authorization': auth,

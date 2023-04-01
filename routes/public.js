@@ -27,9 +27,7 @@ mongoose.set('strictQuery', true);
 const crypto = require('crypto');
 
 // Schemas
-const { Login } = require('../scheme/author.js');
-const { Following } = require('../scheme/relations.js');
-const { PostHistory, PublicPost } = require('../scheme/post.js');
+const { PublicPost } = require('../scheme/post.js');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
 
@@ -93,61 +91,8 @@ async function getPublicLocalPosts(page, size) {
 
 async function getPublicPostsXServer(page, size){
     let [response, statusCode] = await getPublicLocalPosts(page, size)
-    let publicPosts = response.items;
     const outgoings = await OutgoingCredentials.find().clone();
-    /*
-    for (let i = 0; i < outgoings.length; i++) {
-        if (outgoings[i].allowed || outgoings[i].url !== 'https://bigger-yoshi.herokuapp.com/api') {
-            const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
-            if (outgoings[i].auth === 'userpass') {
-                var config = {
-                    host: outgoings[i].url,
-                    url: outgoings[i].url + '/posts/public/',
-                    method: 'GET',
-                    auth: auth,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    params: {
-                        page: page,
-                        size: size
-                    },
-                    data: {
-                        local: false
-                    }
-                };
-            } else {
-                var config = {
-                    host: outgoings[i].url,
-                    url: outgoings[i].url + '/posts/public',
-                    method: 'GET',
-                    headers: {
-                        'Authorization': auth,
-                        'Content-Type': 'application/json'
-                    },
-                    params: {
-                        page: page,
-                        size: size
-                    }
-                };
-            }
-        
-            await axios.request(config)
-            .then(res => {
-                let items = []
-                if (outgoings[i].auth === 'userpass') { 
-                    items = res.data.filter((i)=>i !== null && typeof i !== 'undefined');
-                } else {
-                    if (typeof(res.data) != string) {
-                        items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
-                    }
-                }
-                publicPosts = publicPosts.concat(items);
-            })
-            .catch( error => { console.log(config) })
-        }
-    }
-    */
+    
     for(let i = 0; i < outgoings.length; i++) {
         const outgoing = outgoings[i];
         const host = outgoing.url;

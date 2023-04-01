@@ -192,46 +192,54 @@ function Post({viewerId, post}) {
     
     return (
         <div className="post">
-            {!post.unlisted &&
-                <div>
-                    { post.shared ? <h4>Shared Post</h4> : null }
-                    { post.title === "" ? null : <h1>{post.title}</h1> }
-                    { post.description === "" ? null : <h3>{ post.description }</h3> }
-                    { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    <img className={"image"} src={item} alt=""/>
+            <div>
+                { post.shared ? <h4>Shared Post</h4> : null }
+                { post.title === "" ? null : <h1>{post.title}</h1> }
+                { post.description === "" ? null : <h3>{ post.description }</h3> }
+                { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
+                <img className={"image"} src={item} alt=""/>
 
-                    <p>{post.published}</p>
+                <p>{post.published}</p>
+                <br></br>
+                { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons' onClick={removeLike}>Unlike</button></span>} 
+                <br></br>
+                {numComments}
+                { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
+
+                {showComment && 
+                    <div>
+                        <h3>Comments</h3>
+
+                        <form >
+                            <input type="text" id="newComment" name="newComment" onChange={(e) => {
+                                setComment({...comment, newComment: e.target.value})
+                            }}/>
+                            <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
+                        </form>
+                        {
+                            Object.keys(post.comments).map((comment, idx) => (
+                            <Comment key={idx} authorId={authorId} viewerId={viewerId} postId={postId} {...post.comments[comment]}/>
+                            )
+                        )}
+                    </div>}
                     <br></br>
-                    { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons' onClick={removeLike}>Unlike</button></span>} 
-                    <br></br>
-                    {numComments}
-                    { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
-
-                    {showComment && 
-                        <div>
-                            <h3>Comments</h3>
-
-                            <form >
-                                <input type="text" id="newComment" name="newComment" onChange={(e) => {
-                                    setComment({...comment, newComment: e.target.value})
-                                }}/>
-                                <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
-                            </form>
-                            {
-                                Object.keys(post.comments).map((comment, idx) => (
-                                <Comment key={idx} authorId={authorId} viewerId={viewerId} postId={postId} {...post.comments[comment]}/>
-                                )
-                            )}
-                        </div>}
-                        <br></br>
-                    {
-                        post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
-                    }    
-                    {
-                        post.authorId !== viewerId ? null : <button className='post-buttons' onClick={deletePost}>Delete</button>
-                    }  
-                    <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup> 
-                </div>}
+                    <div>
+                        { post.categories !== undefined ? 
+                            post.categories.map((category, idx) => (
+                                <div key={idx}>
+                                    <span class='category'>{category}</span>
+                                </div> 
+                            )) : 
+                            null
+                        }
+                    </div>
+                {
+                    post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
+                }    
+                {
+                    post.authorId !== viewerId ? null : <button className='post-buttons' onClick={deletePost}>Delete</button>
+                }    
+            </div>
         </div>
     )
 }

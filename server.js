@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 require('dotenv').config();
-mongoose.connect(process.env.ATLAS_URI, {dbName: "yoshi-connect"}).catch(err => console.log(err));
+mongoose.connect(process.env.ATLAS_URI, {dbName: process.env.DATABASE}).catch(err => console.log(err));
 
 // Parser
 const bodyParser = require('body-parser');
@@ -34,7 +34,7 @@ const express = require('express');
 const app = express();
 let cors = require('cors');
 let corsOptions = {
-  origin: ["http://www.distribution.social", "https://www.distribution.social/", "http://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com", "http://localhost:127.0.0.1:8000"],
+  origin: ["http://www.distribution.social", "https://www.distribution.social", "http://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com", "http://localhost:8000/", "http://127.0.0.1:8000", "http://0.0.0.0:8000/"],
   credentials: true
 };
 const PORT = process.env.PORT || 8080;
@@ -57,6 +57,7 @@ const post = require('./api/post');
 const setting = require('./api/settings');
 const userinfo = require('./api/userinfo');
 const node = require('./api/node');
+const public = require('./api/public');
 
 // App Uses
 app.use(express.json({limit: '10mb'}));
@@ -85,6 +86,7 @@ app.use("/authors/:authorId/friends", friends);
 app.use("/api-docs", apiDocs);
 app.use("/userinfo", userinfo);
 app.use("/nodes", node);
+app.use("/posts/public", public);
 
 if (process.env.NODE_ENV === "development") { app.use(express.static("./yoshi-react/build")); }
 

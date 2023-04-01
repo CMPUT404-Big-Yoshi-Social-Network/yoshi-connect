@@ -118,9 +118,7 @@ router.get('/outgoing/authors', async (req, res) => {
                 }
                 authors = authors.concat(items);
             })
-            .catch( error => {
-                console.log(error);
-            })
+            .catch( error => { })
         }
     }
     return res.json({
@@ -1024,11 +1022,11 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
               }
             }
             await axios.request(config)
-            .then( res => { console.log(res) })
-            .catch( error => { 
-                console.log(error) })
+            .then( res => { })
+            .catch( error => { })
         }
     }
+
     return res.sendStatus(200);
 })
 

@@ -347,6 +347,15 @@ router.post('/:authorId', async (req, res) => {
   if (status == 404 || status == 401) { return res.sendStatus(status); }
 })
 
+router.get('/postTo/:username', async (req, res) => {
+  const username = req.params.username;
+  let author = await Author.findOne({username: username}).clone();
+  if (!author) { 
+    return res.sendStatus(404)
+  }  
+  return res.json(author);
+})
+
 /**
  * @openapi
  * /search/:username:
@@ -403,7 +412,23 @@ router.post('/:authorId', async (req, res) => {
  */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
+  const localAuthor = await Author.findOne({username: username}); 
   let authors = []
+  if (localAuthor !== undefined && localAuthor !== null) {
+    const sanitizedAuthor = {
+      "type": "author",
+      "id" : process.env.DOMAIN_NAME + "authors/" + localAuthor._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayName": localAuthor.username,
+      "url":  process.env.DOMAIN_NAME + "authors/" + localAuthor._id,
+      "github": localAuthor.github,
+      "profileImage": localAuthor.profileImage,
+      "email": localAuthor.email, 
+      "about": localAuthor.about,
+      "pronouns": localAuthor.pronouns
+    }
+    authors.push(sanitizedAuthor);
+  }
 
   const outgoings = await OutgoingCredentials.find().clone();
 
@@ -452,15 +477,15 @@ router.get('/search/:username', async (req, res) => {
               } else {
                   items = res.data.items
               }
-              for (let j = 0; j < items.length; j++) {
-                if (items[j].displayName == username) {
-                  authors.push(items[j]);
+              if (items !== undefined) {
+                for (let j = 0; j < items.length; j++) {
+                  if (items[j].displayName == username) {
+                    authors.push(items[j]);
+                  }
                 }
               }
           })
-          .catch( error => {
-              console.log(error);
-          })
+          .catch( error => { })
       }
   }
   return res.json({

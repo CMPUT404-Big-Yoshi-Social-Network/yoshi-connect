@@ -191,7 +191,9 @@ async function createPost(token, authorId, postId, newPost) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if(! (await authLogin(token, authorId))){ return [[], 401]; }
+    if (token !== null) {
+        if(! (await authLogin(token, authorId))){ return [[], 401]; }
+    }
 
     let authorPromise = getAuthor(authorId);
 
@@ -199,11 +201,11 @@ async function createPost(token, authorId, postId, newPost) {
     const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
-    const categories = [''];
+    const categories = newPost.categories;
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const postTo = newPost.postTo;
+    const postFrom = newPost.postFrom;
 
     if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
@@ -241,7 +243,7 @@ async function createPost(token, authorId, postId, newPost) {
         visibility: visibility,
         unlisted: unlisted,
         shared: false,
-        postTo: postTo
+        postFrom: postFrom
     };
 
     postHistory.posts.push(post);
@@ -263,7 +265,7 @@ async function createPost(token, authorId, postId, newPost) {
     let [author, status] = await authorPromise;
     if (status != 200) return [{}, 500];
 
-    if (visibility == 'PUBLIC') {
+    if (visibility == 'PUBLIC' && (postFrom == '' || postFrom == undefined)) {
         post.author = {
             _id: author.id,
             displayName: author.displayName,
@@ -276,7 +278,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if(unlisted == "false" || unlisted == false){
+    if((postFrom == '' || postFrom == undefined) && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;
@@ -459,7 +461,7 @@ async function updatePost(token, authorId, postId, newPost) {
             visibility: visibility,
             shared: post.shared,
             unlisted: unlisted,
-            postTo: post.postTo
+            postFrom: post.postFrom
         };
         await (new PublicPost(publicPost)).save();
     }

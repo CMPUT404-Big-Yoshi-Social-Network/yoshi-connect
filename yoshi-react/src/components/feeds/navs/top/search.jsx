@@ -39,6 +39,8 @@ function SearchCard(props) {
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
     const navigate = useNavigate();
+    let id = props.id.split('/')
+    id = id[id.length - 1]
 
     useEffect(() => {
         /**
@@ -70,22 +72,36 @@ function SearchCard(props) {
 
     const sendRequest = () => {
         setRequestButton('Sent');
-        let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
-        let config = {
-            summary: viewer.displayName + " wants to follow " + username,
-            actor: viewer,
-            actorId: viewerId,
-            objectId: id,
-            object: props
+        let config = '';
+        let url = '';
+        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
+            url = '/authors/' + id + '/inbox'
+            config = {
+                actor: {
+                    id: props.host + 'authors/' + viewerId,
+                    status: 'local'
+                },
+                type: 'follow'
+            }
+        } else {
+            console.log(id)
+            url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
+            config = {
+                summary: viewer + " wants to follow " + username,
+                actor: viewer,
+                actorId: viewerId,
+                objectId: id,
+                object: props
+            }
         }
         axios
-        .post('/nodes/outgoing/authors/' + id + '/inbox/follow', config)
+        .post(url, config)
         .then((response) => { })
         .catch(err => { });
     }
 
     const seePosts = () => {
-        if (host === 'https://yoshi-connect.herokuapp.com/') {
+        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
             navigate('/users/' + username);
         } else {
             let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
@@ -116,7 +132,9 @@ function SearchCard(props) {
                     <br></br>
                     {host}
                     <Button onClick={seePosts} type="submit">View Profile</Button>
-                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    { id === viewerId ? null : 
+                        <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    }
                 </div>
             }
         </div>

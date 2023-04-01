@@ -51,7 +51,7 @@ function Profile() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const {state} = useLocation();
-    const { posts } = state;
+    const { posts } = state || [];
     const { username } = useParams();
     const [personal, setPersonal] = useState({
         person: null,
@@ -191,16 +191,15 @@ function Profile() {
         console.log('Debug: <TLDR what the function is doing>')
         if (requestButton === "Add") {
             setRequestButton('Sent');
-            let config = {
-                method: 'put',
-                maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
+            let body = {
+                actor: {
+                    id: personal.viewerId,
+                    status: 'local'
+                },
+                type: 'follow'
             }
             axios
-            .put('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
+            .post('/authors/' + personal.viewedId + '/inbox', body)
             .then((response) => { })
             .catch(err => {
               if (err.response.status === 401) {

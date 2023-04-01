@@ -19,16 +19,30 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-.feedColL, .feedColM, .feedColR {
-    display: inline-block;
+// Functionality
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+
+function Messenger(props) {
+    /**
+     * Description:    
+     * Returns: 
+     */
+    console.log('Debug: <TLDR what the function is doing>')
+    const [author, setAuthor] = useState()
+    useEffect(() => {
+        axios
+        .get('/authors/' + props.currentMessenger)
+        .then((response) => {
+            setAuthor(response.data)
+        })
+        .catch(err => { });
+    }, [props]);
+    return (
+        <div id='messenger'>
+            {author?.displayName !== undefined ? author.displayName : null }
+        </div>
+    )
 }
 
-.feedColL, .feedColR {
-    width: 15%;
-}
-
-.feedColM {
-    margin-top: 4em;
-    width: 70%;
-    background-color: #090D0E;
-}
+export default Messenger;

@@ -27,6 +27,7 @@ const { PostHistory, PublicPost, Post, Image, Inbox } = require('../scheme/post.
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
+const { OutgoingCredentials } = require('../scheme/server');
 
 
 // UUID
@@ -169,6 +170,7 @@ async function getPost(postId, auth, author){
         "contentType": post.contentType,
         "content": post.content,
         "author": author,
+        "shared": post.shared,
         "categories": post.categories,
         "count": post.commentCount,
         "likeCount": post.likeCount,
@@ -237,8 +239,10 @@ async function createPost(token, authorId, postId, newPost) {
         likeCount: 0,
         commentCount: 0,
         published: published,
+        whoShared: [],
         visibility: visibility,
         unlisted: unlisted,
+        shared: false,
         postFrom: postFrom
     };
 
@@ -262,6 +266,117 @@ async function createPost(token, authorId, postId, newPost) {
     if (status != 200) return [{}, 500];
 
     if (visibility == 'PUBLIC' && (postFrom == '' || postFrom == undefined)) {
+        post.author = {
+            _id: author.id,
+            displayName: author.displayName,
+            profileImage: author.profileImage,
+            pronouns: author.pronouns
+        }
+        const publicPost = new PublicPost(post);
+        await publicPost.save();
+    }
+
+    //TODO make this faster
+    //if not unlisted send to all followers 
+    if((postFrom == '' || postFrom == undefined) && (unlisted == "false" || unlisted == false)){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+            inbox.posts.push(post);
+            await inbox.save();
+        }
+    }
+
+    await likes;
+    await comments;
+    await savePostPromise;
+    return await getPost(postId, authorId, author);
+}
+
+async function sharePost(token, authorId, postId, newPost) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
+    if(! (await authLogin(token, authorId))){ return [[], 401]; }
+
+    let authorPromise = getAuthor(authorId);
+
+    const title = newPost.title;
+    const description = newPost.description;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = [''];
+    const published = new Date().toISOString();
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    const postTo = newPost.postTo;
+    const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
+    const origin = newPost.origin;
+
+    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
+        return [[], 400];
+    }
+
+    let postHistory = await PostHistory.findOne({authorId: authorId});
+    if (!postHistory) { return [[], 404]; }
+
+    let source = newPost.author._id + '/posts/' + newPost.postId;
+
+    const originalPH = await PostHistory.findOne({authorId: newPost.author._id});
+    const originalPost = originalPH.posts.id(newPost.postId);
+    originalPost.whoShared.push({
+        authorId: authorId, 
+        host: process.env.DOMAIN_NAME,
+        postId: sharedPostId
+    });
+
+    let post = {
+        _id: sharedPostId,
+        title: title,
+        source: source,
+        origin: origin,
+        description: description,
+        contentType: contentType,
+        content: content,
+        authorId: authorId,
+        categories: categories,
+        likeCount: 0,
+        commentCount: 0,
+        published: published,
+        visibility: visibility,
+        unlisted: unlisted,
+        whoShared: [],
+        shared: true,
+        postTo: postTo,
+        author: null
+    };
+
+    postHistory.posts.push(post);
+    postHistory.num_posts = postHistory.num_posts + 1;
+
+    let savePostPromise = postHistory.save();
+
+    let likes = LikeHistory({
+        type: "post",
+        Id: sharedPostId,
+        likes: [],
+    }).save();
+
+    let comments = CommentHistory({
+        postId: sharedPostId,
+        comments: [],
+    }).save();
+
+    let [author, status] = await authorPromise;
+    if (status != 200) return [{}, 500];
+
+    if (visibility == 'PUBLIC') {
         post.author = {
             _id: author.id,
             host: author.host,
@@ -292,7 +407,7 @@ async function createPost(token, authorId, postId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-    return await getPost(postId, authorId, author);
+    return await getPost(sharedPostId, authorId, author);
 }
 
 async function updatePost(token, authorId, postId, newPost) {
@@ -348,6 +463,7 @@ async function updatePost(token, authorId, postId, newPost) {
             commentCount: post.commentCount,
             published: post.published,
             visibility: visibility,
+            shared: post.shared,
             unlisted: unlisted,
             postFrom: post.postFrom
         };
@@ -365,25 +481,27 @@ async function updatePost(token, authorId, postId, newPost) {
     post.unlisted = unlisted;
     post.categories = categories;
     await postHistory.save()
-    
-    /*
-    if(unlisted === "false"){
-        const followers = await Follower.findOne({authorId: authorId}).clone();
-        let promiseList = [];
-        for(let i = 0; i < followers.followers.length; i++){
-            const follower = followers.followers[i].authorId;
-            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-            inbox.posts.push(post);
-            promiseList.push(inbox.save());
-        }
 
-        for(let i = 0; i < promiseList.length; i++){
-            await promiseList[i];
-        }
-    }
-    */
     let author = await getAuthor(authorId);
     return await getPost(postId, token, author[0]);
+}
+
+async function createTombstone(authorId, postId) {
+    const phShared = await PostHistory.findOne({authorId: authorId});
+
+    if (!phShared) { return [{}, 404]; }
+
+    const pShared = postHistory.posts.id(postId);
+
+    if(!pShared) { return [{}, 404]; }
+
+    pShared.title = 'Shared Post Deleted!'
+    pShared.description = 'Sorry, but the original post has been deleted! -- YoshiConnect'
+    pShared.contentType = 'text/plain'
+    pShared.content = 'RIP Shared Post'
+    // TODO: Need to address the image for the tombstone for a deleted shared post
+
+    await phShared.save();
 }
 
 async function deletePost(token, authorId, postId) {
@@ -406,6 +524,18 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
+
+    if (post.whoShared != []) {
+            const whoShared = post.whoShared; 
+            const outgoings = await OutgoingCredentials.find().clone();
+            for (let i = 0; i < whoShared.length; i++) {
+                const node = outgoings.find(item => item.url === whoShared[i].host)
+                if (node === undefined) {
+                    await createTombstone(authorId, postId);
+                }
+            }
+        }
+
 
     const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
     const comments = CommentHistory.findOneAndDelete({postId: postId});
@@ -670,9 +800,11 @@ module.exports={
     deletePost,
     createPost,
     getPosts,
+    sharePost,
     fetchMyPosts,
     fetchOtherPosts,
     uploadImage,
     getImage,
-    editImage
+    editImage,
+    createTombstone
 }

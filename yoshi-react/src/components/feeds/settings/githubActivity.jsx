@@ -32,7 +32,6 @@ function Activity({activity}) {
     return (
         <div style={{padding: "1em"}}>
             <span>{activity.user.name} </span>
-            <span>{activity.type} </span>
             <span>{activity.text} </span>
             <br/>
         </div>

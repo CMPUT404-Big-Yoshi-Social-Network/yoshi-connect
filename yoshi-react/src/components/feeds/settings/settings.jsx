@@ -50,7 +50,9 @@ function Settings() {
         newUsername: '',
         newPassword: '',
         newEmail: '',
-        image: ""
+        newGithub: "",
+        newImage: ""
+
     })
     const [viewer, setViewer] = useState('')
     
@@ -114,7 +116,8 @@ function Settings() {
                 username: newAuthor.newUsername,
                 password: newAuthor.newPassword,
                 email: newAuthor.newEmail, 
-                profileImage: newAuthor.image
+                profileImage: newAuthor.newImage,
+                github: newAuthor.newGithub
             }
         }
 
@@ -172,10 +175,17 @@ function Settings() {
                                         type="password" className='account-details-box'/>
                                 </Form.Group>
                                 <Form.Group className="account-details-a">
+                                    <p>GitHub Username</p>
+                                    <Form.Control
+                                        name="github"
+                                        onChange={(e) => {setNewAuthor({...newAuthor, newGithub: e.target.value})}}
+                                        type="text" className='account-details-box'/>
+                                </Form.Group>
+                                <Form.Group className="account-details-a">
                                     <p>Profile Picture</p>
                                     <Form.Control
                                         name="image"
-                                        onChange={(e) => {setNewAuthor({...newAuthor, image: e.target.value})}}
+                                        onChange={(e) => {setNewAuthor({...newAuthor, newImage: e.target.value})}}
                                         type="text" className='account-details-box'/>
                                 </Form.Group>
                                 <br></br>

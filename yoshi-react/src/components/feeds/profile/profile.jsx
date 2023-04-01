@@ -232,7 +232,7 @@ function Profile() {
                 if (err.response.status === 500) { navigate('/servererror') }
             });
         }
-    }, [username, personal, exists, requestButton])
+    }, [navigate, username, personal, exists, requestButton])
 
     const SendRequest = () => {
         /**

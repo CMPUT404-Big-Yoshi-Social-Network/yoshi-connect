@@ -50,10 +50,10 @@ function RightNavBar() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                setProfile({...profile, username: response.data.displayName, pic: response.data.profileImage})
+                setProfile({username: response.data.displayName, pic: response.data.profileImage})
             })
             .catch(err => { if (err.response.status === 404) { 
-                setProfile({...profile, username: ""})
+                setProfile({username: ""})
             } 
             });
         }

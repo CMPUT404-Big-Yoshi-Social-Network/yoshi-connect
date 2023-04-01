@@ -102,7 +102,7 @@ function Posts(props) {
         .get(url, config)
         .then((response) => {
             console.log(response.data)
-            setPosts(posts.concat(response.data.items));
+            setPosts(posts => posts.concat(response.data.items));
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -144,7 +144,7 @@ function Posts(props) {
         });
         
        } 
-    }, [url, navigate]);
+    }, [url, navigate, page, size]);
 
     const getMore = () => {
         /**
@@ -170,23 +170,14 @@ function Posts(props) {
             axios
             .get(url, config)
             .then((response) => { 
-                let more = []
-                for (let i = 0; i < response.data.items.length; i++) {
-                    more.push(response.data.items[i]);
-                }
-                setPosts(posts.concat(more));
+                setPosts(posts.concat(response.data.items));
                 if (response.data.items.length < size) {
                     setSeeMore(true);
                 } 
             })
             .catch(err => {
-                if (err.response.status === 404) {
-                    setPosts(posts);
-                } else if (err.response.status === 401) {
+                if (err.response.status === 401) {
                     navigate('/unauthorized');
-                } else if (err.response.status === 500) {
-                    // TEMPORARY
-                    setPosts(posts);
                 }
             });
         }
@@ -210,14 +201,9 @@ function Posts(props) {
         .catch(err => {
             console.log(err);
             if(err.response){
-                if (err.response.status === 404) {
-                    setPosts(posts);
-                } else if (err.response.status === 401) {
+                if (err.response.status === 401) {
                     navigate('/unauthorized');
-                } else if (err.response.status === 500) {
-                    // TEMPORARY
-                    setPosts(posts);
-                }
+            }
             }
             
         });

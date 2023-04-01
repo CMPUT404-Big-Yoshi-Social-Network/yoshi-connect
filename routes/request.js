@@ -130,7 +130,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     }
 
     await Follower.findOne({authorId: foreignId}, async function(err, follower){
-        const newFollower = {}
+        let newFollower = {}
         if (actor.username === undefined) {
             newFollower = {
                 _id: uuidF,

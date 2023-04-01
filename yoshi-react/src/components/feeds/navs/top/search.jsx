@@ -128,14 +128,12 @@ function SearchCard(props) {
         <div>
             { !props && username === undefined ? null : 
                 <div>
-                    <hr/>
-                    <h5>{host}</h5>
+                    <p className='search-username'>{host}</p>
                     <p className='search-username'>{username}</p>
                     <Button className='search-button' onClick={seePosts} type="submit">View Profile</Button>
                     { id === viewerId ? null : 
                         <Button className='search-button' onClick={sendRequest} type="submit">{requestButton}</Button>
                     }
-                    
                 </div>
             }
         </div>

@@ -115,9 +115,9 @@ function SearchOutcomes({url}) {
                     setAuthors(authors);
                 }
             } else if (err.response.status === 401) {
-                navigate('/unauthorized');
+                console.log('401')
             } else if (err.response.status === 500) {
-                navigate('/servererror')
+                console.log('500')
             }
         });
     }, [setFindings, authors, next, page, url])
@@ -159,11 +159,10 @@ function SearchOutcomes({url}) {
             .catch(err => {
                 if (err.response.status === 404) {
                     setAuthors([]);
-                    navigate('/notfound')
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
-                    navigate('/servererror')
+                    navigate('500 PAGE')
                 }
             });
         }
@@ -187,11 +186,10 @@ function SearchOutcomes({url}) {
         .catch(err => {
             if (err.response.status === 404) {
                 setAuthors([]);
-                navigate('/notfound')
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                navigate('/servererror')
+                navigate('500 PAGE')
             }
         });
     }
@@ -233,11 +231,10 @@ function SearchOutcomes({url}) {
             .catch(err => {
                 if (err.response.status === 404) {
                     setAuthors([]);
-                    navigate('/notfound')
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized');
                 } else if (err.response.status === 500) {
-                    navigate('/servererror')
+                    navigate('500 PAGE')
                 }
             });
         }

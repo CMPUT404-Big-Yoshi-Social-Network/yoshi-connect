@@ -48,7 +48,7 @@ async function getLikes(authorId, postId, commentId, type){
                                             summary: "abc likes your post",
                                             type: "Like",
                                             author: author,
-                                            object: https://yoshi-connect.herokuapp.com/f08d2d6579d5452ab282512d8cdd10d4 }
+                                            object: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/902sq546w5498hea764r80re0z89becb/comments/6d45f566w5498e78tgy436h48dh96a : authors/29c546d45f564a27871838825e3dbecb /posts/902sq546w5498hea764r80re0z89becb }
     */
     let objectId;
     if(type == "comment"){

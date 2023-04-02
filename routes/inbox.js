@@ -305,11 +305,18 @@ async function postInboxLike(like, authorId){
 
 async function postInboxComment(newComment, recieverAuthorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts a comment object into the Author's inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: POST
+    Request Body: { _id: f08d2d6579d5452ab282512d8cdd10d4,
+                    author: author,
+                    comment: "abc",
+                    contentType: text/plain,
+                    published: 2023-03-24T06:53:47.567Z }
+    Return: 401 Status (Unauthorized) -- No token or not authorized 
+            400 Status (Bad Request) -- No valid type specified in request
+            500 Status (Internal Server Error) -- Unable to retrieve comment history from database
+            200 Status (OK) -- Successfully posts a comment to the Inbox
     */
     if(!newComment){
         return [{}, 400];

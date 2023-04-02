@@ -525,8 +525,7 @@ async function updatePost(token, authorId, postId, newPost) {
     if (!postHistory) { return [{}, 500]; }
 
     let post = postHistory.posts.id(postId);
-
-    if(unlisted == 'false' && visibility == "PUBLIC" && !post.unlisted && post.visibility == "PUBLIC") {
+    if((unlisted == 'false' || unlisted == false) && visibility == "PUBLIC" && !post.unlisted && post.visibility == "PUBLIC") {
         let publicPosts = await PublicPost.findOne({_id: postId}).clone();
         if(!publicPosts) return [{}, 500];
         publicPosts.title = title;
@@ -538,7 +537,7 @@ async function updatePost(token, authorId, postId, newPost) {
         publicPosts.categories = categories;
         await publicPosts.save();
     }
-    else if(unlisted == 'false' && visibility == "PUBLIC") {
+    else if((unlisted == 'false' || unlisted == false) && visibility == "PUBLIC") {
         let publicPost = {
             _id: postId,
             title: title,
@@ -559,7 +558,7 @@ async function updatePost(token, authorId, postId, newPost) {
         };
         await (new PublicPost(publicPost)).save();
     }
-    else if(unlisted == "true" || visibility == "FRIENDS"){
+    else if((unlisted == "true" || unlisted == true) || visibility == "FRIENDS"){
         await PublicPost.findOneAndDelete({_id: postId}).clone();
     }
 

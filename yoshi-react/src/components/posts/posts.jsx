@@ -81,11 +81,11 @@ function Posts(props) {
                 if (props.posts === undefined) {
                     if (type === 'public') {
                         setUrl('/posts/' + type);
-                    }
-                    else if (type === 'inbox') {
+                    } else if (type === 'inbox') {
                         setUrl('/authors/' + id + '/inbox');
-                    }
-                    else {
+                    } else if (type === 'personal') {
+                        setUrl('/authors/' + id + '/posts/personal')
+                    } else {
                         setUrl('/authors/' + id + '/posts/' + type);
                     }
                 }

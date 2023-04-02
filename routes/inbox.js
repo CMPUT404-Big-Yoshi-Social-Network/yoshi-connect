@@ -20,11 +20,16 @@ const { authLogin } = require('./auth.js');
 
 async function getInbox(token, authorId, page, size){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets an Author's inbox posts
+    Associated Endpoint: /authors/:authorId/inbox
+                         /authors/:authorId/posts/friends-posts
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 400 Status (Bad Request) -- No posts to get
+            200 Status (OK) -- Successfully fetches posts from Inbox
+                                    { type: "inbox",
+                                        author: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                        items: posts }
     */
     if( ! (await authLogin(token, authorId))){
         return [{}, 401];

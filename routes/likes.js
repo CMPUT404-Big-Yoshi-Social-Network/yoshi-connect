@@ -151,10 +151,10 @@ async function addLike(like, authorId, postId){
 async function addLiked(authorId, objectId){
     /**
     Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { _id: 902sq546w5498hea764r80re0z89bej }
+    Return: N/A
     */
     //Add this object to the list of posts that the author has liked
     //extract author uuid from authorID

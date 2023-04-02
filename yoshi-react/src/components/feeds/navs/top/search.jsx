@@ -88,7 +88,21 @@ function SearchCard(props) {
                 } else if (response.data.status === 'Follows') {
                     setRequestButton('Unfollow');
                 } else if (response.data.status === 'Strangers') {
-                    setRequestButton('Add');
+                    if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
+                        console.log('ere')
+                        axios
+                        .get('/authors/' + viewerId + '/inbox/requests/' + id)
+                        .then((response) => { 
+                            if (response.data.summary !== 'No request found') {
+                                setRequestButton('Sent');
+                            }
+                        })
+                        .catch(err => {
+                            if (err.response.status === 404) { }
+                        });
+                    } else {
+                        setRequestButton('Add');
+                    }
                 }
             })
             .catch(err => {
@@ -97,50 +111,50 @@ function SearchCard(props) {
         }
     }, [id, viewerId, host]);
 
-    useEffect(() => {
-        if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
-            if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
-                axios
-                .get('/authors/' + viewerId + '/inbox/requests/' + id)
-                .then((response) => { 
-                    if (response.data.summary !== 'No request found') {
-                        setRequestButton('Sent');
-                    }
-                })
-                .catch(err => {
-                    if (err.response.status === 404) { }
-                });
-            }
-        }
-    }, [viewerId, id, host]);
-
     const sendRequest = () => {
-        setRequestButton('Sent');
-        let config = '';
-        let url = '';
-        if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
-            url = '/authors/' + id + '/inbox'
-            config = {
-                actor: {
-                    id: host + 'authors/' + viewerId,
-                    status: 'local'
-                },
-                type: 'follow'
+        if (requestButton === "Add") { 
+            setRequestButton('Sent');
+            let config = '';
+            let url = '';
+            if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
+                url = '/authors/' + id + '/inbox'
+                config = {
+                    actor: {
+                        id: host + 'authors/' + viewerId,
+                        status: 'local'
+                    },
+                    type: 'follow'
+                }
+            } else {
+                url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
+                config = {
+                    summary: viewer.displayName + " wants to follow " + username,
+                    actor: viewer,
+                    actorId: viewerId,
+                    objectId: id,
+                    object: props
+                }
             }
-        } else {
-            url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
-            config = {
-                summary: viewer.displayName + " wants to follow " + username,
-                actor: viewer,
-                actorId: viewerId,
-                objectId: id,
-                object: props
-            }
-        }
-        axios
-        .post(url, config)
-        .then((response) => { })
-        .catch(err => { });
+            axios
+            .post(url, config)
+            .then((response) => { })
+            .catch(err => { });
+        } else if (requestButton === "Sent") {
+            setRequestButton('Add')
+            axios
+            .delete('/authors/' + id + '/inbox/requests/' + viewerId)
+            .then((response) => { })
+            .catch(err => { });
+        } else if (requestButton === 'Unfriend' || requestButton === "Unfollow") {
+            axios
+            .delete('/authors/' + viewerId + '/followings/' + id)
+            .then((response) => {
+                if (response.data.status === 204) {
+                    setRequestButton('Add');
+                }
+            })
+            .catch(err => { });
+        } 
     }
 
     const seePosts = () => {

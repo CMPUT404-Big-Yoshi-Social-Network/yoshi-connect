@@ -39,6 +39,7 @@ function Posts(props) {
     const [posts, setPosts] = useState([]);  
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
+    const [userInfo, setUserInfo] = useState({})
     const size = 20;
     const navigate = useNavigate();
     const [url, setUrl] = useState('');
@@ -56,7 +57,10 @@ function Posts(props) {
         if (props.posts !== undefined) {
             setPosts(props.posts)
         }
-    }, [props])
+        if (type === 'public') {
+            setUrl('/posts/' + type);
+        }
+    })
 
     useEffect(() => {
 
@@ -79,10 +83,10 @@ function Posts(props) {
                 id = response.data.authorId;
                 setViewerId(id);
                 if (props.posts === undefined) {
-                    if (type === 'public') {
-                        setUrl('/posts/' + type);
-                    }
-                    else if (type === 'inbox') {
+                    setUserInfo(response.data);
+                    let viewerId = response.data.authorId;
+                    setViewerId(viewerId);
+                    if (type === 'inbox') {
                         setUrl('/authors/' + id + '/inbox');
                     }
                     else {
@@ -248,7 +252,7 @@ function Posts(props) {
                 <div> 
                     <Pagination>
                         {Object.keys(posts).map((post, idx) => (
-                            <Post key={idx} viewerId={viewerId} post={posts[post]}/>
+                            <Post key={idx} viewerId={viewerId} post={posts[post]} author={userInfo}/>
                         ))}  
                         { seeMore ? null :
                             <div>

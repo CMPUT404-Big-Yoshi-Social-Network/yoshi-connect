@@ -78,11 +78,10 @@ async function uploadImage(url, image) {
 
 async function editImage(url, src) {
     /**
-    Description: Edits an image associated with a specific post made by a specific author
+    Description: Edits an image associated with a specific post made by a specific Author
     Associated Endpoint: /authors/:authorId/posts/:postId/image 
     Request Type: POST
-    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image,  
-                    src: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd }
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image }
     Return: 404 Status (Not Found) -- Image was not found
             200 Status (OK) -- Successfully edited the image from a post made by the Author
     */
@@ -95,11 +94,12 @@ async function editImage(url, src) {
 
 async function getImage(url) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the image associated with post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image
+    Request Type: GET
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image }
+    Return: 404 Status (Not Found) -- Image was not found
+            200 Status (OK) -- Successfully retrieved the image from a post made by the Author
     */
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
@@ -108,11 +108,13 @@ async function getImage(url) {
 
 async function getPost(postId, auth, author){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the posts associated with postId for the Author associated with authorId
+    Associated Endpoint: /authors/:authorId/posts/:postId 
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb  , postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 404 Status (Not Found) -- Author ID was not found or Post associated with Author was not found
+            401 Status (Unauthorized) -- Authentication failed, post not visible
+            200 Status (OK) -- Returns Authour's post
     */
     let post = await PostHistory.aggregate([
         {

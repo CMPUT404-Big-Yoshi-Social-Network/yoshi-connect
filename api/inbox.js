@@ -311,7 +311,14 @@ router.get('/requests/:foreignAuthorId', async (req, res) => {
   
 	const request = await getRequest(authorId, foreignId);
 
-	if (!request) { return res.sendStatus(404); }
+	if (!request) { 
+		return res.json({
+			"type": 'follow',
+			"summary": 'No request found',
+			"actor": null,
+			"object": null
+		  })
+	}
   
 	return res.json({
 	  "type": request.goal,

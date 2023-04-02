@@ -98,15 +98,19 @@ function SearchCard(props) {
     }, [id, viewerId, host]);
 
     useEffect(() => {
-        if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
-            axios
-            .get('/authors/' + viewerId + '/inbox/requests/' + id)
-            .then((response) => { 
-                setRequestButton('Sent');
-            })
-            .catch(err => {
-                if (err.response.status === 404) { }
-            });
+        if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
+            if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
+                axios
+                .get('/authors/' + viewerId + '/inbox/requests/' + id)
+                .then((response) => { 
+                    if (response.data.summary !== 'No request found') {
+                        setRequestButton('Sent');
+                    }
+                })
+                .catch(err => {
+                    if (err.response.status === 404) { }
+                });
+            }
         }
     }, [viewerId, id, host]);
 

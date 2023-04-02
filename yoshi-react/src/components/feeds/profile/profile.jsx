@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
 import axios from 'axios';
@@ -49,6 +49,7 @@ function Profile() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
+    const {state} = useLocation();
     const { username } = useParams();
     const [profileInfo, setProfileInfo] = useState({
         github: null,
@@ -84,50 +85,52 @@ function Profile() {
         let numFollowers = '';
         let otherUrl = '';
 
-        const isRealProfile = () => {
-            /**
-             * Description: Checks if the author account exists
-             * Request: GET
-             * Returns: N/A
-             */
-            console.log('Debug: <TLDR what the function is doing>')
-            axios
-            .get('/profile/' + username)
-            .then((response) => {
-                console.log('Debug: Profile Exists.')
-                person = response.data.personal
-                viewer = response.data.viewer
-                viewed = response.data.viewed
-                viewedId = response.data.viewedId
-                viewerId = response.data.viewerId
-                numPosts = response.data.numPosts
-                numFollowing = response.data.numFollowing
-                numFollowers = response.data.numFollowers
-                console.log("Everything", response.data)
-                setPersonal(prevPersonal => ({...prevPersonal, person}))
-                setPersonal(prevViewer => ({...prevViewer, viewer}))
-                setPersonal(prevViewed => ({...prevViewed, viewed}))
-                setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
-                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
-                setPersonal(prevNumPosts => ({...prevNumPosts, numPosts}))
-                setPersonal(prevNumFollowing => ({...prevNumFollowing, numFollowing}))
-                setPersonal(prevNumFollowers => ({...prevNumFollowers, numFollowers}))
-
-                otherUrl = 'other/' + viewedId;
-                setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
-            })
-            .catch(err => {
-                if (err.response.status === 404) {
-                    navigate('/notfound'); 
-                }
-                else if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); 
-                }
-            });
+        if (!state.isRemote) {
+            const isRealProfile = () => {
+                /**
+                 * Description: Checks if the author account exists
+                 * Request: GET
+                 * Returns: N/A
+                 */
+                console.log('Debug: <TLDR what the function is doing>')
+                axios
+                .get('/profile/' + username)
+                .then((response) => {
+                    console.log('Debug: Profile Exists.')
+                    person = response.data.personal
+                    viewer = response.data.viewer
+                    viewed = response.data.viewed
+                    viewedId = response.data.viewedId
+                    viewerId = response.data.viewerId
+                    numPosts = response.data.numPosts
+                    numFollowing = response.data.numFollowing
+                    numFollowers = response.data.numFollowers
+                    console.log("Everything", response.data)
+                    setPersonal(prevPersonal => ({...prevPersonal, person}))
+                    setPersonal(prevViewer => ({...prevViewer, viewer}))
+                    setPersonal(prevViewed => ({...prevViewed, viewed}))
+                    setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
+                    setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+                    setPersonal(prevNumPosts => ({...prevNumPosts, numPosts}))
+                    setPersonal(prevNumFollowing => ({...prevNumFollowing, numFollowing}))
+                    setPersonal(prevNumFollowers => ({...prevNumFollowers, numFollowers}))
+    
+                    otherUrl = 'other/' + viewedId;
+                    setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
+                })
+                .catch(err => {
+                    if (err.response.status === 404) {
+                        navigate('/notfound'); 
+                    }
+                    else if (err.response.status === 401) {
+                        console.log("Debug: Not authorized.");
+                        navigate('/unauthorized'); 
+                    }
+                });
+            }
+            isRealProfile();
         }
-        isRealProfile();
-    }, [navigate, username])
+    }, [navigate, username, state.isRemote])
 
     useEffect(() => {
         let github = '';
@@ -135,7 +138,7 @@ function Profile() {
         let about = '';
         let pronouns = '';
 
-        if (personal.viewedId) {
+        if (personal.viewedId && !state.isRemote) {
             const getProfileInfo = () => {
                 /**
                  * Description: Gets account details of author
@@ -171,7 +174,7 @@ function Profile() {
             }
             getProfileInfo();
         }
-    }, [navigate, personal])
+    }, [navigate, personal, state.isRemote])
 
     useEffect(() => {
         /**
@@ -180,7 +183,7 @@ function Profile() {
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
-        if (!personal.person && personal.viewerId != null && personal.viewedId != null) { 
+        if (!personal.person && personal.viewerId != null && personal.viewedId != null && !state.isRemote) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
                 method: 'get',
@@ -200,7 +203,8 @@ function Profile() {
                 if (err.response.status === 404) { exists.current = false; }
             });
         }
-    }, [username, exists, personal]);
+    }, [username, exists, personal, state.isRemote]);
+
     useEffect(() => {
         /**
          * Description: Checks if the author is a follower or a friend
@@ -209,7 +213,7 @@ function Profile() {
          * REFACTOR: CHECK 
          */
         console.log('Debug: <TLDR what the function is doing>')
-        if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
+        if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null && !state.isRemote) {
             console.log('See if they are followers or friends.');
             let config = {
                 method: 'post',
@@ -232,7 +236,7 @@ function Profile() {
                 if (err.response.status === 500) { navigate('/servererror') }
             });
         }
-    }, [navigate, username, personal, exists, requestButton])
+    }, [navigate, username, personal, exists, requestButton, state.isRemote])
 
     const SendRequest = () => {
         /**
@@ -334,17 +338,24 @@ function Profile() {
                     { (profileInfo.profileImage === '') ? <img className='profile-image' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='profile-image' src={profileInfo.profileImage} alt='prof-userimg' width={130}/>}
                     <h1 className='profile-username'>{username}</h1>
                     <p className='profile-pronouns' >{profileInfo.pronouns}</p>
-                    { personal.person ? null : 
-                        <button style={{marginLeft: '1.8em'}} className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
-                    <p className='profile-nums'>{personal.numPosts} Posts</p> 
-                    <p className='profile-nums'>{personal.numFollowing} Following</p> 
-                    <p className='profile-nums'>{personal.numFollowers} Followers</p>
-                    <p className='profile-about'>{profileInfo.about}</p>
+                    { (state.isRemote || personal.person) ? null : 
+                        <button style={{marginLeft: '1.8em'}} className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>
+                    }
+                    { !state.isRemote ? 
+                        <div>
+                            <p className='profile-nums'>{personal.numPosts} Posts</p> 
+                            <p className='profile-nums'>{personal.numFollowing} Following</p> 
+                            <p className='profile-nums'>{personal.numFollowers} Followers</p>
+                            <p className='profile-about'>{profileInfo.about}</p>
+                        </div> : 
+                        null
+                    }
                     
                     <hr/>
                     <br/>
-                    { (personal.person === null) ? null : (personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>) 
-                    }   
+                    {
+                        personal.person === null ? state.isRemote === true ? <Posts posts={state.posts}/> : null : personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>
+                    }
                 </div>
                 <div className='profColR'>
                     <RightNavBar/>

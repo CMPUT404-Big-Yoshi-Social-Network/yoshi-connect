@@ -48,14 +48,13 @@ async function createInbox(username, authorId){
     Description: Creates the Author's inbox in the database
     Associated Endpoint: N/A
     Request Type: PUT
-    Request Body: Example: 
-        { _id: 29c546d45f564a27871838825e3dbecb,
-            authorId: 29c546d45f564a27871838825e3dbecb,
-            username: abc, 
-            posts: [], 
-            likes: [],
-            comments: [],
-            requests: [] }
+    Request Body: { _id: 29c546d45f564a27871838825e3dbecb,
+                    authorId: 29c546d45f564a27871838825e3dbecb,
+                    username: abc, 
+                    posts: [], 
+                    likes: [],
+                    comments: [],
+                    requests: [] }
     Return: N/A
     */
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
@@ -73,19 +72,18 @@ async function createInbox(username, authorId){
 async function registerAuthor(req, res){
     /**
     Description: Registers the Author to the database
-    Associated Endpoint: components:
+    Associated Endpoint: components
     Request Type: POST
-    Request Body: Example: 
-        { _id: 29c546d45f564a27871838825e3dbecb,
-            username: abc, 
-            password: 123, 
-            email: 123@aulenrta.ca, 
-            about: "author bio", 
-            pronouns: "they/them", 
-            github: "https://github.com/name",
-            profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd", 
-            admin: false
-            allowed: false }
+    Request Body: { _id: 29c546d45f564a27871838825e3dbecb,
+                    username: abc, 
+                    password: 123, 
+                    email: 123@aulenrta.ca, 
+                    about: "author bio", 
+                    pronouns: "they/them", 
+                    github: "https://github.com/name",
+                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd", 
+                    admin: false
+                    allowed: false }
     Return: 400 Status (Bad Request) -- Username is already taken, no 'username', 'email', or 'password' was given, or invalid email
             500 Status (Internal Server Error) -- Unable to save Author in database
             200 Status (OK) -- Author was succesfully registered and added to the database
@@ -188,11 +186,25 @@ async function getProfile(req, res) {
 
 async function getAuthor(authorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Retrives the Author from database
+    Associated Endpoint: /authors/:authorId
+                         /authors/:authorId/posts
+    Request Type: GET 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Author was not found in database
+            500 Status (Internal Server Error) -- Unable to retreive author from database 
+            200 Status (OK) -- Returns a JSON that contains 
+                                { type: author
+                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+                                    authorId: 29c546d45f564a27871838825e3dbecb,
+                                    host: https://yoshi-connect.herokuapp.com/,
+                                    displayName: abc, 
+                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
+                                    email: 123@aulenrta.ca,  
+                                    github: "https://github.com/name",
+                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
+                                    about: "author bio",
+                                    pronouns: "they/them" }
     */
     const author = await Author.findOne({_id: authorId}, function (err, author) {
         if (err) { return "server failure"; }
@@ -222,11 +234,27 @@ async function getAuthor(authorId){
 
 async function updateAuthor(token, author){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Updates the Author in the database
+    Associated Endpoint: /settings
+                         /authors/:authorId                        
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)	    
+            401 Status (Unathorized) -- Author token is not authenticated
+            404 Status (Not Found) -- Author was not found in database
+            400 Status (Bad Request) -- Type, authorId, host, or username are incorrect
+            200 Status (OK) -- Returns JSON of sanitized Author 
+                                { type: author
+                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+                                    authorId: 29c546d45f564a27871838825e3dbecb,
+                                    host: https://yoshi-connect.herokuapp.com/,
+                                    displayName: abc, 
+                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
+                                    email: 123@aulenrta.ca,  
+                                    github: "https://github.com/name",
+                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
+                                    about: "author bio",
+                                    pronouns: "they/them" }
     */
     if (await checkExpiry(token)) { return [null, 401]; }
 
@@ -261,11 +289,25 @@ async function updateAuthor(token, author){
 
 async function getAuthors(page, size){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets a paginated list of Authors
+    Associated Endpoint: /authors
+    Request Type: GET
+    Request Body: N/A
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)	    
+            500 Status (Internal Server Error) -- Unable to retreive Authors from database
+            400 Status (Bad Request) -- Incorrect paging requested from the user
+            200 Status (OK) -- Returns sanitized paginated list of Authors 
+                                { type: author
+                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
+                                    authorId: 29c546d45f564a27871838825e3dbecb,
+                                    host: https://yoshi-connect.herokuapp.com/,
+                                    displayName: abc, 
+                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
+                                    email: 123@aulenrta.ca,  
+                                    github: "https://github.com/name",
+                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
+                                    about: "author bio",
+                                    pronouns: "they/them" }
     */
     let authors = undefined;
 
@@ -301,11 +343,11 @@ async function getAuthors(page, size){
 
 function validateAuthorObject(author){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Validates the Author from the database 
+    Associated Endpoint: N/A
+    Request Type: N/A
+    Request Body: N/A
+    Return: N/A
     */
     if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
         return false;

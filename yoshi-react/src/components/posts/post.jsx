@@ -26,9 +26,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Child Component 
-import Comments from './comments';
-import EditPost from "./edit";
-import SharePost from "./sharePost";
+import Comments from './comments.jsx';
+import EditPost from "./edit.jsx";
+import SharePost from "./sharePost.jsx";
 // Styling
 import './post.css';
 
@@ -36,9 +36,10 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
-    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : post._id ? post._id : undefined;
-    let authorId = post.author ? post.author.id ? post.author.id.split('/')[(post.author.id.split('/')).length - 1] : post.author.authorId || post.authorId : undefined;
     let published = post.published.substring(0,10);
+    let postId = post._id
+    let authorId = post.authorId
+    
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
     const [numComments, setNumComments] = useState(post.count);

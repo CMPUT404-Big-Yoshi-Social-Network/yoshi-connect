@@ -96,7 +96,7 @@ function EditPost({viewerId, post}) {
         
         let body = {
             title: data.title,
-            desc: data.desc,
+            description: data.desc,
             contentType: data.contentType,
             visibility: data.visibility,
             content: data.content,

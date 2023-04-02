@@ -732,7 +732,7 @@ async function getPosts(token, page, size, author) {
             "author": author,
             "categories": post.categories,
             "count": post.commentCount,
-            "likeCount": post.likesCount,
+            "likeCount": post.likeCount,
             "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
             "commentSrc": post.commentSrc,
             "published": post.published,

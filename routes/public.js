@@ -74,15 +74,22 @@ async function fetchPublicPosts(page, size) {
 
     for(let i = 0; i < publicPosts.length; i++){
         let post = publicPosts[i];
-        if (post.author != undefined) {
-            post.author.authorId = post.author._id != undefined ? post.author._id.split("/") : post.author.authorId ;
-            post.author.authorId = post.author._id != undefined ? post.author.authorId[post.author.authorId.length - 1] : post.author.authorId;
-            post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
-            post.comments = post.id + "/comments";
-            delete post._id;
-        }
+        post.author.authorId = post.author._id.split("/");
+        post.author.authorId = post.author.authorId[post.author.authorId.length - 1];
+        post.author.id = post.author._id;
+        delete post.author._id;
+        post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
+        post.comments = post.id + "/comments";
+        delete post._id;
+        post.count = post.commentCount;
+        delete post.commentCount;
     }
 
+    response = {
+        items: publicPosts
+    }
+    
+    return [response, 200];
     // const outgoings = await OutgoingCredentials.find().clone();
 
     // for (let i = 0; i < outgoings.length; i++) {
@@ -127,7 +134,7 @@ async function fetchPublicPosts(page, size) {
     //         })
     //     }
     // }
-    
+    /* 
     var config = {
         host: 'http://www.distribution.social/api',
         url: 'http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts',
@@ -158,7 +165,7 @@ async function fetchPublicPosts(page, size) {
 
     var config = {
         host: 'https://bigger-yoshi.herokuapp.com/api',
-        url: 'https://bigger-yoshi.herokuapp.com/api/authors/6422246700002cf6bf0007/posts/',
+        url: 'https://bigger-yoshi.herokuapp.com/api/authors/6421fdb1000041ba410007/posts/',
         method: 'GET',
         headers: {
             'Authorization': 'Basic bWFuOjEyMw==',
@@ -173,11 +180,8 @@ async function fetchPublicPosts(page, size) {
         console.log('Error')
     })
 
-    console.log(publicPosts)
-    response = {
-        items: publicPosts
-    }
-    return [response, 200];
+    
+    
     /*
     const outgoings = await OutgoingCredentials.find().clone();
     

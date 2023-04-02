@@ -30,7 +30,7 @@ function Friend(props) {
     console.log('Debug: <TLDR what the function is doing>')
     return (
         <div id='friend'>
-            { props.displayName }
+            { props.displayName || props.displayname }
         </div>
     )
 }

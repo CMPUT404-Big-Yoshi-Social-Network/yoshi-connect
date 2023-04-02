@@ -14,6 +14,7 @@ const crypto = require('crypto');
 const { addLike, addLiked } = require('./likes.js');
 const { createComment } = require('./comment.js');
 const { validateAuthorObject } = require('./author.js');
+const axios = require('axios');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
@@ -107,6 +108,59 @@ async function getInbox(token, authorId, page, size){
     else{
         posts = posts[0].posts_array
     }
+
+    let promiseQueue = [];
+    for(let i = 0; i < posts.length; i++){
+        promiseQueue.push(axios.get(posts[i]._id)
+        .then((response) => {
+            console.log(response.data);
+            return response.data
+        })
+        .catch((err) => {
+            console.log(err);
+        }))
+    }
+
+    for(let i = 0; i < posts.length; i++){
+        let updatedPost = await promiseQueue[i];
+        let post;
+        if(!updatedPost){
+            post = posts[i];
+        }
+        else{
+            post = updatedPost;
+            post.author._id = post.author.id;
+            post.commentCount = post.count
+        }
+        posts[i] = {
+            "type": "post",
+            "title": post.title,
+            "id": !updatedPost ? post.author._id + '/posts/' + post._id : post.id,
+            "source": post.source,
+            "origin": post.origin,
+            "description": post.description,
+            "contentType": post.contentType,
+            "content": post.content,
+            "author": {
+                type: "author",
+                id: post.author._id,
+                host: post.author.host,
+                displayName: post.author.displayName,
+                profileImage: post.author.profileImage,
+                url: post.author.url,
+                github: post.author.github,
+            },
+            "categories": post.categories,
+            "count": post.commentCount ? post.commentCount : 0,
+            "likeCount": post.likeCount ? post.likeCount : 0,
+            "comments": post.author._id + '/posts/' + post._id + '/comments/',
+            "commentSrc": post.commentSrc,
+            "published": post.published,
+            "visibility": post.visibility,
+            "unlisted": post.unlisted,
+        }
+    }
+
     let response = {
         type: "inbox",
         author: process.env.DOMAIN_NAME + "authors/" + authorId,
@@ -114,95 +168,6 @@ async function getInbox(token, authorId, page, size){
     };
 
     return [response, 200];
-}
-
-async function postInbox(req, res){
-    /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
-    */
-    if(req.body.type === "post") {
-        const title = req.body.title;
-        const id = req.body._id;
-        const description = req.body.description;
-        const contentType = req.body.contentType;
-        const content = req.body.content;
-        const categories = req.body.categories;
-        const count = req.body.count;
-        const comments = req.body.comments;
-        const published = req.body.published;
-        const visibility = req.body.visibility;
-        const unlisted = req.body.unlisted;
-        const authorId = req.body.authorId;
-
-        if ( title === undefined || id === undefined || description === undefined || 
-            contentType === undefined || content === undefined || categories === undefined || 
-            count === undefined || comments === undefined|| published === undefined || visibility === undefined || 
-            unlisted === undefined || authorId === undefined ) { 
-                return res.sendStatus(400); 
-        }
-
-        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-        const post = Post({
-                _id: uuid,
-                title: title,
-                description: description,
-                contentType: contentType,
-                content: content,
-                authorId: authorId,
-                categories: categories,
-                count: 0,
-                likes: [],
-                comments: [],
-                published: published,
-                visibility: visibility,
-                specifics: specifics,
-                unlisted: unlisted,
-                image: ""
-        });
-
-        postInboxPost(post, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "follow") {
-        const senderUUID = await Author.findOne({username: req.body.data.sender});
-        const receiverUUID = await Author.findOne({username: req.body.data.receiver});
-        let uuidReq = String(crypto.randomUUID()).replace(/-/g, "");
-        const request = new Request({
-            _id: uuidReq,
-            senderId: req.body.sender,
-            senderUUID: senderUUID,
-            receiverId: req.body.receiver,
-            receiverUUID: receiverUUID,
-        });
-
-        postInboxRequest(request, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "like") {
-        
-        let uuidLike = String(crypto.randomUUID()).replace(/-/g, "");
-        const like = new Like({
-            _id: uuidLike,
-            liker: req.body.liker
-        });
-
-        postInboxLike(like, req.params.author_id);
-    } else if (req.body.type === "comment") {
-        let uuidCom = String(crypto.randomUUID()).replace(/-/g, "");
-        const comment = new Comment({
-            _id: uuidCom,
-            commenter: req.body.commenter,
-            comment: req.body.comment
-        });
-
-        postInboxComment(comment, req.params.author_id);
-    } else {
-        res.sendStatus(400);
-    }
 }
 
 async function postInboxPost(post, recieverAuthorId){
@@ -213,6 +178,17 @@ async function postInboxPost(post, recieverAuthorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
+    let postFrom = '' // Need to discuss wherther other teams will follow this
+    if (post.authorId === undefined) {
+        postFrom = post.author.id
+        postFrom = postFrom.split("/");
+        postFrom = postFrom[postFrom.length - 1];
+    } else {
+        postFrom = post.authorId
+    }
+    if (post.id === undefined) {
+        post = (await createPost(null, post.authorId, post.id, {...post, postFrom: postFrom}))[0];
+    }
     const type = post.type;
     const title = post.title;
     const id = post.id;
@@ -229,15 +205,12 @@ async function postInboxPost(post, recieverAuthorId){
     const authorGithub = post.author.github;
     const authorProfileImage = post.author.profileImage;
     const categories = post.categories;
-    const count = post.count;
     const published = post.published;
-    const postTo = post.postTo // Need to discuss wherther other teams will follow this
-    //Used to mark if this is a private message or a follower post.
     const visibility = post.visibility;
     const unlisted = post.unlisted;
 
     if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||
-        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || !count || 
+        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || 
         !published || !visibility || !unlisted)
     {
         return [{}, 400];
@@ -260,6 +233,10 @@ async function postInboxLike(like, authorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
+
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
     if(!validateAuthorObject(author)){
@@ -271,13 +248,16 @@ async function postInboxLike(like, authorId){
         host: author.host,
         displayName: author.displayName,
         url: author.url,
-        github: author.github, //TODO I don't think we need this but I'll leave it here for later consideration
+        github: author.github, 
         profileImage: author.profileImage
     };
 
     //Add a like to the authors post/comment
+    if(await addLiked(author._id, like.object)){
+        return [like, 403];
+    }
     await addLike(like, authorId);
-    await addLiked(author._id, like.object);
+    
     
     //TODO Unliking should also be added
 
@@ -342,7 +322,9 @@ async function postInboxComment(newComment, recieverAuthorId){
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const post = postHistory.posts.id(postId);
     if(!post){ return [{}, 404]; }
-
+    post.commentCount++;
+    await postHistory.save();
+    
     const commentHistory = await CommentHistory.findOne({postId: postId});
     if(!commentHistory){ return [{}, 500]; }
     if(commentHistory.comments.id(commentId)){ return [{}, 400]; }
@@ -379,7 +361,7 @@ async function deleteInbox(token, authorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if (! (await authLogin(token, authorId))) { return 401; }
+    if (!(await authLogin(token, authorId))) { return 401; }
 
     const responses = await Inbox.updateOne({authorId: authorId},{requests: [], likes: [], posts: [], comments: []}).clone();
     
@@ -390,10 +372,39 @@ async function deleteInbox(token, authorId){
     return 200;
 }
 
+async function sendToForeignInbox(url, auth, data){
+    let config = {
+        url: url + "/inbox",
+        method: "post",
+        headers:{
+            "Authorization": auth,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: data
+    }
+    //Send a post request to that node with the proper auth
+    //The post should contain the contents of whatever is meant to be 
+    let response = "";
+    let status;
+    await axios.request(config)
+    .then((res) => {
+        console.log(res.data);
+        response = res.data;
+        status = 200;
+    })
+    .catch((err) => {
+        console.log(err.response)
+        status = err.response.status;
+    })
+
+    return [response, status];
+}
+
 module.exports = {
     getInbox,
     deleteInbox,
     postInboxPost,
     postInboxLike,
-    postInboxComment
+    postInboxComment,
+    sendToForeignInbox
 }

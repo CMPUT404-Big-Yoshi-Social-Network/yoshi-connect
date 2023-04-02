@@ -243,14 +243,16 @@ function SearchOutcomes({url}) {
     return (
         <div>
             { findings ? 
-                <div>
+                <div className='search-card'>
                     {Object.keys(authors).map((author, idx) => (
                         <SearchCard key={idx} {...authors[author]}/>
                     ))}
                     <div>
                         <Pagination>
-                            <Pagination.Prev disabled={prev} onClick={goBack}/>
-                            <Pagination.Next disabled={next} onClick={getMore}/>
+                            {/* <Pagination.Prev disabled={prev} onClick={goBack}/>
+                            <Pagination.Next disabled={next} onClick={getMore}/> */}
+                            <button className='search-prev' disabled={prev} onClick={goBack}>Previous</button>
+                            <button className='search-next' disabled={next} onClick={getMore}>Next</button>
                         </Pagination>
                     </div>
                 </div> :

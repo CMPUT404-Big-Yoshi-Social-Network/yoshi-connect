@@ -181,7 +181,7 @@ router.post('/', async (req, res) => {
 	}
 
 	let authorId;
-	if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
+	if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
 		if (req.body.author !== undefined) {
 			authorId = req.body.author.id.split("/");
 			authorId = authorId[authorId.length - 1];
@@ -189,7 +189,7 @@ router.post('/', async (req, res) => {
 			authorId = req.body.authorId;
 		}
 	}
-	else if(req.body.type == "follow"){
+	else if(req.body.type.toLowerCase() == "follow"){
 		authorId = req.body.actor.id;
 		authorId = authorId.split("/");
 		authorId = authorId[authorId.length - 1];
@@ -208,7 +208,7 @@ router.post('/', async (req, res) => {
 		return res.sendStatus(401);
 	}
 	
-	const type = req.body.type;
+	const type = req.body.type.toLowerCase();
 	let response, status;
 	if(type === "post"){
 		//For other servers to send their authors posts to us

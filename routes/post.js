@@ -418,12 +418,14 @@ async function sharePost(token, authorId, postId, newPost) {
     let source = newPost.author._id + '/posts/' + newPost.postId;
 
     const originalPH = await PostHistory.findOne({authorId: postFrom});
-    const originalPost = originalPH.posts.id(newPost.postId);
-    originalPost.whoShared.push({
-        authorId: authorId, 
-        host: process.env.DOMAIN_NAME,
-        postId: sharedPostId
-    });
+    if (originalPH) {
+        const originalPost = originalPH.posts.id(newPost.postId);
+        originalPost.whoShared.push({
+            authorId: authorId, 
+            host: process.env.DOMAIN_NAME,
+            postId: sharedPostId
+        });
+    }
 
     let post = {
         _id: sharedPostId,
@@ -523,7 +525,7 @@ async function updatePost(token, authorId, postId, newPost) {
     if (!postHistory) { return [{}, 500]; }
 
     let post = postHistory.posts.id(postId);
-    
+
     if(unlisted == 'false' && visibility == "PUBLIC" && !post.unlisted && post.visibility == "PUBLIC") {
         let publicPosts = await PublicPost.findOne({_id: postId}).clone();
         if(!publicPosts) return [{}, 500];
@@ -602,6 +604,8 @@ async function deletePost(token, authorId, postId) {
             404 Status (Not Found) -- Post was not found
             200 Status (OK) -- Successfully deleted post object from database
     */
+    console.log(token, authorId)
+
     if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});

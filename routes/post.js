@@ -111,7 +111,7 @@ async function getPost(postId, auth, author){
     Description: Gets the posts associated with postId for the Author associated with authorId
     Associated Endpoint: /authors/:authorId/posts/:postId 
     Request Type: GET
-    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb  , postId: 902sq546w5498hea764r80re0z89becb }
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
     Return: 404 Status (Not Found) -- Author ID was not found or Post associated with Author was not found
             401 Status (Unauthorized) -- Authentication failed, post not visible
             200 Status (OK) -- Returns Authour's post
@@ -359,6 +359,13 @@ async function createPost(token, authorId, postId, newPost) {
 }
 
 async function getHostNames(){
+    /**
+    Description: Gets the host names
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: N/A
+    Return: N/A
+    */
     let hosts = [];
 
     let currHost = process.env.DOMAIN_NAME.split("/");
@@ -376,11 +383,13 @@ async function getHostNames(){
 
 async function sharePost(token, authorId, postId, newPost) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Sends a POST request to share post assciated with a specific Author
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 404 Status (Not Found) -- Post from Author was not found in the database
+            500 Status (Internal Server Error) -- Unable to confrim post in database
+            200 Status (OK) -- Returns Authour's post
     */
     let authorPromise = getAuthor(authorId);
 

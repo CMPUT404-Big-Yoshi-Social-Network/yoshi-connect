@@ -31,8 +31,10 @@ function Messenger(props) {
     console.log('Debug: <TLDR what the function is doing>')
     const [author, setAuthor] = useState()
     useEffect(() => {
+        let id = props.currentMessenger.split('/')
+        id = id[id.length - 1]
         axios
-        .get('/authors/' + props.currentMessenger)
+        .get('/authors/' + id)
         .then((response) => {
             setAuthor(response.data)
         })

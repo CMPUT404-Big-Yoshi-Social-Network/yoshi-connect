@@ -99,8 +99,8 @@ function Messages({currMess}) {
                 posts = response.data.items;
                 if (response.data.items !== undefined && response.data.items.length !== 0) {
                     for (let i = 0; i < response.data.items.length; i++) {
-                        if (response.data.items[i].postFrom !== undefined) {
-                            messengers.push(response.data.items[i].postFrom);
+                        if (response.data.items[i].visibility === 'PRIVATE') {
+                            messengers.push(response.data.items[i].author.url);
                         }
                     }
                     if (messengers.length !== 0 && currMess === undefined) {
@@ -114,11 +114,7 @@ function Messages({currMess}) {
 
 
             if (messengers.length !== 0) {
-                if (curr !== '') {
-                    setPosts((posts).filter(post => post.postFrom !== undefined && post.postFrom === curr))
-                } else {
-                    setPosts((posts).filter(post => post.postFrom !== undefined && post.postFrom === currMess))
-                }
+                setPosts((posts).filter(post => curr === post.author.url && post.visibility === 'PRIVATE'))
             }
             setMessengers(messengers);
             setCurrentMessenger(curr);
@@ -137,7 +133,7 @@ function Messages({currMess}) {
             .get('/authors/' + viewer.viewerId + '/inbox', config)
             .then((response) => { 
                 if (response.data.items !== undefined) { 
-                    const nextSet = response.data.items.filter(post => post.postFrom === curr);
+                    const nextSet = response.data.items.filter(post => curr === post.author.url && post.visibility === 'PRIVATE');
                     if (nextSet.length !== 0) {
                         setSeeMore(true); 
                     }
@@ -175,7 +171,7 @@ function Messages({currMess}) {
             axios
             .get('/authors/' + viewer.viewerId + '/inbox', config)
             .then((response) => { 
-                const nextSet = (response.data.items).filter(post => post.postFrom !== undefined && post.postFrom === currentMessenger);
+                const nextSet = (response.data.items).filter(post => currentMessenger === post.author.url && post.visibility === 'PRIVATE');
                 if (nextSet.length !== 0) {
                     setPosts(posts.concat(nextSet));
                 }
@@ -208,7 +204,7 @@ function Messages({currMess}) {
         axios
         .get('/authors/' + viewer.viewerId + '/inbox', config)
         .then((response) => { 
-            const nextSet = response.data.items.filter(post => post.postFrom === currentMessenger);
+            const nextSet = response.data.items.filter(post => currentMessenger === post.author.url && post.visibility === 'PRIVATE');
             if (nextSet.length !== 0) {
                 setSeeMore(true); 
             }

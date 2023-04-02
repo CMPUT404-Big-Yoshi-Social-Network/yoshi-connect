@@ -58,21 +58,38 @@ function Post({viewerId, post, author}) {
          * Request: (if axios is used)    
          * Returns: 
          */
-    
-    useEffect(() => {
-        console.log('Debug: <TLDR what the function is doing>') 
-        const getImage = () => {
-            axios
-            .get("/authors/" + authorId + "/posts/" + postId + "/image")
-            .then((res) => {
-                if (res.data.status === 200) {
-                    setImage(res.data.src)
-                } else {
-                    setImage('')
-                }
-            })
+        if (viewerId !== null && viewerId !== undefined && postId !== null && postId !== undefined) {
+            console.log('Debug: <TLDR what the function is doing>') 
+            const getImage = () => {
+                axios
+                .get(url)
+                .then((res) => {
+                    if (res.data.status === 200) {
+                        setItem(res.data.src)
+                    } else {
+                        setItem('')
+                    }
+                })
+            }
+            getImage();
         }
-        getImage();
+    }, [url, viewerId, postId])
+
+    useEffect(() => {
+        /**
+         * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
+         * Request: POST
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        const hasLiked = () => {
+            // axios
+            // .get('/authors/' + authorId + '/posts/' + postId + '/liked')
+            // .then((response) => { setLike(true) })
+            // .catch(err => { setLike(false) });
+            console.log('In construction')
+        }
+        hasLiked();
     }, [authorId, postId])
 
     useEffect(() => {    

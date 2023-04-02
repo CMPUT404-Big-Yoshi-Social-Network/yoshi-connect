@@ -27,8 +27,7 @@ import './create.css';
 
 
 function SharePost({viewerId, post}) {
-    let postId = post.id ? post.id.split('/') : undefined;
-    postId = postId ? postId[postId.length - 1] : undefined;
+    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : undefined;
     let authorId = post.author ? post.author.authorId : undefined;
 
     const numLikes = post.likeCount;
@@ -51,13 +50,15 @@ function SharePost({viewerId, post}) {
     useEffect(() => { 
         console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
-            axios
-            .get("/authors/" + authorId + "/posts/" + postId + "/image")
-            .then((res) => {
-                if (res.data.status === 200) {
-                    setItem({ ...item, image: res.data.src, exist: true})
-                }
-            })
+            if (authorId !== null && authorId !== undefined && postId !== null && postId !== undefined) {
+                axios
+                .get("/authors/" + authorId + "/posts/" + postId + "/image")
+                .then((res) => {
+                    if (res.data.status === 200) {
+                        setItem({ ...item, image: res.data.src, exist: true})
+                    }
+                })
+            }
         }
         getImage();
     }, [item, postId, authorId])

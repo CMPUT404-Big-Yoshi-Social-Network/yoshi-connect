@@ -204,7 +204,7 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postTo = newPost.postTo;
 
-    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
+    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
     }
 
@@ -499,7 +499,7 @@ async function updatePost(token, authorId, postId, newPost) {
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
 
-    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false')){
+    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false')){
         return [{}, 400];
     }
 

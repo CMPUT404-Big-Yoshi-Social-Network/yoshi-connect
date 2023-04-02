@@ -36,10 +36,7 @@ function Posts(props) {
      * Returns: 
      */
     console.log('Debug: <TLDR what the function is doing>')
-    const [posts, setPosts] = useState([]);
-    if (props.posts !== undefined) {
-        setPosts(props.posts)
-    }
+    const [posts, setPosts] = useState([]);  
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 20;
@@ -56,6 +53,13 @@ function Posts(props) {
     }
 
     useEffect(() => {
+        if (props.posts !== undefined) {
+            setPosts(props.posts)
+        }
+    })
+
+    useEffect(() => {
+
         /**
          * Description: Fetches the current author's id and the public and following (who the author follows) posts  
          * Returns: N/A

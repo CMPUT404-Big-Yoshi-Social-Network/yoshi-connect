@@ -198,7 +198,7 @@ router.post('/', async (req, res) => {
 		return res.sendStatus(400);
 	}
 
-	if( await authLogin(token, authorId)){
+	if(await authLogin(req.cookies.token, authorId)){
 		authorized = true;
 	}
 

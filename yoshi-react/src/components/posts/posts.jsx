@@ -69,6 +69,11 @@ function Posts(props) {
             .then((response) => {
                 id = response.data.authorId;
                 setViewerId(id);
+                if (type === 'public/local') {
+                    setUrl('/posts/' + type)
+                } else {
+                    setUrl('/authors/' + id + '/posts/' + type)
+                }
             })
             .catch(err => { 
                 if (err.response.status === 401 || err.response.status === 404) { 
@@ -77,11 +82,7 @@ function Posts(props) {
             });
         }
         getId();
-        if (type === 'public/local') {
-            setUrl('/posts/' + type)
-        } else {
-            setUrl('/authors/' + id + '/posts/' + type)
-        }
+        
     }, [type]);
 
     useEffect(() => {

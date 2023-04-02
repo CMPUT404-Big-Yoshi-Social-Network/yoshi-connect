@@ -241,7 +241,7 @@ async function postInbox(req, res){
             receiverUUID: receiverUUID,
         });
 
-        postInboxRequest(request, req.params.author_id);
+        postInboxRequest(request, req.params.author_id, res.body.type);
 
         return res.sendStatus(200);
     } else if(req.body.type === "like") {
@@ -447,10 +447,13 @@ async function postInboxComment(newComment, recieverAuthorId){
     return [comment, 200];
 }
 
-async function postInboxRequest(actor, receiverAuthorId) {
+async function postInboxRequest(actor, receiverAuthorId, type) {
     const object = await Author.findOne({_id: receiverAuthorId});
 
-    let summary = actor.displayName + ' wants to follow ' + object.username;
+    let summary = ''
+    if (type !== 'accept') {
+        summary = actor.displayName + ' wants to follow ' + object.username;
+    } 
 
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let authorId = actor.id;
@@ -459,7 +462,7 @@ async function postInboxRequest(actor, receiverAuthorId) {
 
     const request = {
         _id: uuid,
-        goal: 'follow',
+        goal: type,
         actor: actor.displayName,
         actorId: authorId,
         objectId: object._id,

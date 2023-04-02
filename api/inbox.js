@@ -189,7 +189,7 @@ router.post('/', async (req, res) => {
 			authorId = req.body.authorId;
 		}
 	}
-	else if(req.body.type.toLowerCase() == "follow"){
+	else if(req.body.type.toLowerCase() == "follow" || req.body.type.toLowerCase() == 'accept'){
 		authorId = req.body.actor.id;
 		authorId = authorId.split("/");
 		authorId = authorId[authorId.length - 1];
@@ -215,7 +215,7 @@ router.post('/', async (req, res) => {
 		//For other servers to send their authors posts to us
 		[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	else if(type === "follow"){
+	else if(type === "follow" || type === 'accept'){
 		//For local/remote authors to server 
 		let actor = null;
 		if (req.body.actor.status !== undefined) {
@@ -235,7 +235,7 @@ router.post('/', async (req, res) => {
 			// remote
 			actor = req.body.actor;
 		}
-		[response, status] = await postInboxRequest(actor, req.params.authorId);
+		[response, status] = await postInboxRequest(actor, req.params.authorId, type);
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);
@@ -254,9 +254,9 @@ router.post('/', async (req, res) => {
 	if(type === "post"){
 		//[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	else if (type === "follow") {
+	else if (type === "follow" || type === 'accept') {
 		response = {
-			type: "follow",
+			type: type,
 			summary: response.summary,
 			actor: response.actor,
 			object: response.object

@@ -30,7 +30,7 @@ import './login.css'
 
 export default function Login() {
     /**
-     * Description:
+     * Description: Handles the login procedures for the Author
      * Functions: 
      *     - getUserpass(): Sends a POST request to get the account for routing it to the public feed as well as loggin in the existing author
      * Returns: N/A

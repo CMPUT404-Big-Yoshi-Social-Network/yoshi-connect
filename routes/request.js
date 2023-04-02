@@ -292,11 +292,11 @@ async function deleteRequest(authorId, foreignId, res) {
 
 async function getRequests(authorId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets an Author's inbox requests
+    Associated Endpoint: /authors/:authorId/inbox/requests
+    Request Type: GET 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 200 Status (OK) -- Successfully fetches requests from Inbox, returns JSON with type and items (all requests)
     */
     const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
     return res.json({
@@ -308,7 +308,7 @@ async function getRequests(authorId, res) {
 async function getRequest(authorId, foreignId) {
     /**
     Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
     Request Type: 
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)

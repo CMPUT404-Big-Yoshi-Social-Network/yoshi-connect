@@ -33,11 +33,12 @@ const { Inbox } = require('../scheme/post.js');
 
 async function senderAdded(authorId, foreignId, req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Adds foreign sender associated with foreignId to the server
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 500 Status (Internal Server Error) -- Unable to add sender
+            200 Status (OK) -- Sender successfully added
     */
     let success = true;
     let isLocal = true;
@@ -174,11 +175,11 @@ async function senderAdded(authorId, foreignId, req, res) {
 
 async function sendRequest(authorId, foreignId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates a request and saves it into the inbox
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
+    Request Type: PUT
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 200 Status (OK) -- Successfully saves the request to the Inbox 
     */
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
@@ -243,11 +244,12 @@ async function sendRequest(authorId, foreignId, res) {
 
 async function deleteRequest(res, actor, object, foreignId, authorId, status, isLocal) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes an Author's inbox requests
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
+    Request Type: DELETE
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 500 Status (Internal Server Error) -- Unable to find/get Actor or Object
+            200 Status (OK) -- Successfully deleteed the request from Inbox
     */
     if (actor === null || actor === undefined) {
         actor = await Author.findOne({_id: authorId});
@@ -399,11 +401,11 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status, is
 
 async function getRequests(authorId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets an Author's inbox requests
+    Associated Endpoint: /authors/:authorId/inbox/requests
+    Request Type: GET 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 200 Status (OK) -- Successfully fetches requests from Inbox, returns JSON with type and items (all requests)
     */
     const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
     return res.json({
@@ -414,11 +416,11 @@ async function getRequests(authorId, res) {
 
 async function getRequest(authorId, foreignId) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates a request and saves it into the inbox
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 200 Status (OK) -- Successfully finds the follow request
     */
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);

@@ -39,11 +39,14 @@ const { getAuthor } = require('./author.js');
 
 async function createPostHistory(author_id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates the Author's post history
+    Associated Endpoint: N/A
+    Request Type: PUT
+    Request Body: {_id: 08a779b240624ff899823d1024ff3aa1,
+                    authorId: 29c546d45f564a27871838825e3dbecb ,
+                    num_posts: 0,
+                    posts: [] }
+    Return: N/A
     */
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let new_post_history = new PostHistory ({
@@ -58,11 +61,12 @@ async function createPostHistory(author_id){
 
 async function uploadImage(url, image) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Uploads an image related to a post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image
+    Request Type: POST 
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image,  
+                    src: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd }
+    Return: 200 Status (OK) -- Successfully uploaded the image to a post made by the Author
     */
     let newImage = new Image ({
         _id: url,  
@@ -74,11 +78,12 @@ async function uploadImage(url, image) {
 
 async function editImage(url, src) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Edits an image associated with a specific post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image 
+    Request Type: POST
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image }
+    Return: 404 Status (Not Found) -- Image was not found
+            200 Status (OK) -- Successfully edited the image from a post made by the Author
     */
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
@@ -89,11 +94,12 @@ async function editImage(url, src) {
 
 async function getImage(url) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the image associated with post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image
+    Request Type: GET
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image }
+    Return: 404 Status (Not Found) -- Image was not found
+            200 Status (OK) -- Successfully retrieved the image from a post made by the Author
     */
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
@@ -102,11 +108,13 @@ async function getImage(url) {
 
 async function getPost(postId, auth, author){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the posts associated with postId for the Author associated with authorId
+    Associated Endpoint: /authors/:authorId/posts/:postId 
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 404 Status (Not Found) -- Author ID was not found or Post associated with Author was not found
+            401 Status (Unauthorized) -- Authentication failed, post not visible
+            200 Status (OK) -- Returns Authour's post
     */
     let post = await PostHistory.aggregate([
         {
@@ -185,11 +193,15 @@ async function getPost(postId, auth, author){
 
 async function createPost(token, authorId, postId, newPost) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates the posts associated with postId for the Author associated with authorId to create a post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: PUT
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Token expired or is not authenticated
+            400 Status (Bad Request) -- Post details are invalid
+            404 Status (Not Found) -- Post associated with author ID was not found
+            500 Status (Internal Server Error) -- Unable to confrim post in database
+            200 Status (OK) -- Returns Authour's post
     */
     if (token !== null) {
         if(! (await authLogin(token, authorId))){ return [[], 401]; }
@@ -295,13 +307,41 @@ async function createPost(token, authorId, postId, newPost) {
     return await getPost(postId, authorId, author);
 }
 
+<<<<<<< HEAD
+async function getHostNames(){
+    /**
+    Description: Gets the host names
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: N/A
+    Return: N/A
+    */
+    let hosts = [];
+
+    let currHost = process.env.DOMAIN_NAME.split("/");
+    hosts.push({host: currHost[2]});
+
+    let outs = await OutgoingCredentials.find().clone();
+    for(let i = 0; i < outs.length; i++){
+        let out = outs[i];
+        let foreignHost = out.url.split("/");
+        hosts.push({...out, host: foreignHost[2]});
+    }
+
+    return hosts;
+}
+
+=======
+>>>>>>> c692461154518e935cb6c17e1fed473bc3fb445f
 async function sharePost(token, authorId, postId, newPost) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Sends a POST request to share post assciated with a specific Author
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 404 Status (Not Found) -- Post from Author was not found in the database
+            500 Status (Internal Server Error) -- Unable to confrim post in database
+            200 Status (OK) -- Returns Authour's post
     */
     let authorPromise = getAuthor(authorId);
 
@@ -417,11 +457,14 @@ async function sharePost(token, authorId, postId, newPost) {
 
 async function updatePost(token, authorId, postId, newPost) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Sends the posts associated with postId for the Author associated with authorId to update the post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: POST 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Token expired or is not authenticated
+            400 Status (Not Found) -- Post details are invalid
+            500 Status (Internal Server Error) -- Unable to fetch post history from database
+            200 Status (OK) -- Returns a JSON of the updated post object
     */
     if (!(await authLogin(token, authorId))) { return [{}, 401]; }
     const title = newPost.title;
@@ -511,11 +554,13 @@ async function createTombstone(authorId, postId) {
 
 async function deletePost(token, authorId, postId) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes the posts associated with postId for the Author associated with authorId to delete the post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: DELETE
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Author token is not authenticated
+            404 Status (Not Found) -- Post was not found
+            200 Status (OK) -- Successfully deleted post object from database
     */
     if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
@@ -560,11 +605,13 @@ async function deletePost(token, authorId, postId) {
 
 async function getPosts(token, page, size, author) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the posts associated with authorId for the Author themselves
+    Associated Endpoint: /authors/:authorId/posts/personal
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 400 Status (Bad Request) -- Invalid post
+            401 Status (Unauthorized) -- Author is not a follower or friend
+            200 Status (OK) -- Returns the post associated with author ID
     */
     if(page < 0 || size < 0){
         return [[], 400]
@@ -671,11 +718,11 @@ async function getPosts(token, page, size, author) {
 
 async function fetchMyPosts(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the Author's posts for themselves
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 200 Status (OK) -- Returns a JSON with an array of the Author's posts
     */
     const posts = await PostHistory.aggregate([
         {
@@ -728,11 +775,11 @@ async function fetchMyPosts(req, res) {
 
 async function fetchOtherPosts(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets other Author's posts
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 200 Status (OK) -- Returns a JSON with an array of the other Author's posts
     */
     const posts = await PostHistory.aggregate([
         {

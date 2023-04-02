@@ -177,7 +177,7 @@ async function sendRequest(authorId, foreignId, res) {
     /**
     Description: Creates a request and saves it into the inbox
     Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
-    Request Type: POST
+    Request Type: PUT
     Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
     Return: 200 Status (OK) -- Successfully saves the request to the Inbox 
     */
@@ -307,11 +307,11 @@ async function getRequests(authorId, res) {
 
 async function getRequest(authorId, foreignId) {
     /**
-    Description: 
+    Description: Creates a request and saves it into the inbox
     Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 200 Status (OK) -- Successfully finds the follow request
     */
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);

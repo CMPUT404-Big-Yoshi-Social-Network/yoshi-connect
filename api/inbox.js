@@ -176,7 +176,11 @@ router.post('/', async (req, res) => {
 			const [serverName, password] = credential.split(":");
 			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
 				authorized = true;
-			}
+			} 
+		}
+	} else {
+		if (await authLogin(req.cookies.token, authorId)) {
+			authorized = true;
 		}
 	}
 
@@ -196,10 +200,6 @@ router.post('/', async (req, res) => {
 	}
 	else{
 		return res.sendStatus(400);
-	}
-
-	if(await authLogin(req.cookies.token, authorId)){
-		authorized = true;
 	}
 
 	//TODO fix this once and for all

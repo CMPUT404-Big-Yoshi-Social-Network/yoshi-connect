@@ -604,9 +604,8 @@ async function deletePost(token, authorId, postId) {
     Request Type: DELETE
     Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
     Return: 401 Status (Unauthorized) -- Author token is not authenticated
-            500 Status (Internal Server Error) -- Unable to fetch post history from database
             404 Status (Not Found) -- Post was not found
-            200 Status (OK) -- Returns JSON of the deleted post object
+            200 Status (OK) -- Successfully deleted post object from database
     */
     if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
@@ -639,11 +638,13 @@ async function deletePost(token, authorId, postId) {
 
 async function getPosts(token, page, size, author) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the posts associated with authorId for the Author themselves
+    Associated Endpoint: /authors/:authorId/posts/personal
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 400 Status (Bad Request) -- Invalid post
+            401 Status (Unauthorized) -- Author is not a follower or friend
+            200 Status (OK) -- Returns the post associated with author ID
     */
     if(page < 0 || size < 0){
         return [[], 400]
@@ -759,11 +760,11 @@ async function getPosts(token, page, size, author) {
 
 async function fetchMyPosts(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the Author's posts for themselves
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 200 Status (OK) -- Returns a JSON with an array of the Author's posts
     */
     const posts = await PostHistory.aggregate([
         {

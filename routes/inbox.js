@@ -23,11 +23,16 @@ const { createPost } = require('./post.js');
 
 async function getInbox(token, authorId, page, size){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets an Author's inbox posts
+    Associated Endpoint: /authors/:authorId/inbox
+                         /authors/:authorId/posts/friends-posts
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 400 Status (Bad Request) -- No posts to get
+            200 Status (OK) -- Successfully fetches posts from Inbox
+                                    { type: "inbox",
+                                        author: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                        items: posts }
     */
     if( ! (await authLogin(token, authorId))){
         return [{}, 401];
@@ -121,11 +126,12 @@ async function getInbox(token, authorId, page, size){
 
 async function postInbox(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts an object into the Author's inbox
+    Associated Endpoint: N/A
+    Request Type: POST 
+    Request Body: N/A
+    Return: 200 Status (OK) -- Successfully posts to the Inbox
+            400 Status (Bad Request) -- No valid type specified in request
     */
     if(req.body.type === "post") {
         const title = req.body.title;
@@ -210,11 +216,13 @@ async function postInbox(req, res){
 
 async function postInboxPost(post, recieverAuthorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts a post object into the Author's inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 401 Status (Unauthorized) -- No token or not authorized
+            400 Status (Bad Request) -- No valid type specified in request
+            200 Status (OK) -- Successfully posts a post to the Inbox
     */
     let postFrom = '' // Need to discuss wherther other teams will follow this
     if (post.authorId === undefined) {
@@ -262,11 +270,12 @@ async function postInboxPost(post, recieverAuthorId){
 
 async function postInboxLike(like, authorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts a like object into the Author's inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: POST
+    Request Body: { like: 29c546d45f564a27871838825e3dbecb, author._id: 902sq546w5498hea764r80re0z89bej }
+    Return: 400 Status (Bad Request) -- No valid type specified in request
+            200 Status (OK) -- Successfully posts a like to the Inbox
     */
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
@@ -304,11 +313,18 @@ async function postInboxLike(like, authorId){
 
 async function postInboxComment(newComment, recieverAuthorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts a comment object into the Author's inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: POST
+    Request Body: { _id: f08d2d6579d5452ab282512d8cdd10d4,
+                    author: author,
+                    comment: "abc",
+                    contentType: text/plain,
+                    published: 2023-03-24T06:53:47.567Z }
+    Return: 401 Status (Unauthorized) -- No token or not authorized 
+            400 Status (Bad Request) -- No valid type specified in request
+            500 Status (Internal Server Error) -- Unable to retrieve comment history from database
+            200 Status (OK) -- Successfully posts a comment to the Inbox
     */
     if(!newComment){
         return [{}, 400];
@@ -429,11 +445,13 @@ async function postInboxRequest(actor, receiverAuthorId) {
 
 async function deleteInbox(token, authorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes a request from the inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: DELETE
+    Request Body: {  }
+    Return: 401 Status (Unauthorized) -- Token has expired or is not authenticated
+            404 Status (Not Found) -- No response was found
+            200 Status (OK) -- Successfully deleted the request from the Inbox
     */
     if (! (await authLogin(token, authorId))) { return 401; }
 

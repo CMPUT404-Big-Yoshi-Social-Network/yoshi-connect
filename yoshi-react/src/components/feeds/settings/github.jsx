@@ -105,7 +105,7 @@ function GitHub() {
     const navigate = useNavigate();
     const [data, setData] = useState({
         viewer: "",
-        github: "",
+        githubUsername: "",
         activities: [],
         pfp: ""
     }) 
@@ -126,18 +126,19 @@ function GitHub() {
             axios
             .get('/userinfo', config)
             .then((response) => {
-                setData({...data, veiwer: response.data.authorId, github: response.data.github, activities: test, pfp: test[0].user.img})
-                // if (response.data.github !== "") {
-                //     getUserActivity(response.data.github).then((res) => {
-                //         for (let i = 0; i < res.length; i++) {
-                //             data.activities.push(res[i])
-                //         }
-                //     })
-                // }
+                setData({...data, veiwer: response.data.authorId})
+                if (response.data.github !== "") {
+                    getUserActivity(response.data.github.split("/")[3]).then((res) => {
+                      if (res) {setData({...data, pfp: res[0].user.img, githubUsername: res[0].user.name})}  
+                      for (let i = 0; i < res.length; i++) {
+                          data.activities.push(res[i])
+                      }
+                    })
+                }
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
-                    setData({...data, veiwer: "", github: ""})
+                    setData({...data, veiwer: "", githubUsername: ""})
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized')
                 }   
@@ -156,7 +157,7 @@ function GitHub() {
                 </div>
                 <div className='pubColM'>
                     {data.activities === [] ? null : <img className="pfp" src={data.pfp} alt=""/>}
-                    <img src={"https://ghchart.rshah.org/" + data.github} alt="" style={{margins: "10em", padding: "1em" }}/>
+                    <img src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" style={{margins: "10em", padding: "1em" }}/>
                     {Object.keys(data.activities).map((activity, idx) => (
                         <Activity key={idx} activity={data.activities[activity]}/>
                     ))}

@@ -61,11 +61,12 @@ async function createPostHistory(author_id){
 
 async function uploadImage(url, image) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Uploads an image related to a post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image
+    Request Type: POST 
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image,  
+                    src: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd }
+    Return: 200 Status (OK) -- Successfully uploaded the image to a post made by the Author
     */
     let newImage = new Image ({
         _id: url,  

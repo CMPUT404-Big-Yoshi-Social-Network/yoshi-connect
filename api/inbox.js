@@ -177,12 +177,11 @@ router.post('/', async (req, res) => {
 				authorized = true;
 			} 
 		}
+	} else {
+		if (await authLogin(req.cookies.token, authorId)) {
+			authorized = true;
+		}
 	}
-	// } else {
-	// 	if (await authLogin(req.cookies.token, authorId)) {
-	// 		authorized = true;
-	// 	}
-	// }
 
 	let authorId;
 	if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){

@@ -248,7 +248,7 @@ router.get('/:foreignAuthorId', async (req, res) => {
  *      401:
  *        description: Unauthorized, no associated cookies, Login token had expired, authorId was not authenticated 
  *      404: 
- *        description: Bad Request, unable to find a request object from the foreignAuthorId to the authorId
+ *        description: Not Found, unable to find a request object from the foreignAuthorId to the authorId
  *      200: 
  *        description: OK, successfully added follower to the follower document for Author associated with authorId
  */

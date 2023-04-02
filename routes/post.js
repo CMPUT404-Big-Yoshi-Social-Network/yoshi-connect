@@ -278,12 +278,63 @@ async function createPost(token, authorId, postId, newPost) {
     if(unlisted == "false" || unlisted == false){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
+            /*
             post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
             const follower = followers.followers[i].authorId;
             const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
 
             inbox.posts.push(post);
             await inbox.save();
+            */
+            post.type = "post";
+            post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+            post.author = {
+                type: "author",
+                id: author.id,
+                host: author.host,
+                displayName: author.displayName,
+                url: author.url,
+                github: author.github,
+                profileImage: author.profileImage,
+            };
+            delete post._id;
+
+            //Send the post to other followers 
+            const follower = followers[i];
+            const hosts = getHostNames();
+            //TODO NEEDS TESTING
+            let followerHost = follower.id.split("/");
+            followerHost = followerHost[2];
+            for(let i = 0; i < hosts.length; i++){
+                if(i ==0 && followerHost == followerHost[i]){
+                    post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+                    const follower = followers.followers[i].authorId;
+                    const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+                    inbox.posts.push(post);
+                    await inbox.save();
+                }
+                else if(followerHost == followerHost[i]){
+                    let host = followerHost[i];
+                    let config = {
+                        url: follower.id + "/inbox",
+                        method: "post",
+                        headers:{
+                            "Authorization": host.auth,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data: post
+                    }
+
+                    axios.request(config)
+                    .then((request) => {
+                        console.log(request.data);
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                }
+            }
         }
     }
 
@@ -291,6 +342,22 @@ async function createPost(token, authorId, postId, newPost) {
     await comments;
     await savePostPromise;
     return await getPost(postId, authorId, author);
+}
+
+async function getHostNames(){
+    let hosts = [];
+
+    let currHost = process.env.DOMAIN_NAME.split("/");
+    hosts.push({host: currHost[2]});
+
+    let outs = await OutgoingCredentials.find().clone();
+    for(let i = 0; i < outs.length; i++){
+        let out = outs[i];
+        let foreignHost = out.url.split("/");
+        hosts.push({...out, host: foreignHost[2]});
+    }
+
+    return hosts;
 }
 
 async function updatePost(token, authorId, postId, newPost) {

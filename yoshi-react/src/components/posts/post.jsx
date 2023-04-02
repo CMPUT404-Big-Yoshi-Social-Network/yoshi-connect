@@ -233,6 +233,9 @@ function Post({viewerId, post}) {
                             null
                         }
                     </div>
+                <div>
+                    <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
+                </div>
                 {
                     post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
                 }    

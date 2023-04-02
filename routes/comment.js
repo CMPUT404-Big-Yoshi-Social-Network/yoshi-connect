@@ -185,11 +185,18 @@ async function getComment(authorId, postId, commentId, token) {
 
 async function createComment(token, authorId, postId, newComment) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates comment for a specific Post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/comments
+    Request Type: PUT
+    Request Body: { _id: 29c546d45f564a27871838825e3dbecb, token: 5yy7bCMPrSXSv9knpS4gfz, postId: 902sq546w5498hea764r80re0z89bej }
+    Return: 400 Status (Bad Request) -- No comment provided, no Author to be the author of the comment, did not provide content type or type
+            200 Status (OK) -- Successfully created comment
+                                    { -id: 29c546d45f564a27871838825e3dbecb,
+                                        author: author,
+                                        comment: 'abc',
+                                        contentType: text/plain,
+                                        published: 2023-03-24T06:53:47.567Z,
+                                        object: 902sq546w5498hea764r80re0z89bej
     */
     if(newComment == undefined){
         return [{}, 400];

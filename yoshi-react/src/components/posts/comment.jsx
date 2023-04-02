@@ -36,6 +36,7 @@ function Comment({viewerId, comment, author}) {
      * Functions: 
      *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
      *     - likeComment(): Sends a POST request of the like to the Author's inbox on a specific comment
+     *     - useEffect: Fetches the likes related to the comment ID
      * Returns: N/A
      */
     const [liked, setLiked] = useState(true);

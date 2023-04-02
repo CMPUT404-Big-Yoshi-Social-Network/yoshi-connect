@@ -248,8 +248,9 @@ async function deleteRequest(authorId, foreignId, res) {
     Description: Deletes an Author's inbox requests
     Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
     Request Type: DELETE
-    Request Body: { username: kc, email: 123@aulenrta.ca }
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 500 Status (Internal Server Error) -- Unable to find/get Actor or Object
+            200 Status (OK) -- Successfully deleteed the request from Inbox
     */
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});

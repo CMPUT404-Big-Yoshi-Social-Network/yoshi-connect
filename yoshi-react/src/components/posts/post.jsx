@@ -48,7 +48,6 @@ function Post({viewerId, post, author}) {
     const [like, setLike] = useState(false);
     const [image, setImage] = useState("");
     // const [items, setItems] = useState(undefined);
-
     const navigate = useNavigate();
 
     /**
@@ -198,8 +197,7 @@ function Post({viewerId, post, author}) {
     }
     
     const getLikes = () => {
-
-        axios.get(post.id + '/likes')
+        axios.get('/authors/' + authorId + '/posts/' + postId + '/likes')
         .then((response) => { 
             setNumLikes(response.data.items.length);
             // setItems(response.data.items);
@@ -213,19 +211,7 @@ function Post({viewerId, post, author}) {
                 }
             }
         })
-        .catch((err) => { 
-            if(err.response){
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                } else if (err.response.status === 400) {
-                    navigate('/badrequest')
-                } else if (err.response.status === 404) {
-                    navigate('/notfound')
-                } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
-                }
-            }
-        });
+        .catch((err) => { });
     }
 
     return (

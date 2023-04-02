@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { getUserActivity } from "gh-recent-activity";
+// import { getUserActivity } from "gh-recent-activity";
 // import GitHubFeed from 'react-github-activity'
 
 // Child Component
@@ -138,7 +138,7 @@ function GitHub() {
             });
         }
         getAuthor();
-    }, [navigate])
+    }, [navigate, data, test])
 
     return (
         <div>

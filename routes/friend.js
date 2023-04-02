@@ -37,11 +37,11 @@ const axios = require('axios');
 
 async function getFollowers(id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets a specific Author using foreignAuthorId params associated by authorId params
+    Associated Endpoint: /authors/:authorId/followers/:foreignAuthorId
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Follower associated with Author was not found
     */
     const followers = await Follower.findOne({authorId: id});
     if (!followers) { return 404; }
@@ -50,11 +50,11 @@ async function getFollowers(id){
 
 async function getFollowings(id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the followings list for Author associated with authorId
+    Associated Endpoint: /authors/:authorId/followings
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Author associated with authorId does not have a followings list
     */
     const following = await Following.findOne({authorId: id});
     if (!following) { return 404; }
@@ -63,11 +63,11 @@ async function getFollowings(id){
 
 async function getFriends(id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets friends list associated with authorId
+    Associated Endpoint: /authors/:authorId/friends
+    Request Type: GET
+    Request Body: N/A
+    Return: 200 Status (OK) -- Returns array of Friends
     */
     const following = await Following.aggregate([
         {
@@ -122,11 +122,11 @@ async function getFriends(id){
 
 async function addFollower(token, authorId, foreignId, body, req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
+    Associated Endpoint: /authors/:authorId/followers/:foreignAuthorId
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Unable to find a request object from the foreignAuthorId to the authorId
     */
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
@@ -137,11 +137,11 @@ async function addFollower(token, authorId, foreignId, body, req, res){
 
 async function deleteFollowing(authorId, foreignId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes a specific Author associated with foreignAuthorId contained in Author followings list associated with authorIdi
+    Associated Endpoint: /authors/:authorId/followings/:foreignAuthorId
+    Request Type: DELETE
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 204 Status (No Content) -- Following foreign Author was deleted from followings list associated with authorId
     */
     const followings = await Following.findOne({authorId: authorId});
     for(let i = 0; i < followings.followings.length; i++){
@@ -158,11 +158,18 @@ async function deleteFollowing(authorId, foreignId){
 
 async function isFriend(isLocal, authorId, foreignId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Checks if the Author associated with foreignId is true friends with Author associated with authorId
+    Associated Endpoint: /authors/:authorId/friends/:foreignId
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 200 Status (OK) -- Returns JSON with 
+                                    { type: "relation",
+                                        "aId" : https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                        "actorId" : authorId,
+                                        "host": https://yoshi-connect.herokuapp.com/,
+                                        "oId" : https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                        "objectId" : 29c546d45f564a27871838825e3dbecb,
+                                        status: 'Follows' }
     */
     let actorFollows = false;
     let objectFollows = false;
@@ -248,11 +255,11 @@ async function isFriend(isLocal, authorId, foreignId, res) {
 
 async function fetchFriendPosts(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the Friend's posts associated with authorId 
+    Associated Endpoint: /authors/:authorId/posts/friends-posts
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 200 Status (OK) -- Returns JSON with array of the Friend's posts associated with authorId
     */
     const friends = await getFriends(req.params.authorId);
 

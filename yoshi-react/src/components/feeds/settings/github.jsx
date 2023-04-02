@@ -24,7 +24,6 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getUserActivity } from "gh-recent-activity";
-// import GitHubFeed from 'react-github-activity'
 
 // Child Component
 import TopNav from '../navs/top/nav.jsx';
@@ -42,65 +41,7 @@ function GitHub() {
      *     - useEffect(): Before rendering, checks if the author is logged in to authorize routing
      * Returns: N/A
      */
-    const test = 
     
-    [
-        {
-          "text": "Created profile-pic branch on CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-          "user": {
-            "name": "Holy-Hero",
-            "link": "https://github.com/Holy-Hero",
-            "img": "https://avatars.githubusercontent.com/u/47871461?"
-          },
-          "repo": {
-            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
-          },
-          "created": {
-            "type": "branch",
-            "branch": "profile-pic"
-          },
-          "type": "create"
-        },
-        {
-          "text": "Opened PR at CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-          "user": {
-            "name": "Holy-Hero",
-            "link": "https://github.com/Holy-Hero",
-            "img": "https://avatars.githubusercontent.com/u/47871461?"
-          },
-          "repo": {
-            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
-          },
-          "pr": {
-            "prNumber": 118,
-            "state": "open",
-            "title": "Unit test backend",
-            "url": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/pull/118"
-          },
-          "type": "pull_request"
-        },
-        {
-          "text": "Closed PR at CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-          "user": {
-            "name": "Holy-Hero",
-            "link": "https://github.com/Holy-Hero",
-            "img": "https://avatars.githubusercontent.com/u/47871461?"
-          },
-          "repo": {
-            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
-          },
-          "pr": {
-            "prNumber": 117,
-            "state": "closed",
-            "title": "Unit test backend",
-            "url": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/pull/117"
-          },
-          "type": "pull_request"
-        }
-      ]
 
     const navigate = useNavigate();
     const [data, setData] = useState({
@@ -145,7 +86,7 @@ function GitHub() {
             });
         }
         getAuthor();
-    }, [navigate])
+    }, [navigate, data])
 
     return (
         <div>

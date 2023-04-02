@@ -37,6 +37,9 @@ function Posts(props) {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [posts, setPosts] = useState([]);
+    if (props.posts !== undefined) {
+        setPosts(props.posts)
+    }
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 20;
@@ -44,10 +47,12 @@ function Posts(props) {
     const [url, setUrl] = useState('');
     const [viewerId, setViewerId] = useState('');
     let type = '';
-    if (props.type.otherUrl) {
-        type = props.type.otherUrl
-    } else {
-        type = props.type
+    if (props.type !== undefined) {
+        if (props.type.otherUrl) {
+            type = props.type.otherUrl
+        } else {
+            type = props.type
+        }
     }
 
     useEffect(() => {
@@ -69,14 +74,16 @@ function Posts(props) {
             .then((response) => {
                 id = response.data.authorId;
                 setViewerId(id);
-                if (type === 'public') {
-                    setUrl('/posts/' + type);
-                }
-                else if (type === 'inbox') {
-                    setUrl('/authors/' + id + '/inbox');
-                }
-                else {
-                    setUrl('/authors/' + id + '/posts/' + type);
+                if (props.posts === undefined) {
+                    if (type === 'public') {
+                        setUrl('/posts/' + type);
+                    }
+                    else if (type === 'inbox') {
+                        setUrl('/authors/' + id + '/inbox');
+                    }
+                    else {
+                        setUrl('/authors/' + id + '/posts/' + type);
+                    }
                 }
             })
             .catch(err => { 
@@ -87,7 +94,7 @@ function Posts(props) {
         }
         getId();
         
-    }, [type]);
+    }, [type, props.posts]);
 
     useEffect(() => {
         /**
@@ -96,7 +103,7 @@ function Posts(props) {
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')
-       if (url) {
+       if (url && props.posts === undefined) {
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -149,7 +156,7 @@ function Posts(props) {
         });
         
        } 
-    }, [url, navigate, page, size]);
+    }, [url, navigate, page, size, props.posts]);
 
     const getMore = () => {
         /**

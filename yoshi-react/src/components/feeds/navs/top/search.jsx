@@ -212,7 +212,7 @@ function SearchCard(props) {
             axios
             .get('/nodes/outgoing/authors/' + id + '/posts', config)
             .then((response) => { 
-                navigate('/users/' + username, { state: { posts: response.data.items } })
+                navigate('/users/' + username, { state: { posts: response.data.items, isRemote: true } })
             })
             .catch(err => { })
         }

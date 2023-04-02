@@ -41,8 +41,7 @@ async function checkUsername(req) {
     Description: Authenticates username
     Associated Endpoint: /authors/:authorid
     Request Type: GET
-    Request Body: Example: 
-                    { username: abc }
+    Request Body: Example: { username: abc }
     Return: N/A
     */
     const author = await Author.findOne({username: req.body.username});

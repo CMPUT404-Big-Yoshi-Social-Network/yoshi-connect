@@ -39,11 +39,14 @@ const { getAuthor } = require('./author.js');
 
 async function createPostHistory(author_id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates the Author's post history
+    Associated Endpoint: N/A
+    Request Type: PUT
+    Request Body: {_id: 08a779b240624ff899823d1024ff3aa1,
+                    authorId: 29c546d45f564a27871838825e3dbecb ,
+                    num_posts: 0,
+                    posts: [] }
+    Return: N/A
     */
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let new_post_history = new PostHistory ({

@@ -121,7 +121,7 @@ router.post('/logout', async (req, res) => { removeLogin(req, res); })
  *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  */
 router.put('/', async (req, res) => {
-  const [author, status] = await updateAuthor(req.cookies.token, req.body.data);
+  const status = await updateAuthor(req.cookies.token, req.body.data);
   return res.sendStatus(status);
 })
 

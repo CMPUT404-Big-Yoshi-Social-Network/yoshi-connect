@@ -22,7 +22,6 @@ Foundation; All Rights Reserved
 // Functionality 
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import TopNav from '../navs/top/nav.jsx';
@@ -54,7 +53,6 @@ function PublicFeed() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewerId] = useState('')
-    const navigate = useNavigate();
 
     useEffect(() => {
         /**
@@ -75,12 +73,12 @@ function PublicFeed() {
                 let viewerId = response.data.authorId;
                 setViewerId(viewerId)
             })
-            .catch(err => { if (err.response.status === 404) { 
-                setViewerId('')
-            }})
+            .catch(err => { 
+                if (err.response.status === 401 || err.response.status === 404) { setViewerId('') }}
+            )
         }
         getId();
-    }, [navigate]);
+    }, []);
 
     return (
         <div>
@@ -90,7 +88,7 @@ function PublicFeed() {
                     <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts type={'public'}/>               
+                    <Posts type={'public/local'}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

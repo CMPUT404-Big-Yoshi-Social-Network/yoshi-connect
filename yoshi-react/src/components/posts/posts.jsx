@@ -59,7 +59,7 @@ function Posts(props) {
         let id = ''
         const getId = () => {
             /**
-             * Description: Sends a GET request to get the current author's id 
+             * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
@@ -67,10 +67,8 @@ function Posts(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                setUserInfo(response.data);
-                let viewerId = response.data.authorId;
-                setViewerId(viewerId);
-                setUrl('/authors/' + viewerId + '/posts/' + type)
+                id = response.data.authorId;
+                setViewerId(id);
             })
             .catch(err => { 
                 if (err.response.status === 401 || err.response.status === 404) { 
@@ -108,8 +106,7 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => {
-            console.log(response.data)
-            setPosts(posts => posts.concat(response.data.items));
+            setPosts(response.data.items);
         })
         .catch(err => {
             if (err.response.status === 404) {

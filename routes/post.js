@@ -25,9 +25,9 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { PostHistory, PublicPost, Post, Image, Inbox } = require('../scheme/post.js');
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
-const { OutgoingCredentials } = require('../scheme/server.js')
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
+const { OutgoingCredentials } = require('../scheme/server');
 
 
 // UUID
@@ -268,10 +268,7 @@ async function createPost(token, authorId, postId, newPost) {
     if (visibility == 'PUBLIC' && (postFrom == '' || postFrom == undefined)) {
         post.author = {
             _id: author.id,
-            host: author.host,
             displayName: author.displayName,
-            url: author.url,
-            github: author.github,
             profileImage: author.profileImage,
             pronouns: author.pronouns
         }
@@ -284,64 +281,11 @@ async function createPost(token, authorId, postId, newPost) {
     if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
-            /*
-            post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
             const follower = followers.followers[i].authorId;
             const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
 
             inbox.posts.push(post);
             await inbox.save();
-            */
-            post.type = "post";
-            post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
-            post.author = {
-                type: "author",
-                id: author.id,
-                host: author.host,
-                displayName: author.displayName,
-                url: author.url,
-                github: author.github,
-                profileImage: author.profileImage,
-            };
-            delete post._id;
-
-            //Send the post to other followers 
-            const follower = followers.followers[i];
-            const hosts = await getHostNames();
-            //TODO NEEDS TESTING
-            let followerHost = follower.id.split("/");
-            followerHost = followerHost[2];
-            for(let i = 0; i < hosts.length; i++){
-                if(i == 0 && followerHost == hosts[i].host){
-                    post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
-                    const followerId = followers.followers[i].authorId;
-                    const inbox = await Inbox.findOne({"authorId": followerId}).clone();
-
-                    inbox.posts.push(post);
-                    inbox.num_posts++;
-                    await inbox.save();
-                }
-                else if(followerHost == followerHost[i]){
-                    let host = followerHost[i];
-                    let config = {
-                        url: follower.id + "/inbox",
-                        method: "post",
-                        headers:{
-                            "Authorization": host.auth,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        data: post
-                    }
-
-                    axios.request(config)
-                    .then((request) => {
-                        console.log(request.data);
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
-                }
-            }
         }
     }
 
@@ -349,22 +293,6 @@ async function createPost(token, authorId, postId, newPost) {
     await comments;
     await savePostPromise;
     return await getPost(postId, authorId, author);
-}
-
-async function getHostNames(){
-    let hosts = [];
-
-    let currHost = process.env.DOMAIN_NAME.split("/");
-    hosts.push({host: currHost[2]});
-
-    let outs = await OutgoingCredentials.find().clone();
-    for(let i = 0; i < outs.length; i++){
-        let out = outs[i];
-        let foreignHost = out.url.split("/");
-        hosts.push({...out, host: foreignHost[2]});
-    }
-
-    return hosts;
 }
 
 async function sharePost(token, authorId, postId, newPost) {
@@ -685,7 +613,6 @@ async function getPosts(token, page, size, author) {
     if(token){
         login = await login;
         if(login){
-            let followingStatus = false;
             let following = await Following.findOne({authorId: author.authorId});
 
             if(!following || !following.followings){
@@ -696,15 +623,7 @@ async function getPosts(token, page, size, author) {
                 follow = following.followings[i];
                 if(follow.authorId = login.authorId){
                     aggregatePipeline.splice(3, 1);
-                    followingStatus = true;
                     break;
-                }
-            }
-
-            if(!followingStatus && author.authorId == login.authorId){
-                if(authLogin(token, author.authorId)){
-                    aggregatePipeline.splice(3, 1);
-                    aggregatePipeline.splice(4, 1);
                 }
             }
         }

@@ -26,7 +26,7 @@ mongoose.set('strictQuery', true);
 const { PostHistory, PublicPost, Inbox } = require('../scheme/post.js');
 const { CommentHistory, LikeHistory } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
-const { Follower } = require('../scheme/relations.js');
+const {Follower } = require('../scheme/relations.js');
 
 // UUID
 const crypto = require('crypto');
@@ -228,13 +228,6 @@ async function createComment(token, authorId, postId, newComment) {
         id = String(crypto.randomUUID()).replace(/-/g, "");
     }
 
-    let posts = await PostHistory.findOne({authorId: authorId});
-    let post = posts.posts.id(postId);
-    post.commentCount = post.commentCount + 1;
-    await posts.save();
-
-    await PublicPost.findOneAndUpdate({_id: postId}, {commentCount: post.commentCount});
-
     let comments = await CommentHistory.findOne({postId: postId}); 
     author._id = author.id;
     comments.comments.push({
@@ -281,13 +274,11 @@ async function createComment(token, authorId, postId, newComment) {
 
 async function deleteComment(req, res){
     /**
-    Description: Deletes a comment on a specific post
-    Associated Endpoint: N/A
-    Request Type: DELETE
-    Request Body: (for example: { commentId: 6d45f566w5498e78tgy436h48dh96a })
-    Return: 200 Status (OK) -- Return a JSON with
-                                        { status: success,
-                                            numComments: numComments }
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     let success = false;
     let numComments = 0;
@@ -324,11 +315,11 @@ async function deleteComment(req, res){
 
 async function editComment(req, res){
     /**
-    Description: Edits a comment on a specific post
-    Associated Endpoint: N/A
-    Request Type: POST
-    Request Body: { commentId: 6d45f566w5498e78tgy436h48dh96a }
-    Return: 200 Status (OK) -- Returns a JSON { status: success }
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     let success = false;
     let publicPost = await PublicPost.find();

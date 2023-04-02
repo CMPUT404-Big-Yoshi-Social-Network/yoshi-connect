@@ -19,20 +19,30 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality
+// Functionality 
 import React from "react";
+import { Button } from 'react-bootstrap';
 
-function Follow(props) {
-    /**
-     * Description:   
-     * Returns: 
-     */
-    console.log('Debug: <TLDR what the function is doing>')
+// Child Component 
+import Messenger from './messenger.jsx';
+import Messages from "./messages.jsx";
+
+function MessagesNav({authorId, messengers, currentMessenger}) {
+    const selectedMessenger = (messenger) => { 
+        Messages(messenger);
+    }
     return (
-        <div id='follow'>
-            { props.displayName || props.displayname }
+        <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
+            <h3>Messenges</h3>
+            { messengers === undefined || messengers.length === 0 ? null :
+                <div>
+                    {Object.keys(messengers).map((messenger, idx) => (
+                        <Button key={idx} onClick={() => selectedMessenger(messenger)}><Messenger key={idx} authorId={authorId} currentMessenger={currentMessenger}/></Button>
+                    ))}
+                </div>
+            }
         </div>
     )
 }
 
-export default Follow;
+export default MessagesNav;

@@ -27,7 +27,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import React from 'react';
 
 // Before Entering YoshiConnect
-import Welcome from "./components/welcome/welcome.jsx";
+// import Welcome from "./components/welcome/welcome.jsx";
 import Login from "./components/login/login.jsx";
 import Signup from "./components/signup/signup.jsx";
 
@@ -63,7 +63,7 @@ import GitHub from "./components/feeds/settings/github.jsx"
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Welcome/>
+    element: <PublicFeed/>
   },
   {
     path: '/login',

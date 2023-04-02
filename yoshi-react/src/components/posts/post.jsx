@@ -34,6 +34,7 @@ import './post.css';
 
 // User Interface
 import Popup from 'reactjs-popup';
+import SharePost from "./sharePost";
 
 function Post({viewerId, post, author}) {
     let postId = post.id ? post.id.split('/') : undefined;
@@ -49,11 +50,12 @@ function Post({viewerId, post, author}) {
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
     const [image, setImage] = useState("");
-    // const [items, setItems] = useState(undefined);
+    const url = "/authors/" + authorId + "/posts/" + postId + "/image"
 
     const navigate = useNavigate();
 
-    /**
+    useEffect(() => {
+        /**
          * Description:  
          * Request: (if axios is used)    
          * Returns: 

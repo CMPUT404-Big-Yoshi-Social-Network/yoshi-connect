@@ -170,6 +170,7 @@ async function getPost(postId, auth, author){
         "contentType": post.contentType,
         "content": post.content,
         "author": author,
+        "shared": post.shared,
         "categories": post.categories,
         "count": post.commentCount,
         "likeCount": post.likeCount,
@@ -190,7 +191,9 @@ async function createPost(token, authorId, postId, newPost) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if(! (await authLogin(token, authorId))){ return [[], 401]; }
+    if (token !== null) {
+        if(! (await authLogin(token, authorId))){ return [[], 401]; }
+    }
 
     let authorPromise = getAuthor(authorId);
 
@@ -198,11 +201,11 @@ async function createPost(token, authorId, postId, newPost) {
     const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
-    const categories = [''];
+    const categories = newPost.categories;
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const postTo = newPost.postTo;
+    const postFrom = newPost.postFrom;
 
     if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
@@ -236,9 +239,11 @@ async function createPost(token, authorId, postId, newPost) {
         likeCount: 0,
         commentCount: 0,
         published: published,
+        whoShared: [],
         visibility: visibility,
         unlisted: unlisted,
-        postTo: postTo
+        shared: false,
+        postFrom: postFrom
     };
 
     postHistory.posts.push(post);
@@ -260,7 +265,7 @@ async function createPost(token, authorId, postId, newPost) {
     let [author, status] = await authorPromise;
     if (status != 200) return [{}, 500];
 
-    if (visibility == 'PUBLIC') {
+    if (visibility == 'PUBLIC' && (postFrom == '' || postFrom == undefined)) {
         post.author = {
             _id: author.id,
             host: author.host,
@@ -268,7 +273,7 @@ async function createPost(token, authorId, postId, newPost) {
             url: author.url,
             github: author.github,
             profileImage: author.profileImage,
-            pronouns: author.pronouns,
+            pronouns: author.pronouns
         }
         const publicPost = new PublicPost(post);
         await publicPost.save();
@@ -535,8 +540,9 @@ async function updatePost(token, authorId, postId, newPost) {
             commentCount: post.commentCount,
             published: post.published,
             visibility: visibility,
+            shared: post.shared,
             unlisted: unlisted,
-            postTo: post.postTo
+            postFrom: post.postFrom
         };
         await (new PublicPost(publicPost)).save();
     }
@@ -552,25 +558,27 @@ async function updatePost(token, authorId, postId, newPost) {
     post.unlisted = unlisted;
     post.categories = categories;
     await postHistory.save()
-    
-    /*
-    if(unlisted === "false"){
-        const followers = await Follower.findOne({authorId: authorId}).clone();
-        let promiseList = [];
-        for(let i = 0; i < followers.followers.length; i++){
-            const follower = followers.followers[i].authorId;
-            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-            inbox.posts.push(post);
-            promiseList.push(inbox.save());
-        }
 
-        for(let i = 0; i < promiseList.length; i++){
-            await promiseList[i];
-        }
-    }
-    */
     let author = await getAuthor(authorId);
     return await getPost(postId, token, author[0]);
+}
+
+async function createTombstone(authorId, postId) {
+    const phShared = await PostHistory.findOne({authorId: authorId});
+
+    if (!phShared) { return [{}, 404]; }
+
+    const pShared = postHistory.posts.id(postId);
+
+    if(!pShared) { return [{}, 404]; }
+
+    pShared.title = 'Shared Post Deleted!'
+    pShared.description = 'Sorry, but the original post has been deleted! -- YoshiConnect'
+    pShared.contentType = 'text/plain'
+    pShared.content = 'RIP Shared Post'
+    // TODO: Need to address the image for the tombstone for a deleted shared post
+
+    await phShared.save();
 }
 
 async function deletePost(token, authorId, postId) {
@@ -593,6 +601,18 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
+
+    if (post.whoShared != []) {
+            const whoShared = post.whoShared; 
+            const outgoings = await OutgoingCredentials.find().clone();
+            for (let i = 0; i < whoShared.length; i++) {
+                const node = outgoings.find(item => item.url === whoShared[i].host)
+                if (node === undefined) {
+                    await createTombstone(authorId, postId);
+                }
+            }
+        }
+
 
     const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
     const comments = CommentHistory.findOneAndDelete({postId: postId});
@@ -857,10 +877,11 @@ module.exports={
     deletePost,
     createPost,
     getPosts,
+    sharePost,
     fetchMyPosts,
     fetchOtherPosts,
     uploadImage,
     getImage,
     editImage,
-    sharePost
+    createTombstone
 }

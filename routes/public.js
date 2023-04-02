@@ -27,13 +27,11 @@ mongoose.set('strictQuery', true);
 const crypto = require('crypto');
 
 // Schemas
-const { Login } = require('../scheme/author.js');
-const { Following } = require('../scheme/relations.js');
-const { PostHistory, PublicPost } = require('../scheme/post.js');
+const { PublicPost } = require('../scheme/post.js');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
 
-async function fetchPublicPosts(page, size) {
+async function getPublicLocalPosts(page, size) {
     /**
     Description: 
     Associated Endpoint: (for example: /authors/:authorid)
@@ -56,6 +54,11 @@ async function fetchPublicPosts(page, size) {
             }
         },
         {
+            $match: {
+                'unlisted': false
+            }
+        },
+        {
             $sort: { "published": -1 }
         },
         {
@@ -74,179 +77,79 @@ async function fetchPublicPosts(page, size) {
 
     for(let i = 0; i < publicPosts.length; i++){
         let post = publicPosts[i];
-        post.author.authorId = post.author._id.split("/");
-        post.author.authorId = post.author.authorId[post.author.authorId.length - 1];
-        post.author.id = post.author._id;
-        delete post.author._id;
-        post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
-        post.comments = post.id + "/comments";
-        delete post._id;
-        post.count = post.commentCount;
-        delete post.commentCount;
+        if (post.author != undefined) {
+            post.author.authorId = post.author._id != undefined ? post.author._id.split("/") : post.author.authorId ;
+            post.author.authorId = post.author._id != undefined ? post.author.authorId[post.author.authorId.length - 1] : post.author.authorId;
+            post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
+            post.comments = post.id + "/comments";
+            delete post._id;
+        }
     }
 
     response = {
+        page: page,
+        size: size,
         items: publicPosts
     }
-    
     return [response, 200];
-    // const outgoings = await OutgoingCredentials.find().clone();
+}
 
-    // for (let i = 0; i < outgoings.length; i++) {
-    //     if (outgoings[i].allowed) {
-    //         const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
-    //         if (outgoings[i].auth === 'userpass') {
-    //             var config = {
-    //                 host: outgoings[i].url,
-    //                 url: outgoings[i].url + '/posts/public',
-    //                 method: 'GET',
-    //                 auth: auth,
-    //                 headers: {
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             };
-    //         } else {
-    //             var config = {
-    //                 host: outgoings[i].url,
-    //                 url: outgoings[i].url + '/posts/public',
-    //                 method: 'GET',
-    //                 headers: {
-    //                     'Authorization': auth,
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             };
-    //         }
-      
-    //         await axios.request(config)
-    //         .then( res => {
-    //             let items = []
-    //             if (outgoings[i].auth === 'userpass') {
-    //                 items = res.data.results
-    //             } else {
-    //                 items = res.data.items
-    //             }
-    //             for (let j = 0; j < items.length; j++) {
-    //                 publicPosts.push(items[j]);
-    //             }
-    //         })
-    //         .catch( error => {
-    //             console.log(error);
-    //         })
-    //     }
-    // }
-    /* 
-    var config = {
-        host: 'http://www.distribution.social/api',
-        url: 'http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts',
-        method: 'GET',
-        headers: {
-            'Authorization': 'Basic eW9zaGk6eW9zaGkxMjM=',
-            'Content-Type': 'application/json'
-        }
-    };
-    await axios.request(config)
-    .then( res => { })
-    .catch( error => {  })
-
-    var config = {
-        host: 'https://sociallydistributed.herokuapp.com',
-        url: 'https://sociallydistributed.herokuapp.com/posts/authors/546de5fe-77ea-4cc2-93f9-7a3825132d68/posts/',
-        method: 'GET',
-        auth: { username: 'Yoshi_Connects', password: 'MinionConnector1' },
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-    await axios.request(config)
-    .then( res => { 
-        publicPosts = publicPosts.concat(res.data.results) 
-    })
-    .catch( error => { })
-
-    var config = {
-        host: 'https://bigger-yoshi.herokuapp.com/api',
-        url: 'https://bigger-yoshi.herokuapp.com/api/authors/6421fdb1000041ba410007/posts/',
-        method: 'GET',
-        headers: {
-            'Authorization': 'Basic bWFuOjEyMw==',
-            'Content-Type': 'application/json'
-        }
-    };
-    await axios.request(config)
-    .then( res => {
-        publicPosts = publicPosts.concat(res.data.items) 
-    })
-    .catch( error => {
-        console.log('Error')
-    })
-
-    
-    
-    /*
+async function getPublicPostsXServer(page, size){
+    let [response, statusCode] = await getPublicLocalPosts(page, size)
     const outgoings = await OutgoingCredentials.find().clone();
     
-    // TODO: WORKING ON THIS WIP
-    let fposts = [];
-    /*
-    for (let i = 0; i < 1; i++) {
+    for(let i = 0; i < outgoings.length; i++) {
+        const outgoing = outgoings[i];
+        const host = outgoing.url;
+        let endpoint = "";
+        if(host == "http://www.distribution.social"){
+            endpoint = "/api/posts/public"
+        }
+        else if(host == "https://sociallydistributed.herokuapp.com"){
+            endpoint = "/posts/public"
+        }
+        else if(host == "https://bigger-yoshi.herokuapp.com"){
+            endpoint = "/api/posts/public";
+        }
+        const auth = outgoing.auth;
         var config = {
-            host: outgoings[i].url,
-            url: outgoings[i].url + "/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts",
+            url: host + endpoint,
             method: 'GET',
-            headers: {
-                'Authorization': outgoings[i].auth,
-                'Content-Type': 'application/json'
+            host: host,
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': auth,
+                'Accept': 'application/json'
+            },
+            params: {
+                page: page,
+                size: size,
             }
-        };
-        console.log(config)
+        }
+
         await axios.request(config)
-        .then( res => {
-            let items = res.data.items
-            fposts = fposts.concat(items);
+        .then((res) => {
+            if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
+                response.items = response.items.concat(res.data.items);
+            }
+            else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
+                response.items = response.items.concat(res.data);
+            }
         })
-        .catch( error => {
-            console.log(error);
+        .catch((err) => {
         })
     }
-    */
-    /*
-    let response = await axios.get('http://www.distribution.social/api/authors/2b8099db-ea53-46cd-8833-18da83a33e29/posts', {
-        headers: {
-            'Authorization': 'Basic eW9zaGk6eW9zaGkxMjM=',
-            'Content-Type': 'application/json'
-        }
+
+    response.items.sort((post1, post2) => {
+        return new Date(post2.published) - new Date(post1.published);
     })
 
-    let allPosts = null;
-    if (publicPosts[0] != undefined && posts != undefined) {
-        allPosts = posts[0].posts_array.concat(publicPosts[0].publicPosts);
-    } else if (posts != undefined && posts[0]?.posts_array != undefined) {
-        allPosts = posts[0].posts_array;
-    } else if (publicPosts[0] != undefined) {
-        allPosts = publicPosts[0].publicPosts;
-    } else {
-        allPosts = [];
-    }
-    */
-    // Remove duplicates (https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects)
-    //allPosts = allPosts.filter( (postA, i, arr) => arr.findIndex( postB => ( postB._id === postA._id ) ) === i )
+    response.items = response.items.slice(1, size + 1);
 
-    /*WIP*/
-    /*
-    for(let i = 0; i < response.data.items.length; i++){
-        allPosts.push(response.data.items[i]);
-    }
-
-    if (allPosts && isPublicExists){
-        return res.json({
-            type: "posts",
-            items: allPosts
-          });
-    }
-    */
-
+    return [response, statusCode]
 }
 
 module.exports={
-    fetchPublicPosts
+    getPublicLocalPosts,
+    getPublicPostsXServer
 }

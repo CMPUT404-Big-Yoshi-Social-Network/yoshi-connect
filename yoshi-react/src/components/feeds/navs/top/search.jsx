@@ -58,10 +58,9 @@ function SearchCard(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let id = response.data.id.split('/')
-                id = id[id.length - 1]
+                let viewerId = response.data.authorId;
                 let viewer = response.data;
-                setViewerId(id)
+                setViewerId(viewerId)
                 setViewer(viewer)
             })
             .catch(err => { if (err.response.status === 404) { 
@@ -99,17 +98,15 @@ function SearchCard(props) {
     }, [id, viewerId, host]);
 
     useEffect(() => {
-        if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
-            if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
-                axios
-                .get('/authors/' + viewerId + '/inbox/requests/' + id)
-                .then((response) => { 
-                    setRequestButton('Sent');
-                })
-                .catch(err => {
-                    if (err.response.status === 404) { }
-                });
-            }
+        if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
+            axios
+            .get('/authors/' + viewerId + '/inbox/requests/' + id)
+            .then((response) => { 
+                setRequestButton('Sent');
+            })
+            .catch(err => {
+                if (err.response.status === 404) { }
+            });
         }
     }, [viewerId, id, host]);
 
@@ -170,10 +167,13 @@ function SearchCard(props) {
         <div>
             { !props && username === undefined ? null : 
                 <div>
-                    <p className='search-username'>{username}</p>
-                    <p>{host}</p>
+                    {username}
+                    <br></br>
+                    {host}
                     <Button onClick={seePosts} type="submit">View Profile</Button>
-                    <Button className='search-button' onClick={sendRequest} type="submit">{requestButton}</Button>
+                    { id === viewerId ? null : 
+                        <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    }
                 </div>
             }
         </div>

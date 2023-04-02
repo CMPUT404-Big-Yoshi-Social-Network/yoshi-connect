@@ -19,47 +19,35 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality 
+// Functionality
 import React from "react";
 import Pagination from 'react-bootstrap/Pagination';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
 
-// User Interface
-import Comment from './comment.jsx';
+// Child Component
+import Post from './post.jsx';
 
-function Comments(params) {
-    const [comments, setComments] = useState([]);
-
+function RemotePosts(props) { 
+    /**
+     * Description:  
+     * Request: (if axios is used)    
+     * Returns: 
+     */
     console.log('Debug: <TLDR what the function is doing>')
-    useEffect(() => {
 
-        axios.get(params.url)
-        .then((response) => {
-            if(response.data.comments){
-                setComments(response.data.comments);
-            }
-         })
-        .catch((err) => {
-            setComments([]);
-         });
-    }, [params.url]);
     return (
         <div>
-            { comments.length === 0 ? 
+            { props.type.length !== 0 ? 
+                <Pagination>
+                    {Object.keys(props.type).map((post, idx) => (
+                        <Post key={idx} viewerId={null} post={props.type[post]}/>
+                    ))}
+                </Pagination> :
                 <div>
-                    <h4>No comments to show.</h4>
-                </div> : 
-                <div> 
-                    <Pagination>
-                        {Object.keys(comments).map((comment, idx) => (
-                            <Comment key={idx} comment={comments[comment]} author={params.author}/>
-                        ))}  
-                    </Pagination>  
+                    <h4>No posts to show.</h4>
                 </div>
             }
         </div>
     )
 }
 
-export default Comments;
+export default RemotePosts;

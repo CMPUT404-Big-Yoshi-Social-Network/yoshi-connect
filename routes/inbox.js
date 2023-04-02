@@ -6,6 +6,8 @@ mongoose.set('strictQuery', true);
 const { Post, Inbox, PostHistory } = require('../scheme/post.js');
 const { Like, Comment, CommentHistory } = require('../scheme/interactions.js');
 const { Request } = require('../scheme/relations.js');
+const { Author } = require('../scheme/author.js');
+const axios = require('axios');
 
 // UUID
 const crypto = require('crypto');
@@ -13,11 +15,11 @@ const crypto = require('crypto');
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
 const { createComment } = require('./comment.js');
-const { validateAuthorObject } = require('./author.js');
-const axios = require('axios');
+const { validateAuthorObject, getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
+const { createPost } = require('./post.js');
 
 async function getInbox(token, authorId, page, size){
     /**
@@ -226,7 +228,7 @@ async function postInboxPost(post, recieverAuthorId){
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
 
     post._id = id
-    inbox.posts.push(post);
+    inbox.posts.push({...post, postFrom: postFrom});
     await inbox.save();
     delete post._id;
     return [post, 200]
@@ -265,7 +267,7 @@ async function postInboxLike(like, authorId){
         return [like, 403];
     }
     await addLike(like, authorId);
-    
+    await addLiked(author._id, like.object);
     
     //TODO Unliking should also be added
 
@@ -368,6 +370,54 @@ async function postInboxComment(newComment, recieverAuthorId){
     return [comment, 200];
 }
 
+async function postInboxRequest(actor, receiverAuthorId) {
+    const object = await Author.findOne({_id: receiverAuthorId});
+
+    let summary = actor.displayName + ' wants to follow ' + object.username;
+
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+    let authorId = actor.id;
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
+    const request = {
+        _id: uuid,
+        goal: 'follow',
+        actor: actor.displayName,
+        actorId: authorId,
+        objectId: object._id,
+        object: object.username
+    }
+
+    const inbox = await Inbox.findOne({authorId: receiverAuthorId});
+    inbox.requests.push(request);
+    inbox.save();
+
+    const jsonRequest = {
+        summary: summary, 
+        actor: {
+            type: 'author',
+            id: actor.id,
+            host: actor.host,
+            displayName: actor.displayName,
+            url: actor.url,
+            github: actor.github,
+            profileImage: actor.profileImage
+        }, 
+        object: {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage 
+        }
+    }
+
+    return [jsonRequest, 200];
+}
+
 async function deleteInbox(token, authorId){
     /**
     Description: Deletes a request from the inbox
@@ -423,5 +473,6 @@ module.exports = {
     postInboxPost,
     postInboxLike,
     postInboxComment,
+    postInboxRequest,
     sendToForeignInbox
 }

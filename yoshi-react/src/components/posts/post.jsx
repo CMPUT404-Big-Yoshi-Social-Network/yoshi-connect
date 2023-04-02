@@ -91,13 +91,13 @@ function Post({viewerId, post, author}) {
         .then((response) => { })
         .catch((err) => { 
             if (err.response.status === 401) {
-                navigate('/unauthorized')
+                navigate('/unauthorized');
             } else if (err.response.status === 400) {
-                navigate('/badrequest')
+                navigate('/badrequest');
             } else if (err.response.status === 404) {
-                navigate('/notfound')
+                navigate('/notfound');
             } else if (err.response.status === 500) {
-                console.log('500 PAGE')
+                console.log('500 PAGE');
             }
          });
     }
@@ -106,12 +106,12 @@ function Post({viewerId, post, author}) {
         if(author){
         let body = {
             type: "like",
-            summary: "DisplayName likes your post",
+            summary: author.displayName + " likes your post",
             author: author,
             object: post.id
         }
 
-        axios.post('/authors/' + post.author.id + '/inbox', body, {
+        axios.post('/authors/' + encodeURIComponent(post.author.id) + '/inbox', body, {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
             }

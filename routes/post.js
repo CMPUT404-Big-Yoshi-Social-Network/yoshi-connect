@@ -402,18 +402,32 @@ async function sharePost(token, authorId, postId, newPost) {
     const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
     const origin = newPost.origin;
 
+
+    let postFrom = '';
+    if (newPost.authorId === undefined) {
+        postFrom = newPost.source
+        postFrom = postFrom.split("/");
+        postFrom = postFrom[postFrom.length - 3];
+    } else {
+        postFrom = newPost.authorId
+    }
+
     let postHistory = await PostHistory.findOne({authorId: authorId});
     if (!postHistory) { return [[], 404]; }
 
     let source = newPost.author._id + '/posts/' + newPost.postId;
 
-    const originalPH = await PostHistory.findOne({authorId: og});
-    const originalPost = originalPH.posts.id(newPost.postId);
-    originalPost.whoShared.push({
-        authorId: authorId, 
-        host: process.env.DOMAIN_NAME,
-        postId: sharedPostId
-    });
+    const originalPH = await PostHistory.findOne({authorId: postFrom});
+    if (originalPH) {
+        const originalPost = originalPH.posts.id(newPost.postId);
+        if (originalPost) {
+            originalPost.whoShared.push({
+                authorId: authorId, 
+                host: process.env.DOMAIN_NAME,
+                postId: sharedPostId
+            });
+        }
+    }
 
     let post = {
         _id: sharedPostId,

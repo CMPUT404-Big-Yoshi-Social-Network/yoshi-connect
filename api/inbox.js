@@ -169,6 +169,7 @@ router.post('/', async (req, res) => {
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
+		console.log(authHeader)
 
 		const [scheme, data] = authHeader.split(" ");
 		if(scheme === "Basic") {

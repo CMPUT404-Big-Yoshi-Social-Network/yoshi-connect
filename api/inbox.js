@@ -34,7 +34,7 @@ const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
-const { IncomingCredentials } = require('../scheme/server');
+const { IncomingCredentials, OutgoingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
 const { Author } = require('../scheme/author');
 
@@ -174,7 +174,7 @@ router.post('/', async (req, res) => {
 		if(scheme === "Basic") {
 			const credential = Buffer.from(data, 'base64').toString('ascii');
 			const [serverName, password] = credential.split(":");
-			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
+			if( await OutgoingCredentials.findOne({displayName: serverName, password: password})) {
 				authorized = true;
 			} 
 		}

@@ -98,11 +98,12 @@ async function getLikes(authorId, postId, commentId, type){
 
 async function addLike(like, authorId, postId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Adds a like to the associated author's post / comment
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: N/A
+    Return: 400 Status (Bad Request) -- Invalid type given
+            200 Status (OK) -- Successfully added a like to post /comment
     */
     const type = like.type;
     const summary = like.summary;

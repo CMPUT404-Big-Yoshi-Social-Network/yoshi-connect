@@ -37,11 +37,18 @@ const { authLogin, checkExpiry } = require('./auth.js');
 
 async function getComments(postId, authorId, page, size) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets a paginated list of comments for a specific post (dictated by size and page queries)
+    Associated Endpoint: /authors/:authorId/posts/:postId/comments
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb}
+    Return: 404 Status (Not Found) --
+            200 Status (OK) -- Returns comments
+                                    { type: "comments",
+                                        author: author,
+                                        comment: 'abc',
+                                        contentType: text/plain,
+                                        published: 2023-03-24T06:53:47.567Z,
+                                        id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments }
     */
     let comments = undefined
     //TODO Avoid duplicated code by using a list of objects and modifying them before sending

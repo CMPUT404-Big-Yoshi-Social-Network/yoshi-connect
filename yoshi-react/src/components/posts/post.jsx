@@ -49,7 +49,7 @@ function Post({viewerId, post, author}) {
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
     const [image, setImage] = useState("");
-    const [items, setItems] = useState(undefined);
+    // const [items, setItems] = useState(undefined);
 
     const navigate = useNavigate();
 
@@ -204,7 +204,7 @@ function Post({viewerId, post, author}) {
         axios.get(post.id + '/likes')
         .then((response) => { 
             setNumLikes(response.data.items.length);
-            setItems(response.data.items);
+            // setItems(response.data.items);
             let itemsCopy = response.data.items;
             for(let i = 0; i < itemsCopy.length; i++){
                 let like = itemsCopy[i];

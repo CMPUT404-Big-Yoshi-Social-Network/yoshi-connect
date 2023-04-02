@@ -203,7 +203,7 @@ function CreatePost() {
                             setData({...data, visibility: e.target.value})}}>
                             <option value={"PUBLIC"}>Public</option>
                             <option value={"FRIENDS"}>Friends</option>
-                            <option value={"Private"}>Private</option>
+                            <option value={"PRIVATE"}>Private</option>
                         </select>
                         <label className='postLabel'><p style={{color:"white"}}>Unlisted:</p></label>
                         <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{

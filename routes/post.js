@@ -278,7 +278,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if((postFrom == '' || postFrom == undefined) && (unlisted == "false" || unlisted == false)){
+    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;
@@ -303,7 +303,6 @@ async function sharePost(token, authorId, postId, newPost) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
     let authorPromise = getAuthor(authorId);
 
@@ -396,7 +395,7 @@ async function sharePost(token, authorId, postId, newPost) {
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if(unlisted == "false" || unlisted == false){
+    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;

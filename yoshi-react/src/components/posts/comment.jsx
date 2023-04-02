@@ -32,8 +32,8 @@ function Comment({viewerId, comment, author}) {
      *     - getLikes(): Fetches the likes related to the comment ID
      * Returns: N/A
      */
-    console.log('Debug: Comments() <TLDR what the function is doing>')
-    
+    console.log('Debug: Comment() <TLDR what the function is doing>')
+
     const [liked, setLiked] = useState(true);
 
     const likeComment = () => {

@@ -42,15 +42,73 @@ function GitHub() {
      *     - useEffect(): Before rendering, checks if the author is logged in to authorize routing
      * Returns: N/A
      */
+    const test = 
+    
+    [
+        {
+          "text": "Created profile-pic branch on CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+          "user": {
+            "name": "Holy-Hero",
+            "link": "https://github.com/Holy-Hero",
+            "img": "https://avatars.githubusercontent.com/u/47871461?"
+          },
+          "repo": {
+            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+          },
+          "created": {
+            "type": "branch",
+            "branch": "profile-pic"
+          },
+          "type": "create"
+        },
+        {
+          "text": "Opened PR at CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+          "user": {
+            "name": "Holy-Hero",
+            "link": "https://github.com/Holy-Hero",
+            "img": "https://avatars.githubusercontent.com/u/47871461?"
+          },
+          "repo": {
+            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+          },
+          "pr": {
+            "prNumber": 118,
+            "state": "open",
+            "title": "Unit test backend",
+            "url": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/pull/118"
+          },
+          "type": "pull_request"
+        },
+        {
+          "text": "Closed PR at CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+          "user": {
+            "name": "Holy-Hero",
+            "link": "https://github.com/Holy-Hero",
+            "img": "https://avatars.githubusercontent.com/u/47871461?"
+          },
+          "repo": {
+            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+          },
+          "pr": {
+            "prNumber": 117,
+            "state": "closed",
+            "title": "Unit test backend",
+            "url": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/pull/117"
+          },
+          "type": "pull_request"
+        }
+      ]
+
     const navigate = useNavigate();
     const [data, setData] = useState({
         viewer: "",
         github: "",
-        activities: []
+        activities: [],
+        pfp: ""
     }) 
-
-
-    
     useEffect(() => {
         /**
          * Description: Before render, checks the author's account details
@@ -68,14 +126,14 @@ function GitHub() {
             axios
             .get('/userinfo', config)
             .then((response) => {
-                setData({...data, veiwer: response.data.authorId, github: response.data.github})
-                if (response.data.github !== "") {
-                    getUserActivity(response.data.github).then((res) => {
-                        for (let i = 0; i < res.length; i++) {
-                            data.activities.push(res[i])
-                        }
-                    })
-                }
+                setData({...data, veiwer: response.data.authorId, github: response.data.github, activities: test, pfp: test[0].user.img})
+                // if (response.data.github !== "") {
+                //     getUserActivity(response.data.github).then((res) => {
+                //         for (let i = 0; i < res.length; i++) {
+                //             data.activities.push(res[i])
+                //         }
+                //     })
+                // }
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
@@ -97,12 +155,12 @@ function GitHub() {
                     <LeftNavBar authorId={data.viewer}/>
                 </div>
                 <div className='pubColM'>
-                <img src={"https://ghchart.rshah.org/" + data.github} alt="" style={{margins: "10em", padding: "1em" }}/>
-                {console.log(data.activities)}
-                {Object.keys(data.activities).map((activity, idx) => (
-                    <Activity key={idx} activity={data.activities[activity]}/>
-                ))} 
-                </div>
+                    {data.activities === [] ? null : <img className="pfp" src={data.pfp} alt=""/>}
+                    <img src={"https://ghchart.rshah.org/" + data.github} alt="" style={{margins: "10em", padding: "1em" }}/>
+                    {Object.keys(data.activities).map((activity, idx) => (
+                        <Activity key={idx} activity={data.activities[activity]}/>
+                    ))}
+                    </div>
                 <div className='pubColR'>
                     <RightNavBar/>
                 </div>

@@ -249,8 +249,7 @@ async function createPost(token, authorId, postId, newPost) {
         commentCount: 0,
         published: published,
         visibility: visibility,
-        unlisted: unlisted,
-        postTo: postTo
+        unlisted: unlisted
     };
 
     postHistory.posts.push(post);

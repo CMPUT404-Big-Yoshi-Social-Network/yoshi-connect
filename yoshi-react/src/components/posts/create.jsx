@@ -30,6 +30,7 @@ import { Nav } from 'react-bootstrap';
 // Styling
 import './create.css';
 
+//Reference for tagging: https://www.youtube.com/watch?v=l8Jd7Ub4yJE&ab_channel=AngleBrace
 function CreatePost() {
     /**
      * Description: Represents the CreatePost Form 
@@ -41,6 +42,24 @@ function CreatePost() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
+    const [categories, setCategories] = useState([])
+
+    function saveCategory(e) {
+        if (e.key !== 'Enter') {
+            return
+        } 
+        const category = e.target.value;
+        if (!category.trim()) {
+            return
+        }
+        setCategories([...categories, category]);
+        e.target.value = '';
+    }
+
+    function removeCategory(idx) {
+        setCategories(categories.filter((category,i) => i !== idx))
+    }
+
     const [data, setData] = useState({
         title: "",
         description: "",
@@ -106,19 +125,39 @@ function CreatePost() {
             likes: data.likes,
             comments: data.comments,
             unlisted: data.unlisted,
+            categories: categories,
             postTo: data.postTo,
-            image: data.image
+            image: data.image,
+            type: '',
+            authorId: data.authorId
         }
 
         let link = { postId: "" }
         
-        await axios.post('/authors/' + data.authorId + '/posts/', body)
-        .then((response) => { 
-            if (response.status === 200) {
-                link.postId = response.data.id.split('/')[6];
-            }
-        })
-        .catch((e) =>{ console.log(e); })
+        if (data.postTo === '') {
+            await axios.post('/authors/' + data.authorId + '/posts/', body)
+            .then((response) => { 
+                if (response.status === 200) {
+                    link.postId = response.data.id.split('/')[6];
+                }
+            })
+            .catch((e) =>{ console.log(e); })
+        } else {
+            body.type = 'post'
+            await axios
+            .get('/authors/postTo/' + body.postTo)
+            .then((response) => {
+                body.postTo = response.data._id;
+                axios.post('/authors/' + response.data._id + '/inbox', body)
+                .then((response) => { 
+                    if (response.status === 200) {
+                        link.postId = response.data.id.split('/')[6];
+                    }
+                })
+                .catch((e) =>{ console.log(e); })
+            })
+            .catch(err => { });
+        }
 
         if (item.image !== "") {
             axios.put('/authors/' + data.authorId + '/posts/' + link.postId + "/image", {
@@ -138,6 +177,7 @@ function CreatePost() {
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
+        setCategories([])
         setIsOpen(!isOpen); 
         setItem({ ...item, image: "" })
     }
@@ -214,6 +254,18 @@ function CreatePost() {
 
                         <div style={{color:"white", textAlign:"right"}}>
                             {item.size} of 10MB
+                        </div>
+
+                        <p>Categories</p>
+                        
+                        <div>
+                            { categories.map((category, idx) => (
+                                <div key={idx}>
+                                    <span class='category'>{category}</span>
+                                    <span class='close' onClick={() => removeCategory(idx)}>x</span>
+                                </div> 
+                            ))}
+                            <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
                         </div>
 
                         <button className={"createPostButton"} type={"button"} onClick={savePost}>Create Post</button>

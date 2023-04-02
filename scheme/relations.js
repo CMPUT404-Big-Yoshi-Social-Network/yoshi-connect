@@ -56,8 +56,7 @@ const followingScheme = new Schema({
 
 const requestScheme = new Schema({
     _id: String,
-    type: String,
-    summary: String,
+    goal: String,
     actor: String,
     actorId: String,
     objectId: String,

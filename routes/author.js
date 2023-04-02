@@ -207,11 +207,11 @@ async function getAuthor(authorId){
 
     const sanitizedAuthor = {
         "type": "author",
-        "id" : process.env.DOMAIN_NAME + "authors/" + author._id,
+        "id" : 'https://yoshi-connect.herokuapp.com/' + "authors/" + author._id,
         "authorId" : author._id,
-        "host": process.env.DOMAIN_NAME,
+        "host": 'https://yoshi-connect.herokuapp.com/',
         "displayName": author.username,
-        "url":  process.env.DOMAIN_NAME + "authors/" + author._id,
+        "url":  'https://yoshi-connect.herokuapp.com/' + "authors/" + author._id,
         "github": author.github,
         "profileImage": author.profileImage,
         "about": author.about,
@@ -239,7 +239,6 @@ async function updateAuthor(token, author){
     if (author.github != undefined) { authorProfile.github = author.github; }
     if (author.password != undefined) { authorProfile.password = crypto_js.SHA256(author.password); }
     if (author.admin != undefined) { authorProfile.admin = author.admin; }
-    if (author.profileImage != undefined) { authorProfile.profileImage = author.profileImage; }
 
     await authorProfile.save();
 
@@ -308,7 +307,7 @@ function validateAuthorObject(author){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if(author == undefined || author.id == undefined || author.host == undefined || author.displayName == undefined || author.url == undefined || !author.github == undefined || author.profileImage == undefined){
+    if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
         return false;
     }
 

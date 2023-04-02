@@ -167,7 +167,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     }).clone()
 
     if (success) {
-        await deleteRequest(authorId, foreignId, res);
+        await deleteRequest(res, actor, object, foreignId, authorId, 'accept', isLocal);
     } else {
         return res.sendStatus(500);
     }
@@ -208,7 +208,6 @@ async function sendRequest(authorId, foreignId, res) {
     const request = {
         _id: uuid,
         goal: type,
-        summary: summary,
         actor: actor.username,
         actorId: actor._id,
         objectId: object._id,
@@ -243,7 +242,7 @@ async function sendRequest(authorId, foreignId, res) {
     }
 }
 
-async function deleteRequest(authorId, foreignId, res) {
+async function deleteRequest(res, actor, object, foreignId, authorId, status, isLocal) {
     /**
     Description: Deletes an Author's inbox requests
     Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
@@ -252,42 +251,152 @@ async function deleteRequest(authorId, foreignId, res) {
     Return: 500 Status (Internal Server Error) -- Unable to find/get Actor or Object
             200 Status (OK) -- Successfully deleteed the request from Inbox
     */
-    const actor = await Author.findOne({_id: authorId});  
-    const object = await Author.findOne({_id: foreignId});
+    if (actor === null || actor === undefined) {
+        actor = await Author.findOne({_id: authorId});
+        if (actor === null || actor === undefined) {
+            // Must be from another server
+            const outgoings = await OutgoingCredentials.find().clone();
+            isLocal = false;
+            for (let i = 0; i < outgoings.length; i++) {
+                if (outgoings[i].allowed) {
+                    const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+                    if (outgoings[i].auth === 'userpass') {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors/' + authorId + '/',
+                            method: 'GET',
+                            auth: auth,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    } else {
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors/' + authorId + '/',
+                            method: 'GET',
+                            headers: {
+                                'Authorization': auth,
+                                'Content-Type': 'application/json'
+                            }
+                        };              
+                    } else {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors' + authorId + '/',
+                            method: 'GET',
+                            headers: {
+                                'Authorization': auth,
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    }
+                    }
+            
+                    await axios.request(config)
+                    .then( res => {
+                        actor = res.data 
+                    })
+                    .catch( error => { })
+                }
+            }
+        } else {
+            actor = {
+                type: 'author',
+                id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+                host: process.env.DOMAIN_NAME,
+                displayName: actor.username,
+                url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }
+        }
+    }
+
+    if (object === null || object === undefined) {
+        object = await Author.findOne({_id: foreignId});
+    }
 
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
 
-    if (!actor && !object) { return 500 }
-
     let summary = '';
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
-    const request = inbox.requests[idx]
+    let request = inbox.requests[idx]
     inbox.requests.splice(idx, 1);
     inbox.save();
-    summary = actor.username + " wants to undo " + request.type + " request to " + object.username;  
 
-    return res.json({
-        type: request.type,
-        summary: summary,
-        actor: {
-            type: 'author',
-            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
-            host: process.env.DOMAIN_NAME,
-            displayName: actor.username,
-            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
-            github: actor.github,
-            profileImage: actor.profileImage
-        },
-        object: {
-            type: 'author',
-            id: process.env.DOMAIN_NAME + "authors/" + object._id,
-            host: process.env.DOMAIN_NAME,
-            displayName: object.username,
-            url: process.env.DOMAIN_NAME + "authors/" + object._id,
-            github: object.github,
-            profileImage: object.profileImage
+    if (isLocal) {
+        const actorInbox = await Inbox.findOne({authorId: authorId}, '_id requests');
+        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+        const newRequest = {
+            _id: uuid,
+            goal: status,
+            actor: request.actor,
+            actorId: request.actorId,
+            objectId: request.objectId,
+            object: request.object
         }
-    })
+        actorInbox.requests.push(newRequest);
+        actorInbox.save();
+    }
+    if (status !== 'accept') {
+        summary = actor.displayName + " wants to undo " + request.goal + " request to " + object.username; 
+    } else {
+        summary = object.username + " accepted request from " + actor.displayName; 
+    }
+
+    if (!isLocal) {
+        // Must be from another server
+        const outgoings = await OutgoingCredentials.find().clone();
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].allowed && outgoings[i].host === actor.host) {
+                const auth = outgoings[i].auth
+                    var config = {
+                        host: outgoings[i].url,
+                        url: actor.id + '/inbox',
+                        method: 'POST',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        },
+                        data: {
+                            type: status,
+                            summary: summary,
+                            actor: actor,
+                            object: {
+                                type: 'author',
+                                id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                                host: process.env.DOMAIN_NAME,
+                                displayName: object.username,
+                                url: process.env.DOMAIN_NAME + "authors/" + object._id,
+                                github: object.github,
+                                profileImage: object.profileImage
+                            }
+                        }
+                    };
+                }
+        
+                await axios.request(config)
+                .then( res => { })
+                .catch( error => { })
+            }
+    } else {
+        return res.json({
+            type: status,
+            summary: summary,
+            actor: actor,
+            object: {
+                type: 'author',
+                id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                host: process.env.DOMAIN_NAME,
+                displayName: object.username,
+                url: process.env.DOMAIN_NAME + "authors/" + object._id,
+                github: object.github,
+                profileImage: object.profileImage
+            }
+        })
+    }
 }
 
 async function getRequests(authorId, res) {

@@ -41,7 +41,7 @@ async function checkUsername(req) {
     Description: Authenticates username
     Associated Endpoint: /authors/:authorid
     Request Type: GET
-    Request Body: Example: { username: abc }
+    Request Body: { username: abc }
     Return: N/A
     */
     const author = await Author.findOne({username: req.body.username});
@@ -59,7 +59,7 @@ async function checkUsername(req) {
 async function removeLogin(req, res) {
     /**
     Description: Deletes the Author's login token
-    Associated Endpoint: /settings/logout:
+    Associated Endpoint: /settings/logout
     Request Type: DELETE
     Request Body: N/A
     Return: 500 Status (Internal Server Error) -- Unable to delete login token from database
@@ -80,12 +80,12 @@ async function removeLogin(req, res) {
 async function checkExpiry(token) {
     /**
     Description: Checks token authentication
-    Associated Endpoint: /admin/dashboard:
-                         /authors/:authorId/followers:
-                         /authors/:authorId/followings:
-                         /authors/:authorId/friends/:foreignId:
-                         /authors/:authorId/inbox/requests:
-                         /profile/:username:
+    Associated Endpoint: /admin/dashboard
+                         /authors/:authorId/followers
+                         /authors/:authorId/followings
+                         /authors/:authorId/friends/:foreignId
+                         /authors/:authorId/inbox/requests
+                         /profile/:username
     Request Type: GET
     Request Body: N/A
     Return: N/A
@@ -123,8 +123,8 @@ async function checkAdmin(req){
 async function authAuthor(req, res) {
     /**
     Description: Authenticates Author
-    Associated Endpoint: /login:
-                         /admin:    
+    Associated Endpoint: /login
+                         /admin   
     Request Type: GET
     Request Body: { username: abc, password: 123 }
     Return: 400 Status (Bad Request) -- Invalid username or password
@@ -184,7 +184,7 @@ async function authAuthor(req, res) {
 async function authLogin(token, authorId){
     /**
     Description: Authenticates login
-    Associated Endpoint: /authors/:authorId/inbox:
+    Associated Endpoint: /authors/:authorId/inbox
     Request Type: GET
     Request Body: N/A
     Return: N/A

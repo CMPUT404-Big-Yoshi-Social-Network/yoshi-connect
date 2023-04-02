@@ -35,11 +35,13 @@ const axios = require('axios');
 
 async function fetchPublicPosts(page, size) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the posts associated with authorId
+    Associated Endpoint: /authors/:authorId/posts/public
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 400 Status (Bad Request) -- Invalid post
+            500 Status (Internal Server Error) -- Unable to save public post in database
+            200 Status (OK) -- Returns JSON with type and items (all posts)
     */
     // TODO: Paging
     if(!page) page = 1;

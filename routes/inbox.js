@@ -293,21 +293,24 @@ async function postInboxPost(post, recieverAuthorId){
     const authorHost = post.author.host;
     const authorDisplayName = post.author.displayName;
     const authorUrl = post.author.url;
+    const authorGithub = post.author.github;
+    const authorProfileImage = post.author.profileImage;
     const categories = post.categories;
     const published = post.published;
     const visibility = post.visibility;
+    const unlisted = post.unlisted;
 
     if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||
-        !authorHost || !authorDisplayName || !authorUrl || !categories || 
-        !published || !visibility)
+        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || 
+        !published || !visibility || !unlisted)
     {
         return [{}, 400];
     }
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
-    
+
     post._id = id
-    inbox.posts.push({...post, postFrom: postFrom});
+    inbox.posts.push(post);
     await inbox.save();
     delete post._id;
     return [post, 200]
@@ -321,6 +324,9 @@ async function postInboxLike(like, authorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
     if(!validateAuthorObject(author)){
@@ -332,15 +338,14 @@ async function postInboxLike(like, authorId){
         host: author.host,
         displayName: author.displayName,
         url: author.url,
-        github: author.github, //TODO I don't think we need this but I'll leave it here for later consideration
+        github: author.github, 
         profileImage: author.profileImage
     };
 
-    //Add a like to the authors post/comment
-    await addLike(like, authorId);
-    await addLiked(author._id, like.object);
-    
-    //TODO Unliking should also be added
+    if(await addLiked(author._id, like.object)){
+        return [like, 403];
+    }
+    await addLike(like, authorId); 
 
     const inboxLike = {
         author: author,
@@ -403,7 +408,9 @@ async function postInboxComment(newComment, recieverAuthorId){
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const post = postHistory.posts.id(postId);
     if(!post){ return [{}, 404]; }
-
+    post.commentCount++;
+    await postHistory.save();
+    
     const commentHistory = await CommentHistory.findOne({postId: postId});
     if(!commentHistory){ return [{}, 500]; }
     if(commentHistory.comments.id(commentId)){ return [{}, 400]; }

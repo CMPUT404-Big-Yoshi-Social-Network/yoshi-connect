@@ -505,11 +505,14 @@ async function sharePost(token, authorId, postId, newPost) {
 
 async function updatePost(token, authorId, postId, newPost) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Sends the posts associated with postId for the Author associated with authorId to update the post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: POST 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Token expired or is not authenticated
+            400 Status (Not Found) -- Post details are invalid
+            500 Status (Internal Server Error) -- Unable to fetch post history from database
+            200 Status (OK) -- Returns a JSON of the updated post object
     */
     if (!(await authLogin(token, authorId))) { return [{}, 401]; }
     const title = newPost.title;

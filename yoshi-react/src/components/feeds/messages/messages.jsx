@@ -28,8 +28,11 @@ import axios from 'axios';
 import TopNav from '../navs/top/nav.jsx';
 import LeftNavBar from '../navs/left/nav.jsx';
 import RightNavBar from '../navs/right/nav.jsx';
+import Post from "../../posts/post.jsx";
+import { Pagination } from "react-bootstrap";
 
-function Messages() {
+
+function Messages({currMess}) {
     /**
      * Description: Represents the Messages page that authors will keep their private posts with specific authors 
      * Functions: 
@@ -40,7 +43,14 @@ function Messages() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewer] = useState({ viewerId: '' });
+    const [messengers, setMessengers] = useState([]);
+    const [currentMessenger, setCurrentMessenger] = useState(currMess);
     const navigate = useNavigate();
+
+    const [posts, setPosts] = useState([]);
+    const [page, setPage] = useState(1);
+    const [seeMore, setSeeMore] = useState(false);
+    const size = 5;
 
     useEffect(() => {
         /**
@@ -56,27 +66,182 @@ function Messages() {
                 let viewerId = response.data.authorId;
                 setViewer({ viewerId: viewerId })
             })
-            .catch(err => { 
-                if (err.response.status === 404) { 
-                    setViewer({ viewerId: '' })
+            .catch(err => { });
+        }
+
+        getAuthor();
+    }, [navigate])
+
+    useEffect(() => {
+        /**
+         * Description: Before render, checks the author's account details
+         * Request: POST
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        const getPrivatePosts = async () => {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/authors/' + viewer.viewerId + '/inbox',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: 1,
+                    size: size
+                }
+            }
+            let messengers = []
+            let curr = '';
+            let posts = []
+            await axios
+            .get('/authors/' + viewer.viewerId + '/inbox', config)
+            .then((response) => {
+                posts = response.data.items;
+                if (response.data.items !== undefined && response.data.items.length !== 0) {
+                    for (let i = 0; i < response.data.items.length; i++) {
+                        if (response.data.items[i].postFrom !== undefined) {
+                            messengers.push(response.data.items[i].postFrom);
+                        }
+                    }
+                    if (messengers.length !== 0 && currMess === undefined) {
+                        curr = messengers[0]
+                    } else {
+                        curr = currMess
+                    }
+                }
+            })
+            .catch(err => { });
+
+
+            if (messengers.length !== 0) {
+                if (curr !== '') {
+                    setPosts((posts).filter(post => post.postFrom !== undefined && post.postFrom === curr))
+                } else {
+                    setPosts((posts).filter(post => post.postFrom !== undefined && post.postFrom === currMess))
+                }
+            }
+            setMessengers(messengers);
+            setCurrentMessenger(curr);
+
+            config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/authors/' + viewer.viewerId + '/inbox',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: 2,
+                    size: size
+                }
+            }
+            axios
+            .get('/authors/' + viewer.viewerId + '/inbox', config)
+            .then((response) => { 
+                if (response.data.items !== undefined) { 
+                    const nextSet = response.data.items.filter(post => post.postFrom === curr);
+                    if (nextSet.length !== 0) {
+                        setSeeMore(true); 
+                    }
+                }
+            })
+            .catch(err => { });
+        }
+
+        if (viewer.viewerId !== '') {
+            getPrivatePosts();
+        }
+    }, [currentMessenger, viewer.viewerId, currMess])
+
+    const getMore = () => {
+        /**
+         * Description:  
+         * Request: (if axios is used)    
+         * Returns: 
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        if (!seeMore) {
+            let updated = page + 1;
+            setPage(updated);
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/authors/' + viewer.viewerId + '/inbox',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
+            }
+
+            axios
+            .get('/authors/' + viewer.viewerId + '/inbox', config)
+            .then((response) => { 
+                const nextSet = (response.data.items).filter(post => post.postFrom !== undefined && post.postFrom === currentMessenger);
+                if (nextSet.length !== 0) {
+                    setPosts(posts.concat(nextSet));
+                }
+                if (nextSet.length < size) {
+                    setSeeMore(true);
+                } 
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setPosts(posts);
                 } else if (err.response.status === 401) {
-                    navigate('/unauthorized')
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    // TEMPORARY
+                    setPosts(posts);
                 }
             });
         }
-        getAuthor();
-    }, [navigate])
+        let config = {
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: '/authors/' + viewer.viewerId + '/inbox',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: {
+                page: page + 1,
+                size: size
+            }
+        }
+
+        axios
+        .get('/authors/' + viewer.viewerId + '/inbox', config)
+        .then((response) => { 
+            const nextSet = response.data.items.filter(post => post.postFrom === currentMessenger);
+            if (nextSet.length !== 0) {
+                setSeeMore(true); 
+            }
+        })
+        .catch(err => { });
+    }
 
     return (
         <div>
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={viewer.viewerId}/>
+                    <LeftNavBar authorId={viewer.viewerId} messengers={messengers} currentMessenger={currentMessenger}/>
                 </div>
                 <div className='pubColM'>
                     <div style={{paddingLeft: '1em'}}>
-                        IN CONSTRUCTION
+                        { posts.length === 0 ? 
+                            <div>
+                                <h4>No posts to show.</h4>
+                            </div> : 
+                            <div> 
+                                <Pagination>
+                                    {Object.keys(posts).map((post, idx) => (
+                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]}/>
+                                    ))}  
+                                    { seeMore ? null :
+                                        <div>
+                                            <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
+                                        </div>
+                                    }
+                                </Pagination>  
+                            </div>
+                        }
                     </div>
                 </div>
                 <div className='pubColR'>

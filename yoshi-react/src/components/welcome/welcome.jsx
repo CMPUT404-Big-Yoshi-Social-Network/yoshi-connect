@@ -42,7 +42,6 @@ function Welcome() {
                 <Button className='welcome-button' href='/signup' data-testid="signup">Sign Up</Button>
                 <Button className='welcome-button' href='/login' data-testid="login">Log In</Button>
             </div>
-            
         </div>
     )
 }

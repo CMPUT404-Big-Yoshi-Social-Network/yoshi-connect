@@ -39,7 +39,6 @@ function Posts(props) {
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
-    const [userInfo, setUserInfo] = useState({})
     const size = 20;
     const navigate = useNavigate();
     const [url, setUrl] = useState('');
@@ -57,9 +56,10 @@ function Posts(props) {
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
+        let id = ''
         const getId = () => {
             /**
-             * Description: Sends a GET request to get the current author's id 
+             * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
@@ -67,17 +67,22 @@ function Posts(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                setUserInfo(response.data);
-                let viewerId = response.data.authorId;
-                setViewerId(viewerId);
-                setUrl('/authors/' + viewerId + '/posts/' + type)
+                id = response.data.authorId;
+                setViewerId(id);
             })
             .catch(err => { 
-                console.log(err)
+                if (err.response.status === 401 || err.response.status === 404) { 
+                    setViewerId('') 
+                }
             });
         }
         getId();
-    }, [navigate, props, type]);
+        if (type === 'public/local') {
+            setUrl('/posts/' + type)
+        } else {
+            setUrl('/authors/' + id + '/posts/' + type)
+        }
+    }, [type]);
 
     useEffect(() => {
         /**
@@ -101,8 +106,7 @@ function Posts(props) {
         axios
         .get(url, config)
         .then((response) => {
-            console.log(response.data)
-            setPosts(posts => posts.concat(response.data.items));
+            setPosts(response.data.items);
         })
         .catch(err => {
             if (err.response.status === 404) {
@@ -110,9 +114,7 @@ function Posts(props) {
             } else if (err.response.status === 401) {
                 navigate('/unauthorized');
             } else if (err.response.status === 500) {
-                //TEMPORARY
                 setPosts([]);
-                navigate('/servererror')
             }
         });
         
@@ -170,14 +172,23 @@ function Posts(props) {
             axios
             .get(url, config)
             .then((response) => { 
-                setPosts(posts.concat(response.data.items));
+                let more = []
+                for (let i = 0; i < response.data.items.length; i++) {
+                    more.push(response.data.items[i]);
+                }
+                setPosts(posts.concat(more));
                 if (response.data.items.length < size) {
                     setSeeMore(true);
                 } 
             })
             .catch(err => {
-                if (err.response.status === 401) {
+                if (err.response.status === 404) {
+                    setPosts(posts);
+                } else if (err.response.status === 401) {
                     navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    // TEMPORARY
+                    setPosts(posts);
                 }
             });
         }
@@ -201,9 +212,14 @@ function Posts(props) {
         .catch(err => {
             console.log(err);
             if(err.response){
-                if (err.response.status === 401) {
+                if (err.response.status === 404) {
+                    setPosts(posts);
+                } else if (err.response.status === 401) {
                     navigate('/unauthorized');
-            }
+                } else if (err.response.status === 500) {
+                    // TEMPORARY
+                    setPosts(posts);
+                }
             }
             
         });
@@ -219,11 +235,11 @@ function Posts(props) {
                 <div> 
                     <Pagination>
                         {Object.keys(posts).map((post, idx) => (
-                            <Post key={idx} viewerId={viewerId} post={posts[post]} author={userInfo}/>
+                            <Post key={idx} viewerId={viewerId} post={posts[post]}/>
                         ))}  
                         { seeMore ? null :
-                            <div className='post-seemore'>
-                                <p disabled={seeMore} onClick={getMore}>See More</p>
+                            <div>
+                                <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
                             </div>
                         }
                     </Pagination>  

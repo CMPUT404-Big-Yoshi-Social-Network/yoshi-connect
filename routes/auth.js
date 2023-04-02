@@ -81,12 +81,12 @@ async function removeLogin(req, res) {
 async function checkExpiry(token) {
     /**
     Description: Checks token authentication
-    Associated Endpoint: /admin/dashboard
-                         /authors/:authorId/followers
-                         /authors/:authorId/followings
-                         /authors/:authorId/friends/:foreignId
-                         /authors/:authorId/inbox/requests
-                         /profile/:username
+    Associated Endpoint: /admin/dashboard:
+                         /authors/:authorId/followers:
+                         /authors/:authorId/followings:
+                         /authors/:authorId/friends/:foreignId:
+                         /authors/:authorId/inbox/requests:
+                         /profile/:username:
     Request Type: GET
     Request Body: N/A
     Return: N/A

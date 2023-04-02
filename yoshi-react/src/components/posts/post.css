@@ -44,15 +44,3 @@ Foundation; All Rights Reserved
     width: 100%;
     border-radius: .5em;
 }
-.post-seemore{
-    position: relative;
-    color: white;
-    padding: .1em;
-    background-color: #735DFA;
-    border: #735DFA;
-    border-radius: .5em;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    right: 1em;
-}

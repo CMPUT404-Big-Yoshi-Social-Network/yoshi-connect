@@ -180,32 +180,26 @@ router.post('/', async (req, res) => {
 		}
 	}
 
-	if(req.cookies.token){
-		let authorId;
-		const token = req.cookies.token;
-		if(!token){
-			return res.sendStatus(401);
-		}
-		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
-			if (req.body.author !== undefined) {
-				authorId = req.body.author.id.split("/");
-				authorId = authorId[authorId.length - 1];
-			} else {
-				authorId = req.body.authorId;
-			}
-		}
-		else if(req.body.type == "follow"){
-			authorId = req.body.actor.id;
-			authorId = authorId.split("/");
+	let authorId;
+	if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
+		if (req.body.author !== undefined) {
+			authorId = req.body.author.id.split("/");
 			authorId = authorId[authorId.length - 1];
+		} else {
+			authorId = req.body.authorId;
 		}
-		else{
-			return res.sendStatus(400);
-		}
+	}
+	else if(req.body.type == "follow"){
+		authorId = req.body.actor.id;
+		authorId = authorId.split("/");
+		authorId = authorId[authorId.length - 1];
+	}
+	else{
+		return res.sendStatus(400);
+	}
 
-		if( await authLogin(token, authorId)){
-			authorized = true;
-		}
+	if( await authLogin(token, authorId)){
+		authorized = true;
 	}
 
 	//TODO fix this once and for all

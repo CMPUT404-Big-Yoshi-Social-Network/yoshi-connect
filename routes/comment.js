@@ -41,8 +41,8 @@ async function getComments(postId, authorId, page, size) {
     Associated Endpoint: /authors/:authorId/posts/:postId/comments
     Request Type: GET
     Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb}
-    Return: 404 Status (Not Found) --
-            200 Status (OK) -- Returns comments
+    Return: 404 Status (Not Found) -- Comments for specific post were not found
+            200 Status (OK) -- Successfully fetched and sanitized comments for a specific post from the database
                                     { type: "comments",
                                         author: author,
                                         comment: 'abc',
@@ -147,11 +147,18 @@ async function getComments(postId, authorId, page, size) {
 
 async function getComment(authorId, postId, commentId, token) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets a specific Comment from a specific Post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/comments/:commentId
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89bej, commentId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 404 Status (Not Found) -- Could not find any comment with the specific comment Id
+            200 Status (OK) -- Successfully fetched and sanitized comment associated with comment Id
+                                    { type: "comments",
+                                        author: author,
+                                        comment: 'abc',
+                                        contentType: text/plain,
+                                        published: 2023-03-24T06:53:47.567Z,
+                                        id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments/c890c904cbd14fee8644f1ab7b7fb66b }
     */
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const commentHistory = await CommentHistory.findOne({postId: postId});

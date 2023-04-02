@@ -56,7 +56,7 @@ function Posts(props) {
         if (props.posts !== undefined) {
             setPosts(props.posts)
         }
-    })
+    }, [props])
 
     useEffect(() => {
 

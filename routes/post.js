@@ -207,7 +207,7 @@ async function createPost(token, authorId, postId, newPost) {
     const unlisted = newPost.unlisted;
     const postFrom = newPost.postFrom;
 
-    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
+    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
     }
 
@@ -303,7 +303,6 @@ async function sharePost(token, authorId, postId, newPost) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-
     let authorPromise = getAuthor(authorId);
 
     const title = newPost.title;
@@ -322,19 +321,23 @@ async function sharePost(token, authorId, postId, newPost) {
     } else {
         postFrom = newPost.authorId
     }
+    let og = ''
+    if (newPost.authorId === undefined) {
+        og = post.author.id
+        og = og.split("/");
+        og = oh[og.length - 1];
+    } else {
+        og = newPost.authorId
+    }
     const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
     const origin = newPost.origin;
-
-    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
-        return [[], 400];
-    }
 
     let postHistory = await PostHistory.findOne({authorId: authorId});
     if (!postHistory) { return [[], 404]; }
 
     let source = newPost.author._id + '/posts/' + newPost.postId;
 
-    const originalPH = await PostHistory.findOne({authorId: newPost.author._id});
+    const originalPH = await PostHistory.findOne({authorId: og});
     const originalPost = originalPH.posts.id(newPost.postId);
     originalPost.whoShared.push({
         authorId: authorId, 
@@ -429,7 +432,7 @@ async function updatePost(token, authorId, postId, newPost) {
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
 
-    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false')){
+    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false')){
         return [{}, 400];
     }
 

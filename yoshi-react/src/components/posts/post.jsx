@@ -37,8 +37,7 @@ import Popup from 'reactjs-popup';
 import SharePost from "./sharePost";
 
 function Post({viewerId, post}) {
-    let postId = post.id ? post.id.split('/') : undefined;
-    postId = postId ? postId[postId.length - 1] : undefined;
+    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : undefined;
     let authorId = post.author ? post.author.authorId : undefined;
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
@@ -58,7 +57,7 @@ function Post({viewerId, post}) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        if (viewerId !== null) {
+        if (viewerId !== null && viewerId !== undefined && postId !== null && postId !== undefined) {
             console.log('Debug: <TLDR what the function is doing>') 
             const getImage = () => {
                 axios
@@ -73,7 +72,7 @@ function Post({viewerId, post}) {
             }
             getImage();
         }
-    }, [url, viewerId])
+    }, [url, viewerId, postId])
 
     useEffect(() => {
         /**

@@ -58,10 +58,10 @@ function SearchCard(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                console.log(response)
-                let viewerId = response.data.authorId;
+                let id = response.data.id.split('/')
+                id = id[id.length - 1]
                 let viewer = response.data;
-                setViewerId(viewerId)
+                setViewerId(id)
                 setViewer(viewer)
             })
             .catch(err => { if (err.response.status === 404) { 
@@ -99,15 +99,17 @@ function SearchCard(props) {
     }, [id, viewerId, host]);
 
     useEffect(() => {
-        if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
-            axios
-            .get('/authors/' + viewerId + '/inbox/requests/' + id)
-            .then((response) => { 
-                setRequestButton('Sent');
-            })
-            .catch(err => {
-                if (err.response.status === 404) { }
-            });
+        if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
+            if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
+                axios
+                .get('/authors/' + viewerId + '/inbox/requests/' + id)
+                .then((response) => { 
+                    setRequestButton('Sent');
+                })
+                .catch(err => {
+                    if (err.response.status === 404) { }
+                });
+            }
         }
     }, [viewerId, id, host]);
 
@@ -139,11 +141,38 @@ function SearchCard(props) {
         .then((response) => { })
         .catch(err => { });
     }
+
+    const seePosts = () => {
+        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
+            navigate('/users/' + username);
+        } else {
+            let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/nodes/outgoing/authors/' + id + '/posts',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: 1,
+                    size: 5
+                }
+            }
+            axios
+            .get('/nodes/outgoing/authors/' + id + '/posts', config)
+            .then((response) => { 
+                navigate('/users/' + username, { state: { posts: response.data.items } })
+            })
+            .catch(err => { })
+        }
+    }
+
     return (
         <div>
             { !props && username === undefined ? null : 
                 <div>
                     <p className='search-username'>{username}</p>
+                    <p>{host}</p>
+                    <Button onClick={seePosts} type="submit">View Profile</Button>
                     <Button className='search-button' onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }

@@ -68,6 +68,7 @@ function SearchOutcomes({url}) {
         axios
         .get(url, config)
         .then((response) => { 
+            console.log(response.data.items)
             if (response.data.items.length !== 0 && authors.length === 0) {
                 let authors = []
                 for (let i = 0; i < response.data.items.length; i++) {

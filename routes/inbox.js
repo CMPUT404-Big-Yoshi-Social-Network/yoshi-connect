@@ -389,11 +389,13 @@ async function postInboxComment(newComment, recieverAuthorId){
 
 async function deleteInbox(token, authorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes a request from the inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: DELETE
+    Request Body: {  }
+    Return: 401 Status (Unauthorized) -- Token has expired or is not authenticated
+            404 Status (Not Found) -- No response was found
+            200 Status (OK) -- Successfully deleted the request from the Inbox
     */
     if (! (await authLogin(token, authorId))) { return 401; }
 

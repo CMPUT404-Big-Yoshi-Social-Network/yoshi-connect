@@ -135,7 +135,7 @@ function SearchCard(props) {
             }
         }
         axios
-        .post('/nodes/outgoing/authors/' + id + '/inbox/follow', config)
+        .post(url, config)
         .then((response) => { })
         .catch(err => { });
     }

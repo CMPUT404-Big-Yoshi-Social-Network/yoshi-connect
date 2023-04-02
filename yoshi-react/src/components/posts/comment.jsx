@@ -22,13 +22,6 @@ Foundation; All Rights Reserved
 // Functionality 
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-// Child Components
-import EditComment from "./editComment";
-
-// User Interface
-import Popup from 'reactjs-popup';
 
 function Comment({viewerId, comment, author}) {
     /**
@@ -57,27 +50,29 @@ function Comment({viewerId, comment, author}) {
     }
 
     useEffect(() => {
-
-        axios.get(comment.id + '/likes')
-        .then((response) => {
-            console.log(response);
-            let likes = response.data.likes;
-            for(let i = 0; i < likes.length; i++){
-                let like = likes[i];
-                let likeAuthorId = like.author.id.split("/");
-                likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
-                if(likeAuthorId == viewerId){
-                    setLiked(true);
-                    return
+        function getLikes(){
+            axios.get(comment.id + '/likes')
+            .then((response) => {
+                console.log(response);
+                let likes = response.data.likes;
+                for(let i = 0; i < likes.length; i++){
+                    let like = likes[i];
+                    let likeAuthorId = like.author.id.split("/");
+                    likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
+                    if(likeAuthorId === viewerId){
+                        setLiked(true);
+                        return
+                    }
                 }
-            }
-            setLiked(false);
-            return
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    },[]);
+                setLiked(false);
+                return
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        }
+        getLikes();
+    },[comment.id, viewerId]);
 
     return (
         <div id='comment'>

@@ -60,7 +60,7 @@ function Posts(props) {
         if (type === 'public') {
             setUrl('/posts/' + type);
         }
-    })
+    }, [props.posts, type])
 
     useEffect(() => {
 

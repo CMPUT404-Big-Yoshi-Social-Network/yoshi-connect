@@ -277,16 +277,8 @@ async function postInboxPost(post, recieverAuthorId){
             400 Status (Bad Request) -- No valid type specified in request
             200 Status (OK) -- Successfully posts a post to the Inbox
     */
-    let postFrom = '' // Need to discuss wherther other teams will follow this
-    if (post.authorId === undefined) {
-        postFrom = post.author.id
-        postFrom = postFrom.split("/");
-        postFrom = postFrom[postFrom.length - 1];
-    } else {
-        postFrom = post.authorId
-    }
     if (post.id === undefined) {
-        post = (await createPost(null, post.authorId, post.id, {...post, postFrom: postFrom}))[0];
+        post = (await createPost(null, post.authorId, post.id, {...post}))[0];
     }
     const type = post.type;
     const title = post.title;

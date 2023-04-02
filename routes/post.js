@@ -215,7 +215,6 @@ async function createPost(token, authorId, postId, newPost) {
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const postTo = newPost.postTo;
 
     if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
@@ -250,8 +249,7 @@ async function createPost(token, authorId, postId, newPost) {
         commentCount: 0,
         published: published,
         visibility: visibility,
-        unlisted: unlisted,
-        postTo: postTo
+        unlisted: unlisted
     };
 
     postHistory.posts.push(post);
@@ -401,14 +399,6 @@ async function sharePost(token, authorId, postId, newPost) {
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    let postFrom = '';
-    if (newPost.authorId === undefined) {
-        postFrom = newPost.source
-        postFrom = postFrom.split("/");
-        postFrom = postFrom[postFrom.length - 3];
-    } else {
-        postFrom = newPost.authorId
-    }
     const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
     const origin = newPost.origin;
 
@@ -417,15 +407,13 @@ async function sharePost(token, authorId, postId, newPost) {
 
     let source = newPost.author._id + '/posts/' + newPost.postId;
 
-    const originalPH = await PostHistory.findOne({authorId: postFrom});
-    if (originalPH) {
-        const originalPost = originalPH.posts.id(newPost.postId);
-        originalPost.whoShared.push({
-            authorId: authorId, 
-            host: process.env.DOMAIN_NAME,
-            postId: sharedPostId
-        });
-    }
+    const originalPH = await PostHistory.findOne({authorId: og});
+    const originalPost = originalPH.posts.id(newPost.postId);
+    originalPost.whoShared.push({
+        authorId: authorId, 
+        host: process.env.DOMAIN_NAME,
+        postId: sharedPostId
+    });
 
     let post = {
         _id: sharedPostId,
@@ -435,6 +423,7 @@ async function sharePost(token, authorId, postId, newPost) {
         description: description,
         contentType: contentType,
         content: content,
+        authorId: authorId,
         categories: categories,
         likeCount: 0,
         commentCount: 0,
@@ -443,7 +432,6 @@ async function sharePost(token, authorId, postId, newPost) {
         unlisted: unlisted,
         whoShared: [],
         shared: true,
-        postFrom: postFrom,
         author: null
     };
 
@@ -516,7 +504,7 @@ async function updatePost(token, authorId, postId, newPost) {
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
 
-    if(!title || !description || !contentType || !content || !categories){
+    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false')){
         return [{}, 400];
     }
 
@@ -552,9 +540,8 @@ async function updatePost(token, authorId, postId, newPost) {
             commentCount: post.commentCount,
             published: post.published,
             visibility: visibility,
-            shared: post.shared,
-            unlisted: unlisted,
-            postFrom: post.postFrom
+            shared: post.shared, 
+            unlisted: unlisted
         };
         await (new PublicPost(publicPost)).save();
     }
@@ -603,8 +590,6 @@ async function deletePost(token, authorId, postId) {
             404 Status (Not Found) -- Post was not found
             200 Status (OK) -- Successfully deleted post object from database
     */
-    console.log(token, authorId)
-
     if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});

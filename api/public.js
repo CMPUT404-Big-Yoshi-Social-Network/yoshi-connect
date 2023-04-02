@@ -87,7 +87,6 @@ const router = express.Router({mergeParams: true});
  *                  commentCount: 100
  *                  published: 2023-03-27T06:43:18.423Z
  *                  visibility: PUBLIC
- *                  postTo: ""
  *                  unlisted: false
  */
 router.get('/', async (req, res) => {

@@ -70,9 +70,13 @@ function Posts(props) {
                 id = response.data.authorId;
                 setViewerId(id);
                 if (type === 'public') {
-                    setUrl('/posts/' + type)
-                } else {
-                    setUrl('/authors/' + id + '/posts/' + type)
+                    setUrl('/posts/' + type);
+                }
+                else if (type === 'inbox') {
+                    setUrl('/authors/' + id + '/inbox');
+                }
+                else {
+                    setUrl('/authors/' + id + '/posts/' + type);
                 }
             })
             .catch(err => { 

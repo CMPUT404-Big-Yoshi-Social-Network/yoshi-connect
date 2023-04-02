@@ -110,6 +110,59 @@ async function getInbox(token, authorId, page, size){
     else{
         posts = posts[0].posts_array
     }
+
+    let promiseQueue = [];
+    for(let i = 0; i < posts.length; i++){
+        promiseQueue.push(axios.get(posts[i]._id)
+        .then((response) => {
+            console.log(response.data);
+            return response.data
+        })
+        .catch((err) => {
+            console.log(err);
+        }))
+    }
+
+    for(let i = 0; i < posts.length; i++){
+        let updatedPost = await promiseQueue[i];
+        let post;
+        if(!updatedPost){
+            post = posts[i];
+        }
+        else{
+            post = updatedPost;
+            post.author._id = post.author.id;
+            post.commentCount = post.count
+        }
+        posts[i] = {
+            "type": "post",
+            "title": post.title,
+            "id": !updatedPost ? post.author._id + '/posts/' + post._id : post.id,
+            "source": post.source,
+            "origin": post.origin,
+            "description": post.description,
+            "contentType": post.contentType,
+            "content": post.content,
+            "author": {
+                type: "author",
+                id: post.author._id,
+                host: post.author.host,
+                displayName: post.author.displayName,
+                profileImage: post.author.profileImage,
+                url: post.author.url,
+                github: post.author.github,
+            },
+            "categories": post.categories,
+            "count": post.commentCount ? post.commentCount : 0,
+            "likeCount": post.likeCount ? post.likeCount : 0,
+            "comments": post.author._id + '/posts/' + post._id + '/comments/',
+            "commentSrc": post.commentSrc,
+            "published": post.published,
+            "visibility": post.visibility,
+            "unlisted": post.unlisted,
+        }
+    }
+
     let response = {
         type: "inbox",
         author: process.env.DOMAIN_NAME + "authors/" + authorId,

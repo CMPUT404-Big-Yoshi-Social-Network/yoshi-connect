@@ -302,11 +302,13 @@ async function createComment(token, authorId, postId, newComment) {
 
 async function deleteComment(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes a comment on a specific post
+    Associated Endpoint: N/A
+    Request Type: DELETE
+    Request Body: (for example: { commentId: 6d45f566w5498e78tgy436h48dh96a })
+    Return: 200 Status (OK) -- Return a JSON with
+                                        { status: success,
+                                            numComments: numComments }
     */
     let success = false;
     let numComments = 0;
@@ -343,11 +345,11 @@ async function deleteComment(req, res){
 
 async function editComment(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Edits a comment on a specific post
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { commentId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 200 Status (OK) -- Returns a JSON { status: success }
     */
     let success = false;
     let publicPost = await PublicPost.find();

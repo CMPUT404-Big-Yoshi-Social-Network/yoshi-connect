@@ -513,16 +513,20 @@ async function updatePost(token, authorId, postId, newPost) {
     const categories = newPost.categories;
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
+    console.log(newPost)
 
-    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false')){
+    if(!title || !description || !contentType || !content || !categories){
         return [{}, 400];
     }
 
+    console.log(authorId)
     const postHistory = await PostHistory.findOne({authorId: authorId});
+    console.log(postHistory)
 
     if (!postHistory) { return [{}, 500]; }
 
     let post = postHistory.posts.id(postId);
+    console.log(post)
     if(unlisted == 'false' && visibility == "PUBLIC" && !post.unlisted && post.visibility == "PUBLIC") {
         let publicPosts = await PublicPost.findOne({_id: postId}).clone();
         if(!publicPosts) return [{}, 500];

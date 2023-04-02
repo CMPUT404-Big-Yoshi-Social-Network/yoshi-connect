@@ -215,15 +215,15 @@ function Post({viewerId, post, author}) {
         })
         .catch((err) => { 
             if(err.response){
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                } else if (err.response.status === 400) {
-                    navigate('/badrequest')
-                } else if (err.response.status === 404) {
-                    navigate('/notfound')
-                } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
-                }
+                // if (err.response.status === 401) {
+                //     navigate('/unauthorized')
+                // } else if (err.response.status === 400) {
+                //     navigate('/badrequest')
+                // } else if (err.response.status === 404) {
+                //     navigate('/notfound')
+                // } else if (err.response.status === 500) {
+                //     console.log('500 PAGE')
+                // }
             }
         });
     }

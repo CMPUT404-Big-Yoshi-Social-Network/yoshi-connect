@@ -177,11 +177,11 @@ async function addLiked(authorId, objectId){
 //TODO Refactor this to work
 async function deleteLike(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes like from post / comment
+    Associated Endpoint: N/A
+    Request Type: DELETE
+    Request Body: N/A
+    Return: 200 Status (OK) -- Successfully deleted the like from a post / comment
     */
     let success = false;
     let numLikes = 0;

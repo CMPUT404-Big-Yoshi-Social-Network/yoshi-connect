@@ -189,9 +189,9 @@ function EditPost({viewerId, post}) {
                 <br/>
                 <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} value={data.visibility || 'Public '} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
-                            <option value={"Public"}>Public</option>
-                            <option value={"Friends"}>Friends</option>
-                            <option value={"Private"}>Private</option>
+                            <option value={"PUBLIC"}>Public</option>
+                            <option value={"FRIENDS"}>Friends</option>
+                            <option value={"PRIVATE"}>Private</option>
                 </select>
                 <br/>
                 <div className={"postMenuInput"}>

@@ -446,6 +446,34 @@ async function deleteInbox(token, authorId){
     return 200;
 }
 
+async function sendToForeignInbox(url, auth, data){
+    let config = {
+        url: url + "/inbox",
+        method: "post",
+        headers:{
+            "Authorization": auth,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: data
+    }
+    //Send a post request to that node with the proper auth
+    //The post should contain the contents of whatever is meant to be 
+    let response = "";
+    let status;
+    await axios.request(config)
+    .then((res) => {
+        console.log(res.data);
+        response = res.data;
+        status = 200;
+    })
+    .catch((err) => {
+        console.log(err.response)
+        status = err.response.status;
+    })
+
+    return [response, status];
+}
+
 module.exports = {
     getInbox,
     deleteInbox,

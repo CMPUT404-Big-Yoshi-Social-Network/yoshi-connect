@@ -169,8 +169,6 @@ router.post('/', async (req, res) => {
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
-		console.log(authHeader)
-
 		const [scheme, data] = authHeader.split(" ");
 		if(scheme === "Basic") {
 			const credential = Buffer.from(data, 'base64').toString('ascii');
@@ -179,11 +177,12 @@ router.post('/', async (req, res) => {
 				authorized = true;
 			} 
 		}
-	} else {
-		if (await authLogin(req.cookies.token, authorId)) {
-			authorized = true;
-		}
 	}
+	// } else {
+	// 	if (await authLogin(req.cookies.token, authorId)) {
+	// 		authorized = true;
+	// 	}
+	// }
 
 	let authorId;
 	if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){

@@ -403,9 +403,18 @@ router.post('/:authorId', async (req, res) => {
  */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  let authors = await Author.find({username: username}).clone();
-  if (!authors) { 
-    return res.sendStatus(404)
+  let authors = []
+  let localAuthor = await Author.findOne({username: username}).clone();
+  if (localAuthor) { 
+    authors.push({
+      displayName: localAuthor.username,
+      github: localAuthor.github,
+      host: 'https://yoshi-connect.herokuapp.com/',
+      id: 'https://yoshi-connect.herokuapp.com/authors/' + localAuthor._id,
+      profileImage: localAuthor.profileImage,
+      type: 'author',
+      url: 'https://yoshi-connect.herokuapp.com/authors/' + localAuthor._id
+    })
   }
 
   const outgoings = await OutgoingCredentials.find().clone();
@@ -433,7 +442,7 @@ router.get('/search/:username', async (req, res) => {
                       'Authorization': auth,
                       'Content-Type': 'application/json'
                   }
-                };          
+                };      
             } else {
                 var config = {
                   host: outgoings[i].url,
@@ -458,9 +467,11 @@ router.get('/search/:username', async (req, res) => {
                     items = res.data.data
                   }
               }
-              for (let j = 0; j < items.length; j++) {
-                if (items[j].displayName == username) {
-                  authors.push(items[j]);
+              if (items !== undefined) {
+                for (let j = 0; j < items.length; j++) {
+                  if (items[j].displayName == username) {
+                    authors.push(items[j]);
+                  }
                 }
               }
           })

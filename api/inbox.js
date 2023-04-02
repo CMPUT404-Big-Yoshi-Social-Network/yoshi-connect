@@ -184,6 +184,11 @@ router.post('/', async (req, res) => {
 	}
 
 	let authorId;
+
+	if (req.body === undefined || req.body === null || req.body.type === undefined || req.body.type === null) {
+		return res.sendStatus(400);
+	}
+
 	if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
 		if (req.body.author !== undefined) {
 			authorId = req.body.author.id.split("/");

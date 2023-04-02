@@ -173,6 +173,7 @@ router.post('/', async (req, res) => {
 		}
 	}
 
+	const type = req.body.type.toLowerCase();
 	if(req.cookies.token){
 		let authorId;
 		const token = req.cookies.token;
@@ -234,9 +235,7 @@ router.post('/', async (req, res) => {
 		return res.sendStatus(400);
 	}
 	
-
 	//NEED to fix req.body.author.id to the id of the inbox haver
-	const type = req.body.type.toLowerCase();
 	let response, status;
 	if(type === "post"){
 		//For other servers to send their authors posts to us

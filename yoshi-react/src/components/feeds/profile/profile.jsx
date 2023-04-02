@@ -49,13 +49,19 @@ function Profile() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
-    const {state} = useLocation();
+    let {state} = useLocation();
     const { username } = useParams();
+    if (state === null) {
+        state = {
+            isRemote: false
+        }
+    }
     const [profileInfo, setProfileInfo] = useState({
         github: null,
         profileImage: null,
         about: null,
-        pronouns: null
+        pronouns: null,
+        isRemote: state.isRemote
     })
     const [personal, setPersonal] = useState({
         person: null,
@@ -68,6 +74,7 @@ function Profile() {
     const [otherUrl, setOtherUrl] = useState([]);
     const navigate = useNavigate();
     let exists = useRef(null);
+
     useEffect(() => {
         /**
          * Description: Get the viewership details

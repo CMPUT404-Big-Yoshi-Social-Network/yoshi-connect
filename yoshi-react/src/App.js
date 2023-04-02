@@ -57,6 +57,9 @@ import ApiDocs from "./components/apiDocs/apiDocs.jsx";
 // Image
 import Image from "./components/image/image.jsx";
 
+// GitHub
+import GitHub from "./components/feeds/settings/github.jsx"
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -129,6 +132,10 @@ const router = createBrowserRouter([
   {
     path: '/authors/:authorId/posts/:postId/image',
     element: <Image/>
+  },
+  {
+    path: '/github',
+    element: <GitHub/>
   }
 ])
   

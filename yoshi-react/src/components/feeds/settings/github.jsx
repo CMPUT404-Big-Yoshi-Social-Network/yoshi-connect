@@ -20,12 +20,17 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { getUserActivity } from "gh-recent-activity";
+// import GitHubFeed from 'react-github-activity'
 
 // Child Component
-import TopNav from '../feeds/topNav';
-import LeftNavBar from '../feeds/leftNav.jsx';
-import RightNavBar from '../feeds/rightNav.jsx';
+import TopNav from '../navs/top/nav.jsx';
+import LeftNavBar from '../navs/left/nav.jsx';
+import RightNavBar from '../navs/right/nav.jsx';
+import Activity from "./githubActivity.jsx";
 
 // Styling
 import './github.css';
@@ -37,16 +42,66 @@ function GitHub() {
      *     - useEffect(): Before rendering, checks if the author is logged in to authorize routing
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
+    const navigate = useNavigate();
+    const [data, setData] = useState({
+        viewer: "",
+        github: "",
+        activities: []
+    }) 
+
+
+    
+    useEffect(() => {
+        /**
+         * Description: Before render, checks the author's account details
+         * Request: POST
+         * Returns: N/A
+         */
+        const getAuthor = () => {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/userinfo',
+                headers: { 'Content-Type': 'application/json' }
+            }
+
+            axios
+            .get('/userinfo', config)
+            .then((response) => {
+                setData({...data, veiwer: response.data.authorId, github: response.data.github})
+                if (response.data.github !== "") {
+                    getUserActivity(response.data.github).then((res) => {
+                        for (let i = 0; i < res.length; i++) {
+                            data.activities.push(res[i])
+                        }
+                    })
+                }
+            })
+            .catch(err => { 
+                if (err.response.status === 404) { 
+                    setData({...data, veiwer: "", github: ""})
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                }   
+            });
+        }
+        getAuthor();
+    }, [navigate])
+
     return (
         <div>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.min.css"></link>
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={viewer.viewerId}/>
+                    <LeftNavBar authorId={data.viewer}/>
                 </div>
                 <div className='pubColM'>
-                    UNDER CONSTRUCTION
+                <img src={"https://ghchart.rshah.org/" + data.github} alt="" style={{margins: "10em", padding: "1em" }}/>
+                {console.log(data.activities)}
+                {Object.keys(data.activities).map((activity, idx) => (
+                    <Activity key={idx} activity={data.activities[activity]}/>
+                ))} 
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

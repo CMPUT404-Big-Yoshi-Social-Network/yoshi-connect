@@ -73,11 +73,11 @@ function Post({viewerId, post, author}) {
             })
         }
         getImage();
-    }, [])
+    }, [authorId, postId])
 
     useEffect(() => {    
         getLikes();
-    }, []);
+    });
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
@@ -227,7 +227,7 @@ function Post({viewerId, post, author}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" ><img className={"image"} src={image} alt=""/></a>}
+                    { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
                     <p>{published}</p>
                     <br></br>

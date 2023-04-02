@@ -151,8 +151,8 @@ async function getInbox(token, authorId, page, size){
                 github: post.author.github,
             },
             "categories": post.categories,
-            "count": post.commentCount,
-            "likeCount": post.likeCount,
+            "count": post.commentCount ? post.commentCount : 0,
+            "likeCount": post.likeCount ? post.likeCount : 0,
             "comments": post.author._id + '/posts/' + post._id + '/comments/',
             "commentSrc": post.commentSrc,
             "published": post.published,
@@ -178,6 +178,17 @@ async function postInboxPost(post, recieverAuthorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
+    let postFrom = '' // Need to discuss wherther other teams will follow this
+    if (post.authorId === undefined) {
+        postFrom = post.author.id
+        postFrom = postFrom.split("/");
+        postFrom = postFrom[postFrom.length - 1];
+    } else {
+        postFrom = post.authorId
+    }
+    if (post.id === undefined) {
+        post = (await createPost(null, post.authorId, post.id, {...post, postFrom: postFrom}))[0];
+    }
     const type = post.type;
     const title = post.title;
     const id = post.id;
@@ -194,15 +205,12 @@ async function postInboxPost(post, recieverAuthorId){
     const authorGithub = post.author.github;
     const authorProfileImage = post.author.profileImage;
     const categories = post.categories;
-    const count = post.count;
     const published = post.published;
-    const postTo = post.postTo // Need to discuss wherther other teams will follow this
-    //Used to mark if this is a private message or a follower post.
     const visibility = post.visibility;
     const unlisted = post.unlisted;
 
     if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||
-        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || !count || 
+        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || 
         !published || !visibility || !unlisted)
     {
         return [{}, 400];

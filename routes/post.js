@@ -25,6 +25,7 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { PostHistory, PublicPost, Post, Image, Inbox } = require('../scheme/post.js');
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
+const { OutgoingCredentials } = require('../scheme/server.js')
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
 
@@ -275,7 +276,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if(unlisted == "false" || unlisted == false){
+    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             /*
@@ -300,18 +301,19 @@ async function createPost(token, authorId, postId, newPost) {
             delete post._id;
 
             //Send the post to other followers 
-            const follower = followers[i];
-            const hosts = getHostNames();
+            const follower = followers.followers[i];
+            const hosts = await getHostNames();
             //TODO NEEDS TESTING
             let followerHost = follower.id.split("/");
             followerHost = followerHost[2];
             for(let i = 0; i < hosts.length; i++){
-                if(i ==0 && followerHost == followerHost[i]){
+                if(i == 0 && followerHost == hosts[i].host){
                     post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
-                    const follower = followers.followers[i].authorId;
-                    const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+                    const followerId = followers.followers[i].authorId;
+                    const inbox = await Inbox.findOne({"authorId": followerId}).clone();
 
                     inbox.posts.push(post);
+                    inbox.num_posts++;
                     await inbox.save();
                 }
                 else if(followerHost == followerHost[i]){
@@ -358,6 +360,126 @@ async function getHostNames(){
     }
 
     return hosts;
+}
+
+async function sharePost(token, authorId, postId, newPost) {
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
+    let authorPromise = getAuthor(authorId);
+
+    const title = newPost.title;
+    const description = newPost.description;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const published = new Date().toISOString();
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    let postFrom = '';
+    if (newPost.authorId === undefined) {
+        postFrom = post.author.id
+        postFrom = postFrom.split("/");
+        postFrom = postFrom[postFrom.length - 1];
+    } else {
+        postFrom = newPost.authorId
+    }
+    let og = ''
+    if (newPost.authorId === undefined) {
+        og = post.author.id
+        og = og.split("/");
+        og = oh[og.length - 1];
+    } else {
+        og = newPost.authorId
+    }
+    const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
+    const origin = newPost.origin;
+
+    let postHistory = await PostHistory.findOne({authorId: authorId});
+    if (!postHistory) { return [[], 404]; }
+
+    let source = newPost.author._id + '/posts/' + newPost.postId;
+
+    const originalPH = await PostHistory.findOne({authorId: og});
+    const originalPost = originalPH.posts.id(newPost.postId);
+    originalPost.whoShared.push({
+        authorId: authorId, 
+        host: process.env.DOMAIN_NAME,
+        postId: sharedPostId
+    });
+
+    let post = {
+        _id: sharedPostId,
+        title: title,
+        source: source,
+        origin: origin,
+        description: description,
+        contentType: contentType,
+        content: content,
+        authorId: authorId,
+        categories: categories,
+        likeCount: 0,
+        commentCount: 0,
+        published: published,
+        visibility: visibility,
+        unlisted: unlisted,
+        whoShared: [],
+        shared: true,
+        postFrom: postFrom,
+        author: null
+    };
+
+    postHistory.posts.push(post);
+    postHistory.num_posts = postHistory.num_posts + 1;
+
+    let savePostPromise = postHistory.save();
+
+    let likes = LikeHistory({
+        type: "post",
+        Id: sharedPostId,
+        likes: [],
+    }).save();
+
+    let comments = CommentHistory({
+        postId: sharedPostId,
+        comments: [],
+    }).save();
+
+    let [author, status] = await authorPromise;
+    if (status != 200) return [{}, 500];
+
+    if (visibility == 'PUBLIC') {
+        post.author = {
+            _id: author.id,
+            displayName: author.displayName,
+            profileImage: author.profileImage,
+            pronouns: author.pronouns
+        }
+        const publicPost = new PublicPost(post);
+        await publicPost.save();
+    }
+
+    //TODO make this faster
+    //if not unlisted send to all followers 
+    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+            inbox.posts.push(post);
+            await inbox.save();
+        }
+    }
+
+    await likes;
+    await comments;
+    await savePostPromise;
+    return await getPost(sharedPostId, authorId, author);
 }
 
 async function updatePost(token, authorId, postId, newPost) {
@@ -739,5 +861,6 @@ module.exports={
     fetchOtherPosts,
     uploadImage,
     getImage,
-    editImage
+    editImage,
+    sharePost
 }

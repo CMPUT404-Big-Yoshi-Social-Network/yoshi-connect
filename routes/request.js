@@ -40,8 +40,58 @@ async function senderAdded(authorId, foreignId, req, res) {
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     let success = true;
-
+    let isLocal = true;
     const actor = await Author.findOne({_id: authorId});
+    if (actor === null || actor === undefined) {
+        // Must be from another server
+        const outgoings = await OutgoingCredentials.find().clone();
+
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].allowed) {
+                const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+                if (outgoings[i].auth === 'userpass') {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors/' + authorId + '/',
+                        method: 'GET',
+                        auth: auth,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                } else {
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors/' + authorId + '/',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                      };              
+                  } else {
+                      var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors' + authorId + '/',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                      };
+                  }
+                }
+          
+                await axios.request(config)
+                .then( res => {
+                    actor = res.data 
+                })
+                .catch( error => { })
+            }
+        }
+        isLocal = false;
+    }
     const object = await Author.findOne({_id: foreignId});
     let uuidFollow = String(crypto.randomUUID()).replace(/-/g, "");
     let uuidF = String(crypto.randomUUID()).replace(/-/g, "");
@@ -80,7 +130,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     }
 
     await Follower.findOne({authorId: foreignId}, async function(err, follower){
-        const newFollower = {}
+        let newFollower = {}
         if (actor.username === undefined) {
             newFollower = {
                 _id: uuidF,

@@ -28,7 +28,7 @@ import { useNavigate } from 'react-router-dom';
 // Child Component 
 import Comments from './comments';
 import EditPost from "./edit";
-
+import SharePost from "./sharePost";
 // Styling
 import './post.css';
 
@@ -249,7 +249,10 @@ function Post({viewerId, post, author}) {
                            <Comments key={commentCreated} viewerId={viewerId} url={post.id + '/comments'} author={author}> </Comments>
                         </div>}
                         <br></br>
-                    {
+                    <div>
+                    <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
+                </div>
+                {
                         post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
                     }    
                     {

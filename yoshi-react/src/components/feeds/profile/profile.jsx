@@ -203,7 +203,7 @@ function Profile() {
                 if (err.response.status === 404) { exists.current = false; }
             });
         }
-    }, [username, exists, personal, state.isRemote]);
+    }, [personal, state.isRemote]);
 
     useEffect(() => {
         /**
@@ -236,7 +236,7 @@ function Profile() {
                 if (err.response.status === 500) { navigate('/servererror') }
             });
         }
-    }, [navigate, username, personal, exists, requestButton, state.isRemote])
+    }, [navigate, personal, exists, state.isRemote])
 
     const SendRequest = () => {
         /**

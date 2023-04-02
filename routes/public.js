@@ -56,11 +56,6 @@ async function getPublicLocalPosts(page, size) {
             }
         },
         {
-            $match: {
-                'unlisted': false
-            }
-        },
-        {
             $sort: { "published": -1 }
         },
         {
@@ -80,12 +75,17 @@ async function getPublicLocalPosts(page, size) {
     for(let i = 0; i < publicPosts.length; i++){
         let post = publicPosts[i];
         if (post.author != undefined) {
-            post.author.authorId = post.author._id != undefined ? post.author._id.split("/") : post.author.authorId ;
+            post.author.authorId = post.author._id != undefined ? post.author._id.split("/") : post.author.authorId;
             post.author.authorId = post.author._id != undefined ? post.author.authorId[post.author.authorId.length - 1] : post.author.authorId;
+            post.author.id = post.author._id;
             post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
             post.comments = post.id + "/comments";
+            post.count = post.commentCount;
+            delete post.commentCount;
             delete post._id;
+            delete post.author._id;
         }
+        publicPosts[i] = post;
     }
 
     response = {
@@ -100,6 +100,7 @@ async function getPublicPostsXServer(page, size){
     let [response, statusCode] = await getPublicLocalPosts(page, size)
     const outgoings = await OutgoingCredentials.find().clone();
     
+    let promiseQueue = [];
     for(let i = 0; i < outgoings.length; i++) {
         const outgoing = outgoings[i];
         const host = outgoing.url;
@@ -110,8 +111,8 @@ async function getPublicPostsXServer(page, size){
         else if(host == "https://sociallydistributed.herokuapp.com"){
             endpoint = "/posts/public"
         }
-        else if(host == "https://bigger-yoshi.herokuapp.com"){
-            endpoint = "/api/posts/public";
+        else if(host == "https://bigger-yoshi.herokuapp.com/api"){
+            endpoint = "/posts/public";
         }
         const auth = outgoing.auth;
         var config = {
@@ -129,17 +130,23 @@ async function getPublicPostsXServer(page, size){
             }
         }
 
-        await axios.request(config)
-        .then((res) => {
-            if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
-                response.items = response.items.concat(res.data.items);
-            }
-            else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
-                response.items = response.items.concat(res.data);
-            }
-        })
-        .catch((err) => {
-        })
+        promiseQueue.push(
+            axios.request(config)
+            .then((res) => {
+                if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
+                    response.items = response.items.concat(res.data.items);
+                }
+                else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
+                    response.items = response.items.concat(res.data);
+                }
+            })
+            .catch((err) => {
+            })
+        )
+    }
+
+    for(let i = 0; i < promiseQueue.length; i++){
+        await promiseQueue[i];
     }
 
     response.items.sort((post1, post2) => {

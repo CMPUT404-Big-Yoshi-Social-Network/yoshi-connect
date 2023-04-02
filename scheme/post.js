@@ -67,7 +67,7 @@ const publicPostAuthorsScheme = new Schema({
 
 const publicScheme = new Schema({
     _id: String, //postId
-    author: publicPostAuthorsScheme,
+    author: basicAuthorScheme,
     origin: String,
     source: String,
     title: String,

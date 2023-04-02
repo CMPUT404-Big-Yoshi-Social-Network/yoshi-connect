@@ -203,9 +203,7 @@ async function createPost(token, authorId, postId, newPost) {
             500 Status (Internal Server Error) -- Unable to confrim post in database
             200 Status (OK) -- Returns Authour's post
     */
-    if (token !== null) {
-        if(! (await authLogin(token, authorId))){ return [[], 401]; }
-    }
+    if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
     let authorPromise = getAuthor(authorId);
 
@@ -213,13 +211,13 @@ async function createPost(token, authorId, postId, newPost) {
     const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
-    const categories = newPost.categories;
+    const categories = [''];
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const postFrom = newPost.postFrom;
+    const postTo = newPost.postTo;
 
-    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
+    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
     }
 
@@ -251,11 +249,9 @@ async function createPost(token, authorId, postId, newPost) {
         likeCount: 0,
         commentCount: 0,
         published: published,
-        whoShared: [],
         visibility: visibility,
         unlisted: unlisted,
-        shared: false,
-        postFrom: postFrom
+        postTo: postTo
     };
 
     postHistory.posts.push(post);
@@ -277,12 +273,15 @@ async function createPost(token, authorId, postId, newPost) {
     let [author, status] = await authorPromise;
     if (status != 200) return [{}, 500];
 
-    if (visibility == 'PUBLIC' && (postFrom == '' || postFrom == undefined)) {
+    if (visibility == 'PUBLIC') {
         post.author = {
             _id: author.id,
+            host: author.host,
             displayName: author.displayName,
+            url: author.url,
+            github: author.github,
             profileImage: author.profileImage,
-            pronouns: author.pronouns
+            pronouns: author.pronouns,
         }
         const publicPost = new PublicPost(post);
         await publicPost.save();
@@ -293,14 +292,66 @@ async function createPost(token, authorId, postId, newPost) {
     if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
+            /*
+            post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
             const follower = followers.followers[i].authorId;
             const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-
             inbox.posts.push(post);
             await inbox.save();
+            */
+            post.type = "post";
+            post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+            post.author = {
+                type: "author",
+                id: author.id,
+                host: author.host,
+                displayName: author.displayName,
+                url: author.url,
+                github: author.github,
+                profileImage: author.profileImage,
+            };
+            delete post._id;
+
+            //Send the post to other followers 
+            const follower = followers.followers[i];
+            const hosts = await getHostNames();
+            //TODO NEEDS TESTING
+            let followerHost = follower.id.split("/");
+            followerHost = followerHost[2];
+            for(let i = 0; i < hosts.length; i++){
+                if(i == 0 && followerHost == hosts[i].host){
+                    post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+                    const followerId = followers.followers[i].authorId;
+                    const inbox = await Inbox.findOne({"authorId": followerId}).clone();
+
+                    inbox.posts.push(post);
+                    inbox.num_posts++;
+                    await inbox.save();
+                }
+                else if(followerHost == followerHost[i]){
+                    let host = followerHost[i];
+                    let config = {
+                        url: follower.id + "/inbox",
+                        method: "post",
+                        headers:{
+                            "Authorization": host.auth,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data: post
+                    }
+
+                    axios.request(config)
+                    .then((request) => {
+                        console.log(request.data);
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                }
+            }
         }
     }
-
+        
     await likes;
     await comments;
     await savePostPromise;

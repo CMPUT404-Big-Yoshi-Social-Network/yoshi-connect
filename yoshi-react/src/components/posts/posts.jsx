@@ -69,7 +69,7 @@ function Posts(props) {
             .then((response) => {
                 id = response.data.authorId;
                 setViewerId(id);
-                if (type === 'public/local') {
+                if (type === 'public') {
                     setUrl('/posts/' + type)
                 } else {
                     setUrl('/authors/' + id + '/posts/' + type)
@@ -104,8 +104,7 @@ function Posts(props) {
             }
         }
 
-        axios
-        .get(url, config)
+        axios.get(url, config)
         .then((response) => {
             setPosts(response.data.items);
         })
@@ -131,8 +130,7 @@ function Posts(props) {
             }
         }
 
-        axios
-        .get(url, config)
+        axios.get(url, config)
         .then((response) => { 
             if (response.data[0]) { setSeeMore(true); }
         })
@@ -170,8 +168,7 @@ function Posts(props) {
                 }
             }
 
-            axios
-            .get(url, config)
+            axios.get(url, config)
             .then((response) => { 
                 let more = []
                 for (let i = 0; i < response.data.items.length; i++) {

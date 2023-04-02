@@ -88,7 +88,7 @@ function PublicFeed() {
                     <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts type={'public/local'}/>               
+                    <Posts type={'public'}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

@@ -116,15 +116,9 @@ function GitHub() {
          * Returns: N/A
          */
         const getAuthor = () => {
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/userinfo',
-                headers: { 'Content-Type': 'application/json' }
-            }
 
             axios
-            .get('/userinfo', config)
+            .get('/userinfo')
             .then((response) => {
                 setData({...data, veiwer: response.data.authorId, github: response.data.github, activities: test, pfp: test[0].user.img})
                 // if (response.data.github !== "") {

@@ -207,10 +207,6 @@ router.post('/', async (req, res) => {
 		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
 		return res.sendStatus(401);
 	}
-	
-	else if(!authorized){
-		return res.sendStatus(401);
-	}
 
 	
 	const type = req.body.type.toLowerCase();

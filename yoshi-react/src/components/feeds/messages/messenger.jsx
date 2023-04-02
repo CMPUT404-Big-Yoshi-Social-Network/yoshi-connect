@@ -31,12 +31,24 @@ function Messenger(props) {
     console.log('Debug: <TLDR what the function is doing>')
     const [author, setAuthor] = useState()
     useEffect(() => {
-        axios
-        .get('/authors/' + props.currentMessenger)
-        .then((response) => {
-            setAuthor(response.data)
-        })
-        .catch(err => { });
+        let id = props.currentMessenger.split('/')
+        id = id[id.length - 1]
+        let host = props.currentMessenger.split('/authors/')
+        if (host === 'http://www.distribution.social' || host === 'https://sociallydistributed.herokuapp.com' || host === 'https://bigger-yoshi.herokuapp.com') {
+            axios
+            .get('/outgoing/authors/' + id)
+            .then((response) => {
+                setAuthor(response.data)
+            })
+            .catch(err => { });
+        } else {
+            axios
+            .get('/authors/' + id)
+            .then((response) => {
+                setAuthor(response.data)
+            })
+            .catch(err => { });
+        }
     }, [props]);
     return (
         <div id='messenger'>

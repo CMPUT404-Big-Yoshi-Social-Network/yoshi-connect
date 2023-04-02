@@ -36,9 +36,11 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
+    let postId = post.id ? post.id.split('/') : undefined;
+    postId = postId ? postId[postId.length - 1] : undefined;
+    let authorId = post.author ? post.author.id.split('/') : undefined;
+    authorId = authorId ? authorId[authorId.length - 1] : undefined;
     let published = post.published.substring(0,10);
-    let postId = post._id
-    let authorId = post.authorId
     
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
@@ -61,7 +63,7 @@ function Post({viewerId, post, author}) {
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             axios
-            .get("/authors/" + authorId + "/posts/" + postId + "/image")
+            .get( post.id + "/image")
             .then((res) => {
                 if (res.data.status === 200) {
                     setImage(res.data.src)
@@ -71,11 +73,28 @@ function Post({viewerId, post, author}) {
             })
         }
         getImage();
-    }, [authorId, postId])
+    }, [post.id])
 
-    useEffect(() => {    
+    useEffect(() => {  
+        const getLikes = () => {
+            axios.get(post.id + '/likes')
+            .then((response) => { 
+                setNumLikes(response.data.items.length);
+                // setItems(response.data.items);
+                let itemsCopy = response.data.items;
+                for(let i = 0; i < itemsCopy.length; i++){
+                    let like = itemsCopy[i];
+                    let likeAuthorId = like.author.id.split("/");
+                    likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
+                    if(likeAuthorId === viewerId){
+                        setLike(true);
+                    }
+                }
+            })
+            .catch((err) => { });
+        }
         getLikes();
-    });
+    }, [post.id, viewerId]);
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
@@ -85,7 +104,7 @@ function Post({viewerId, post, author}) {
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')
-        axios.delete('/authors/' + authorId + '/posts/' + postId)
+        axios.delete(post.id)
         .then((response) => { })
         .catch((err) => {
             if(err.response){
@@ -111,7 +130,7 @@ function Post({viewerId, post, author}) {
             object: post.id
         }
 
-        axios.post('/authors/' + post.author.id + '/inbox', body, {
+        axios.post(post.author.id + '/inbox', body, {
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
             }
@@ -143,7 +162,7 @@ function Post({viewerId, post, author}) {
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')
-        axios.delete('/authors/' + authorId + '/posts/' + postId + '/likes')
+        axios.delete(post.id + '/likes')
         .then((response) => {
             setNumLikes(response.data.numLikes);
             setLike(false);
@@ -177,7 +196,7 @@ function Post({viewerId, post, author}) {
             contentType: "text/plaintext",
         };
 
-        axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
+        axios.post(post.id + '/comments', body)
         .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);
@@ -197,23 +216,7 @@ function Post({viewerId, post, author}) {
         });
     }
     
-    const getLikes = () => {
-        axios.get('/authors/' + authorId + '/posts/' + postId + '/likes')
-        .then((response) => { 
-            setNumLikes(response.data.items.length);
-            // setItems(response.data.items);
-            let itemsCopy = response.data.items;
-            for(let i = 0; i < itemsCopy.length; i++){
-                let like = itemsCopy[i];
-                let likeAuthorId = like.author.id.split("/");
-                likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
-                if(likeAuthorId === viewerId){
-                    setLike(true);
-                }
-            }
-        })
-        .catch((err) => { });
-    }
+    
 
     return (
         <div className="post">

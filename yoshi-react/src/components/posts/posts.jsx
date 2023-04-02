@@ -60,7 +60,7 @@ function Posts(props) {
         if (type === 'public') {
             setUrl('/posts/' + type);
         }
-    })
+    }, [props.posts, type])
 
     useEffect(() => {
 
@@ -80,18 +80,19 @@ function Posts(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                id = response.data.authorId;
+                id = response.data.id.split("");
+                id = id[id.length - 1];
                 setViewerId(id);
                 if (props.posts === undefined) {
                     setUserInfo(response.data);
                     let viewerId = response.data.authorId;
                     setViewerId(viewerId);
                     if (type === 'inbox') {
-                        setUrl('/authors/' + id + '/inbox');
+                        setUrl(response.data.id + '/inbox');
                     } else if (type === 'personal') {
                         setUrl('/authors/' + id + '/posts/personal')
                     } else {
-                        setUrl('/authors/' + id + '/posts/' + type);
+                        setUrl('/posts/' + type);
                     }
                 }
             })

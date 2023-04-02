@@ -96,7 +96,6 @@ const router = express.Router({mergeParams: true});
  *                  commentCount: 100
  *                  published: 2023-03-27T06:43:18.423Z
  *                  visibility: PUBLIC
- *                  postFrom: ""
  *                  unlisted: false
  */
 router.get('/public', async (req, res) => { 
@@ -157,7 +156,6 @@ router.get('/public', async (req, res) => {
  *                      commentCount: 100
  *                      published: 2023-03-27T06:43:18.423Z
  *                      visibility: PUBLIC
- *                      postFrom: ""
  *                      unlisted: false
  */
 router.get('/friends-posts', async (req, res) => { 
@@ -216,7 +214,6 @@ router.get('/friends-posts', async (req, res) => {
  *                      commentCount: 100
  *                      published: 2023-03-27T06:43:18.423Z
  *                      visibility: PUBLIC
- *                      postFrom: ""
  *                      unlisted: false
  */
 router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
@@ -274,7 +271,6 @@ router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
  *                      commentCount: 100
  *                      published: 2023-03-27T06:43:18.423Z
  *                      visibility: PUBLIC
- *                      postFrom: ""
  *                      unlisted: false
  */
 router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
@@ -595,9 +591,6 @@ router.delete('/:postId', async (req, res) => {
  *           unlisted: 
  *             type: boolean
  *             description: dictates whether a post is unlisted or not
- *           postFrom: 
- *             type: string
- *             description: posting to a specific author (private)
  * /authors/:authorId/posts/:postId:
  *  put:
  *    summary: Puts the posts associated with postId for the Author associated with authorId to create a post
@@ -632,7 +625,6 @@ router.delete('/:postId', async (req, res) => {
  *               published: 2023-03-24T06:53:47.567Z
  *               visibility: Public
  *               unlisted: false
- *               postFrom: beta
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -753,9 +745,6 @@ router.get('/', async (req, res) => {
  *           unlisted: 
  *             type: boolean
  *             description: dictates whether a post is unlisted or not
- *           postFrom: 
- *             type: string
- *             description: posting to a specific author (private)
  * /authors/:authorId/posts:
  *  post:
  *    summary: Sends the posts associated with authorId
@@ -785,7 +774,6 @@ router.get('/', async (req, res) => {
  *               published: 2023-03-24T06:53:47.567Z
  *               visibility: Public
  *               unlisted: false
- *               postFrom: beta
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated

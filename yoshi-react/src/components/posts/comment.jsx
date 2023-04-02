@@ -29,9 +29,11 @@ function Comment({viewerId, comment, author}) {
      * Functions: 
      *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
      *     - likeComment(): Sends a POST request of the like to the Author's inbox on a specific comment
-     *     - useEffect: Fetches the likes related to the comment ID
+     *     - getLikes(): Fetches the likes related to the comment ID
      * Returns: N/A
      */
+    console.log('Debug: Comments() <TLDR what the function is doing>')
+    
     const [liked, setLiked] = useState(true);
 
     const likeComment = () => {
@@ -59,6 +61,11 @@ function Comment({viewerId, comment, author}) {
 
     useEffect(() => {
         function getLikes(){
+            /**
+             * Description: Fetches the likes of a specific comment through sending a GET request
+             * Request: GET
+             * Returns: N/A
+             */
             axios.get(comment.id + '/likes')
             .then((response) => {
                 console.log(response);

@@ -26,9 +26,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Child Component 
-import Comments from './comments';
-import EditPost from "./edit";
-import SharePost from "./sharePost";
+import Comments from './comments.jsx';
+import EditPost from "./edit.jsx";
+import SharePost from "./sharePost.jsx";
 // Styling
 import './post.css';
 

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, postInboxRequest} = require('../routes/inbox')
+const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, postInboxRequest, sendToForeignInbox} = require('../routes/inbox')
 const { sendRequest, deleteRequest, getRequests, getRequest } = require('../routes/request');
 const { checkExpiry } = require('../routes/auth');
 
@@ -34,9 +34,8 @@ const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
-const { IncomingCredentials } = require('../scheme/server');
+const { IncomingCredentials, OutgoingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
-const { Author } = require('../scheme/author');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -139,7 +138,7 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
   
-	await deleteRequest(res, null, null, foreignId, authorId, 'reject', true)
+	await deleteRequest(authorId, foreignId, res);
 })
 
 // TBA 200
@@ -169,46 +168,74 @@ router.post('/', async (req, res) => {
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
-
-		const [scheme, data] = authHeader.split(" ");
-		if(scheme === "Basic") {
-			const credential = Buffer.from(data, 'base64').toString('ascii');
-			const [serverName, password] = credential.split(":");
-			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
-				authorized = true;
-			}
+		if( await IncomingCredentials.findOne({auth: authHeader})) {
+			authorized = true;
 		}
 	}
 
-	let authorId;
-	if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
-		if (req.body.author !== undefined) {
+	const type = req.body.type.toLowerCase();
+	if(req.cookies.token){
+		let authorId;
+		const token = req.cookies.token;
+		if(!token){
+			return res.sendStatus(401);
+		}
+		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
 			authorId = req.body.author.id.split("/");
 			authorId = authorId[authorId.length - 1];
-		} else {
-			authorId = req.body.authorId;
+		}
+		else if(req.body.type == "follow"){
+			authorId = req.body.actor.id;
+		}
+		else{
+			return res.sendStatus(400);
+		}
+
+		if( await authLogin(token, authorId)){
+			authorized = true;
 		}
 	}
-	else if(req.body.type.toLowerCase() == "follow"){
-		authorId = req.body.actor.id;
-		authorId = authorId.split("/");
-		authorId = authorId[authorId.length - 1];
-	}
-	else{
-		return res.sendStatus(400);
-	}
 
-	if( await authLogin(token, authorId)){
-		authorized = true;
-	}
 
 	//TODO fix this once and for all
-	if(!authorized){
+	if(!authorized && req.headers["x-requested-with"] != "XMLHttpRequest"){
 		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
 		return res.sendStatus(401);
 	}
+	else if(!authorized){
+		return res.sendStatus(401);
+	}
+
 	
-	const type = req.body.type.toLowerCase();
+	let idURL = req.params.authorId.split("/");
+	let host = process.env.DOMAIN_NAME.split("/")
+	host = host[host.length - 2];
+	if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[2] == host && idURL[3] == "authors"){
+		req.params.authorId = idURL[4];
+	}
+	else if((idURL[0] == "http:" || idURL[0] == "https:") && idURL.find(element => element === "authors")){
+		//Check if the host name is in mongo
+		//If not then 401
+		//Else send a post request to that server with the associated request
+		let outgoings = await OutgoingCredentials.find().clone();
+		for(let i = 0; i < outgoings.length; i++){
+			let outgoing = outgoings[i];
+			let url = outgoing.url.split("/");
+			url = url[url.length - 1];
+			if(url != idURL[2]){
+				continue;
+			}
+
+			let [response, status] = await sendToForeignInbox(req.params.authorId, outgoing.auth, req.body);
+			if(status > 200 && status < 300){
+				return res.json(response);
+			}
+			return res.sendStatus(status);
+		}
+		return res.sendStatus(400);
+	}
+	
+	//NEED to fix req.body.author.id to the id of the inbox haver
 	let response, status;
 	if(type === "post"){
 		//For other servers to send their authors posts to us
@@ -216,25 +243,7 @@ router.post('/', async (req, res) => {
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
-		let actor = null;
-		if (req.body.actor.status !== undefined) {
-			let actorId = req.body.actor.id;
-			actorId = actorId.split("/");
-			actorId = actorId[actorId.length - 1];
-			const actorDoc = await Author.findOne({_id: actorId});
-			actor = {
-				id: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
-				host: process.env.DOMAIN_NAME,
-				displayName: actorDoc.username,
-				url: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
-				github: actorDoc.github,
-				profileImage: actorDoc.profileImage
-			}
-		} else {
-			// remote
-			actor = req.body.actor;
-		}
-		[response, status] = await postInboxRequest(actor, req.params.authorId);
+		[response, status] = await postInboxFollow(req.body);
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);
@@ -244,6 +253,7 @@ router.post('/', async (req, res) => {
 	}
 	else{
 		res.sendStatus(400);
+		return;
 	}
 
 	if(status != 200){
@@ -253,13 +263,7 @@ router.post('/', async (req, res) => {
 	if(type === "post"){
 		//[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	else if (type === "follow") {
-		response = {
-			type: "follow",
-			summary: response.summary,
-			actor: response.actor,
-			object: response.object
-		}
+	else if(type === "follow"){
 	}
 	else if(type === "comment"){
 		response = {
@@ -273,6 +277,43 @@ router.post('/', async (req, res) => {
 	}
 
 	return res.json(response);
+})
+
+// TBA 200
+/**
+ * @openapi
+ * /authors/:authorId/inbox/requests/:foreignAuthorId:
+ *  put:
+ *    summary: creates a request and saves it into the inbox
+ *    tags:
+ *      - inbox 
+ *    parameters:
+ *      - in: path
+ *        name: authorId
+ *        schema:
+ *          type: string
+ *        description: id of an Author
+ *      - in: path
+ *        name: foreignAuthorId
+ *        schema:
+ *          type: string
+ *        description: id of an foreign Author
+ *    responses:
+ *      200: 
+ *        description: OK, successfully saves the request to the Inbox
+ */
+router.put('/requests/:foreignAuthorId', async (req, res) => {
+	const authorId = req.params.authorId;
+	const foreignId = req.params.foreignAuthorId;
+  
+	const request = await sendRequest(authorId, foreignId, res);
+  
+	return res.json({
+	  "type": request.type,
+	  "summary": request.summary,
+	  "actor": request.actor,
+	  "object": request.object
+	})
 })
 
 // TBA 200
@@ -309,7 +350,7 @@ router.get('/requests/:foreignAuthorId', async (req, res) => {
 	if (!request) { return res.sendStatus(404); }
   
 	return res.json({
-	  "type": request.goal,
+	  "type": request.type,
 	  "summary": request.summary,
 	  "actor": request.actor,
 	  "object": request.object

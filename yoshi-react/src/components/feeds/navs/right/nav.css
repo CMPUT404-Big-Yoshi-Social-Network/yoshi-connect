@@ -38,6 +38,7 @@ Foundation; All Rights Reserved
     border: #24292F 0.1em solid;
     padding: 1em;
     font-family: 'Uni Neue', sans-serif;
+    z-index: 1;
 }
 
 .rn-div{
@@ -61,20 +62,4 @@ Foundation; All Rights Reserved
     margin: 1em 1em;
     right: 0;
     bottom: 0;
-}
-
-.welcome-button{
-    color: white;
-    font-size: 16px;
-    margin: 0em 1em;
-    background-color: #735DFA;
-    border: #735DFA;
-    border-radius: 0.50em;
-    padding: .4em 1em;
-    text-decoration: none;
-    display: inline-block;
-}
-.welcome-button:hover{
-    background-color: #A7E7F8;
-    color: black;
 }

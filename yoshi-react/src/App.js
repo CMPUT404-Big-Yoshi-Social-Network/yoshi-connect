@@ -27,7 +27,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import React from 'react';
 
 // Before Entering YoshiConnect
-// import Welcome from "./components/welcome/welcome.jsx";
+import Welcome from "./components/welcome/welcome.jsx";
 import Login from "./components/login/login.jsx";
 import Signup from "./components/signup/signup.jsx";
 
@@ -54,10 +54,16 @@ import Errors from './components/user-error/errors.jsx';
 // API Docs
 import ApiDocs from "./components/apiDocs/apiDocs.jsx";
 
+// Image
+import Image from "./components/image/image.jsx";
+
+// GitHub
+import GitHub from "./components/feeds/settings/github.jsx"
+
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <PublicFeed/>
+    element: <Welcome/>
   },
   {
     path: '/login',
@@ -122,6 +128,14 @@ const router = createBrowserRouter([
   {
     path: '/servererror/',
     element: <Errors/>
+  },
+  {
+    path: '/authors/:authorId/posts/:postId/image',
+    element: <Image/>
+  },
+  {
+    path: '/github',
+    element: <GitHub/>
   }
 ])
   

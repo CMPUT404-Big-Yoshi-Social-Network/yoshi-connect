@@ -20,8 +20,9 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, sharePost, getImage, editImage, createTombstone } = require('../routes/post');
+const { createPost, updatePost, deletePost, getPost, getPosts, fetchMyPosts, fetchOtherPosts, uploadImage, getImage, editImage } = require('../routes/post');
 const { fetchPublicPosts } = require('../routes/public');
+const { fetchFriendPosts } = require('../routes/friend');
 const { getAuthor } = require('../routes/author.js');
 const { getInbox } = require('../routes/inbox.js');
 
@@ -96,7 +97,7 @@ const router = express.Router({mergeParams: true});
  *                  commentCount: 100
  *                  published: 2023-03-27T06:43:18.423Z
  *                  visibility: PUBLIC
- *                  postFrom: ""
+ *                  postTo: ""
  *                  unlisted: false
  */
 router.get('/public', async (req, res) => { 
@@ -157,7 +158,7 @@ router.get('/public', async (req, res) => {
  *                      commentCount: 100
  *                      published: 2023-03-27T06:43:18.423Z
  *                      visibility: PUBLIC
- *                      postFrom: ""
+ *                      postTo: ""
  *                      unlisted: false
  */
 router.get('/friends-posts', async (req, res) => { 
@@ -216,10 +217,28 @@ router.get('/friends-posts', async (req, res) => {
  *                      commentCount: 100
  *                      published: 2023-03-27T06:43:18.423Z
  *                      visibility: PUBLIC
- *                      postFrom: ""
+ *                      postTo: ""
  *                      unlisted: false
  */
-router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
+router.get('/personal', async (req, res) => { 
+  const authorId = req.params.authorId;
+  
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let size = req.query.size ? parseInt(req.query.size) : 5;
+
+  let [author, status] = await getAuthor(authorId);
+
+  if (status != 200 || author.admin) { return res.sendStatus(status); }
+
+  [posts, status] = await getPosts(req.cookies.token, page, size, author);
+
+  if (status != 200) { return res.sendStatus(status); }
+
+  return res.json({
+    "type": "posts",
+    "items": posts
+  });
+})
 
 /**
  * @openapi
@@ -274,10 +293,28 @@ router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
  *                      commentCount: 100
  *                      published: 2023-03-27T06:43:18.423Z
  *                      visibility: PUBLIC
- *                      postFrom: ""
+ *                      postTo: ""
  *                      unlisted: false
  */
-router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
+router.get('/other/:other', async (req, res) => { 
+  const authorId = req.params.other;
+  
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let size = req.query.size ? parseInt(req.query.size) : 5;
+
+  let [author, status] = await getAuthor(authorId);
+
+  if (status != 200 || author.admin) { return res.sendStatus(status); }
+
+  [posts, status] = await getPosts(req.cookies.token, page, size, author);
+
+  if (status != 200) { return res.sendStatus(status); }
+
+  return res.json({
+    "type": "posts",
+    "items": posts
+  });
+})
 
 /**
  * @openapi
@@ -595,7 +632,7 @@ router.delete('/:postId', async (req, res) => {
  *           unlisted: 
  *             type: boolean
  *             description: dictates whether a post is unlisted or not
- *           postFrom: 
+ *           postTo: 
  *             type: string
  *             description: posting to a specific author (private)
  * /authors/:authorId/posts/:postId:
@@ -632,7 +669,7 @@ router.delete('/:postId', async (req, res) => {
  *               published: 2023-03-24T06:53:47.567Z
  *               visibility: Public
  *               unlisted: false
- *               postFrom: beta
+ *               postTo: beta
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -642,24 +679,17 @@ router.delete('/:postId', async (req, res) => {
  *        description: Ok -- Returns JSON the newly created post object
  */
 router.put('/:postId', async (req, res) => {
-  if (req.body.status != undefined) {
-    if (req.body.status === 'Tombstone') {
-      await createTombstone(req.body.authorId, req.body.postId);
-    }
+  const authorId = req.params.authorId;
+  const postId = req.params.postId;
 
+  if (!req.cookies.token) { return res.sendStatus(401); }
+
+  const [post, status] = await createPost(req.cookies.token, authorId, postId, req.body);
+
+  if (status == 200) {
+    return res.json(post);
   } else {
-    const authorId = req.params.authorId;
-    const postId = req.params.postId;
-  
-    if (!req.cookies.token) { return res.sendStatus(401); }
-  
-    const [post, status] = await createPost(req.cookies.token, authorId, postId, req.body);
-  
-    if (status == 200) {
-      return res.json(post);
-    } else {
-      return res.sendStatus(status);
-    }
+    return res.sendStatus(status);
   }
 })
 
@@ -753,7 +783,7 @@ router.get('/', async (req, res) => {
  *           unlisted: 
  *             type: boolean
  *             description: dictates whether a post is unlisted or not
- *           postFrom: 
+ *           postTo: 
  *             type: string
  *             description: posting to a specific author (private)
  * /authors/:authorId/posts:
@@ -785,7 +815,7 @@ router.get('/', async (req, res) => {
  *               published: 2023-03-24T06:53:47.567Z
  *               visibility: Public
  *               unlisted: false
- *               postFrom: beta
+ *               postTo: beta
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated
@@ -805,18 +835,6 @@ router.post('/', async (req, res) => {
     return res.json(post);
   }
   return res.sendStatus(status); 
-})
-
-router.post('/:postId/share', async (req, res) => {
-  const authorId = req.params.authorId;
-  const postId = req.params.postId;
-
-  if (!req.cookies.token) { return res.sendStatus(401); }
-
-  const [post, status] = await sharePost(req.cookies.token, authorId, postId, req.body);
-
-  if (status == 200) { return res.json(post); }
-  return res.sendStatus(status);  
 })
 
 // TBA

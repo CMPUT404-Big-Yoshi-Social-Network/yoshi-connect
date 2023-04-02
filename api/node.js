@@ -130,7 +130,9 @@ router.get('/outgoing/authors', async (req, res) => {
                 }
                 authors = authors.concat(items);
             })
-            .catch( error => { })
+            .catch( error => {
+                console.log(error);
+            })
         }
     }
     return res.json({
@@ -446,8 +448,9 @@ router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) =
  *    tags:
  *      - remote 
  */
-router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
+router.get('/outgoing/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
+    
     let posts = [];
 
     for (let i = 0; i < outgoings.length; i++) {
@@ -501,17 +504,15 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
 
             await axios.request(config)
             .then( res => {
-                let items = []
-                if (outgoings[i].auth === 'userpass') { 
-                    items = res.data.results.filter((i)=>i !== null && typeof i !== 'undefined');
-                } else {
-                    items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
-                }
+                let items = res.data.items
                 posts = posts.concat(items);
             })
-            .catch(error => { })
+            .catch( error => {
+                console.log(error);
+            })
         }
     }
+    
     return res.json({
         'type': 'posts',
         items: posts
@@ -1046,11 +1047,14 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
               }
             }
             await axios.request(config)
-            .then( res => { })
-            .catch( error => { })
+            .then( res => { console.log(res) })
+            .catch( error => {
+                if (error.response.status == 404) {
+                    console.log('Debug: Adding an object (post, follow, like) to inbox.')
+                } 
+            })
         }
     }
-
     return res.sendStatus(200);
 })
 

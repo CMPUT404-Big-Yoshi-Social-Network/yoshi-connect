@@ -19,35 +19,16 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality
-import React from "react";
-import Pagination from 'react-bootstrap/Pagination';
-
-// Child Component
-import Post from './post.jsx';
-
-function RemotePosts(props) { 
-    /**
-     * Description:  
-     * Request: (if axios is used)    
-     * Returns: 
-     */
-    console.log('Debug: <TLDR what the function is doing>')
-
-    return (
-        <div>
-            { props.type.length !== 0 ? 
-                <Pagination>
-                    {Object.keys(props.type).map((post, idx) => (
-                        <Post key={idx} viewerId={null} post={props.type[post]}/>
-                    ))}
-                </Pagination> :
-                <div>
-                    <h4>No posts to show.</h4>
-                </div>
-            }
-        </div>
-    )
+.feedColL, .feedColM, .feedColR {
+    display: inline-block;
 }
 
-export default RemotePosts;
+.feedColL, .feedColR {
+    width: 15%;
+}
+
+.feedColM {
+    margin-top: 4em;
+    width: 70%;
+    background-color: #090D0E;
+}

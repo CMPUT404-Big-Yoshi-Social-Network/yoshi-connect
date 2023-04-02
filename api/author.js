@@ -275,7 +275,7 @@ router.get('/:authorId', async (req, res) => {
  *      401:
  *        description: Unauthorized, Author does not have an associated token 
  *      400:
- *        description: Bad Request, type, authorId, host, username are incorrect
+ *        description: Bad Request, type, authorId, host, or username are incorrect
  *      200:
  *        description: OK, Author was succesfully sent, JSON sent with sanitized and updated Author
  *        content:
@@ -328,7 +328,7 @@ router.get('/:authorId', async (req, res) => {
  *                  description: profile picture Author uses
  *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
  *      404:
- *        description: Not Found, Author was not found
+ *        description: Not Found, Author was not found in database
  */
 router.post('/:authorId', async (req, res) => {
   if (!req.cookies.token) { return res.sendStatus(401); }
@@ -345,15 +345,6 @@ router.post('/:authorId', async (req, res) => {
 
   if (status == 200) { return res.json(author) }
   if (status == 404 || status == 401) { return res.sendStatus(status); }
-})
-
-router.get('/postTo/:username', async (req, res) => {
-  const username = req.params.username;
-  let author = await Author.findOne({username: username}).clone();
-  if (!author) { 
-    return res.sendStatus(404)
-  }  
-  return res.json(author);
 })
 
 /**
@@ -412,22 +403,18 @@ router.get('/postTo/:username', async (req, res) => {
  */
 router.get('/search/:username', async (req, res) => {
   const username = req.params.username;
-  const localAuthor = await Author.findOne({username: username}); 
   let authors = []
-  if (localAuthor !== undefined && localAuthor !== null) {
-    const sanitizedAuthor = {
-      "type": "author",
-      "id" : process.env.DOMAIN_NAME + "authors/" + localAuthor._id,
-      "host": process.env.DOMAIN_NAME,
-      "displayName": localAuthor.username,
-      "url":  process.env.DOMAIN_NAME + "authors/" + localAuthor._id,
-      "github": localAuthor.github,
-      "profileImage": localAuthor.profileImage,
-      "email": localAuthor.email, 
-      "about": localAuthor.about,
-      "pronouns": localAuthor.pronouns
-    }
-    authors.push(sanitizedAuthor);
+  let localAuthor = await Author.findOne({username: username}).clone();
+  if (localAuthor) { 
+    authors.push({
+      displayName: localAuthor.username,
+      github: localAuthor.github,
+      host: 'https://yoshi-connect.herokuapp.com/',
+      id: 'https://yoshi-connect.herokuapp.com/authors/' + localAuthor._id,
+      profileImage: localAuthor.profileImage,
+      type: 'author',
+      url: 'https://yoshi-connect.herokuapp.com/authors/' + localAuthor._id
+    })
   }
 
   const outgoings = await OutgoingCredentials.find().clone();
@@ -455,7 +442,7 @@ router.get('/search/:username', async (req, res) => {
                       'Authorization': auth,
                       'Content-Type': 'application/json'
                   }
-                };          
+                };      
             } else {
                 var config = {
                   host: outgoings[i].url,
@@ -465,7 +452,7 @@ router.get('/search/:username', async (req, res) => {
                       'Authorization': auth,
                       'Content-Type': 'application/json'
                   }
-                };
+              };
             }
           }
     
@@ -488,7 +475,9 @@ router.get('/search/:username', async (req, res) => {
                 }
               }
           })
-          .catch( error => { })
+          .catch( error => {
+              console.log(error);
+          })
       }
   }
   return res.json({

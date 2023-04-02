@@ -30,7 +30,7 @@ function Follow(props) {
     console.log('Debug: <TLDR what the function is doing>')
     return (
         <div id='follow'>
-            { props.displayName || props.displayname }
+            { props.displayName }
         </div>
     )
 }

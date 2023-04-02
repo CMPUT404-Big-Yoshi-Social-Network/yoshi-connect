@@ -25,9 +25,9 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { PostHistory, PublicPost, Post, Image, Inbox } = require('../scheme/post.js');
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
+const { OutgoingCredentials } = require('../scheme/server.js')
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
-const { OutgoingCredentials } = require('../scheme/server');
 
 
 // UUID
@@ -170,7 +170,6 @@ async function getPost(postId, auth, author){
         "contentType": post.contentType,
         "content": post.content,
         "author": author,
-        "shared": post.shared,
         "categories": post.categories,
         "count": post.commentCount,
         "likeCount": post.likeCount,
@@ -191,9 +190,7 @@ async function createPost(token, authorId, postId, newPost) {
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    if (token !== null) {
-        if(! (await authLogin(token, authorId))){ return [[], 401]; }
-    }
+    if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
     let authorPromise = getAuthor(authorId);
 
@@ -201,11 +198,11 @@ async function createPost(token, authorId, postId, newPost) {
     const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
-    const categories = newPost.categories;
+    const categories = [''];
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const postFrom = newPost.postFrom;
+    const postTo = newPost.postTo;
 
     if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
@@ -239,11 +236,9 @@ async function createPost(token, authorId, postId, newPost) {
         likeCount: 0,
         commentCount: 0,
         published: published,
-        whoShared: [],
         visibility: visibility,
         unlisted: unlisted,
-        shared: false,
-        postFrom: postFrom
+        postTo: postTo
     };
 
     postHistory.posts.push(post);
@@ -265,12 +260,15 @@ async function createPost(token, authorId, postId, newPost) {
     let [author, status] = await authorPromise;
     if (status != 200) return [{}, 500];
 
-    if (visibility == 'PUBLIC' && (postFrom == '' || postFrom == undefined)) {
+    if (visibility == 'PUBLIC') {
         post.author = {
             _id: author.id,
+            host: author.host,
             displayName: author.displayName,
+            url: author.url,
+            github: author.github,
             profileImage: author.profileImage,
-            pronouns: author.pronouns
+            pronouns: author.pronouns,
         }
         const publicPost = new PublicPost(post);
         await publicPost.save();
@@ -281,11 +279,64 @@ async function createPost(token, authorId, postId, newPost) {
     if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
+            /*
+            post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
             const follower = followers.followers[i].authorId;
             const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
 
             inbox.posts.push(post);
             await inbox.save();
+            */
+            post.type = "post";
+            post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+            post.author = {
+                type: "author",
+                id: author.id,
+                host: author.host,
+                displayName: author.displayName,
+                url: author.url,
+                github: author.github,
+                profileImage: author.profileImage,
+            };
+            delete post._id;
+
+            //Send the post to other followers 
+            const follower = followers.followers[i];
+            const hosts = await getHostNames();
+            //TODO NEEDS TESTING
+            let followerHost = follower.id.split("/");
+            followerHost = followerHost[2];
+            for(let i = 0; i < hosts.length; i++){
+                if(i == 0 && followerHost == hosts[i].host){
+                    post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+                    const followerId = followers.followers[i].authorId;
+                    const inbox = await Inbox.findOne({"authorId": followerId}).clone();
+
+                    inbox.posts.push(post);
+                    inbox.num_posts++;
+                    await inbox.save();
+                }
+                else if(followerHost == followerHost[i]){
+                    let host = followerHost[i];
+                    let config = {
+                        url: follower.id + "/inbox",
+                        method: "post",
+                        headers:{
+                            "Authorization": host.auth,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data: post
+                    }
+
+                    axios.request(config)
+                    .then((request) => {
+                        console.log(request.data);
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                }
+            }
         }
     }
 
@@ -293,6 +344,22 @@ async function createPost(token, authorId, postId, newPost) {
     await comments;
     await savePostPromise;
     return await getPost(postId, authorId, author);
+}
+
+async function getHostNames(){
+    let hosts = [];
+
+    let currHost = process.env.DOMAIN_NAME.split("/");
+    hosts.push({host: currHost[2]});
+
+    let outs = await OutgoingCredentials.find().clone();
+    for(let i = 0; i < outs.length; i++){
+        let out = outs[i];
+        let foreignHost = out.url.split("/");
+        hosts.push({...out, host: foreignHost[2]});
+    }
+
+    return hosts;
 }
 
 async function sharePost(token, authorId, postId, newPost) {
@@ -468,9 +535,8 @@ async function updatePost(token, authorId, postId, newPost) {
             commentCount: post.commentCount,
             published: post.published,
             visibility: visibility,
-            shared: post.shared,
             unlisted: unlisted,
-            postFrom: post.postFrom
+            postTo: post.postTo
         };
         await (new PublicPost(publicPost)).save();
     }
@@ -486,27 +552,25 @@ async function updatePost(token, authorId, postId, newPost) {
     post.unlisted = unlisted;
     post.categories = categories;
     await postHistory.save()
+    
+    /*
+    if(unlisted === "false"){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        let promiseList = [];
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i].authorId;
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+            inbox.posts.push(post);
+            promiseList.push(inbox.save());
+        }
 
+        for(let i = 0; i < promiseList.length; i++){
+            await promiseList[i];
+        }
+    }
+    */
     let author = await getAuthor(authorId);
     return await getPost(postId, token, author[0]);
-}
-
-async function createTombstone(authorId, postId) {
-    const phShared = await PostHistory.findOne({authorId: authorId});
-
-    if (!phShared) { return [{}, 404]; }
-
-    const pShared = postHistory.posts.id(postId);
-
-    if(!pShared) { return [{}, 404]; }
-
-    pShared.title = 'Shared Post Deleted!'
-    pShared.description = 'Sorry, but the original post has been deleted! -- YoshiConnect'
-    pShared.contentType = 'text/plain'
-    pShared.content = 'RIP Shared Post'
-    // TODO: Need to address the image for the tombstone for a deleted shared post
-
-    await phShared.save();
 }
 
 async function deletePost(token, authorId, postId) {
@@ -529,18 +593,6 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
-
-    if (post.whoShared != []) {
-            const whoShared = post.whoShared; 
-            const outgoings = await OutgoingCredentials.find().clone();
-            for (let i = 0; i < whoShared.length; i++) {
-                const node = outgoings.find(item => item.url === whoShared[i].host)
-                if (node === undefined) {
-                    await createTombstone(authorId, postId);
-                }
-            }
-        }
-
 
     const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
     const comments = CommentHistory.findOneAndDelete({postId: postId});
@@ -613,6 +665,7 @@ async function getPosts(token, page, size, author) {
     if(token){
         login = await login;
         if(login){
+            let followingStatus = false;
             let following = await Following.findOne({authorId: author.authorId});
 
             if(!following || !following.followings){
@@ -623,7 +676,15 @@ async function getPosts(token, page, size, author) {
                 follow = following.followings[i];
                 if(follow.authorId = login.authorId){
                     aggregatePipeline.splice(3, 1);
+                    followingStatus = true;
                     break;
+                }
+            }
+
+            if(!followingStatus && author.authorId == login.authorId){
+                if(authLogin(token, author.authorId)){
+                    aggregatePipeline.splice(3, 1);
+                    aggregatePipeline.splice(4, 1);
                 }
             }
         }
@@ -657,7 +718,7 @@ async function getPosts(token, page, size, author) {
             "author": author,
             "categories": post.categories,
             "count": post.commentCount,
-            "likeCount": post.likesCount,
+            "likeCount": post.likeCount,
             "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
             "commentSrc": post.commentSrc,
             "published": post.published,
@@ -796,11 +857,10 @@ module.exports={
     deletePost,
     createPost,
     getPosts,
-    sharePost,
     fetchMyPosts,
     fetchOtherPosts,
     uploadImage,
     getImage,
     editImage,
-    createTombstone
+    sharePost
 }

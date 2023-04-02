@@ -19,30 +19,20 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-// Functionality
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+// Functionality 
+import React from 'react';
 
-function Messenger(props) {
-    /**
-     * Description:    
-     * Returns: 
-     */
-    console.log('Debug: <TLDR what the function is doing>')
-    const [author, setAuthor] = useState()
-    useEffect(() => {
-        axios
-        .get('/authors/' + props.currentMessenger)
-        .then((response) => {
-            setAuthor(response.data)
-        })
-        .catch(err => { });
-    }, [props]);
+
+function Activity({activity}) {
+
+
     return (
-        <div id='messenger'>
-            {author?.displayName !== undefined ? author.displayName : null }
+        <div style={{padding: "1em"}}>
+            <span>{activity.user.name} </span>
+            <span>{activity.text} </span>
+            <br/>
         </div>
     )
 }
 
-export default Messenger;
+export default Activity

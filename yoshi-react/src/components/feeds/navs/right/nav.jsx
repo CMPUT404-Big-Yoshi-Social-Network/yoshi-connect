@@ -31,7 +31,6 @@ import CreatePost from '../../../posts/create.jsx';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import Button from 'react-bootstrap/Button';
 import './nav.css';
 
 function RightNavBar() {
@@ -40,35 +39,35 @@ function RightNavBar() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
-    const [username, setUsername] = useState('');
-    const [logged, setLogged] = useState(false);
+    const [profile, setProfile] = useState({
+        username: "", 
+        pic: ""
+    });
     const navigate = useNavigate();
-
+    
     useEffect(() => {
         const getId = () => {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let username = response.data.displayName;
-                setUsername(username)
-                setLogged(true);
+                setProfile({username: response.data.displayName, pic: response.data.profileImage})
             })
             .catch(err => { if (err.response.status === 404) { 
-                setLogged(false);
+                setProfile({username: ""})
             } 
             });
         }
         getId();
-    }, [username, navigate])
+    }, [navigate])
 
     return (
         <Navbar className="right-column">
-            {logged === true? <Container>
+            <Container>
                 <Nav>
                     <div className='rn-div'>
                     {/* TODO: Needs to fetch username  */}
-                        <img className='rn-pubUserImg' alt='rn-pubUser' src='/images/public/icon_profile.png' width={40}/>
-                        <Nav.Link className='rn-user' href={`/users/${username}`}>{username}</Nav.Link> 
+                    {profile.pic === "" ? <img className='rn-pubUserImg' alt='rn-pubUser' src='/images/public/icon_profile.png' width={40}/> : <img className='rn-pubUserImg' alt='rn-pubUser' src={profile.pic} width={40}/>}
+                        <Nav.Link className='rn-user' href={`/users/${profile.username}`}>{profile.username}</Nav.Link> 
                     </div>
                     <div className='rn-div'>
                         <img className='rn-pubFeedImg' alt='rn-pubFeedImg' src='/images/public/icon_public_feed.png' width={25}/>
@@ -92,12 +91,7 @@ function RightNavBar() {
                         <img className='rn-pubCogImg' alt='rn-pubCogImg' src='/images/public/icon_settings.png' width={25}/>
                     </a>
                 </div>
-            </Container> :             
-            <div>
-                <Button className='welcome-button' href='/signup' data-testid="signup">Sign Up</Button>
-                <Button className='welcome-button' href='/login' data-testid="login">Log In</Button>
-            </div>
-            }
+            </Container>
         </Navbar>
     )
 }

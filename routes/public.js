@@ -153,7 +153,7 @@ async function getPublicPostsXServer(page, size){
         return new Date(post2.published) - new Date(post1.published);
     })
 
-    response.items = response.items.slice(1, size + 1);
+    response.items = response.items.slice(0, size);
 
     return [response, statusCode]
 }

@@ -599,11 +599,14 @@ async function updatePost(token, authorId, postId, newPost) {
 
 async function deletePost(token, authorId, postId) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes the posts associated with postId for the Author associated with authorId to delete the post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: DELETE
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Author token is not authenticated
+            500 Status (Internal Server Error) -- Unable to fetch post history from database
+            404 Status (Not Found) -- Post was not found
+            200 Status (OK) -- Returns JSON of the deleted post object
     */
     if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 

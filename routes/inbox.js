@@ -123,11 +123,12 @@ async function getInbox(token, authorId, page, size){
 
 async function postInbox(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts an object into the Author's inbox
+    Associated Endpoint: N/A
+    Request Type: POST 
+    Request Body: N/A
+    Return: 200 Status (OK) -- Successfully posts to the Inbox
+            400 Status (Bad Request) -- No valid type specified in request
     */
     if(req.body.type === "post") {
         const title = req.body.title;
@@ -212,8 +213,8 @@ async function postInbox(req, res){
 
 async function postInboxPost(post, recieverAuthorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
+    Description: Posts an object into the Author's inbox (comment, post, like, follow)
+    Associated Endpoint: /authors/:authorId/inbox
     Request Type: 
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)

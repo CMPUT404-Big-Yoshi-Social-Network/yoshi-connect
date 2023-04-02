@@ -43,7 +43,7 @@ function Comments(params) {
         .catch((err) => {
             setComments([]);
          });
-    }, []);
+    }, [params.url]);
     return (
         <div>
             { comments.length === 0 ? 

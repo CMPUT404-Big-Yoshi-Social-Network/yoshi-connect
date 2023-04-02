@@ -311,11 +311,18 @@ async function sharePost(token, authorId, postId, newPost) {
     const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
-    const categories = [''];
+    const categories = newPost.categories;
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const postTo = newPost.postTo;
+    let postFrom = '';
+    if (newPost.authorId === undefined) {
+        postFrom = post.author.id
+        postFrom = postFrom.split("/");
+        postFrom = postFrom[postFrom.length - 1];
+    } else {
+        postFrom = newPost.authorId
+    }
     const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
     const origin = newPost.origin;
 
@@ -353,7 +360,7 @@ async function sharePost(token, authorId, postId, newPost) {
         unlisted: unlisted,
         whoShared: [],
         shared: true,
-        postTo: postTo,
+        postFrom: postFrom,
         author: null
     };
 

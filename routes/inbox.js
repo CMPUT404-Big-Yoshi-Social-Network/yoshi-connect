@@ -215,7 +215,14 @@ async function postInboxPost(post, recieverAuthorId){
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
-    const postFrom = post.authorId // Need to discuss wherther other teams will follow this
+    let postFrom = '' // Need to discuss wherther other teams will follow this
+    if (post.authorId === undefined) {
+        postFrom = post.author.id
+        postFrom = postFrom.split("/");
+        postFrom = postFrom[postFrom.length - 1];
+    } else {
+        postFrom = post.authorId
+    }
     if (post.id === undefined) {
         post = (await createPost(null, post.authorId, post.id, {...post, postFrom: postFrom}))[0];
     }
@@ -234,7 +241,6 @@ async function postInboxPost(post, recieverAuthorId){
     const authorUrl = post.author.url;
     const categories = post.categories;
     const published = post.published;
-    //Used to mark if this is a private message or a follower post.
     const visibility = post.visibility;
 
     if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||

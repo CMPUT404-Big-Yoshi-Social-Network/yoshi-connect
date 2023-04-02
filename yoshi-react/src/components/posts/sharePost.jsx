@@ -84,7 +84,8 @@ function SharePost({viewerId, post}) {
             source: post.source,
             origin: post.origin,
             id: post.id,
-            author: post.author
+            author: post.author,
+            authorId: authorId
         }
 
         let link = { postId: "" }

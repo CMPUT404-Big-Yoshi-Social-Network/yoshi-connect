@@ -88,8 +88,9 @@ function Posts(props) {
                     setViewerId(viewerId);
                     if (type === 'inbox') {
                         setUrl('/authors/' + id + '/inbox');
-                    }
-                    else {
+                    } else if (type === 'personal') {
+                        setUrl('/authors/' + id + '/posts/personal')
+                    } else {
                         setUrl('/authors/' + id + '/posts/' + type);
                     }
                 }

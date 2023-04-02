@@ -36,8 +36,8 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
-    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : undefined;
-    let authorId = post.author ? post.author.id ? post.author.id.split('/')[(post.author.id.split('/')).length - 1] : post.author.authorId : undefined;
+    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : post._id ? post._id : undefined;
+    let authorId = post.author ? post.author.id ? post.author.id.split('/')[(post.author.id.split('/')).length - 1] : post.author.authorId || post.authorId : undefined;
     let published = post.published.substring(0,10);
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
@@ -48,7 +48,6 @@ function Post({viewerId, post, author}) {
     const [like, setLike] = useState(false);
     const [image, setImage] = useState("");
     // const [items, setItems] = useState(undefined);
-
     const navigate = useNavigate();
 
     /**
@@ -198,8 +197,7 @@ function Post({viewerId, post, author}) {
     }
     
     const getLikes = () => {
-
-        axios.get(post.id + '/likes')
+        axios.get('/authors/' + authorId + '/posts/' + postId + '/likes')
         .then((response) => { 
             setNumLikes(response.data.items.length);
             // setItems(response.data.items);
@@ -213,19 +211,7 @@ function Post({viewerId, post, author}) {
                 }
             }
         })
-        .catch((err) => { 
-            if(err.response){
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                } else if (err.response.status === 400) {
-                    navigate('/badrequest')
-                } else if (err.response.status === 404) {
-                    navigate('/notfound')
-                } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
-                }
-            }
-        });
+        .catch((err) => { });
     }
 
     return (

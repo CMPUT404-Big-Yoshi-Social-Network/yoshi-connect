@@ -33,11 +33,12 @@ const { Inbox } = require('../scheme/post.js');
 
 async function senderAdded(authorId, foreignId, req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Adds foreign sender associated with foreignId to the server
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 500 Status (Internal Server Error) -- Unable to add sender
+            200 Status (OK) -- Sender successfully added
     */
     let success = true;
     let isLocal = true;
@@ -174,11 +175,11 @@ async function senderAdded(authorId, foreignId, req, res) {
 
 async function sendRequest(authorId, foreignId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates a request and saves it into the inbox
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 200 Status (OK) -- Successfully saves the request to the Inbox 
     */
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
@@ -244,10 +245,10 @@ async function sendRequest(authorId, foreignId, res) {
 
 async function deleteRequest(authorId, foreignId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Description: Deletes an Author's inbox requests
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
+    Request Type: DELETE
+    Request Body: { username: kc, email: 123@aulenrta.ca }
     Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     const actor = await Author.findOne({_id: authorId});  

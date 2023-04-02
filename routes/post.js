@@ -78,11 +78,13 @@ async function uploadImage(url, image) {
 
 async function editImage(url, src) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Edits an image associated with a specific post made by a specific author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image 
+    Request Type: POST
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image,  
+                    src: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd }
+    Return: 404 Status (Not Found) -- Image was not found
+            200 Status (OK) -- Successfully edited the image from a post made by the Author
     */
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }

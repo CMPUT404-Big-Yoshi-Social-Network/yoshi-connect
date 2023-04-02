@@ -45,7 +45,6 @@ const postScheme = new Schema({
         host: String,
         postId: String
     }],
-    postFrom: String,
     unlisted: Boolean,},
     {versionKey: false
 });
@@ -80,7 +79,6 @@ const publicScheme = new Schema({
     published: String,
     visibility: String,
     shared: Boolean,
-    postFrom: String,
     unlisted: Boolean,},
     {versionKey: false
 })
@@ -115,7 +113,6 @@ inboxPostScheme = new Schema({
         commentCount: Number,
         published: String,
         visibility: String,
-        postFrom: String,
         unlisted: Boolean,},
         {versionKey: false
 })

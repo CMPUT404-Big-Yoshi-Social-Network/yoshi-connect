@@ -36,7 +36,7 @@ function SharePost({viewerId, post}) {
     const [data, setData] = useState({
         visibility: post.visibility,
         unlisted: post.unlisted,
-        specifics: post.specifics,
+        postTo: '',
         postId: post._id
     })
 
@@ -127,7 +127,7 @@ function SharePost({viewerId, post}) {
 
             <label><p style={{color:"white"}}>Message To:</p></label>
                     <input className={"postMenuInput"} type="text" value={data.specifics || ''} onChange={(e) => {
-                        setData({...data, specifics: [e.target.value]})
+                        setData({...data, postTo: e.target.value})
                     }}></input>
             <br/>
             <span>Unlisted</span>
@@ -141,6 +141,7 @@ function SharePost({viewerId, post}) {
                         <option value="True">True</option>
             </select>
             <br/>
+            
             <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} value={data.visibility || 'Public '} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
                             <option value={"PUBLIC"}>Public</option>

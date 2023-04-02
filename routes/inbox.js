@@ -213,13 +213,13 @@ async function postInbox(req, res){
 
 async function postInboxPost(post, recieverAuthorId){
     /**
-    Description: Posts an object into the Author's inbox (comment, post, like, follow)
+    Description: Posts a post object into the Author's inbox
     Associated Endpoint: /authors/:authorId/inbox
     Request Type: POST
     Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
     Return: 401 Status (Unauthorized) -- No token or not authorized
             400 Status (Bad Request) -- No valid type specified in request
-            200 Status (OK) -- Successfully posts to the Inbox
+            200 Status (OK) -- Successfully posts a post to the Inbox
     */
     const type = post.type;
     const title = post.title;
@@ -262,11 +262,12 @@ async function postInboxPost(post, recieverAuthorId){
 
 async function postInboxLike(like, authorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts a like object into the Author's inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: POST
+    Request Body: { like: 29c546d45f564a27871838825e3dbecb, author._id: 902sq546w5498hea764r80re0z89bej }
+    Return: 400 Status (Bad Request) -- No valid type specified in request
+            200 Status (OK) -- Successfully posts a like to the Inbox
     */
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;

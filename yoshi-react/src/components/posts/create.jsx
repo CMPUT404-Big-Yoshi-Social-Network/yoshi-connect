@@ -36,7 +36,7 @@ function CreatePost() {
      * Description: Represents the CreatePost Form 
      * Functions: 
      *     - useEffect: Fetches the authorId related to the post 
-     *     - savePost: Saves a post into the database 
+     *     - saveCategory(): Saves the post category into the database 
      *     - togglePostMenu: Hides and Unhides the Post Menu
      *     - uploadImage: Uploades an image into the database related to a post
      * Returns: N/A

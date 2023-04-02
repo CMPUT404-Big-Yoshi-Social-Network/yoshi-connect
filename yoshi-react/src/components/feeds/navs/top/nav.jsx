@@ -47,7 +47,7 @@ function TopNav(props) {
             </Navbar.Brand>
             <Nav className='topNavSearch'>
                 <Form.Control type="search" placeholder="Search" className="topSearch" onChange={(e) => {setNewAuthor({...newAuthor, newSearch: e.target.value})}}/>
-                        <Popup trigger={<button>Search</button>} position="right center">
+                        <Popup trigger={<button className='search-button'>Search</button>} position="right center">
                             <SearchOutcomes url={'/authors/search/' + newAuthor.newSearch}/>     
                         </Popup> 
 

@@ -26,67 +26,58 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Child Component 
-import Comment from './comment';
+import Comments from './comments';
 import EditPost from "./edit";
-
+import SharePost from "./sharePost";
 // Styling
 import './post.css';
 
 // User Interface
 import Popup from 'reactjs-popup';
 
-function Post({viewerId, post}) {
+function Post({viewerId, post, author}) {
     let postId = post.id ? post.id.split('/') : undefined;
     postId = postId ? postId[postId.length - 1] : undefined;
-    let authorId = post.author ? post.author.authorId : undefined;
+    let authorId = post.author ? post.author.id.split('/') : undefined;
+    authorId = authorId ? authorId[authorId.length - 1] : undefined;
+    let published = post.published.substring(0,10);
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
-    const [numComments, setNumComments] = useState(post.commentCount);
-
+    const [numComments, setNumComments] = useState(post.count);
+    const [commentCreated, setCommentCreated] = useState(0);
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
-    const [item, setItem] = useState("");
+    const [image, setImage] = useState("");
+    // const [items, setItems] = useState(undefined);
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        /**
+    /**
          * Description:  
          * Request: (if axios is used)    
          * Returns: 
          */
+    
+    useEffect(() => {
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             axios
             .get("/authors/" + authorId + "/posts/" + postId + "/image")
             .then((res) => {
                 if (res.data.status === 200) {
-                    setItem(res.data.src)
+                    setImage(res.data.src)
                 } else {
-                    setItem('')
+                    setImage('')
                 }
             })
         }
         getImage();
     }, [authorId, postId])
 
-    useEffect(() => {
-        /**
-         * Description: Before render, checks if the current viewer has already liked the post and changes the like button accordingly
-         * Request: POST
-         * Returns: N/A
-         */
-        console.log('Debug: <TLDR what the function is doing>')
-        const hasLiked = () => {
-            axios
-            .get('/authors/' + authorId + '/posts/' + postId + '/liked')
-            .then((response) => { setLike(true) })
-            .catch(err => { setLike(false) });
-        }
-        hasLiked();
-    }, [authorId, postId])
-
+    useEffect(() => {    
+        getLikes();
+    });
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
@@ -112,18 +103,24 @@ function Post({viewerId, post}) {
     }
 
     const addLike = () => {
-        /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
-         */
-        console.log('Debug: <TLDR what the function is doing>')
-        axios.put('/authors/' + authorId + '/posts/' + postId + '/likes')
-        .then((response) => { 
-            setNumLikes(response.data.numLikes); 
-            setLike(true);
+        if(author){
+        let body = {
+            type: "like",
+            summary: "DisplayName likes your post",
+            author: author,
+            object: post.id
+        }
+
+        axios.post('/authors/' + post.author.id + '/inbox', body, {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
         })
-        .catch((err) => { 
+        .then((response) => {
+            setLike(true);
+            setNumLikes(numLikes + 1);
+        })
+        .catch((err) => {
             if (err.response.status === 401) {
                 navigate('/unauthorized')
             } else if (err.response.status === 400) {
@@ -133,7 +130,8 @@ function Post({viewerId, post}) {
             } else if (err.response.status === 500) {
                 console.log('500 PAGE')
             }
-         });
+        });
+        }
     }
 
     const removeLike = () => {
@@ -144,11 +142,11 @@ function Post({viewerId, post}) {
          */
         console.log('Debug: <TLDR what the function is doing>')
         axios.delete('/authors/' + authorId + '/posts/' + postId + '/likes')
-        .then((response) => { 
-            setNumLikes(response.data.numLikes); 
+        .then((response) => {
+            setNumLikes(response.data.numLikes);
             setLike(false);
         })
-        .catch((err) => { 
+        .catch((err) => {
             if (err.response.status === 401) {
                 navigate('/unauthorized')
             } else if (err.response.status === 400) {
@@ -168,10 +166,47 @@ function Post({viewerId, post}) {
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')
-        let body = { content: comment.newComment };
+        let body = {
+            type: "comment",
+            author: author,
+            comment: comment.newComment,
+            contentType: "text/plaintext",
+        };
 
-        axios.put('/authors/' + authorId + '/posts/' + postId + '/comments', body)
-        .then((response) => { setNumComments(response.data.numComments); })
+        axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
+        .then((response) => {
+            setNumComments(numComments + 1);
+            setCommentCreated(commentCreated + 1);
+        })
+        .catch((err) => { 
+            if (err.response.status === 401) {
+                navigate('/unauthorized');
+            } else if (err.response.status === 400) {
+                navigate('/badrequest');
+            } else if (err.response.status === 404) {
+                navigate('/notfound');
+            } else if (err.response.status === 500) {
+                console.log('500 PAGE');
+            }
+         });
+    }
+    
+    const getLikes = () => {
+
+        axios.get(post.id + '/likes')
+        .then((response) => { 
+            setNumLikes(response.data.items.length);
+            // setItems(response.data.items);
+            let itemsCopy = response.data.items;
+            for(let i = 0; i < itemsCopy.length; i++){
+                let like = itemsCopy[i];
+                let likeAuthorId = like.author.id.split("/");
+                likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
+                if(likeAuthorId === viewerId){
+                    setLike(true);
+                }
+            }
+        })
         .catch((err) => { 
             if (err.response.status === 401) {
                 navigate('/unauthorized')
@@ -184,7 +219,7 @@ function Post({viewerId, post}) {
             }
          });
     }
-    
+
     return (
         <div className="post">
             {!post.unlisted &&
@@ -192,9 +227,9 @@ function Post({viewerId, post}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    <img className={"image"} src={item} alt=""/>
+                    { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
-                    <p>{post.published}</p>
+                    <p>{published}</p>
                     <br></br>
                     { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons' onClick={removeLike}>Unlike</button></span>} 
                     <br></br>
@@ -211,14 +246,13 @@ function Post({viewerId, post}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                            {
-                                Object.keys(post.comments).map((comment, idx) => (
-                                <Comment key={idx} authorId={authorId} viewerId={viewerId} postId={postId} {...post.comments[comment]}/>
-                                )
-                            )}
+                           <Comments key={commentCreated} viewerId={viewerId} url={post.id + '/comments'} author={author}> </Comments>
                         </div>}
                         <br></br>
-                    {
+                    <div>
+                    <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
+                </div>
+                {
                         post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
                     }    
                     {

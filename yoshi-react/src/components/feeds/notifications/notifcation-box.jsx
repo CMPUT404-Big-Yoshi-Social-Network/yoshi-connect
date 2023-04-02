@@ -42,8 +42,9 @@ function Notifications(props) {
         console.log('Debug: <TLDR what the function is doing>')
      });
     return (
-        <div>
+        <div className='notif-card'>
             <h3>Notifications</h3>
+            <hr/>
             <div><Requests authorId={props.authorId}/></div>
             {/* Friend Requests: accepted notification
             Likes received from own posts from other users

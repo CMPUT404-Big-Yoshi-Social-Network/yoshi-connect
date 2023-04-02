@@ -29,7 +29,8 @@ import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
     const username = props.username !== undefined ? props.username : props.displayName
-    const [requestButton, setRequestButton] = useState('Send Follow Request');
+    const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
+    const [requestButton, setRequestButton] = useState('Add');
     /**
      * Description:     
      * Returns: 
@@ -38,6 +39,8 @@ function SearchCard(props) {
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
     const navigate = useNavigate();
+    let id = props.id.split('/')
+    id = id[id.length - 1]
 
     useEffect(() => {
         /**
@@ -68,18 +71,71 @@ function SearchCard(props) {
         getId();
     }, [navigate]);
 
+    useEffect(() => {
+        /**
+         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
+            let config = {
+                isLocal: (host === 'https://yoshi-connect.herokuapp.com/') || (host === 'https://yoshi-connect.herokuapp.com') || host === ('http://localhost:3000/')
+            }
+            axios
+            .post('/authors/' + viewerId + '/friends/' + id, config)
+            .then((response) => {
+                if (response.data.status === 'Friends') {
+                    setRequestButton('Unfriend');
+                } else if (response.data.status === 'Follows') {
+                    setRequestButton('Unfollow');
+                } else if (response.data.status === 'Strangers') {
+                    setRequestButton('Add');
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 500) { console.log('500 PAGE') }
+            });
+        }
+    }, [id, viewerId, host]);
+
+    useEffect(() => {
+        if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
+            axios
+            .get('/authors/' + viewerId + '/inbox/requests/' + id)
+            .then((response) => { 
+                setRequestButton('Sent');
+            })
+            .catch(err => {
+                if (err.response.status === 404) { }
+            });
+        }
+    }, [viewerId, id, host]);
+
     const sendRequest = () => {
         setRequestButton('Sent');
-        let id = props.id.replace(props.host + 'authors/', '');
-        let config = {
-            summary: viewer + " wants to follow " + username,
-            actor: viewer,
-            actorId: viewerId,
-            objectId: id,
-            object: props
+        let config = '';
+        let url = '';
+        if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
+            url = '/authors/' + id + '/inbox'
+            config = {
+                actor: {
+                    id: host + 'authors/' + viewerId,
+                    status: 'local'
+                },
+                type: 'follow'
+            }
+        } else {
+            url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
+            config = {
+                summary: viewer.displayName + " wants to follow " + username,
+                actor: viewer,
+                actorId: viewerId,
+                objectId: id,
+                object: props
+            }
         }
         axios
-        .post('/nodes/outgoing/authors/' + id + '/inbox/follow', config)
+        .post(url, config)
         .then((response) => { })
         .catch(err => { });
     }
@@ -87,8 +143,8 @@ function SearchCard(props) {
         <div>
             { !props && username === undefined ? null : 
                 <div>
-                    {username}
-                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    <p className='search-username'>{username}</p>
+                    <Button className='search-button' onClick={sendRequest} type="submit">{requestButton}</Button>
                 </div>
             }
         </div>

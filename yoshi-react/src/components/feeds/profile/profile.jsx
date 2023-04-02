@@ -50,6 +50,12 @@ function Profile() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const { username } = useParams();
+    const [profileInfo, setProfileInfo] = useState({
+        github: null,
+        profileImage: null,
+        about: null,
+        pronouns: null
+    })
     const [personal, setPersonal] = useState({
         person: null,
         viewer: null,
@@ -63,7 +69,7 @@ function Profile() {
     let exists = useRef(null);
     useEffect(() => {
         /**
-         * Description: Get the account details of the author
+         * Description: Get the viewership details
          * Request: GET
          * Returns: N/A
          */
@@ -73,6 +79,9 @@ function Profile() {
         let viewed = '';
         let viewedId = '';
         let viewerId = '';
+        let numPosts = '';
+        let numFollowing = '';
+        let numFollowers = '';
         let otherUrl = '';
 
         const isRealProfile = () => {
@@ -91,11 +100,18 @@ function Profile() {
                 viewed = response.data.viewed
                 viewedId = response.data.viewedId
                 viewerId = response.data.viewerId
+                numPosts = response.data.numPosts
+                numFollowing = response.data.numFollowing
+                numFollowers = response.data.numFollowers
+                console.log("Everything", response.data)
                 setPersonal(prevPersonal => ({...prevPersonal, person}))
                 setPersonal(prevViewer => ({...prevViewer, viewer}))
                 setPersonal(prevViewed => ({...prevViewed, viewed}))
                 setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
                 setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+                setPersonal(prevNumPosts => ({...prevNumPosts, numPosts}))
+                setPersonal(prevNumFollowing => ({...prevNumFollowing, numFollowing}))
+                setPersonal(prevNumFollowers => ({...prevNumFollowers, numFollowers}))
 
                 otherUrl = 'other/' + viewedId;
                 setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
@@ -112,6 +128,51 @@ function Profile() {
         }
         isRealProfile();
     }, [navigate, username])
+
+    useEffect(() => {
+        let github = '';
+        let profileImage = '';
+        let about = '';
+        let pronouns = '';
+
+        if (personal.viewedId) {
+            const getProfileInfo = () => {
+                /**
+                 * Description: Gets account details of author
+                 * Request: GET
+                 * Returns: N/A
+                 */
+                console.debug("Debug: Getting user profile info");
+                axios
+                .get('/authors/' + personal.viewedId)
+                .then((response) => {
+                    console.log("Debug: Received user profile info");
+                    console.log("Profile Info", response.data);
+                    github = response.data.github
+                    profileImage = response.data.profileImage
+                    about = response.data.about
+                    pronouns = response.data.pronouns
+                    setProfileInfo(prevGithub => ({...prevGithub, github}))
+                    setProfileInfo(prevProfileImage => ({...prevProfileImage, profileImage}))
+                    setProfileInfo(prevAbout => ({...prevAbout, about}))
+                    setProfileInfo(prevPronouns => ({...prevPronouns, pronouns}))
+                })
+                .catch(err => {
+                    if (err.response.status === 404) {
+                        navigate('/notfound');
+                    }
+                    else if (err.response.status === 401) {
+                        navigate('/notauthorized');
+                    }
+                    else if (err.response.status === 500) {
+                        navigate('/servererror');
+                    }
+                })
+            }
+            getProfileInfo();
+        }
+    }, [navigate, personal])
+
     useEffect(() => {
         /**
          * Description: Checks if the viewer has already sent a friend request
@@ -168,10 +229,10 @@ function Profile() {
                 }
             })
             .catch(err => {
-                if (err.response.status === 500) { console.log('500 PAGE') }
+                if (err.response.status === 500) { navigate('/servererror') }
             });
         }
-    }, [username, personal, exists, requestButton])
+    }, [navigate, username, personal, exists, requestButton])
 
     const SendRequest = () => {
         /**
@@ -211,7 +272,7 @@ function Profile() {
                   } else if (err.response.status === 400) {
                     navigate('/badrequest');
                   } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                   }
             });
         } else if (requestButton === 'Unfriend') {
@@ -230,7 +291,7 @@ function Profile() {
                   } else if (err.response.status === 400) {
                     navigate('/badrequest');
                   } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                   }
             });
         } else if (requestButton === "Unfollow") {
@@ -257,7 +318,7 @@ function Profile() {
                   } else if (err.response.status === 400) {
                     navigate('/badrequest');
                   } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                   }
             });
         }
@@ -270,14 +331,19 @@ function Profile() {
                     <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
-                    <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>
+                    { (profileInfo.profileImage === '') ? <img className='profile-image' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='profile-image' src={profileInfo.profileImage} alt='prof-userimg' width={130}/>}
+                    <h1 className='profile-username'>{username}</h1>
+                    <p className='profile-pronouns' >{profileInfo.pronouns}</p>
                     { personal.person ? null : 
-                        <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
-                    <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    { (personal.person === null) ? null:
-                        (personal.person === true ?
-                        <Posts type={'personal'}/> : 
-                        <Posts type={otherUrl}/>) 
+                        <button style={{marginLeft: '1.8em'}} className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
+                    <p className='profile-nums'>{personal.numPosts} Posts</p> 
+                    <p className='profile-nums'>{personal.numFollowing} Following</p> 
+                    <p className='profile-nums'>{personal.numFollowers} Followers</p>
+                    <p className='profile-about'>{profileInfo.about}</p>
+                    
+                    <hr/>
+                    <br/>
+                    { (personal.person === null) ? null : (personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>) 
                     }   
                 </div>
                 <div className='profColR'>

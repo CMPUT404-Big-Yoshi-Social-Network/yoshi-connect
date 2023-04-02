@@ -38,6 +38,7 @@ Foundation; All Rights Reserved
     border: #24292F 0.1em solid;
     padding: 1em;
     font-family: 'Uni Neue', sans-serif;
+    z-index: 1;
 }
 
 .rn-div{

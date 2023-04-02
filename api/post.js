@@ -220,7 +220,25 @@ router.get('/friends-posts', async (req, res) => {
  *                      postTo: ""
  *                      unlisted: false
  */
-router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
+router.get('/personal', async (req, res) => { 
+  const authorId = req.params.authorId;
+  
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let size = req.query.size ? parseInt(req.query.size) : 5;
+
+  let [author, status] = await getAuthor(authorId);
+
+  if (status != 200 || author.admin) { return res.sendStatus(status); }
+
+  [posts, status] = await getPosts(req.cookies.token, page, size, author);
+
+  if (status != 200) { return res.sendStatus(status); }
+
+  return res.json({
+    "type": "posts",
+    "items": posts
+  });
+})
 
 /**
  * @openapi
@@ -278,7 +296,25 @@ router.get('/personal', async (req, res) => { await fetchMyPosts(req, res); })
  *                      postTo: ""
  *                      unlisted: false
  */
-router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res); })
+router.get('/other/:other', async (req, res) => { 
+  const authorId = req.params.other;
+  
+  let page = req.query.page ? parseInt(req.query.page) : 1;
+  let size = req.query.size ? parseInt(req.query.size) : 5;
+
+  let [author, status] = await getAuthor(authorId);
+
+  if (status != 200 || author.admin) { return res.sendStatus(status); }
+
+  [posts, status] = await getPosts(req.cookies.token, page, size, author);
+
+  if (status != 200) { return res.sendStatus(status); }
+
+  return res.json({
+    "type": "posts",
+    "items": posts
+  });
+})
 
 /**
  * @openapi

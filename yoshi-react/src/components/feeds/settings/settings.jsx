@@ -49,7 +49,10 @@ function Settings() {
     const [newAuthor, setNewAuthor] = useState({
         newUsername: '',
         newPassword: '',
-        newEmail: ''
+        newEmail: '',
+        newGithub: "",
+        newImage: ""
+
     })
     const [viewer, setViewer] = useState('')
     
@@ -76,6 +79,7 @@ function Settings() {
                 let viewerId = response.data.authorId;
                 setNewAuthor({ newUsername: username })
                 setNewAuthor({ newEmail: email })
+                setNewAuthor({ image: response.data.profileImage })
                 setViewer(viewerId)
             })
             .catch(err => { 
@@ -111,7 +115,9 @@ function Settings() {
                 id: viewer,
                 username: newAuthor.newUsername,
                 password: newAuthor.newPassword,
-                email: newAuthor.newEmail
+                email: newAuthor.newEmail, 
+                profileImage: newAuthor.newImage,
+                github: newAuthor.newGithub
             }
         }
 
@@ -140,7 +146,7 @@ function Settings() {
                 <div className='pubColM'>
                     <div className='settingColM'>
                         <div className='profile-heading'>
-                            <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/>
+                        { newAuthor.image === "" ? <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/> : <img className='ad-pubUserImg' alt='ad-pubUser' src={newAuthor.image} width={40}/> }
                         </div>
                         <Card.Body>
                             <Form className='account-details-form'>
@@ -167,6 +173,20 @@ function Settings() {
                                         name="password"
                                         onChange={(e) => {setNewAuthor({...newAuthor, newPassword: e.target.value})}}
                                         type="password" className='account-details-box'/>
+                                </Form.Group>
+                                <Form.Group className="account-details-a">
+                                    <p>GitHub Username</p>
+                                    <Form.Control
+                                        name="github"
+                                        onChange={(e) => {setNewAuthor({...newAuthor, newGithub: e.target.value})}}
+                                        type="text" className='account-details-box'/>
+                                </Form.Group>
+                                <Form.Group className="account-details-a">
+                                    <p>Profile Picture</p>
+                                    <Form.Control
+                                        name="image"
+                                        onChange={(e) => {setNewAuthor({...newAuthor, newImage: e.target.value})}}
+                                        type="text" className='account-details-box'/>
                                 </Form.Group>
                                 <br></br>
                                 <Button onClick={modify} variant="warning" type="submit" className='save-setting'>Save</Button>

@@ -188,25 +188,11 @@ async function getProfile(req, res) {
 
 async function getAuthor(authorId){
     /**
-    Description: Retrives the Author from database
-    Associated Endpoint: /authors/:authorId
-                         /authors/:authorId/posts
-    Request Type: GET 
-    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
-    Return: 404 Status (Not Found) -- Author was not found in database
-            500 Status (Internal Server Error) -- Unable to retreive author from database 
-            200 Status (OK) -- Returns sanitized Author 
-                                { type: author
-                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
-                                    authorId: 29c546d45f564a27871838825e3dbecb,
-                                    host: https://yoshi-connect.herokuapp.com/,
-                                    displayName: abc, 
-                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
-                                    email: 123@aulenrta.ca,  
-                                    github: "https://github.com/name",
-                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
-                                    about: "author bio",
-                                    pronouns: "they/them" }
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     const author = await Author.findOne({_id: authorId}, function (err, author) {
         if (err) { return "server failure"; }
@@ -236,26 +222,11 @@ async function getAuthor(authorId){
 
 async function updateAuthor(token, author){
     /**
-    Description: Updates the Author in the database
-    Associated Endpoint: /settings
-                         /authors/:authorId                        
-    Request Type: POST
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
     Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 401 Status (Unathorized) -- Author token is not authenticated
-            404 Status (Not Found) -- Author was not found in database
-            400 Status (Bad Request) -- Type, authorId, host, or username are incorrect
-            200 Status (OK) -- Returns sanitized Author 
-                                { type: author
-                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
-                                    authorId: 29c546d45f564a27871838825e3dbecb,
-                                    host: https://yoshi-connect.herokuapp.com/,
-                                    displayName: abc, 
-                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
-                                    email: 123@aulenrta.ca,  
-                                    github: "https://github.com/name",
-                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
-                                    about: "author bio",
-                                    pronouns: "they/them" }
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     if (await checkExpiry(token)) { return [null, 401]; }
 
@@ -291,24 +262,11 @@ async function updateAuthor(token, author){
 
 async function getAuthors(page, size){
     /**
-    Description: Gets a paginated list of Authors
-    Associated Endpoint: /authors
-    Request Type: GET
-    Request Body: N/A
-    Return: 500 Status (Internal Server Error) -- Unable to retreive Authors from database
-            400 Status (Bad Request) -- Incorrect paging requested from the user
-            200 Status (OK) -- Returns sanitized paginated list of Authors 
-                                { type: author
-                                    id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
-                                    authorId: 29c546d45f564a27871838825e3dbecb,
-                                    host: https://yoshi-connect.herokuapp.com/,
-                                    displayName: abc, 
-                                    url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb, 
-                                    email: 123@aulenrta.ca,  
-                                    github: "https://github.com/name",
-                                    profileImage: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd"
-                                    about: "author bio",
-                                    pronouns: "they/them" }
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     let authors = undefined;
 
@@ -344,11 +302,11 @@ async function getAuthors(page, size){
 
 function validateAuthorObject(author){
     /**
-    Description: Validates the Author from the database 
-    Associated Endpoint: N/A
-    Request Type: N/A
-    Request Body: N/A
-    Return: N/A
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
     */
     if(author == undefined || author.id == undefined || author.host == undefined || author.displayName == undefined || author.url == undefined || !author.github == undefined || author.profileImage == undefined){
         return false;

@@ -254,7 +254,6 @@ router.post('/', async (req, res) => {
 	}
 	else{
 		res.sendStatus(400);
-		return;
 	}
 
 	if(status != 200){

@@ -817,11 +817,11 @@ async function fetchMyPosts(req, res) {
 
 async function fetchOtherPosts(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets other Author's posts
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 200 Status (OK) -- Returns a JSON with an array of the other Author's posts
     */
     const posts = await PostHistory.aggregate([
         {

@@ -22,13 +22,6 @@ Foundation; All Rights Reserved
 // Functionality 
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-// Child Components
-import EditComment from "./editComment";
-
-// User Interface
-import Popup from 'reactjs-popup';
 
 function Comment({viewerId, comment, author}) {
     /**
@@ -67,7 +60,7 @@ function Comment({viewerId, comment, author}) {
                 let like = likes[i];
                 let likeAuthorId = like.author.id.split("/");
                 likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
-                if(likeAuthorId == viewerId){
+                if(likeAuthorId === viewerId){
                     setLiked(true);
                     return
                 }
@@ -78,7 +71,7 @@ function Comment({viewerId, comment, author}) {
         .catch((err) => {
             console.log(err);
         });
-    },[]);
+    },[comment.id, viewerId]);
 
     return (
         <div id='comment'>

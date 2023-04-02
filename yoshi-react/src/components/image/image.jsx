@@ -43,7 +43,7 @@ export default function Image(prop) {
             })
         }
         getImage();
-    }, [])
+    }, [link])
 
     return(<img className={"image"} src={item} alt=""/>);
   }

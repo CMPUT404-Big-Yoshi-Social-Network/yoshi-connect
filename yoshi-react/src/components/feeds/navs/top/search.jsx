@@ -145,7 +145,16 @@ function SearchCard(props) {
             .delete('/authors/' + id + '/inbox/requests/' + viewerId)
             .then((response) => { })
             .catch(err => { });
-        }
+        } else if (requestButton === 'Unfriend' || requestButton === "Unfollow") {
+            axios
+            .delete('/authors/' + viewerId + '/followings/' + id)
+            .then((response) => {
+                if (response.data.status === 204) {
+                    setRequestButton('Add');
+                }
+            })
+            .catch(err => { });
+        } 
     }
 
     const seePosts = () => {

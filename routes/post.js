@@ -307,7 +307,6 @@ async function createPost(token, authorId, postId, newPost) {
     return await getPost(postId, authorId, author);
 }
 
-<<<<<<< HEAD
 async function getHostNames(){
     /**
     Description: Gets the host names
@@ -331,8 +330,6 @@ async function getHostNames(){
     return hosts;
 }
 
-=======
->>>>>>> c692461154518e935cb6c17e1fed473bc3fb445f
 async function sharePost(token, authorId, postId, newPost) {
     /**
     Description: Sends a POST request to share post assciated with a specific Author

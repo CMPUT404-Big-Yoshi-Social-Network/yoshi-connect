@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,37 +29,37 @@ import axios from 'axios';
 import Comment from './comment.jsx';
 
 function Comments(params) {
-const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState([]);
 
-console.log('Debug: <TLDR what the function is doing>')
-useEffect(() => {
+    console.log('Debug: <TLDR what the function is doing>')
+    useEffect(() => {
 
-    axios.get(params.url)
-    .then((response) => {
-        if(response.data.comments){
-            setComments(response.data.comments);
-        }
-        })
-    .catch((err) => {
-        setComments([]);
-        });
-}, [params.url]);
-return (
-    <div>
-        { comments.length === 0 ? 
-            <div>
-                <h4>No comments to show.</h4>
-            </div> : 
-            <div> 
-                <Pagination>
-                    {Object.keys(comments).map((comment, idx) => (
-                        <Comment key={idx} comment={comments[comment]} author={params.author}/>
-                    ))}  
-                </Pagination>  
-            </div>
-        }
-    </div>
-)
+        axios.get(params.url)
+        .then((response) => {
+            if(response.data.comments){
+                setComments(response.data.comments);
+            }
+         })
+        .catch((err) => {
+            setComments([]);
+         });
+    }, [params.url]);
+    return (
+        <div>
+            { comments.length === 0 ? 
+                <div>
+                    <h4>No comments to show.</h4>
+                </div> : 
+                <div> 
+                    <Pagination>
+                        {Object.keys(comments).map((comment, idx) => (
+                            <Comment key={idx} comment={comments[comment]} author={params.author}/>
+                        ))}  
+                    </Pagination>  
+                </div>
+            }
+        </div>
+    )
 }
 
 export default Comments;

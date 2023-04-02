@@ -85,7 +85,7 @@ function CreatePost() {
     useEffect(() => {
         /**
          * Description: Fetches the current authorId through sending a POST request
-         * Request: POST
+         * Request: GET
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')

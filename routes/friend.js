@@ -156,6 +156,27 @@ async function deleteFollowing(authorId, foreignId){
     return 204;
 }
 
+async function deleteFollower(authorId, foreignId){
+    /**
+    Description: 
+    Associated Endpoint: (for example: /authors/:authorid)
+    Request Type: 
+    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    */
+    const followers = await Follower.findOne({authorId: authorId});
+    for(let i = 0; i < followers.followers.length; i++){
+        let follow = followers.followers[i];
+
+        if(follow.authorId == foreignId){
+            followers.followers[i].remove();
+            await followers.save();
+            break
+        }
+    }
+    return 204;
+}
+
 async function isFriend(isLocal, authorId, foreignId, res) {
     /**
     Description: Checks if the Author associated with foreignId is true friends with Author associated with authorId
@@ -327,5 +348,6 @@ module.exports={
     deleteFollowing,
     getFriends,
     addFollower,
-    isFriend
+    isFriend,
+    deleteFollower
 }

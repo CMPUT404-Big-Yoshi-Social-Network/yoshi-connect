@@ -89,7 +89,6 @@ function SearchCard(props) {
                     setRequestButton('Unfollow');
                 } else if (response.data.status === 'Strangers') {
                     if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
-                        console.log('ere')
                         axios
                         .get('/authors/' + viewerId + '/inbox/requests/' + id)
                         .then((response) => { 
@@ -146,14 +145,52 @@ function SearchCard(props) {
             .then((response) => { })
             .catch(err => { });
         } else if (requestButton === 'Unfriend' || requestButton === "Unfollow") {
+            let completed = false;
             axios
             .delete('/authors/' + viewerId + '/followings/' + id)
             .then((response) => {
                 if (response.data.status === 204) {
-                    setRequestButton('Add');
+                    completed = true;
+                } else {
+                    completed = false;
                 }
             })
             .catch(err => { });
+            axios
+            .delete('/authors/' + id + '/followers/' + viewerId)
+            .then((response) => {
+                if (response.data.status === 204) {
+                    completed = true;
+                } else {
+                    completed = false;
+                }
+            })
+            .catch(err => { });
+            if (requestButton === 'Unfriend') {
+                axios
+                .delete('/authors/' + id + '/followings/' + viewerId)
+                .then((response) => {
+                    if (response.data.status === 204) {
+                        completed = true;
+                    } else {
+                        completed = false;
+                    }
+                })
+                .catch(err => { });
+                axios
+                .delete('/authors/' + viewerId + '/followers/' + id)
+                .then((response) => {
+                    if (response.data.status === 204) {
+                        completed = true;
+                    } else {
+                        completed = false;
+                    }
+                })
+                .catch(err => { });
+            }
+            if (completed) {
+                setRequestButton('Add');
+            }
         } 
     }
 

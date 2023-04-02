@@ -19,22 +19,16 @@ some of the code is Copyright © 2001-2013 Python Software
 Foundation; All Rights Reserved
 */
 
-.pubColL, .pubColM, .pubColR {
+.feedColL, .feedColM, .feedColR {
     display: inline-block;
 }
 
-.pubColL, .pubColR {
+.feedColL, .feedColR {
     width: 15%;
 }
 
-.pubColM {
+.feedColM {
+    margin-top: 4em;
     width: 70%;
     background-color: #090D0E;
-}
-
-.pfp {
-    position: relative;
-    height: 10em;
-    top: 2em;
-    right: 2em;
 }

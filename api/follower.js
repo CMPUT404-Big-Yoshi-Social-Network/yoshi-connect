@@ -292,12 +292,11 @@ router.put('/:foreignAuthorId', async (req, res) => {
  */
 router.delete('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
-  if (req.body.type == undefined || req.body.type != "follower") { return res.sendStatus(400) }
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const statusCode = await deleteFollower(req.cookies.token, authorId, foreignId, req.body);
+  const statusCode = await deleteFollower(authorId, foreignId);
 
   return res.sendStatus(statusCode);
 })

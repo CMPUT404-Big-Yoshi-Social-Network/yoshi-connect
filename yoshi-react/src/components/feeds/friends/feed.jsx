@@ -74,7 +74,7 @@ function FriendFeed() {
                     <LeftNavBar authorId={viewer.viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts type={'friends-posts'}/>  
+                    <Posts type={'inbox'}/>  
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

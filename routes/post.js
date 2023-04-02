@@ -192,11 +192,15 @@ async function getPost(postId, auth, author){
 
 async function createPost(token, authorId, postId, newPost) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates the posts associated with postId for the Author associated with authorId to create a post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: PUT
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Token expired or is not authenticated
+            400 Status (Bad Request) -- Post details are invalid
+            404 Status (Not Found) -- Post associated with author ID was not found
+            500 Status (Internal Server Error) -- Unable to confrim post in database
+            200 Status (OK) -- Returns Authour's post
     */
     if(! (await authLogin(token, authorId))){ return [[], 401]; }
 

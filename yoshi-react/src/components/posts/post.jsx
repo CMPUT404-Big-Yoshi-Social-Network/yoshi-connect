@@ -36,8 +36,8 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
-    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : undefined;
-    let authorId = post.author ? post.author.id ? post.author.id.split('/')[(post.author.id.split('/')).length - 1] : post.author.authorId : undefined;
+    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : post._id ? post._id : undefined;
+    let authorId = post.author ? post.author.id ? post.author.id.split('/')[(post.author.id.split('/')).length - 1] : post.author.authorId || post.authorId : undefined;
     let published = post.published.substring(0,10);
 
     const [numLikes, setNumLikes] = useState(post.likeCount);

@@ -71,9 +71,35 @@ function Profile() {
         viewerId: null
     })
     const [requestButton, setRequestButton] = useState('Add');
-    const [otherUrl, setOtherUrl] = useState([]);
+    const [otherUrl, setOtherUrl] = useState("");
+    const [userInfo, setUserInfo] = useState({})
     const navigate = useNavigate();
     let exists = useRef(null);
+
+    useEffect(() => {
+        /**
+         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        const getId = () => {
+            /**
+             * Description: Sends a POST request to get the current author's id 
+             * Request: POST
+             * Returns: N/A
+             */
+            console.log('Debug: <TLDR what the function is doing>')
+            axios
+            .get('/userinfo/')
+            .then((response) => {
+                setUserInfo(response.data);
+            })
+            .catch(err => { 
+                if (err.response.status === 401 || err.response.status === 404) {  }}
+            )
+        }
+        getId();
+    }, []);
 
     useEffect(() => {
         /**
@@ -283,7 +309,7 @@ function Profile() {
                   } else if (err.response.status === 400) {
                     navigate('/badrequest');
                   } else if (err.response.status === 500) {
-                    navigate('/servererror')
+                    navigate('/servererror');
                   }
             });
         } else if (requestButton === 'Unfriend') {
@@ -361,7 +387,7 @@ function Profile() {
                     <hr/>
                     <br/>
                     {
-                        personal.person === null ? state.isRemote === true ? <Posts posts={state.posts}/> : null : personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>
+                        personal.person === null ? state.isRemote === true ? <Posts url={state.url ? state.url : otherUrl} userInfo={userInfo}/> : null : personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>
                     }
                 </div>
                 <div className='profColR'>

@@ -211,12 +211,7 @@ function SearchCard(props) {
                     size: 5
                 }
             }
-            axios
-            .get('/nodes/outgoing/authors/' + id + '/posts', config)
-            .then((response) => { 
-                navigate('/users/' + username, { state: { posts: response.data.items, isRemote: true } })
-            })
-            .catch(err => { })
+            navigate('/users/' + username, { state: { url: '/nodes/outgoing/authors/' + id + '/posts', isRemote: true } })
         }
     }
 

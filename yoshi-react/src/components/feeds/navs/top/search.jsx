@@ -66,10 +66,12 @@ function SearchCard(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let viewerId = response.data.authorId;
-                let viewer = response.data;
-                setViewerId(viewerId)
-                setViewer(viewer)
+                if (response.data !== null) { 
+                    let viewerId = response.data.authorId;
+                    let viewer = response.data;
+                    setViewerId(viewerId)
+                    setViewer(viewer)
+                }
             })
             .catch(err => { if (err.response.status === 404) { 
                 setViewerId('')

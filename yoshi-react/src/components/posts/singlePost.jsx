@@ -54,8 +54,10 @@ function SinglePost() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let viewerId = response.data.authorId;
-                setViewerId(viewerId);
+                if (response.data !== null) { 
+                    let viewerId = response.data.authorId;
+                    setViewerId(viewerId);
+                }
             })
             .catch(err => { 
                 console.log(err)

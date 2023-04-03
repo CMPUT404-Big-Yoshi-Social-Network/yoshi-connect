@@ -104,8 +104,10 @@ function CreatePost() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let authorId = response.data.authorId;
-                setData(prevAuthorId => ({...prevAuthorId, authorId}))
+                if (response.data !== null) { 
+                    let authorId = response.data.authorId;
+                    setData(prevAuthorId => ({...prevAuthorId, authorId}))
+                }
             })
             .catch(err => { 
                 if (err.response.status === 404) { 

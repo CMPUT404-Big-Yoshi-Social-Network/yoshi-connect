@@ -55,7 +55,9 @@ function FriendFeed() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                setUserInfo(response.data);
+                if (response.data !== null) {
+                    setUserInfo(response.data);
+                }
             })
             .catch(err => {  
 

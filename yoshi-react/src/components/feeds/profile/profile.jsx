@@ -92,7 +92,9 @@ function Profile() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                setUserInfo(response.data);
+                if (response.data !== null) { 
+                    setUserInfo(response.data);
+                }
             })
             .catch(err => { 
                 if (err.response.status === 401 || err.response.status === 404) {  }}

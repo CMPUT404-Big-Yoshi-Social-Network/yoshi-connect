@@ -59,8 +59,10 @@ function RightNavBar() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                setProfile({username: response.data.displayName, pic: response.data.profileImage})
-                setLogged(true);
+                if (response.data !== null) {
+                    setProfile({username: response.data.displayName, pic: response.data.profileImage})
+                    setLogged(true);
+                }
             })
             .catch(err => { if (err.response.status === 404) { 
                 setProfile({username: ""})

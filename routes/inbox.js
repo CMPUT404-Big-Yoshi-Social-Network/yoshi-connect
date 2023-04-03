@@ -815,6 +815,7 @@ async function sendToForeignInbox(url, auth, data){
     })
     .catch((err) => {
         console.log(err)
+        status = 400;
      })
 
     return [response, status];

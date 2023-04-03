@@ -390,6 +390,21 @@ async function sharePost(token, authorId, postId, newPost) {
             200 Status (OK) -- Returns Authour's post
     */
     let authorPromise = getAuthor(authorId);
+    let forAuthor = '';
+    if (newPost.author._id !== undefined && newPost.author._id !== null) {
+        let a = await Author.findOne({_id: newPost.author._id.split('/authors/')[(newPost.author._id.split('/authors/')).length - 1]}).clone();
+        forAuthor = {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + a._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: a.username,
+            url: process.env.DOMAIN_NAME + "authors/" + a._id,
+            github: a.github,
+            profileImage: a.profileImage 
+        }
+    } else {
+        forAuthor = newPost.author;
+    }
 
     const title = newPost.title;
     const description = newPost.description;
@@ -486,7 +501,7 @@ async function sharePost(token, authorId, postId, newPost) {
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i];
-            if (follower.id.split('/authors/')[(follower.id.split('/authors/')).length - 1] !== process.env.DOMAIN_NAME) {
+            if (follower.id.split('/authors/')[0] !== process.env.DOMAIN_NAME) {
                 // Remote Follower
                 const outgoings = await OutgoingCredentials.find().clone();
                 let auth = ''
@@ -508,7 +523,7 @@ async function sharePost(token, authorId, postId, newPost) {
                     source: source,
                     origin: newPost.origin,
                     id: newPost.id,
-                    author: newPost.author
+                    author: forAuthor
                 })
             } else {
                 const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();

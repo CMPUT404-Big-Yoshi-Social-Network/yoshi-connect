@@ -245,7 +245,25 @@ router.post('/', async (req, res) => {
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
-		[response, status] = await postInboxFollow(req.body);
+		let actor = null;
+		if (req.body.actor.status !== undefined) {
+			let actorId = req.body.actor.id;
+			actorId = actorId.split("/");
+			actorId = actorId[actorId.length - 1];
+			const actorDoc = await Author.findOne({_id: actorId});
+			actor = {
+				id: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
+				host: process.env.DOMAIN_NAME,
+				displayName: actorDoc.username,
+				url: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
+				github: actorDoc.github,
+				profileImage: actorDoc.profileImage
+			}
+		} else {
+			// remote
+			actor = req.body.actor;
+		}
+		[response, status] = await postInboxRequest(actor, req.params.authorId);
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);

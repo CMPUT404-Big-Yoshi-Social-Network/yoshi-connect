@@ -27,6 +27,13 @@ import './create.css';
 
 
 function SharePost({viewerId, post}) {
+    /**
+     * Description: Represents the paginated Posts
+     * Functions: 
+     *     - useEffect(): Fetches the Post's image
+     *     - share(): Shares the Post 
+     * Returns: N/A
+     */
     let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : undefined;
     let authorId = post.author ? post.author.authorId : undefined;
 
@@ -48,6 +55,11 @@ function SharePost({viewerId, post}) {
      });
 
     useEffect(() => { 
+        /**
+         * Description: Fetches the Post's image through a GET request
+         * Request: GET    
+         * Returns: N/A
+         */
         console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
             if (authorId !== null && authorId !== undefined && postId !== null && postId !== undefined) {
@@ -65,8 +77,8 @@ function SharePost({viewerId, post}) {
 
     const share = async () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
+         * Description: Shares the Post through a POST request
+         * Request: POST    
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')

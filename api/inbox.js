@@ -180,12 +180,12 @@ router.post('/', async (req, res) => {
 		if(!token){
 			return res.sendStatus(401);
 		}
-		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
+		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like" || req.body.type == "follow"){
 			authorId = req.body.author.id.split("/");
 			authorId = authorId[authorId.length - 1];
 		}
 		else if(req.body.type == "follow"){
-			authorId = req.body.actor.id.split("/");
+			authorId = req.body.author.id.split("/");
 			authorId = authorId[authorId.length - 1];
 		}
 		else{
@@ -264,7 +264,7 @@ router.post('/', async (req, res) => {
 			// remote
 			actor = req.body.actor;
 		}
-		[response, status] = await postInboxRequest(actor, req.params.authorId);
+		[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type); 
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);

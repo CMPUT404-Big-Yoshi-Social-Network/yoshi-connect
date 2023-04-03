@@ -214,8 +214,6 @@ function Post({viewerId, post, author}) {
             }
         });
     }
-    
-    
 
     return (
         <div className="post">

@@ -473,36 +473,63 @@ async function postInboxLike(like, authorId){
     */
     authorId = authorId.split("/");
     authorId = authorId[authorId.length - 1];
+    let objectHost = like.object.split('/authors/')
+    objectHost = objectHost[0]
+    if (process.env.DOMAIN_NAME === objectHost) {
+        const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
+        let author = like.author;
+        // if(!validateAuthorObject(author)){
+        //     return [{}, 400];
+        // }
+        author = {
+            _id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github, 
+            profileImage: author.profileImage
+        };
+    
+        if(await addLiked(author._id, like.object)){
+            return [like, 403];
+        }
+        await addLike(like, authorId); 
+    
+        const inboxLike = {
+            author: author,
+            object: like.object,
+            summary: like.summary
+        }
+    
+        inbox.likes.push(inboxLike);
+    
+        inbox.save();
+    } else {
+        let obj = (like.object.split('/authors/'))[(like.object.split('/authors/')).length - 1]
+        obj = obj.split('/posts/')
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].url === objectHost) {       
+                auth = outgoings[i].auth;
+            }
+        }
+        var config = {
+            host: objectHost,
+            url: objectHost + obj[obj.length - 1] + '/inbox',
+            method: 'POST',
+            headers: {
+                'Authorization': auth,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                ...like
+            }
+        };
 
-    const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
-    let author = like.author;
-    // if(!validateAuthorObject(author)){
-    //     return [{}, 400];
-    // }
-
-    author = {
-        _id: author.id,
-        host: author.host,
-        displayName: author.displayName,
-        url: author.url,
-        github: author.github, 
-        profileImage: author.profileImage
-    };
-
-    if(await addLiked(author._id, like.object)){
-        return [like, 403];
+        await axios.request(config)
+        .then( res => { })
     }
-    await addLike(like, authorId); 
-
-    const inboxLike = {
-        author: author,
-        object: like.object,
-        summary: like.summary
-    }
-
-    inbox.likes.push(inboxLike);
-
-    inbox.save();
 
     return [like, 200];
 }

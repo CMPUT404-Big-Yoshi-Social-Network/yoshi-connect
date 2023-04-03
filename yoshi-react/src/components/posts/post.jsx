@@ -148,7 +148,7 @@ function Post({viewerId, post, author}) {
             }
             let id = post.author.id.split("/");
 			id = id[id.length - 1];
-            axios.post('/authors/' + id + '/inbox', body, {
+            axios.post('/authors/' + encodeURIComponent(post.author.id) + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
         })
         .then((response) => {

@@ -42,6 +42,9 @@ function Post({viewerId, post, author}) {
         post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
         undefined : 
         undefined;
+    if (authorId === undefined) {
+        authorId = author;
+    }
     let published = post.published.substring(0,10);
     let contentType = post.contentType ? post.contentType : ""
     

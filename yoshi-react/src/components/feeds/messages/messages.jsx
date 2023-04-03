@@ -52,7 +52,6 @@ function Messages() {
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 5;
-    console.log(currentMessenger)
 
     useEffect(() => {
         /**
@@ -233,7 +232,7 @@ function Messages() {
                             <div> 
                                 <Pagination>
                                     {Object.keys(posts).map((post, idx) => (
-                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]}/>
+                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]} author={viewer.viewerId}/>
                                     ))}  
                                     { seeMore ? null :
                                         <div>

@@ -88,7 +88,8 @@ function Settings() {
                     setNewAuthor({ newEmail: '' })
                     setViewer({ viewerId: '' })
                 } else if (err.response.status === 401) {
-                    navigate('/unauthorized')
+                    // navigate('/unauthorized')
+                    navigate("/welcome")
                 }
             });
         }

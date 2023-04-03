@@ -56,7 +56,6 @@ function Comment({viewerId, comment, author, url}) {
         function getLikes(){
             axios.get(url + "/" + commentId + '/likes')
             .then((response) => {
-                console.log(response);
                 let likes = response.data.likes;
                 for(let i = 0; i < likes.length; i++){
                     let like = likes[i];
@@ -75,7 +74,7 @@ function Comment({viewerId, comment, author, url}) {
             });
         }
         getLikes();
-    },[comment.id, viewerId, url]);
+    },[commentId, viewerId, url]);
 
     return (
         <div id='comment'>

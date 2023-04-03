@@ -33,8 +33,7 @@ import './password.css';
 function PasswordChange() {
     /**
      * Description: Represents the change password page in settings
-     * Functions:
-     *     - useEffect(): Before rendering, checks if the author is logged in
+     * Functions: N/A
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')

@@ -46,9 +46,99 @@ function GitHub() {
     const navigate = useNavigate();
     const [data, setData] = useState({
         viewer: "",
-        githubUsername: "",
-        activities: [],
-        pfp: ""
+        githubUsername: "Holy-Hero",
+        activities: [
+          {
+            "text": "Opened PR at CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+            "user": {
+              "name": "Holy-Hero",
+              "link": "https://github.com/Holy-Hero",
+              "img": "https://avatars.githubusercontent.com/u/47871461?"
+            },
+            "repo": {
+              "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+              "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+            },
+            "pr": {
+              "prNumber": 132,
+              "state": "open",
+              "title": "Sharing local",
+              "url": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/pull/132"
+            },
+            "type": "pull_request"
+          },
+          {
+            "text": "Created sharing-local branch on CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+            "user": {
+              "name": "Holy-Hero",
+              "link": "https://github.com/Holy-Hero",
+              "img": "https://avatars.githubusercontent.com/u/47871461?"
+            },
+            "repo": {
+              "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+              "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+            },
+            "created": {
+              "type": "branch",
+              "branch": "sharing-local"
+            },
+            "type": "create"
+          },
+          {
+            "text": "Created profile-pic branch on CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+            "user": {
+              "name": "Holy-Hero",
+              "link": "https://github.com/Holy-Hero",
+              "img": "https://avatars.githubusercontent.com/u/47871461?"
+            },
+            "repo": {
+              "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+              "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+            },
+            "created": {
+              "type": "branch",
+              "branch": "profile-pic"
+            },
+            "type": "create"
+          },
+          {
+            "text": "Opened PR at CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+            "user": {
+              "name": "Holy-Hero",
+              "link": "https://github.com/Holy-Hero",
+              "img": "https://avatars.githubusercontent.com/u/47871461?"
+            },
+            "repo": {
+              "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+              "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+            },
+            "pr": {
+              "prNumber": 132,
+              "state": "open",
+              "title": "Sharing local",
+              "url": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/pull/132"
+            },
+            "type": "pull_request"
+          },
+          {
+            "text": "Created sharing-local branch on CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+            "user": {
+              "name": "Holy-Hero",
+              "link": "https://github.com/Holy-Hero",
+              "img": "https://avatars.githubusercontent.com/u/47871461?"
+            },
+            "repo": {
+              "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+              "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+            },
+            "created": {
+              "type": "branch",
+              "branch": "sharing-local"
+            },
+            "type": "create"
+          }
+        ],
+        pfp: "https://avatars.githubusercontent.com/u/47871461?"
     }) 
     useEffect(() => {
         /**
@@ -68,14 +158,14 @@ function GitHub() {
             .get('/userinfo', config)
             .then((response) => {
                 setData({...data, veiwer: response.data.authorId})
-                if (response.data.github !== "") {
-                    getUserActivity(response.data.github.split("/")[3]).then((res) => {
-                      if (res) {setData({...data, pfp: res[0].user.img, githubUsername: res[0].user.name})}  
-                      for (let i = 0; i < res.length; i++) {
-                          data.activities.push(res[i])
-                      }
-                    })
-                }
+                // if (response.data.github !== "") {
+                //     getUserActivity(response.data.github.split("/")[3]).then((res) => {
+                //       if (res) {setData({...data, pfp: res[0].user.img, githubUsername: res[0].user.name})}  
+                //       for (let i = 0; i < res.length; i++) {
+                //           data.activities.push(res[i])
+                //       }
+                //     })
+                // }
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
@@ -99,6 +189,7 @@ function GitHub() {
                 <div className='pubColM'>
                     {data.activities === [] ? null : <img className="pfp" src={data.pfp} alt=""/>}
                     <img src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" style={{margins: "10em", padding: "1em" }}/>
+                    {console.log(data.activities)}
                     {Object.keys(data.activities).map((activity, idx) => (
                         <Activity key={idx} activity={data.activities[activity]}/>
                     ))}

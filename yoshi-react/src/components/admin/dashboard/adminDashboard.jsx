@@ -116,11 +116,11 @@ function AdminDashboard() {
                             <AddAuthor/>
                         </Popup>
                         <div><Authors/></div>
-                        <Popup trigger={<button>Add Incoming Node</button>} position="right center">
+                        <Popup trigger={<button className='author-buttons'>Add Incoming Node</button>} position="right center">
                             <AddInNode/>
                         </Popup>
                         <div><InNodes/></div>
-                        <Popup trigger={<button>Add Outgoing Node</button>} position="right center">
+                        <Popup trigger={<button className='author-buttons'>Add Outgoing Node</button>} position="right center">
                             <AddOutNode/>
                         </Popup>
                         <div><OutNodes/></div>

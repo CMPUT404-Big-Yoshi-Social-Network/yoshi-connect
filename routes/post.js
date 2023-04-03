@@ -403,7 +403,17 @@ async function sharePost(token, authorId, postId, newPost) {
             profileImage: a.profileImage 
         }
     } else {
-        forAuthor = newPost.author;
+        authorId
+        let a = await Author.findOne({_id: authorId}).clone();
+        forAuthor = {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + a._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: a.username,
+            url: process.env.DOMAIN_NAME + "authors/" + a._id,
+            github: a.github,
+            profileImage: a.profileImage 
+        }
     }
 
     const title = newPost.title;

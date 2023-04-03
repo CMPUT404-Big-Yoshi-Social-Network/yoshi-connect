@@ -1,0 +1,16 @@
+.request-button {
+    position: relative;
+    display: inline-block;
+    color: white;
+    margin: 0em .2em;
+    background-color: #735DFA;
+    border: #735DFA;
+    border-radius: 0.50em;
+    padding: .2em .5em;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.req-name{
+    display: inline-block;
+}

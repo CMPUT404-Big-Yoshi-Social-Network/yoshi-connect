@@ -23,6 +23,7 @@ Foundation; All Rights Reserved
 import React from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './request.css'
 
 function Request(props) {
     /**
@@ -100,9 +101,9 @@ function Request(props) {
         <div id='request'>
             { props.goal !== 'accept' && props.goal !== 'reject' ? 
                 <div>
-                    { props.actor.displayName }
-                    <button className="search-button" type="button" id='accept' onClick={() => addRequest()}>Add</button>
-                    <button className="search-button" type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
+                    <p className="req-name">{ props.actor.displayName }</p>
+                    <button className="request-button" type="button" id='accept' onClick={() => addRequest()}>Add</button>
+                    <button className="request-button" type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
                 </div> :
                 props.goal === 'accept' ? 
                     <div>{ props.object.displayName } accepted your request!</div> :

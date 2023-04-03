@@ -189,7 +189,7 @@ function Requests(props) {
                         ))}
                         { seeMore ? null : 
                             <div>
-                                <Pagination.Item onClick={getMore}>See More</Pagination.Item>
+                                <p className='post-seemore' onClick={getMore}>See More</p>
                             </div>
                         }
                     </Pagination>  

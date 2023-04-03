@@ -184,14 +184,16 @@ function GitHub() {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={data.viewer}/>
+                    {/* <LeftNavBar authorId={data.viewer}/> */}
+                    <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    {data.activities === [] ? null : <img className="pfp" src={data.pfp} alt=""/>}
-                    <img src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" style={{margins: "10em", padding: "1em" }}/>
+                    {data.activities === [] ? null : <img className="github-pfp" src={data.pfp} alt="" width={150}/>}
+                    <h1 className="github-username">{data.githubUsername}</h1>
+                    <img className='github-chart' src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" style={{margins: "10em", padding: "1em" }}/>
                     {console.log(data.activities)}
                     {Object.keys(data.activities).map((activity, idx) => (
-                        <Activity key={idx} activity={data.activities[activity]}/>
+                        <Activity className='github-feed' key={idx} activity={data.activities[activity]}/>
                     ))}
                     </div>
                 <div className='pubColR'>

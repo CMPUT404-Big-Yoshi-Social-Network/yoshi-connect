@@ -23,23 +23,35 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
-function Comment({viewerId, comment, author}) {
+function Comment({viewerId, comment, author, url}) {
     /**
      * Description: Represents a Comment 
      * Functions: 
      *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
+     *     - likeComment(): Sends a POST request of the like to the Author's inbox on a specific comment
+     *     - getLikes(): Fetches the likes related to the comment ID
      * Returns: N/A
      */
+    console.log('Debug: Comment() <TLDR what the function is doing>')
+
     const [liked, setLiked] = useState(true);
+    const commentSplit = comment.id.split("/")
+    const commentId = commentSplit[commentSplit.length - 1] 
 
     const likeComment = () => {
+        /**
+         * Description: Sends the like object for a specific comment to the Author's inbox 
+         * through sending a POST request
+         * Request: POST
+         * Returns: N/A
+         */
         let body = {
             type: "like",
             summary: "DisplayName likes your comment",
             author: author,
-            object: comment.id
+            object: commentId
         }
-
+        
         axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body)
         .then((response) => {
 
@@ -51,34 +63,36 @@ function Comment({viewerId, comment, author}) {
 
     useEffect(() => {
         function getLikes(){
-            axios.get(comment.id + '/likes')
+            /**
+             * Description: Fetches the likes of a specific comment through sending a GET request
+             * Request: GET
+             * Returns: N/A
+             */
+            axios.get(url + "/" + commentId + '/likes')
             .then((response) => {
-                console.log(response);
                 let likes = response.data.likes;
                 for(let i = 0; i < likes.length; i++){
                     let like = likes[i];
-                    let likeAuthorId = like.author.id.split("/");
+                    let likeAuthorId = like.author.url.split("/");
                     likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
                     if(likeAuthorId === viewerId){
                         setLiked(true);
                         return
                     }
                 }
-                setLiked(false);
-                return
             })
             .catch((err) => {
                 console.log(err);
             });
         }
         getLikes();
-    },[comment.id, viewerId]);
+    },[commentId, viewerId, url]);
 
     return (
         <div id='comment'>
             <h4>{ comment !== undefined ? comment.author.displayName : null}</h4>
             { comment ? comment.comment : null }
-            { !liked ? <button className='post-buttons' >Already Liked</button> :
+            { liked ? <button className='post-buttons' >Already Liked</button> :
                 <button className='post-buttons' onClick={likeComment}>Like</button> }
         </div>
     )

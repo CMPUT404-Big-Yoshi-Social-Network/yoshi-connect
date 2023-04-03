@@ -693,6 +693,19 @@ async function deleteInbox(token, authorId){
 }
 
 async function sendToForeignInbox(url, auth, data){
+    /** 
+    Description: Sends a request to the foreign inbox
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { url: url + "/inbox",
+                    method: "post",
+                    headers:{
+                        "Authorization": auth,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: data }
+    Return: 200 Status (OK) -- Successfully sent the request to the foreign inbox
+    */
     let config = {
         url: url + "/inbox",
         method: "POST",

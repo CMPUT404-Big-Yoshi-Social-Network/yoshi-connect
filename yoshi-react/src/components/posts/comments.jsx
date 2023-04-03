@@ -29,11 +29,22 @@ import axios from 'axios';
 import Comment from './comment.jsx';
 
 function Comments(params) {
+    /**
+     * Description: Represents an array of Comments
+     * Functions: 
+     *     - useEffect: Fetches the the comments related to the url
+     * Returns: N/A
+     */
+    console.log('Debug: Comments() <TLDR what the function is doing>')
+
     const [comments, setComments] = useState([]);
 
-    console.log('Debug: <TLDR what the function is doing>')
     useEffect(() => {
-
+        /**
+         * Description: Fetches the the comments related to the url through sending a GET request
+         * Request: GET
+         * Returns: N/A
+         */
         axios.get(params.url)
         .then((response) => {
             if(response.data.comments){
@@ -53,7 +64,7 @@ function Comments(params) {
                 <div> 
                     <Pagination>
                         {Object.keys(comments).map((comment, idx) => (
-                            <Comment key={idx} comment={comments[comment]} author={params.author}/>
+                            <Comment key={idx} comment={comments[comment]} author={params.author} url={params.url}/>
                         ))}  
                     </Pagination>  
                 </div>

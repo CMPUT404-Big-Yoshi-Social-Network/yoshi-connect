@@ -36,10 +36,10 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
-    // let postId = post.id ? post.id.split('/') : undefined;
-    // postId = postId ? postId[postId.length - 1] : undefined;
-    // let authorId = post.author ? post.author.id.split('/') : undefined;
-    // authorId = authorId ? authorId[authorId.length - 1] : undefined;
+    let postId = post.id ? post.id.split('/') : undefined;
+    postId = postId ? postId[postId.length - 1] : undefined;
+    let authorId = post.author ? post.author.id.split('/') : undefined;
+    authorId = authorId ? authorId[authorId.length - 1] : undefined;
     let published = post.published.substring(0,10);
     
 
@@ -195,7 +195,7 @@ function Post({viewerId, post, author}) {
             contentType: "text/plaintext",
         };
 
-        axios.post(post.id + '/comments', body)
+        axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
         .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);
@@ -224,7 +224,7 @@ function Post({viewerId, post, author}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
+                    { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
                     <p>{published}</p>
                     <br></br>
@@ -243,7 +243,7 @@ function Post({viewerId, post, author}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                           <Comments key={commentCreated} viewerId={viewerId} url={post.id + '/comments'} author={author}> </Comments>
+                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author}> </Comments>
                         </div>}
                         <br></br>
                     <div>

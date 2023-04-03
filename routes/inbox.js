@@ -19,6 +19,7 @@ const { validateAuthorObject, getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
+const { OutgoingCredentials } = require('../scheme/server.js');
 
 async function getPost(postId, auth, author){
     /**
@@ -529,6 +530,7 @@ async function postInboxLike(like, authorId){
 
         await axios.request(config)
         .then( res => { })
+        .catch( error => { })
     }
 
     return [like, 200];

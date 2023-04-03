@@ -461,7 +461,7 @@ async function sendToForeignInbox(url, auth, data){
         method: "POST",
         headers:{
             "Authorization": auth,
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
         },
         data: data
     }
@@ -471,14 +471,12 @@ async function sendToForeignInbox(url, auth, data){
     let status;
     await axios.request(config)
     .then((res) => {
-        console.log(res.data);
         response = res.data;
         status = 200;
     })
     .catch((err) => {
-        console.log(err.response)
-        status = err.response.status;
-    })
+        console.log(err)
+     })
 
     return [response, status];
 }

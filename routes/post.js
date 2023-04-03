@@ -29,13 +29,13 @@ const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
 const { OutgoingCredentials } = require('../scheme/server');
 
-
 // UUID
 const crypto = require('crypto');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
 const { getAuthor } = require('./author.js');
+const { sendToForeignInbox } = require('./inbox.js');
 
 async function createPostHistory(author_id){
     /**
@@ -415,7 +415,8 @@ async function sharePost(token, authorId, postId, newPost) {
     let postHistory = await PostHistory.findOne({authorId: authorId});
     if (!postHistory) { return [[], 404]; }
 
-    let source = newPost.author._id + '/posts/' + newPost.postId;
+
+    let source = process.env.DOMAIN_NAME + 'authors/' + authorId + '/posts/' + newPost.postId;
 
     const originalPH = await PostHistory.findOne({authorId: postFrom});
     if (originalPH) {
@@ -438,7 +439,7 @@ async function sharePost(token, authorId, postId, newPost) {
         contentType: contentType,
         content: content,
         authorId: authorId,
-        categories: categories,
+        categories: [''],
         likeCount: 0,
         commentCount: 0,
         published: published,
@@ -466,6 +467,7 @@ async function sharePost(token, authorId, postId, newPost) {
     }).save();
 
     let [author, status] = await authorPromise;
+    
     if (status != 200) return [{}, 500];
 
     if (visibility == 'PUBLIC') {
@@ -478,14 +480,12 @@ async function sharePost(token, authorId, postId, newPost) {
         const publicPost = new PublicPost(post);
         await publicPost.save();
     }
-
     //TODO make this faster
     //if not unlisted send to all followers 
     if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
-        console.log(followers)
         for(let i = 0; i < followers.followers.length; i++){
-            const follower = followers.followers[i].authorId;
+            const follower = followers.followers[i];
             if (follower.id.split('/authors/')[(follower.id.split('/authors/')).length - 1] !== process.env.DOMAIN_NAME) {
                 // Remote Follower
                 const outgoings = await OutgoingCredentials.find().clone();
@@ -495,7 +495,21 @@ async function sharePost(token, authorId, postId, newPost) {
                         auth = outgoings[i].auth;
                     }
                 }
-                sendToForeignInbox(follower.id, auth, newPost)
+                await sendToForeignInbox(follower.id, auth, {
+                    type: 'post',
+                    title: newPost.title,
+                    description: newPost.description,
+                    contentType: newPost.contentType,
+                    visibility: newPost.visibility,
+                    content: newPost.content,
+                    comments: newPost.comments,
+                    unlisted: newPost.unlisted,
+                    published: published,
+                    source: source,
+                    origin: newPost.origin,
+                    id: newPost.id,
+                    author: newPost.author
+                })
             } else {
                 const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
 

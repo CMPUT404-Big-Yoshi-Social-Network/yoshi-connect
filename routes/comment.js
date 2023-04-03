@@ -74,7 +74,7 @@ async function getComments(postId, authorId, page, size) {
                 $skip: (page - 1) * size
             },
             {
-                $limit: size ? size : 5
+                $limit: size ? size : "5"
             },
             {
                 $group: {
@@ -102,7 +102,7 @@ async function getComments(postId, authorId, page, size) {
                 $sort: { "comments.published": -1 }
             },
             {
-                $limit: size ? size : 5
+                $limit: size ? size : "5"
             },
             {
                 $group: {

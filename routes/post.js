@@ -726,7 +726,7 @@ async function getPosts(token, page, size, author) {
             $sort: { "posts.published": -1 }
         },
         {
-            $limit: size ? size : 5
+            $limit: size ? size : "5"
         },
         {
             $group: {

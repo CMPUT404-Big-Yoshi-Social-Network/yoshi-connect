@@ -20,8 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 function Messenger(props) {
     /**
@@ -29,30 +28,10 @@ function Messenger(props) {
      * Returns: 
      */
     console.log('Debug: <TLDR what the function is doing>')
-    const [author, setAuthor] = useState()
-    useEffect(() => {
-        let id = props.currentMessenger.split('/')
-        id = id[id.length - 1]
-        let host = props.currentMessenger.split('/authors/')
-        if (host === 'http://www.distribution.social' || host === 'https://sociallydistributed.herokuapp.com' || host === 'https://bigger-yoshi.herokuapp.com/api') {
-            axios
-            .get('/outgoing/authors/' + id)
-            .then((response) => {
-                setAuthor(response.data)
-            })
-            .catch(err => { });
-        } else {
-            axios
-            .get('/authors/' + id)
-            .then((response) => {
-                setAuthor(response.data)
-            })
-            .catch(err => { });
-        }
-    }, [props]);
+    console.log(props)
     return (
         <div id='messenger'>
-            {author?.displayName !== undefined ? author.displayName : null }
+            {props.messenger?.displayName !== undefined ? props.messenger.displayName : null }
         </div>
     )
 }

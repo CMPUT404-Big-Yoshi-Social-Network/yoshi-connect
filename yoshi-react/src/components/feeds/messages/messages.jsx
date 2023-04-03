@@ -100,11 +100,11 @@ function Messages({currMess}) {
                 if (response.data.items !== undefined && response.data.items.length !== 0) {
                     for (let i = 0; i < response.data.items.length; i++) {
                         if (response.data.items[i].visibility === 'PRIVATE') {
-                            messengers.push(response.data.items[i].author.url);
+                            messengers.push(response.data.items[i].author);
                         }
                     }
                     if (messengers.length !== 0 && currMess === undefined) {
-                        curr = messengers[0]
+                        curr = messengers[0].url
                     } else {
                         curr = currMess
                     }

@@ -29,7 +29,7 @@ import Messages from "./messages.jsx";
 
 function MessagesNav({authorId, messengers, currentMessenger}) {
     const selectedMessenger = (messenger) => { 
-        Messages(messenger);
+        Messages(messenger.url);
     }
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
@@ -37,7 +37,7 @@ function MessagesNav({authorId, messengers, currentMessenger}) {
             { messengers === undefined || messengers.length === 0 ? null :
                 <div>
                     {Object.keys(messengers).map((messenger, idx) => (
-                        <Button key={idx} onClick={() => selectedMessenger(messenger)}><Messenger key={idx} authorId={authorId} currentMessenger={currentMessenger}/></Button>
+                        <Button key={idx} onClick={() => selectedMessenger(messenger)}><Messenger key={idx} authorId={authorId} messenger={messengers[messenger]} currentMessenger={currentMessenger}/></Button>
                     ))}
                 </div>
             }

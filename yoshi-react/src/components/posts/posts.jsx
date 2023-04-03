@@ -31,9 +31,11 @@ import Post from './post.jsx';
 
 function Posts({url, userInfo}) { 
     /**
-     * Description:  
-     * Request: (if axios is used)    
-     * Returns: 
+     * Description: Represents the paginated Posts
+     * Functions: 
+     *     - useEffect(): Fetches the paginated posts
+     *     - getMore(): Fetches more paginated posts 
+     * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [posts, setPosts] = useState([]);
@@ -44,9 +46,9 @@ function Posts({url, userInfo}) {
 
     useEffect(() => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Fetches the paginated posts  
+         * Request: GET    
+         * Returns: N/A
          */
         if (url) {
             let config = {
@@ -105,9 +107,9 @@ function Posts({url, userInfo}) {
 
     const getMore = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Fetches more paginated posts 
+         * Request: GET    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {

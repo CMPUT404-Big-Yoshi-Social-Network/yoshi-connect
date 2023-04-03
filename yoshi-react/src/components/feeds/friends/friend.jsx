@@ -24,8 +24,9 @@ import React from "react";
 
 function Friend(props) {
     /**
-     * Description:    
-     * Returns: 
+     * Description: Represents a Friend associated with the Author 
+     * Functions: N/A
+     * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
     return (

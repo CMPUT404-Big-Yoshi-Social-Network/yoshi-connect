@@ -28,14 +28,20 @@ import './create.css';
 
 function EditComment(props) {
     /**
-     * Description:  
-     * Request: (if axios is used)    
-     * Returns: 
+     * Description: Represents the updated post 
+     * Functions: 
+     *     - modifyComment(): Updates the comments's contents
+     * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
+    console.log('Debug: Editing comment')
     const [data, setData] = useState({ comment: props.comment })
     
     const modifyComment = () => {
+        /**
+         * Description: Updates the comment's contents through a POST request
+         * Request: POST
+         * Returns: N/A
+         */
         let body = { comment: data.comment }
         axios.post('/authors/' + props.authorId + '/posts/' + props.postId + '/comments' + props._id, body)
         .then((response) => { })

@@ -28,9 +28,9 @@ import Friend from './friend.jsx';
 
 function Friends(props) {
     /**
-     * Description: 
+     * Description: Represents the list of Friends for an Author 
      * Functions: 
-     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     *     - useEffect(): Fetches the Author's friend list
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -38,9 +38,9 @@ function Friends(props) {
 
     useEffect(() => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Fetches the Author's friend list through a GET request  
+         * Request: GET    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         if (props.authorId) {

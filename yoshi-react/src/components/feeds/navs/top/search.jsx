@@ -28,13 +28,21 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
+    /**
+     * Description: Represents the Search Card
+     * Functions: 
+     *     - getId(): Gets the current Author's id 
+     *     - useEffect(): 
+     *          - Fetches the current Author's id and the public and following (who the author follows) posts
+     *          - Sends a DELETE request to delete a comment on a specific post 
+     *     - sendRequest(): Sends a request to the Author's inbox
+     *     - seePosts(): Displays posts from other servers
+     * Returns: N/A
+     */
     const username = props.username !== undefined ? props.username : props.displayName
     const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
     const [requestButton, setRequestButton] = useState('Add');
-    /**
-     * Description:     
-     * Returns: 
-     */
+    
     console.log('Debug: <TLDR what the function is doing>')
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
@@ -111,6 +119,11 @@ function SearchCard(props) {
     }, [id, viewerId, host]);
 
     const sendRequest = () => {
+        /**
+         * Description: Sends a request to the Author's inbox through sending a POST request
+         * Request: POST
+         * Returns: N/A
+         */
         if (requestButton === "Add") { 
             setRequestButton('Sent');
             let config = '';
@@ -199,6 +212,10 @@ function SearchCard(props) {
     }
 
     const seePosts = () => {
+        /**
+         * Description: Displays posts from other servers
+         * Returns: N/A
+         */
         if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
             navigate('/users/' + username);
         } else {

@@ -38,6 +38,7 @@ const { Author } = require('../scheme/author');
 const { OutgoingCredentials } = require('../scheme/server');
 
 const axios = require('axios');
+const { Follower, Following } = require('../scheme/relations');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -347,11 +348,48 @@ router.post('/:authorId', async (req, res) => {
 	if (status == 404 || status == 401) { return res.sendStatus(status); }
 })
 
-router.get('/postTo/:username', async (req, res) => {
+router.get('/:authorId/postTo/:username', async (req, res) => {
 	const username = req.params.username;
+	const authorId = req.params.authorId
 	let author = await Author.findOne({username: username}).clone();
 	if (!author) { 
-		return res.sendStatus(404)
+		if (author === undefined) {
+            // Must be a private foreign (only to followers / followings)
+            let followers = await Follower.findOne({authorId: authorId});
+			let followings = await Following.findOne({authorId: authorId});
+			let foreignAuthor = '';
+			for (let i = 0; i < followers.length; i++) {
+				if (followers[i].displayName === username) {
+					foreignAuthor = followers[i]
+				}
+			}
+			if (foreignAuthor === '') {
+				for (let i = 0; i < followings.length; i++) {
+					if (followings[i].displayName === username) {
+						foreignAuthor = followings[i]
+					}
+				}
+			}
+			if (foreignAuthor === '') {
+				return res.sendStatus(400);
+			} else {
+				let objectHost = foreignAuthor.id.split('/authors/')
+				let config = {
+					host: objectHost[0],
+					url: foreignAuthor.id,
+					method: "GET",
+					headers:{
+						"Authorization": auth,
+						'Content-Type': 'application/json'
+					}
+				}
+				await axios.request(config)
+				.then((res) => { 
+					author = res.data;
+				})
+				.catch((err) => { })
+			}
+        }
 	}  
 	return res.json(author);
 })

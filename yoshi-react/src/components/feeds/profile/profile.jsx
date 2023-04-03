@@ -273,9 +273,10 @@ function Profile() {
 
     const SendRequest = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Handles sending and deleting a friend request, unfriending, and unfollowing
+         * through a PUT request  
+         * Request: PUT    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         if (requestButton === "Add") {

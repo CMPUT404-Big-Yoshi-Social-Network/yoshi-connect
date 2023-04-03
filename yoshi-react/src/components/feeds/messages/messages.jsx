@@ -32,30 +32,32 @@ import Post from "../../posts/post.jsx";
 import { Pagination } from "react-bootstrap";
 
 
-function Messages({currMess}) {
+function Messages() {
     /**
      * Description: Represents the Messages page that authors will keep their private posts with specific authors 
      * Functions: 
-     *     - checkExpiry(): Checks if the current token is expired
-     *     - useEffect(): Checks if the current token is expired before render, so that the author can be logged out if needed 
-     *     - logOut(): Logs out an author and sends them to the Welcome component 
+     *     - useEffect(): 
+     *          - Fetches the author's account details
+     *          - Fetches the Author's messages from the inbox 
+     *     - getMore(): Fetches more messages from the Author's account 
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewer] = useState({ viewerId: '' });
     const [messengers, setMessengers] = useState([]);
-    const [currentMessenger, setCurrentMessenger] = useState(currMess);
+    const [currentMessenger, setCurrentMessenger] = useState('');
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 5;
+    console.log(currentMessenger)
 
     useEffect(() => {
         /**
-         * Description: Before render, checks the author's account details
-         * Request: POST
+         * Description: Before render, fetches the author's account details through a GET request
+         * Request: GET
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
@@ -74,8 +76,8 @@ function Messages({currMess}) {
 
     useEffect(() => {
         /**
-         * Description: Before render, checks the author's account details
-         * Request: POST
+         * Description: Before render, fetches the Author's messages from the inbox through a GET request
+         * Request: GET
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
@@ -100,13 +102,16 @@ function Messages({currMess}) {
                 if (response.data.items !== undefined && response.data.items.length !== 0) {
                     for (let i = 0; i < response.data.items.length; i++) {
                         if (response.data.items[i].visibility === 'PRIVATE') {
-                            messengers.push(response.data.items[i].author.url);
+                            let idx = messengers.map(obj => obj.displayName).indexOf(response.data.items[i].author.displayName);
+                            if (idx <= -1) { 
+                                messengers.push(response.data.items[i].author);
+                            } 
                         }
                     }
-                    if (messengers.length !== 0 && currMess === undefined) {
-                        curr = messengers[0]
+                    if (messengers.length !== 0 && currentMessenger === '') {
+                        curr = messengers[0].url
                     } else {
-                        curr = currMess
+                        curr = currentMessenger
                     }
                 }
             })
@@ -145,13 +150,13 @@ function Messages({currMess}) {
         if (viewer.viewerId !== '') {
             getPrivatePosts();
         }
-    }, [currentMessenger, viewer.viewerId, currMess])
+    }, [currentMessenger, viewer.viewerId])
 
     const getMore = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Fetches more messages from the Author's account through a GET request 
+         * Request: GET    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {
@@ -217,7 +222,7 @@ function Messages({currMess}) {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={viewer.viewerId} messengers={messengers} currentMessenger={currentMessenger}/>
+                    <LeftNavBar authorId={viewer.viewerId} messengers={messengers} currentMessenger={currentMessenger} setCurrentMessenger={setCurrentMessenger}/>
                 </div>
                 <div className='pubColM'>
                     <div style={{paddingLeft: '1em'}}>

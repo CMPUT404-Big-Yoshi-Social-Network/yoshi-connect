@@ -57,6 +57,9 @@ import ApiDocs from "./components/apiDocs/apiDocs.jsx";
 // GitHub
 import GitHub from "./components/feeds/settings/github.jsx"
 
+// Welcome
+import Welcome from './components/welcome/welcome.jsx';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -129,6 +132,10 @@ const router = createBrowserRouter([
   {
     path: '/github/', 
     element: <GitHub/>
+  },
+  {
+    path: "/welcome/",
+    element: <Welcome/>
   }
 ])
   

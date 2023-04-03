@@ -23,63 +23,76 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
-function Comment({viewerId, comment, author}) {
+function Comment({viewerId, comment, author, url, liked}) {
     /**
      * Description: Represents a Comment 
      * Functions: 
      *     - deleteComment(): Sends a DELETE request to delete a comment on a specific post 
+     *     - likeComment(): Sends a POST request of the like to the Author's inbox on a specific comment
+     *     - getLikes(): Fetches the likes related to the comment ID
      * Returns: N/A
      */
-    const [liked, setLiked] = useState(true);
+    console.log('Debug: Comment() <TLDR what the function is doing>')
+    const [numLikes, setNumLikes] = useState(0);
 
-    const likeComment = () => {
-        let body = {
-            type: "like",
-            summary: "DisplayName likes your comment",
-            author: author,
-            object: comment.id
+    const [like, setLike] = useState(false);
+    const commentSplit = comment.id.split("/")
+    const commentId = commentSplit[commentSplit.length - 1] 
+
+    const addLike = () => {
+        if(author){
+            let body = {
+                type: "like",
+                summary: author.displayName + " likes your comment",
+                author: author,
+                object: liked.id
+            }
+            let id = liked.author.id.split("/");
+			id = id[id.length - 1];
+            axios.post('/authors/' + id + '/inbox', body, {
+                "X-Requested-With": "XMLHttpRequest"
+            })
+            .then((response) => {
+                setLike(true);
+                setNumLikes(numLikes + 1);
+            })
+            .catch((err) => { });
         }
-
-        axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body)
-        .then((response) => {
-
-        })
-        .catch((err) => { 
-            
-        });
     }
 
     useEffect(() => {
         function getLikes(){
-            axios.get(comment.id + '/likes')
+            /**
+             * Description: Fetches the likes of a specific comment through sending a GET request
+             * Request: GET
+             * Returns: N/A
+             */
+            axios.get(url + "/" + commentId + '/likes')
             .then((response) => {
-                console.log(response);
                 let likes = response.data.likes;
+                setNumLikes(likes.length);
                 for(let i = 0; i < likes.length; i++){
                     let like = likes[i];
-                    let likeAuthorId = like.author.id.split("/");
+                    let likeAuthorId = like.author.url.split("/");
                     likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
                     if(likeAuthorId === viewerId){
-                        setLiked(true);
+                        setLike(true);
                         return
                     }
                 }
-                setLiked(false);
-                return
             })
             .catch((err) => {
                 console.log(err);
             });
         }
         getLikes();
-    },[comment.id, viewerId]);
+    },[commentId, viewerId, url, setNumLikes]);
 
     return (
         <div id='comment'>
             <h4>{ comment !== undefined ? comment.author.displayName : null}</h4>
             { comment ? comment.comment : null }
-            { !liked ? <button className='post-buttons' >Already Liked</button> :
-                <button className='post-buttons' onClick={likeComment}>Like</button> }
+            { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons'>Unlike</button></span>} 
         </div>
     )
 }

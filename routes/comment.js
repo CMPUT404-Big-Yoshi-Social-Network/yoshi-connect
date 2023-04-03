@@ -170,6 +170,7 @@ async function getComment(authorId, postId, commentId, token) {
     //TODO check visibility
 
     const comment = commentHistory.comments.id(commentId);
+    
 
     let sanitizedComment = {
         type: "comment",
@@ -291,84 +292,6 @@ async function createComment(token, authorId, postId, newComment) {
     delete author._id;
 
     return [inboxComment, 200];
-}
-
-async function deleteComment(req, res){
-    /**
-    Description: Deletes a comment on a specific post
-    Associated Endpoint: N/A
-    Request Type: DELETE
-    Request Body: (for example: { commentId: 6d45f566w5498e78tgy436h48dh96a })
-    Return: 200 Status (OK) -- Return a JSON with
-                                        { status: success,
-                                            numComments: numComments }
-    */
-    let success = false;
-    let numComments = 0;
-    let publicPost = await PublicPost.find();
-    await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
-        if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
-            if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.commentId);
-                history.posts[post_idx].comments.splice(com_idx, 1);
-                history.posts[post_idx].count - 1;
-                numComments = history.posts[post_idx].count;
-                success = true;
-                await history.save();
-
-                for (let i = 0; i < publicPost[0].posts.length; i++) {
-                    if (publicPost[0].posts[i].post._id === req.body.postId) {
-                        let com_idx = publicPost[0].posts[i].post.comments.map(obj => obj._id).indexOf(req.body.commentId);
-                        publicPost[0].posts[i].post.comments.splice(com_idx, 1);
-                        publicPost[0].posts[i].post.count - 1;
-                        numComments = publicPost[0].posts[i].post.count;
-                        await publicPost[0].save();
-                    }
-                }
-            }
-        }
-    }).clone()
-    
-    return res.json({
-        status: success,
-        numComments: numComments
-    })
-}
-
-async function editComment(req, res){
-    /**
-    Description: Edits a comment on a specific post
-    Associated Endpoint: N/A
-    Request Type: POST
-    Request Body: { commentId: 6d45f566w5498e78tgy436h48dh96a }
-    Return: 200 Status (OK) -- Returns a JSON { status: success }
-    */
-    let success = false;
-    let publicPost = await PublicPost.find();
-    await PostHistory.findOne({authorId: req.body.data.authorId}, async function(err, history){
-        if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
-            if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                history.posts[post_idx].comments[com_idx].comment = req.body.data.comment;
-                history.save();
-                success = true;
-            }
-
-            for (let i = 0; i < publicPost[0].posts.length; i++) {
-                if (publicPost[0].posts[i].post._id === req.body.data.postId) {
-                    let com_idx = publicPost[0].posts[i].post.comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                    publicPost[0].posts[i].post.comments[com_idx].comment = req.body.data.comment;
-                    publicPost[0].posts[i].post.count - 1;
-                    numComments = publicPost[0].posts[i].post.count;
-                    await publicPost[0].save();
-                }
-            }
-        }
-    }).clone()
-    
-    return res.json({ status: success })
 }
 
 module.exports = {

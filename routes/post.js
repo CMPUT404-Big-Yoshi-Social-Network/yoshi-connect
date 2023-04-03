@@ -37,28 +37,6 @@ const { authLogin } = require('./auth.js');
 const { getAuthor } = require('./author.js');
 const { sendToForeignInbox } = require('./inbox.js');
 
-async function createPostHistory(author_id){
-    /**
-    Description: Creates the Author's post history
-    Associated Endpoint: N/A
-    Request Type: PUT
-    Request Body: {_id: 08a779b240624ff899823d1024ff3aa1,
-                    authorId: 29c546d45f564a27871838825e3dbecb ,
-                    num_posts: 0,
-                    posts: [] }
-    Return: N/A
-    */
-    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-    let new_post_history = new PostHistory ({
-        _id: uuid,
-        authorId: author_id,
-        num_posts: 0,
-        posts: []
-    });
-
-    await new_post_history.save();
-}
-
 async function uploadImage(url, image) {
     /**
     Description: Uploads an image related to a post made by a specific Author

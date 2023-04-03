@@ -27,9 +27,8 @@ import Requests from './requests/requests.jsx';
 
 function Notifications(props) {
     /**
-     * Description: 
-     * Functions: 
-     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     * Description: Represents a Notification
+     * Functions: N/A
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')

@@ -199,31 +199,44 @@ router.get('/:foreignAuthorId', async (req, res) => {
 
   const followers = await getFollowers(authorId);
 
-  if (followers == 404) { return res.sendStatus(404); }
+  if (followers == 404) { 
+    // Must be a foreign author; need to get author 
+    const followerProfile = await Author.findOne({_id: foreignId}); 
+    return res.json({
+      "type": "author",
+      "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
+      "host": process.env.DOMAIN_NAME,
+      "displayname": followerProfile.username,
+      "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
+      "github": "",
+      "profileImage": "",
+      "about": followerProfile.about,
+      "pronouns": followerProfile.pronouns
+    });
 
-  for (let i = 0; i < followers.length; i++) {
-    const follower = followers[i];
-    if (follower.authorId == foreignId) {
-
-      const followerProfile = await Author.findOne({_id: follower.authorId}); 
-      if (!followerProfile)
-        continue
-
-      return res.json({
-        "type": "author",
-        "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
-        "host": process.env.DOMAIN_NAME,
-        "displayname": followerProfile.username,
-        "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
-        "github": "",
-        "profileImage": "",
-        "about": followerProfile.about,
-        "pronouns": followerProfile.pronouns
-      });
+  } else {
+    for (let i = 0; i < followers.length; i++) {
+      const follower = followers[i];
+      if (follower.authorId == foreignId) {
+  
+        const followerProfile = await Author.findOne({_id: follower.authorId}); 
+        if (!followerProfile)
+          continue
+  
+        return res.json({
+          "type": "author",
+          "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
+          "host": process.env.DOMAIN_NAME,
+          "displayname": followerProfile.username,
+          "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
+          "github": "",
+          "profileImage": "",
+          "about": followerProfile.about,
+          "pronouns": followerProfile.pronouns
+        });
+      }
     }
   }
-
-  return res.sendStatus(404);
 })
 
 /**

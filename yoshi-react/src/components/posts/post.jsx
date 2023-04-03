@@ -36,10 +36,12 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
-    // let postId = post.id ? post.id.split('/') : undefined;
-    // postId = postId ? postId[postId.length - 1] : undefined;
-    // let authorId = post.author ? post.author.id.split('/') : undefined;
-    // authorId = authorId ? authorId[authorId.length - 1] : undefined;
+    let postId = post.id ? (post.id.split('/'))[(post.id.split('/')).length - 1] : post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : undefined;
+    let authorId = post.author ? 
+        post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
+        post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
+        undefined : 
+        undefined;
     let published = post.published.substring(0,10);
     
 
@@ -52,14 +54,13 @@ function Post({viewerId, post, author}) {
     const [image, setImage] = useState("");
     // const [items, setItems] = useState(undefined);
     const navigate = useNavigate();
-
-    /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
-         */
     
     useEffect(() => {
+        /**
+         * Description: Fetches the image associated with a specific post through a GET request
+         * Request: GET    
+         * Returns: N/A
+         */
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             axios
@@ -75,7 +76,12 @@ function Post({viewerId, post, author}) {
         getImage();
     }, [post.id])
 
-    useEffect(() => {  
+    useEffect(() => { 
+        /**
+         * Description: Fetches the likes associated with a specific post through a GET request
+         * Request: GET    
+         * Returns: N/A
+         */ 
         const getLikes = () => {
             axios.get(post.id + '/likes')
             .then((response) => { 
@@ -99,9 +105,9 @@ function Post({viewerId, post, author}) {
 
     const deletePost = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Deletes a Post through a delete request 
+         * Request: DELETE   
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         axios.delete(post.id)
@@ -122,44 +128,48 @@ function Post({viewerId, post, author}) {
     }
 
     const addLike = () => {
+        /**
+         * Description: Sends a like object to the Author's inbox through a POST request 
+         * Request: POST   
+         * Returns: N/A
+         */
         if(author){
-        let body = {
-            type: "like",
-            summary: "DisplayName likes your post",
-            author: author,
-            object: post.id
-        }
-
-        axios.post(post.author.id + '/inbox', body, {
-            headers: {
+            let body = {
+                type: "like",
+                summary: author.displayName + " likes your post",
+                author: author,
+                object: post.id
+            }
+            let id = post.author.id.split("/");
+			id = id[id.length - 1];
+            axios.post('/authors/' + id + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
-            }
-        })
-        .then((response) => {
-            setLike(true);
-            setNumLikes(numLikes + 1);
-        })
-        .catch((err) => {
-            if(err.response){
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                } else if (err.response.status === 400) {
-                    navigate('/badrequest')
-                } else if (err.response.status === 404) {
-                    navigate('/notfound')
-                } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+            })
+            .then((response) => {
+                setLike(true);
+                setNumLikes(numLikes + 1);
+            })
+            .catch((err) => {
+                if(err.response){
+                    if (err.response.status === 401) {
+                        navigate('/unauthorized')
+                    } else if (err.response.status === 400) {
+                        navigate('/badrequest')
+                    } else if (err.response.status === 404) {
+                        navigate('/notfound')
+                    } else if (err.response.status === 500) {
+                        console.log('500 PAGE')
+                    }
                 }
-            }
-        });
+            });
         }
     }
 
     const removeLike = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Deletes a like from a post through a DELETE request 
+         * Request: DELETE    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         axios.delete(post.id + '/likes')
@@ -184,9 +194,9 @@ function Post({viewerId, post, author}) {
 
     const makeComment = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Sends a Comment through a POST request
+         * Request: POST    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         let body = {
@@ -196,7 +206,8 @@ function Post({viewerId, post, author}) {
             contentType: "text/plaintext",
         };
 
-        axios.post(post.id + '/comments', body)
+        console.log('/authors/' + authorId + '/posts/' + postId + '/comments')
+        axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
         .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);
@@ -215,8 +226,6 @@ function Post({viewerId, post, author}) {
             }
         });
     }
-    
-    
 
     return (
         <div className="post">
@@ -225,7 +234,7 @@ function Post({viewerId, post, author}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
+                    { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
                     <p>{published}</p>
                     <br></br>
@@ -244,7 +253,7 @@ function Post({viewerId, post, author}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                           <Comments key={commentCreated} viewerId={viewerId} url={post.id + '/comments'} author={author}> </Comments>
+                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author}> </Comments>
                         </div>}
                         <br></br>
                     <div>

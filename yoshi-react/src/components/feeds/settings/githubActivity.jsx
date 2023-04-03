@@ -20,7 +20,11 @@ import React from 'react';
 
 
 function Activity({activity}) {
-
+    /**
+     * Description: Represents the connection between YoshiConnect and GitHub Activity
+     * Functions: N/A
+     * Returns: N/A
+     */
 
     return (
         <div style={{padding: "1em"}}>

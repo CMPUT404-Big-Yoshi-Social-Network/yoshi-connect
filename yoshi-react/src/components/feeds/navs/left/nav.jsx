@@ -35,7 +35,8 @@ import './nav.css';
 
 function LeftNavBar(props) {
     /**
-     * Description:  
+     * Description: Represents the left dynamic navigation bar 
+     * Functions: N/A
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -50,7 +51,7 @@ function LeftNavBar(props) {
             { url === '/feed' || url === url1 ? <Following authorId={props.authorId}/> :
                 url === '/friends' ? <Friends authorId={props.authorId}/> : 
                 url === '/settings' ? <SettingsNav/> : 
-                url === '/messages' ? <MessagesNav authorId={props.authorId} messengers={props.messengers} currentMessenger={props.currentMessenger}/> : null
+                url === '/messages' ? <MessagesNav authorId={props.authorId} messengers={props.messengers} currentMessenger={props.currentMessenger} setCurrentMessenger={props.setCurrentMessenger}/> : null
             }
         </div>
     )

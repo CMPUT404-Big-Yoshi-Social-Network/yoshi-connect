@@ -32,7 +32,8 @@ function Requests(props) {
     /**
      * Description: Represents all the requests
      * Functions:
-     *     - useEffect(): Before render, checks the and sends the requests
+     *     - useEffect(): Fetches the list of requests
+     *     - getMore(): Fetches more requests 
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -45,9 +46,9 @@ function Requests(props) {
 
     useEffect(() => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Fetches the list of requests
+         * Request: GET    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         let config = {
@@ -105,9 +106,9 @@ function Requests(props) {
 
     const getMore = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Fetches more requests 
+         * Request: GET    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {

@@ -258,6 +258,7 @@ router.get('/', async (req, res) => {
  *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments/f25cd371afbb4775930fefa6ad8828c4
  */
 router.get('/:commentId', async (req, res) => {
+  console.log(req.params.commentId)
   const [comment, status] = await getComment( req.params.authorId, req.params.postId, req.params.commentId);
   if(status != 200){
     return res.sendStatus(status);

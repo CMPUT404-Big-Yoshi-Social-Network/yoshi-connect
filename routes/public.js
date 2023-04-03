@@ -112,7 +112,7 @@ async function getPublicPostsXServer(page, size){
             endpoint = "/posts/public"
         }
         else if(host == "https://bigger-yoshi.herokuapp.com/api"){
-            endpoint = "/posts/public";
+            endpoint = "/authors/posts";
         }
         const auth = outgoing.auth;
         var config = {

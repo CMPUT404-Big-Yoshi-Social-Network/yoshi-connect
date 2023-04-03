@@ -35,16 +35,22 @@ function CreatePost() {
     /**
      * Description: Represents the CreatePost Form 
      * Functions: 
-     *     - useEffect: Fetches the authorId related to the post 
-     *     - savePost: Saves a post into the database 
-     *     - togglePostMenu: Hides and Unhides the Post Menu
-     *     - uploadImage: Uploades an image into the database related to a post
+     *     - saveCategory(): Saves the post category
+     *     - removeCategory(): Removes/filters the post category  
+     *     - useEffect: Fetches the Author's info related to the authorId
+     *     - savePost(): Saves a newly created post with the accompanying data in the database
+     *     - togglePostMenu(): Toggles the Post Menu
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
+    console.log('Debug: Creating post form')
+
     const [categories, setCategories] = useState([])
 
     function saveCategory(e) {
+        /**
+         * Description: Saves the post category
+         * Returns: N/A
+         */
         if (e.key !== 'Enter') {
             return
         } 
@@ -57,6 +63,10 @@ function CreatePost() {
     }
 
     function removeCategory(idx) {
+        /**
+         * Description: Removes/filters the post category
+         * Returns: N/A
+         */
         setCategories(categories.filter((category,i) => i !== idx))
     }
 
@@ -84,11 +94,12 @@ function CreatePost() {
 
     useEffect(() => {
         /**
-         * Description: Fetches the current authorId through sending a POST request
-         * Request: POST
+         * Description: Fetches the Author's info associated with authorId through sending a GET request
+         * Request: GET
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
+        console.log("Debug: Getting the Author's info")
+
         const getId = () => {
             axios
             .get('/userinfo/')
@@ -108,7 +119,8 @@ function CreatePost() {
     
     const savePost = async () => {
         /**
-         * Description: Saves a newly created post by sending a PUT request with accompanying data representing the post
+         * Description: Saves a newly created post by sending a PUT request with accompanying data 
+         * representing the post through sending a PUT request
          * Request: PUT
          * Returns: N/A
          */
@@ -176,7 +188,7 @@ function CreatePost() {
          * Description: Toggles the Post Menu by changing the isOpen useState
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
+        console.log('Debug: Toggling Post Menu')
         setCategories([])
         setIsOpen(!isOpen); 
         setItem({ ...item, image: "" })

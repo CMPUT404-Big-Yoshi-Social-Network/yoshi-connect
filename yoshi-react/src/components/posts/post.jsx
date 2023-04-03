@@ -232,7 +232,8 @@ function Post({viewerId, post, author}) {
             }
         });
     }
-
+    console.log(post.author.authorId)
+    console.log(viewerId)
     return (
         <div className="post">
             {!post.unlisted &&
@@ -265,11 +266,18 @@ function Post({viewerId, post, author}) {
                     <div>
                     <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
                 </div>
-                {
-                        post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
+                    {
+                        post.author.authorId ? 
+                        post.author.authorId !== viewerId ? 
+                        null : 
+                        <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> :
+                        null
                     }    
                     {
-                        post.authorId !== viewerId ? null : <button className='post-buttons' onClick={deletePost}>Delete</button>
+                        post.author.authorId ? 
+                        post.author.authorId !== viewerId ? null : 
+                        <button className='post-buttons' onClick={deletePost}>Delete</button> :
+                        null
                     }    
                 </div>}
         </div>

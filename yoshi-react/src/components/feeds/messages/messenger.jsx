@@ -28,7 +28,6 @@ function Messenger(props) {
      * Returns: 
      */
     console.log('Debug: <TLDR what the function is doing>')
-    console.log(props)
     return (
         <div id='messenger'>
             {props.messenger?.displayName !== undefined ? props.messenger.displayName : null }

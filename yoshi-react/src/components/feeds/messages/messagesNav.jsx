@@ -25,11 +25,10 @@ import { Button } from 'react-bootstrap';
 
 // Child Component 
 import Messenger from './messenger.jsx';
-import Messages from "./messages.jsx";
 
-function MessagesNav({authorId, messengers, currentMessenger}) {
+function MessagesNav({authorId, messengers, currentMessenger, setCurrentMessenger}) {
     const selectedMessenger = (messenger) => { 
-        Messages(messenger.url);
+        setCurrentMessenger(messenger.url)
     }
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
@@ -37,7 +36,7 @@ function MessagesNav({authorId, messengers, currentMessenger}) {
             { messengers === undefined || messengers.length === 0 ? null :
                 <div>
                     {Object.keys(messengers).map((messenger, idx) => (
-                        <Button key={idx} onClick={() => selectedMessenger(messenger)}><Messenger key={idx} authorId={authorId} messenger={messengers[messenger]} currentMessenger={currentMessenger}/></Button>
+                        <Button key={idx} onClick={() => selectedMessenger(messengers[messenger])}><Messenger key={idx} authorId={authorId} messenger={messengers[messenger]} currentMessenger={currentMessenger}/></Button>
                     ))}
                 </div>
             }

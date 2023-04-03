@@ -32,7 +32,7 @@ import Post from "../../posts/post.jsx";
 import { Pagination } from "react-bootstrap";
 
 
-function Messages({currMess}) {
+function Messages() {
     /**
      * Description: Represents the Messages page that authors will keep their private posts with specific authors 
      * Functions: 
@@ -44,13 +44,14 @@ function Messages({currMess}) {
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewer] = useState({ viewerId: '' });
     const [messengers, setMessengers] = useState([]);
-    const [currentMessenger, setCurrentMessenger] = useState(currMess);
+    const [currentMessenger, setCurrentMessenger] = useState('');
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 5;
+    console.log(currentMessenger)
 
     useEffect(() => {
         /**
@@ -106,10 +107,10 @@ function Messages({currMess}) {
                             } 
                         }
                     }
-                    if (messengers.length !== 0 && currMess === undefined) {
+                    if (messengers.length !== 0 && currentMessenger === undefined) {
                         curr = messengers[0].url
                     } else {
-                        curr = currMess
+                        curr = currentMessenger
                     }
                 }
             })
@@ -148,7 +149,7 @@ function Messages({currMess}) {
         if (viewer.viewerId !== '') {
             getPrivatePosts();
         }
-    }, [currentMessenger, viewer.viewerId, currMess])
+    }, [currentMessenger, viewer.viewerId])
 
     const getMore = () => {
         /**
@@ -220,7 +221,7 @@ function Messages({currMess}) {
             <TopNav/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={viewer.viewerId} messengers={messengers} currentMessenger={currentMessenger}/>
+                    <LeftNavBar authorId={viewer.viewerId} messengers={messengers} currentMessenger={currentMessenger} setCurrentMessenger={setCurrentMessenger}/>
                 </div>
                 <div className='pubColM'>
                     <div style={{paddingLeft: '1em'}}>

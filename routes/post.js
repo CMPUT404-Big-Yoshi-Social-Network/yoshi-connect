@@ -450,6 +450,9 @@ async function sharePost(token, authorId, postId, newPost) {
         author: null
     };
 
+    postHistory.posts.push(post);
+    postHistory.num_posts = postHistory.num_posts + 1;
+
     let savePostPromise = postHistory.save();
 
     let likes = LikeHistory({
@@ -477,10 +480,6 @@ async function sharePost(token, authorId, postId, newPost) {
         const publicPost = new PublicPost(post);
         await publicPost.save();
     }
-
-    postHistory.posts.push(post);
-    postHistory.num_posts = postHistory.num_posts + 1;
-    
     //TODO make this faster
     //if not unlisted send to all followers 
     if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){

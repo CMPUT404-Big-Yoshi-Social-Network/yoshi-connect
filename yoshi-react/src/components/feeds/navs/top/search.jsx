@@ -135,7 +135,9 @@ function SearchCard(props) {
                 }
             }
             axios
-            .post(url, config)
+            .post(url, config, {
+                "X-Requested-With": "XMLHttpRequest"
+            })
             .then((response) => { })
             .catch(err => { });
         } else if (requestButton === "Sent") {

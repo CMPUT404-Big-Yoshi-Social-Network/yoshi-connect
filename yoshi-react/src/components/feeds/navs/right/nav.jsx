@@ -103,8 +103,8 @@ function RightNavBar() {
                 </div>
             </Container> :
             <div>
-                <Button className='welcome-button' href='/signup' data-testid="signup">Sign Up</Button>
-                <Button className='welcome-button' href='/login' data-testid="login">Log In</Button>
+                <Button className='rightnav-button' href='/signup' data-testid="signup">Sign Up</Button>
+                <Button className='rightnav-button' href='/login' data-testid="login">Log In</Button>
             </div>
             }
         </Navbar>

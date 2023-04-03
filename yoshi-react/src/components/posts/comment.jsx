@@ -23,7 +23,7 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
-function Comment({viewerId, comment, author}) {
+function Comment({viewerId, comment, author, url}) {
     /**
      * Description: Represents a Comment 
      * Functions: 
@@ -31,6 +31,8 @@ function Comment({viewerId, comment, author}) {
      * Returns: N/A
      */
     const [liked, setLiked] = useState(true);
+    const commentSplit = comment.id.split("/")
+    const commentId = commentSplit[commentSplit.length - 1] 
 
     const likeComment = () => {
         let body = {
@@ -39,6 +41,7 @@ function Comment({viewerId, comment, author}) {
             author: author,
             object: comment.id
         }
+        
 
         axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body)
         .then((response) => {
@@ -51,13 +54,13 @@ function Comment({viewerId, comment, author}) {
 
     useEffect(() => {
         function getLikes(){
-            axios.get(comment.id + '/likes')
+            axios.get(url + "/" + commentId + '/likes')
             .then((response) => {
                 console.log(response);
                 let likes = response.data.likes;
                 for(let i = 0; i < likes.length; i++){
                     let like = likes[i];
-                    let likeAuthorId = like.author.id.split("/");
+                    let likeAuthorId = like.author.url.split("/");
                     likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
                     if(likeAuthorId === viewerId){
                         setLiked(true);
@@ -72,13 +75,13 @@ function Comment({viewerId, comment, author}) {
             });
         }
         getLikes();
-    },[comment.id, viewerId]);
+    },[comment.id, viewerId, url]);
 
     return (
         <div id='comment'>
             <h4>{ comment !== undefined ? comment.author.displayName : null}</h4>
             { comment ? comment.comment : null }
-            { !liked ? <button className='post-buttons' >Already Liked</button> :
+            { liked ? <button className='post-buttons' >Already Liked</button> :
                 <button className='post-buttons' onClick={likeComment}>Like</button> }
         </div>
     )

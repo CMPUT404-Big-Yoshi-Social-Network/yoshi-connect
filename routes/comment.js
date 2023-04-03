@@ -170,6 +170,7 @@ async function getComment(authorId, postId, commentId, token) {
     //TODO check visibility
 
     const comment = commentHistory.comments.id(commentId);
+    
 
     let sanitizedComment = {
         type: "comment",

@@ -28,6 +28,23 @@ import FileBase64 from 'react-file-base64';
 import './create.css';
 
 function EditPost({viewerId, post}) {
+    const [categories, setCategories] = useState(post.categories)
+
+    function saveCategory(e) {
+        if (e.key !== 'Enter') {
+            return
+        } 
+        const category = e.target.value;
+        if (!category.trim()) {
+            return
+        }
+        setCategories([...categories, category]);
+        e.target.value = '';
+    }
+
+    function removeCategory(idx) {
+        setCategories(categories.filter((category,i) => i !== idx))
+    }
 
     const [item, setItem] = useState({ 
         type: "",
@@ -79,12 +96,13 @@ function EditPost({viewerId, post}) {
         
         let body = {
             title: data.title,
-            desc: data.desc,
+            description: data.desc,
             contentType: data.contentType,
             visibility: data.visibility,
             content: data.content,
             unlisted: data.unlisted,
             specifics: data.specifics,
+            categories: categories,
             image: data.image,
             postId: data.postId,
         }
@@ -171,9 +189,9 @@ function EditPost({viewerId, post}) {
                 <br/>
                 <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} value={data.visibility || 'Public '} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
-                            <option value={"Public"}>Public</option>
-                            <option value={"Friends"}>Friends</option>
-                            <option value={"Private"}>Private</option>
+                            <option value={"PUBLIC"}>Public</option>
+                            <option value={"FRIENDS"}>Friends</option>
+                            <option value={"PRIVATE"}>Private</option>
                 </select>
                 <br/>
                 <div className={"postMenuInput"}>
@@ -189,6 +207,18 @@ function EditPost({viewerId, post}) {
                 <div style={{color:"white", textAlign:"right"}}>
                     {item.size} of 10MB
                 </div>
+
+                <p>Categories</p>
+                <div>
+                    { categories.map((category, idx) => (
+                        <div key={idx}>
+                            <span class='category'>{category}</span>
+                            <span class='close' onClick={() => removeCategory(idx)}>x</span>
+                        </div> 
+                    ))}
+                    <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
+                </div>
+
                 <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Post</button>
             </form>
         </div>

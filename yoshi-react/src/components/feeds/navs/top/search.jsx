@@ -29,7 +29,8 @@ import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
     const username = props.username !== undefined ? props.username : props.displayName
-    const [requestButton, setRequestButton] = useState('Send Follow Request');
+    const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
+    const [requestButton, setRequestButton] = useState('Add');
     /**
      * Description:     
      * Returns: 
@@ -38,6 +39,8 @@ function SearchCard(props) {
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
     const navigate = useNavigate();
+    let id = props.id.split('/')
+    id = id[id.length - 1]
 
     useEffect(() => {
         /**
@@ -55,7 +58,6 @@ function SearchCard(props) {
             axios
             .get('/userinfo/')
             .then((response) => {
-                console.log(response)
                 let viewerId = response.data.authorId;
                 let viewer = response.data;
                 setViewerId(viewerId)
@@ -68,27 +70,154 @@ function SearchCard(props) {
         getId();
     }, [navigate]);
 
-    const sendRequest = () => {
-        setRequestButton('Sent');
-        let id = props.id.replace(props.host + 'authors/', '');
-        let config = {
-            summary: viewer + " wants to follow " + username,
-            actor: viewer,
-            actorId: viewerId,
-            objectId: id,
-            object: props
+    useEffect(() => {
+        /**
+         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
+            let config = {
+                isLocal: (host === 'https://yoshi-connect.herokuapp.com/') || (host === 'https://yoshi-connect.herokuapp.com') || host === ('http://localhost:3000/')
+            }
+            axios
+            .post('/authors/' + viewerId + '/friends/' + id, config)
+            .then((response) => {
+                if (response.data.status === 'Friends') {
+                    setRequestButton('Unfriend');
+                } else if (response.data.status === 'Follows') {
+                    setRequestButton('Unfollow');
+                } else if (response.data.status === 'Strangers') {
+                    if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
+                        axios
+                        .get('/authors/' + viewerId + '/inbox/requests/' + id)
+                        .then((response) => { 
+                            if (response.data.summary !== 'No request found') {
+                                setRequestButton('Sent');
+                            }
+                        })
+                        .catch(err => {
+                            if (err.response.status === 404) { }
+                        });
+                    } else {
+                        setRequestButton('Add');
+                    }
+                }
+            })
+            .catch(err => {
+                if (err.response.status === 500) { console.log('500 PAGE') }
+            });
         }
-        axios
-        .post('/nodes/outgoing/authors/' + id + '/inbox/follow', config)
-        .then((response) => { })
-        .catch(err => { });
+    }, [id, viewerId, host]);
+
+    const sendRequest = () => {
+        if (requestButton === "Add") { 
+            setRequestButton('Sent');
+            let config = '';
+            let url = '';
+            if (id !== undefined) {
+                if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
+                    url = '/authors/' + id + '/inbox'
+                    config = {
+                        actor: {
+                            id: host + 'authors/' + viewerId,
+                            status: 'local'
+                        },
+                        type: 'follow'
+                    }
+                } else {
+                    url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
+                    config = {
+                        summary: viewer.displayName + " wants to follow " + username,
+                        actor: viewer,
+                        actorId: viewerId,
+                        objectId: id,
+                        object: props
+                    }
+                }
+                axios
+                .post(url, config, {
+                    "X-Requested-With": "XMLHttpRequest"
+                })
+                .then((response) => { })
+                .catch(err => { });
+            }
+        } else if (requestButton === "Sent") {
+            setRequestButton('Add')
+            axios
+            .delete('/authors/' + id + '/inbox/requests/' + viewerId)
+            .then((response) => { })
+            .catch(err => { });
+        } else if (requestButton === 'Unfriend' || requestButton === "Unfollow") {
+            let completed = false;
+            axios
+            .delete('/authors/' + viewerId + '/followings/' + id)
+            .then((response) => {
+                if (response.data.status === 204) {
+                    completed = true;
+                } else {
+                    completed = false;
+                }
+            })
+            .catch(err => { });
+            axios
+            .delete('/authors/' + id + '/followers/' + viewerId)
+            .then((response) => {
+                if (response.data.status === 204) {
+                    completed = true;
+                } else {
+                    completed = false;
+                }
+            })
+            .catch(err => { });
+            if (requestButton === 'Unfriend') {
+                axios
+                .delete('/authors/' + id + '/followings/' + viewerId)
+                .then((response) => {
+                    if (response.data.status === 204) {
+                        completed = true;
+                    } else {
+                        completed = false;
+                    }
+                })
+                .catch(err => { });
+                axios
+                .delete('/authors/' + viewerId + '/followers/' + id)
+                .then((response) => {
+                    if (response.data.status === 204) {
+                        completed = true;
+                    } else {
+                        completed = false;
+                    }
+                })
+                .catch(err => { });
+            }
+            if (completed) {
+                setRequestButton('Add');
+            }
+        } 
     }
+
+    const seePosts = () => {
+        if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
+            navigate('/users/' + username);
+        } else {
+            let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
+            navigate('/users/' + username, { state: { url: '/nodes/outgoing/authors/' + id + '/posts', isRemote: true } })
+        }
+    }
+
     return (
         <div>
             { !props && username === undefined ? null : 
                 <div>
                     {username}
-                    <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    <br></br>
+                    {host}
+                    <Button onClick={seePosts} type="submit">View Profile</Button>
+                    { id === viewerId ? null : 
+                        <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                    }
                 </div>
             }
         </div>

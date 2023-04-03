@@ -107,9 +107,9 @@ async function addAuthor(req, res){
 async function modifyAuthor(req, res){
     /**
     Description: Updates an Author's attributes in the YoshiConnect Database
-    Associated Endpoint: /admin/dashboard:
+    Associated Endpoint: /admin/dashboard
     Request Type: POST
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
     Return: 404 Status (Not Found) -- Cannot find Author
             400 Status (Bad Request) -- Username and/or email already taken
             500 Status (Internal Server Error) -- Unable to find Login document for Author
@@ -175,7 +175,7 @@ async function modifyAuthor(req, res){
 async function deleteAuthor(req, res){
     /**
     Description: Deletes Author from YoshiConnect database
-    Associated Endpoint: /admin/dashboard:
+    Associated Endpoint: /admin/dashboard
     Request Type: DELETE
     Request Body: N/A
     Return: 404 Status (Not Found) -- Cannot find Author
@@ -195,7 +195,7 @@ async function deleteAuthor(req, res){
 async function allowAuthor(req, res){
     /**
     Description: ENables or disables the Author's permissions
-    Associated Endpoint: /admin/dashboard:
+    Associated Endpoint: /admin/dashboard
     Request Type: POST
     Request Body: N/A
     Return: 200 Status (OK) -- Returns a JSON containing 

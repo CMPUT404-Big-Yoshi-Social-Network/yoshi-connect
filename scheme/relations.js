@@ -30,8 +30,11 @@ const followerScheme = new Schema({
     authorId: String,
     followers: [{
         _id: String,
-        username: String,
-        authorId: String
+        id: String,
+        authorId: String,
+        displayName: String,
+        github: String,
+        profileImage: String
     }]},
     {versionKey: false
 });
@@ -42,20 +45,34 @@ const followingScheme = new Schema({
     authorId: String,
     followings: [{
         _id: String,
-        username: String,
-        authorId: String
+        id: String,
+        authorId: String,
+        displayName: String,
+        github: String,
+        profileImage: String
     }]},
     {versionKey: false
 });
 
 const requestScheme = new Schema({
     _id: String,
-    type: String,
-    summary: String,
-    actor: String,
-    actorId: String,
-    objectId: String,
-    object: String},
+    goal: String,
+    actor: {
+        id: String,
+        host: String,
+        displayName: String,
+        url: String,
+        github: String,
+        profileImage: String
+    }, 
+    object: {
+        id: String,
+        host: String,
+        displayName: String,
+        url: String,
+        github: String,
+        profileImage: String
+    }},
     {versionKey: false
 });
 

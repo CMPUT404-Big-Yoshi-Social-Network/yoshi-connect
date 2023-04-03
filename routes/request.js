@@ -30,45 +30,131 @@ const crypto = require('crypto');
 const { Author } = require('../scheme/author.js');
 const { Request, Follower, Following } = require('../scheme/relations.js');
 const { Inbox } = require('../scheme/post.js');
+const { OutgoingCredentials } = require('../scheme/server.js');
+const axios = require('axios');
 
 async function senderAdded(authorId, foreignId, req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Adds foreign sender associated with foreignId to the server
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 500 Status (Internal Server Error) -- Unable to add sender
+            200 Status (OK) -- Sender successfully added
     */
     let success = true;
+    let isLocal = true;
+    let actor = await Author.findOne({_id: authorId});
+    if (actor === null || actor === undefined) {
+        // Must be from another server
+        const outgoings = await OutgoingCredentials.find().clone();
 
-    const actor = await Author.findOne({_id: authorId});
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].allowed) {
+                const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+                if (outgoings[i].auth === 'userpass') {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors/' + authorId + '/',
+                        method: 'GET',
+                        auth: auth,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                } else {
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors/' + authorId,
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                      };            
+                  } else {
+                      var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors' + authorId + '/',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                      };
+                  }
+                }
+          
+                await axios.request(config)
+                .then( res => {
+                    actor = res.data 
+                })
+                .catch( error => { })
+            }
+        }
+        isLocal = false;
+    }
     const object = await Author.findOne({_id: foreignId});
     let uuidFollow = String(crypto.randomUUID()).replace(/-/g, "");
     let uuidF = String(crypto.randomUUID()).replace(/-/g, "");
 
-    await Following.findOne({authorId: authorId}, async function(err, following){
-        if (following) {
-            following.followings.push({_id: uuidFollow, authorId: foreignId, username: object.username});
-            await following.save();
-        } else {
-            let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
-            var following = {
-                _id: uuidFollowing,
-                username: actor.username,
-                authorId: authorId,
-                followings: [{
+    if (isLocal) {
+        await Following.findOne({authorId: authorId}, async function(err, following){
+            if (following) {
+                const newF = {
                     _id: uuidFollow,
-                    username: object.username,
-                    authorId: foreignId
-                }]
-            };
-            following.save(async (err, following, next) => { if (err) { success = false; } })
-        }
-    }).clone();
+                    id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                    authorId: foreignId,
+                    displayName: object.username,
+                    github: object.github,
+                    profileImage: object.profileImage
+                }
+                following.followings.push(newF);
+                await following.save();
+            } else {
+                let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
+                var following = {
+                    _id: uuidFollowing,
+                    username: actor.username,
+                    authorId: authorId,
+                    followings: [{
+                        _id: uuidFollow,
+                        id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                        authorId: foreignId,
+                        displayName: object.username,
+                        github: object.github,
+                        profileImage: object.profileImage
+                    }]
+                };
+                following.save(async (err, following, next) => { if (err) { success = false; } })
+            }
+        }).clone();
+    }
 
     await Follower.findOne({authorId: foreignId}, async function(err, follower){
+        let newFollower = {}
+        if (actor.username === undefined) {
+            newFollower = {
+                _id: uuidF,
+                id: actor.id,
+                authorId: authorId,
+                displayName: actor.displayName,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }
+        } else {
+            newFollower = {
+                _id: uuidF,
+                id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+                authorId: authorId,
+                displayName: actor.username,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }
+        }
         if (follower) {
-            follower.followers.push({_id: uuidF, username: actor.username, authorId: authorId});
+            follower.followers.push(newFollower);
             await follower.save();
         } else {
             let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
@@ -76,18 +162,14 @@ async function senderAdded(authorId, foreignId, req, res) {
                 _id: uuidFollower,
                 username: object.username,
                 authorId: foreignId,
-                followers: [{
-                    _id: uuidF,
-                    username: actor.username,
-                    authorId: authorId
-                }]
+                followers: [newFollower]
             });
             follower.save(async (err, follower, next) => { if (err) { success = false; } })
         }
     }).clone()
 
     if (success) {
-        await deleteRequest(authorId, foreignId, res);
+        await deleteRequest(res, actor, object, foreignId, authorId, 'accept', isLocal);
     } else {
         return res.sendStatus(500);
     }
@@ -95,11 +177,11 @@ async function senderAdded(authorId, foreignId, req, res) {
 
 async function sendRequest(authorId, foreignId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates a request and saves it into the inbox
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
+    Request Type: PUT
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 200 Status (OK) -- Successfully saves the request to the Inbox 
     */
     const actor = await Author.findOne({_id: authorId});  
     const object = await Author.findOne({_id: foreignId});
@@ -128,11 +210,22 @@ async function sendRequest(authorId, foreignId, res) {
     const request = {
         _id: uuid,
         goal: type,
-        summary: summary,
-        actor: actor.username,
-        actorId: actor._id,
-        objectId: object._id,
-        object: object.username
+        actor: {
+            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: actor.username,
+            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            github: actor.github,
+            profileImage: actor.profileImage 
+        }, 
+        object: {
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage 
+        }
     }
 
     const inbox = await Inbox.findOne({authorId: foreignId});
@@ -163,59 +256,168 @@ async function sendRequest(authorId, foreignId, res) {
     }
 }
 
-async function deleteRequest(authorId, foreignId, res) {
+async function deleteRequest(res, actor, object, foreignId, authorId, status, isLocal) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes an Author's inbox requests
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
+    Request Type: DELETE
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 500 Status (Internal Server Error) -- Unable to find/get Actor or Object
+            200 Status (OK) -- Successfully deleteed the request from Inbox
     */
-    const actor = await Author.findOne({_id: authorId});  
-    const object = await Author.findOne({_id: foreignId});
+    if (actor === null || actor === undefined) {
+        actor = await Author.findOne({_id: authorId});
+        if (actor === null || actor === undefined) {
+            // Must be from another server
+            const outgoings = await OutgoingCredentials.find().clone();
+            isLocal = false;
+            for (let i = 0; i < outgoings.length; i++) {
+                if (outgoings[i].allowed) {
+                    const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+                    if (outgoings[i].auth === 'userpass') {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors/' + authorId + '/',
+                            method: 'GET',
+                            auth: auth,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    } else {
+                    if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors/' + authorId + '/',
+                            method: 'GET',
+                            headers: {
+                                'Authorization': auth,
+                                'Content-Type': 'application/json'
+                            }
+                        };              
+                    } else {
+                        var config = {
+                            host: outgoings[i].url,
+                            url: outgoings[i].url + '/authors' + authorId + '/',
+                            method: 'GET',
+                            headers: {
+                                'Authorization': auth,
+                                'Content-Type': 'application/json'
+                            }
+                        };
+                    }
+                    }
+            
+                    await axios.request(config)
+                    .then( res => {
+                        actor = res.data 
+                    })
+                    .catch( error => { })
+                }
+            }
+        } else {
+            actor = {
+                type: 'author',
+                id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+                host: process.env.DOMAIN_NAME,
+                displayName: actor.username,
+                url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }
+        }
+    }
+
+    if (object === null || object === undefined) {
+        object = await Author.findOne({_id: foreignId});
+    }
 
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
 
-    if (!actor && !object) { return 500 }
-
     let summary = '';
-    let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
-    const request = inbox.requests[idx]
+    let idx = inbox.requests.map(obj => obj.actor.id.split('/authors/')[(obj.actor.id.split('/authors/')).length - 1]).indexOf(authorId);
+    let request = inbox.requests[idx]
     inbox.requests.splice(idx, 1);
     inbox.save();
-    summary = actor.username + " wants to undo " + request.type + " request to " + object.username;  
 
-    return res.json({
-        type: request.type,
-        summary: summary,
-        actor: {
-            type: 'author',
-            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
-            host: process.env.DOMAIN_NAME,
-            displayName: actor.username,
-            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
-            github: actor.github,
-            profileImage: actor.profileImage
-        },
-        object: {
-            type: 'author',
-            id: process.env.DOMAIN_NAME + "authors/" + object._id,
-            host: process.env.DOMAIN_NAME,
-            displayName: object.username,
-            url: process.env.DOMAIN_NAME + "authors/" + object._id,
-            github: object.github,
-            profileImage: object.profileImage
+    if (isLocal) {
+        const actorInbox = await Inbox.findOne({authorId: authorId}, '_id requests');
+        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+        const newRequest = {
+            _id: uuid,
+            goal: status,
+            actor: request.actor,
+            object: request.object
         }
-    })
+        actorInbox.requests.push(newRequest);
+        actorInbox.save();
+    }
+    if (status !== 'accept') {
+        summary = actor.displayName + " wants to undo " + request.goal + " request to " + object.username; 
+    } else {
+        summary = object.username + " accepted request from " + actor.displayName; 
+    }
+
+    if (!isLocal) {
+        // Must be from another server
+        const outgoings = await OutgoingCredentials.find().clone();
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].allowed && outgoings[i].host === actor.host) {
+                const auth = outgoings[i].auth
+                    var config = {
+                        host: outgoings[i].url,
+                        url: actor.id + '/inbox',
+                        method: 'POST',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        },
+                        data: {
+                            type: status,
+                            summary: summary,
+                            actor: actor,
+                            object: {
+                                type: 'author',
+                                id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                                host: process.env.DOMAIN_NAME,
+                                displayName: object.username,
+                                url: process.env.DOMAIN_NAME + "authors/" + object._id,
+                                github: object.github,
+                                profileImage: object.profileImage
+                            }
+                        }
+                    };
+                }
+        
+                await axios.request(config)
+                .then( res => { })
+                .catch( error => { })
+            }
+    } else {
+        return res.json({
+            type: status,
+            summary: summary,
+            actor: actor,
+            object: {
+                type: 'author',
+                id: process.env.DOMAIN_NAME + "authors/" + object._id,
+                host: process.env.DOMAIN_NAME,
+                displayName: object.username,
+                url: process.env.DOMAIN_NAME + "authors/" + object._id,
+                github: object.github,
+                profileImage: object.profileImage
+            }
+        })
+    }
 }
 
 async function getRequests(authorId, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets an Author's inbox requests
+    Associated Endpoint: /authors/:authorId/inbox/requests
+    Request Type: GET 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 200 Status (OK) -- Successfully fetches requests from Inbox, returns JSON with type and items (all requests)
     */
     const inbox = await Inbox.findOne({authorId: authorId}, '_id requests');
     return res.json({
@@ -226,11 +428,11 @@ async function getRequests(authorId, res) {
 
 async function getRequest(authorId, foreignId) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates a request and saves it into the inbox
+    Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, foreignId: 6d45f566w5498e78tgy436h48dh96a }
+    Return: 200 Status (OK) -- Successfully finds the follow request
     */
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
     let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);

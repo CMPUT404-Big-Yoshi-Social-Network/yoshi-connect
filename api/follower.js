@@ -248,12 +248,11 @@ router.get('/:foreignAuthorId', async (req, res) => {
  *      401:
  *        description: Unauthorized, no associated cookies, Login token had expired, authorId was not authenticated 
  *      404: 
- *        description: Bad Request, unable to find a request object from the foreignAuthorId to the authorId
+ *        description: Not Found, unable to find a request object from the foreignAuthorId to the authorId
  *      200: 
  *        description: OK, successfully added follower to the follower document for Author associated with authorId
  */
 router.put('/:foreignAuthorId', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
@@ -292,12 +291,11 @@ router.put('/:foreignAuthorId', async (req, res) => {
  */
 router.delete('/:foreignAuthorId', async (req, res) => {
   if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
-  if (req.body.type == undefined || req.body.type != "follower") { return res.sendStatus(400) }
 
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 
-  const statusCode = await deleteFollower(req.cookies.token, authorId, foreignId, req.body);
+  const statusCode = await deleteFollower(authorId, foreignId);
 
   return res.sendStatus(statusCode);
 })

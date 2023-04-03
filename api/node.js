@@ -26,6 +26,7 @@ const express = require('express');
 const { getCreds, getCred, postCred, putCred, allowNode, deleteCred } = require('../routes/node');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
+const { addFollowing } = require('../routes/friend');
 
 // OpenAPI
 const {options} = require('../openAPI/options.js');
@@ -97,15 +98,27 @@ router.get('/outgoing/authors', async (req, res) => {
                     }
                 };
             } else {
-                var config = {
-                    host: outgoings[i].url,
-                    url: outgoings[i].url + '/authors',
-                    method: 'GET',
-                    headers: {
-                        'Authorization': auth,
-                        'Content-Type': 'application/json'
-                    }
-                };
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                    var config = {
+                      host: outgoings[i].url,
+                      url: outgoings[i].url + '/authors/',
+                      method: 'GET',
+                      headers: {
+                          'Authorization': auth,
+                          'Content-Type': 'application/json'
+                      }
+                    };          
+                } else {
+                    var config = {
+                        host: outgoings[i].url,
+                        url: outgoings[i].url + '/authors',
+                        method: 'GET',
+                        headers: {
+                            'Authorization': auth,
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                }
             }
     
             await axios.request(config)
@@ -118,9 +131,7 @@ router.get('/outgoing/authors', async (req, res) => {
                 }
                 authors = authors.concat(items);
             })
-            .catch( error => {
-                console.log(error);
-            })
+            .catch( error => { })
         }
     }
     return res.json({
@@ -283,15 +294,27 @@ router.get('/outgoing/authors/:authorId', async (req, res) => {
 
     for (let i = 0; i < outgoings.length; i++) {
         if (outgoings[i].allowed) {
-            var config = {
-                host: outgoings[i].url,
-                url: outgoings[i].url + '/authors' + req.params.authorId,
-                method: 'GET',
-                headers: {
-                    'Authorization': outgoings[i].auth,
-                    'Content-Type': 'application/json'
-                }
-            };
+            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors' + req.params.authorId,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': outgoings[i].auth,
+                        'Content-Type': 'application/json'
+                    }
+                }; 
+            } else {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors' + req.params.authorId,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': outgoings[i].auth,
+                        'Content-Type': 'application/json'
+                    }
+                };
+            }
     
             await axios.request(config)
             .then( res => {
@@ -424,38 +447,72 @@ router.get('/outgoing/authors/:authorId/posts/:postId/image', async (req, res) =
  *    tags:
  *      - remote 
  */
-router.get('/outgoing/posts', async (req, res) => {
+router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
     const outgoings = await OutgoingCredentials.find().clone();
-    
     let posts = [];
 
     for (let i = 0; i < outgoings.length; i++) {
         if (outgoings[i].allowed) {
-            var config = {
-                host: outgoings[i].url,
-                url: outgoings[i].url + '/posts',
-                method: 'GET',
-                headers: {
-                    'Authorization': outgoings[i].auth,
-                    'Content-Type': 'application/json'
-                },
-                params: {
-                    page: req.query.page,
-                    size: req.query.size
-                }
-            };
-        
+            const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+            if (outgoings[i].auth === 'userpass') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/posts/authors/' + req.params.authorId + '/posts/',
+                    method: 'GET',
+                    auth: auth,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: req.query.page,
+                        size: req.query.size
+                    }
+                };
+            } else {
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                  var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts/',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': outgoings[i].auth,
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: req.query.page,
+                        size: req.query.size
+                    }
+                  };              
+              } else {
+                  var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/posts',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': outgoings[i].auth,
+                        'Content-Type': 'application/json'
+                    },
+                    params: {
+                        page: req.query.page,
+                        size: req.query.size
+                    }
+                  };
+              }
+            }
+
             await axios.request(config)
             .then( res => {
-                let items = res.data.items
+                let items = []
+                if (outgoings[i].auth === 'userpass') { 
+                    items = res.data.results.filter((i)=>i !== null && typeof i !== 'undefined');
+                } else {
+                    items = res.data.items.filter((i)=>i !== null && typeof i !== 'undefined');
+                }
                 posts = posts.concat(items);
             })
-            .catch( error => {
-                console.log(error);
-            })
+            .catch(error => { })
         }
     }
-    
     return res.json({
         'type': 'posts',
         items: posts
@@ -943,32 +1000,61 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
 
     for (let i = 0; i < outgoings.length; i++) {
         if (outgoings[i].allowed) {
-            var config = {
-                host: outgoings[i].url,
-                url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox',
-                method: 'GET',
-                headers: {
-                    'Authorization': outgoings[i].auth,
-                    'Content-Type': 'application/json'
-                },
-                data: {
-                    type: req.params.type,
-                    summary: req.body.summary,
-                    actor: req.body.actor,
-                    actorId: req.body.actorId,
-                    objectId: req.body.objectId,
-                    object: req.body.object
-                }
-            };
+            const auth = outgoings[i].auth === 'userpass' ? { username: outgoings[i].displayName, password: outgoings[i].password } : outgoings[i].auth
+            if (outgoings[i].auth === 'userpass') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox/',
+                    method: 'POST',
+                    auth: auth,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        type: req.params.type,
+                        ...req.body
+                    }
+                };
+            } else {
+                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox/',
+                    method: 'POST',
+                    headers: {
+                        'Authorization': auth,
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        type: req.params.type,
+                        ...req.body
+                    }
+                };         
+              } else {
+                  var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox',
+                    method: 'POST',
+                    headers: {
+                        'Authorization': auth,
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        type: req.params.type,
+                        ...req.body
+                    }
+                  };
+              }
+            }
+            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api' || outgoings[i].url === 'https://sociallydistributed.herokuapp.com') {
+                await addFollowing(req.body.actor, req.body.object);
+            }
             await axios.request(config)
-            .then( res => { console.log(res) })
-            .catch( error => {
-                if (error.response.status == 404) {
-                    console.log('Debug: Adding an object (post, follow, like) to inbox.')
-                } 
-            })
+            .then( res => { })
+            .catch( error => { })
         }
     }
+
     return res.sendStatus(200);
 })
 

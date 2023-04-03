@@ -6,6 +6,8 @@ mongoose.set('strictQuery', true);
 const { Post, Inbox, PostHistory } = require('../scheme/post.js');
 const { Like, Comment, CommentHistory } = require('../scheme/interactions.js');
 const { Request } = require('../scheme/relations.js');
+const { Author } = require('../scheme/author.js');
+const axios = require('axios');
 
 // UUID
 const crypto = require('crypto');
@@ -13,18 +15,24 @@ const crypto = require('crypto');
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
 const { createComment } = require('./comment.js');
-const { validateAuthorObject } = require('./author.js');
+const { validateAuthorObject, getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
+const { createPost } = require('./post.js');
 
 async function getInbox(token, authorId, page, size){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets an Author's inbox posts
+    Associated Endpoint: /authors/:authorId/inbox
+                         /authors/:authorId/posts/friends-posts
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 400 Status (Bad Request) -- No posts to get
+            200 Status (OK) -- Successfully fetches posts from Inbox
+                                    { type: "inbox",
+                                        author: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb,
+                                        items: posts }
     */
     if( ! (await authLogin(token, authorId))){
         return [{}, 401];
@@ -107,6 +115,58 @@ async function getInbox(token, authorId, page, size){
     else{
         posts = posts[0].posts_array
     }
+
+    let promiseQueue = [];
+    for(let i = 0; i < posts.length; i++){
+        promiseQueue.push(axios.get(posts[i]._id)
+        .then((response) => {
+            return response.data
+        })
+        .catch((err) => {
+            console.log(err);
+        }))
+    }
+
+    for(let i = 0; i < posts.length; i++){
+        let updatedPost = await promiseQueue[i];
+        let post;
+        if(!updatedPost){
+            post = posts[i];
+        }
+        else{
+            post = updatedPost;
+            post.author._id = post.author.id;
+            post.commentCount = post.count
+        }
+        posts[i] = {
+            "type": "post",
+            "title": post.title,
+            "id": !updatedPost ? post.author._id + '/posts/' + post._id : post.id,
+            "source": post.source,
+            "origin": post.origin,
+            "description": post.description,
+            "contentType": post.contentType,
+            "content": post.content,
+            "author": {
+                type: "author",
+                id: post.author._id,
+                host: post.author.host,
+                displayName: post.author.displayName,
+                profileImage: post.author.profileImage,
+                url: post.author.url,
+                github: post.author.github,
+            },
+            "categories": post.categories,
+            "count": post.commentCount ? post.commentCount : 0,
+            "likeCount": post.likeCount ? post.likeCount : 0,
+            "comments": post.author._id + '/posts/' + post._id + '/comments/',
+            "commentSrc": post.commentSrc,
+            "published": post.published,
+            "visibility": post.visibility,
+            "unlisted": post.unlisted,
+        }
+    }
+
     let response = {
         type: "inbox",
         author: process.env.DOMAIN_NAME + "authors/" + authorId,
@@ -116,103 +176,19 @@ async function getInbox(token, authorId, page, size){
     return [response, 200];
 }
 
-async function postInbox(req, res){
-    /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
-    */
-    if(req.body.type === "post") {
-        const title = req.body.title;
-        const id = req.body._id;
-        const description = req.body.description;
-        const contentType = req.body.contentType;
-        const content = req.body.content;
-        const categories = req.body.categories;
-        const count = req.body.count;
-        const comments = req.body.comments;
-        const published = req.body.published;
-        const visibility = req.body.visibility;
-        const unlisted = req.body.unlisted;
-        const authorId = req.body.authorId;
-
-        if ( title === undefined || id === undefined || description === undefined || 
-            contentType === undefined || content === undefined || categories === undefined || 
-            count === undefined || comments === undefined|| published === undefined || visibility === undefined || 
-            unlisted === undefined || authorId === undefined ) { 
-                return res.sendStatus(400); 
-        }
-
-        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-        const post = Post({
-                _id: uuid,
-                title: title,
-                description: description,
-                contentType: contentType,
-                content: content,
-                authorId: authorId,
-                categories: categories,
-                count: 0,
-                likes: [],
-                comments: [],
-                published: published,
-                visibility: visibility,
-                specifics: specifics,
-                unlisted: unlisted,
-                image: ""
-        });
-
-        postInboxPost(post, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "follow") {
-        const senderUUID = await Author.findOne({username: req.body.data.sender});
-        const receiverUUID = await Author.findOne({username: req.body.data.receiver});
-        let uuidReq = String(crypto.randomUUID()).replace(/-/g, "");
-        const request = new Request({
-            _id: uuidReq,
-            senderId: req.body.sender,
-            senderUUID: senderUUID,
-            receiverId: req.body.receiver,
-            receiverUUID: receiverUUID,
-        });
-
-        postInboxRequest(request, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "like") {
-        
-        let uuidLike = String(crypto.randomUUID()).replace(/-/g, "");
-        const like = new Like({
-            _id: uuidLike,
-            liker: req.body.liker
-        });
-
-        postInboxLike(like, req.params.author_id);
-    } else if (req.body.type === "comment") {
-        let uuidCom = String(crypto.randomUUID()).replace(/-/g, "");
-        const comment = new Comment({
-            _id: uuidCom,
-            commenter: req.body.commenter,
-            comment: req.body.comment
-        });
-
-        postInboxComment(comment, req.params.author_id);
-    } else {
-        res.sendStatus(400);
-    }
-}
-
 async function postInboxPost(post, recieverAuthorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts a post object into the Author's inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 401 Status (Unauthorized) -- No token or not authorized
+            400 Status (Bad Request) -- No valid type specified in request
+            200 Status (OK) -- Successfully posts a post to the Inbox
     */
+    if (post.id === undefined) {
+        post = (await createPost(null, post.authorId, post.id, {...post}))[0];
+    }
     const type = post.type;
     const title = post.title;
     const id = post.id;
@@ -229,15 +205,12 @@ async function postInboxPost(post, recieverAuthorId){
     const authorGithub = post.author.github;
     const authorProfileImage = post.author.profileImage;
     const categories = post.categories;
-    const count = post.count;
     const published = post.published;
-    const postTo = post.postTo // Need to discuss wherther other teams will follow this
-    //Used to mark if this is a private message or a follower post.
     const visibility = post.visibility;
     const unlisted = post.unlisted;
 
     if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||
-        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || !count || 
+        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || 
         !published || !visibility || !unlisted)
     {
         return [{}, 400];
@@ -254,12 +227,16 @@ async function postInboxPost(post, recieverAuthorId){
 
 async function postInboxLike(like, authorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts a like object into the Author's inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: POST
+    Request Body: { like: 29c546d45f564a27871838825e3dbecb, author._id: 902sq546w5498hea764r80re0z89bej }
+    Return: 400 Status (Bad Request) -- No valid type specified in request
+            200 Status (OK) -- Successfully posts a like to the Inbox
     */
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
     if(!validateAuthorObject(author)){
@@ -271,15 +248,14 @@ async function postInboxLike(like, authorId){
         host: author.host,
         displayName: author.displayName,
         url: author.url,
-        github: author.github, //TODO I don't think we need this but I'll leave it here for later consideration
+        github: author.github, 
         profileImage: author.profileImage
     };
 
-    //Add a like to the authors post/comment
-    await addLike(like, authorId);
-    await addLiked(author._id, like.object);
-    
-    //TODO Unliking should also be added
+    if(await addLiked(author._id, like.object)){
+        return [like, 403];
+    }
+    await addLike(like, authorId); 
 
     const inboxLike = {
         author: author,
@@ -296,11 +272,18 @@ async function postInboxLike(like, authorId){
 
 async function postInboxComment(newComment, recieverAuthorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Posts a comment object into the Author's inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: POST
+    Request Body: { _id: f08d2d6579d5452ab282512d8cdd10d4,
+                    author: author,
+                    comment: "abc",
+                    contentType: text/plain,
+                    published: 2023-03-24T06:53:47.567Z }
+    Return: 401 Status (Unauthorized) -- No token or not authorized 
+            400 Status (Bad Request) -- No valid type specified in request
+            500 Status (Internal Server Error) -- Unable to retrieve comment history from database
+            200 Status (OK) -- Successfully posts a comment to the Inbox
     */
     if(!newComment){
         return [{}, 400];
@@ -342,7 +325,9 @@ async function postInboxComment(newComment, recieverAuthorId){
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const post = postHistory.posts.id(postId);
     if(!post){ return [{}, 404]; }
-
+    post.commentCount++;
+    await postHistory.save();
+    
     const commentHistory = await CommentHistory.findOne({postId: postId});
     if(!commentHistory){ return [{}, 500]; }
     if(commentHistory.comments.id(commentId)){ return [{}, 400]; }
@@ -371,13 +356,93 @@ async function postInboxComment(newComment, recieverAuthorId){
     return [comment, 200];
 }
 
+async function postInboxRequest(actor, obj, receiverAuthorId, type) {
+    let object = '';
+    let resObj = '';
+    if (obj !== undefined && obj !== null) {
+        object = obj
+        resObj = object;
+    } else {
+        object = await Author.findOne({_id: receiverAuthorId});
+        resObj = {
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage 
+        }
+    }
+
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+    let authorId = actor.id;
+    authorId = authorId.split("/");
+    authorId = authorId[authorId.length - 1];
+
+    let summary = ''
+    let request = ''
+    if (type !== 'accept') {
+        summary = actor.displayName + ' wants to follow ' + resObj.displayName;
+        request = {
+            _id: uuid,
+            goal: type,
+            actor: {
+                id: actor.id,
+                host: actor.host,
+                displayName: actor.displayName,
+                url: actor.url,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }, 
+            object: resObj
+        }
+    } else {
+        summary = actor.displayName + ' accepted ' + object.displayName + ' follow request.';
+        request = {
+            _id: uuid,
+            goal: type,
+            actor: {
+                id: actor.id,
+                host: actor.host,
+                displayName: actor.displayName,
+                url: actor.url,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }, 
+            object: resObj
+        }
+    }
+
+    const inbox = await Inbox.findOne({authorId: receiverAuthorId});
+    inbox.requests.push(request);
+    inbox.save();
+
+    const jsonRequest = {
+        summary: summary, 
+        actor: {
+            type: 'author',
+            id: actor.id,
+            host: actor.host,
+            displayName: actor.displayName,
+            url: actor.url,
+            github: actor.github,
+            profileImage: actor.profileImage
+        }, 
+        object: resObj
+    }
+
+    return [jsonRequest, 200];
+}
+
 async function deleteInbox(token, authorId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes a request from the inbox
+    Associated Endpoint: /authors/:authorId/inbox
+    Request Type: DELETE
+    Request Body: {  }
+    Return: 401 Status (Unauthorized) -- Token has expired or is not authenticated
+            404 Status (Not Found) -- No response was found
+            200 Status (OK) -- Successfully deleted the request from the Inbox
     */
     if (! (await authLogin(token, authorId))) { return 401; }
 
@@ -390,10 +455,38 @@ async function deleteInbox(token, authorId){
     return 200;
 }
 
+async function sendToForeignInbox(url, auth, data){
+    let config = {
+        url: url + "/inbox",
+        method: "POST",
+        headers:{
+            "Authorization": auth,
+            'Content-Type': 'application/json'
+        },
+        data: data
+    }
+    //Send a post request to that node with the proper auth
+    //The post should contain the contents of whatever is meant to be 
+    let response = "";
+    let status;
+    await axios.request(config)
+    .then((res) => {
+        response = res.data;
+        status = 200;
+    })
+    .catch((err) => {
+        console.log(err)
+     })
+
+    return [response, status];
+}
+
 module.exports = {
     getInbox,
     deleteInbox,
     postInboxPost,
     postInboxLike,
-    postInboxComment
+    postInboxComment,
+    postInboxRequest,
+    sendToForeignInbox
 }

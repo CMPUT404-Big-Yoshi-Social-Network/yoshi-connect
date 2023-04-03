@@ -194,7 +194,7 @@ router.post('/:foreignId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignId;
 
-  await isFriend(authorId, foreignId, res);
+  await isFriend(req.body.isLocal, authorId, foreignId, res);
 })
 
 module.exports = router;

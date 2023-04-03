@@ -22,7 +22,6 @@ Foundation; All Rights Reserved
 // Functionality 
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import TopNav from '../navs/top/nav.jsx';
@@ -54,7 +53,7 @@ function PublicFeed() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewerId] = useState('')
-    const navigate = useNavigate();
+    const [userInfo, setUserInfo] = useState({});
 
     useEffect(() => {
         /**
@@ -72,15 +71,16 @@ function PublicFeed() {
             axios
             .get('/userinfo/')
             .then((response) => {
+                setUserInfo(response.data);
                 let viewerId = response.data.authorId;
                 setViewerId(viewerId)
             })
-            .catch(err => { if (err.response.status === 404) { 
-                setViewerId('')
-            }})
+            .catch(err => { 
+                if (err.response.status === 401 || err.response.status === 404) { setViewerId('') }}
+            )
         }
         getId();
-    }, [navigate]);
+    }, []);
 
     return (
         <div>
@@ -90,7 +90,7 @@ function PublicFeed() {
                     <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts type={'public'}/>               
+                    <Posts url={'/posts/public'} userInfo={userInfo}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React, { useEffect } from "react";
+import React from "react";
 
 // Child Component
 import Requests from './requests/requests.jsx';
@@ -33,20 +33,11 @@ function Notifications(props) {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
-    useEffect(() => {
-        /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
-         */
-        console.log('Debug: <TLDR what the function is doing>')
-     });
     return (
         <div>
             <h3>Notifications</h3>
             <div><Requests authorId={props.authorId}/></div>
-            {/* Friend Requests: accepted notification
-            Likes received from own posts from other users
+            {/* Likes received from own posts from other users
             Comments received from own posts from other users */}
         </div>
     )

@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect } from "react";
 import { useState, useRef } from 'react';
 import axios from 'axios';
@@ -49,7 +49,20 @@ function Profile() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
+    let {state} = useLocation();
     const { username } = useParams();
+    if (state === null) {
+        state = {
+            isRemote: false
+        }
+    }
+    const [profileInfo, setProfileInfo] = useState({
+        github: null,
+        profileImage: null,
+        about: null,
+        pronouns: null,
+        isRemote: state.isRemote
+    })
     const [personal, setPersonal] = useState({
         person: null,
         viewer: null,
@@ -58,12 +71,39 @@ function Profile() {
         viewerId: null
     })
     const [requestButton, setRequestButton] = useState('Add');
-    const [otherUrl, setOtherUrl] = useState([]);
+    const [otherUrl, setOtherUrl] = useState("");
+    const [userInfo, setUserInfo] = useState({})
     const navigate = useNavigate();
     let exists = useRef(null);
+
     useEffect(() => {
         /**
-         * Description: Get the account details of the author
+         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
+         * Returns: N/A
+         */
+        console.log('Debug: <TLDR what the function is doing>')
+        const getId = () => {
+            /**
+             * Description: Sends a POST request to get the current author's id 
+             * Request: POST
+             * Returns: N/A
+             */
+            console.log('Debug: <TLDR what the function is doing>')
+            axios
+            .get('/userinfo/')
+            .then((response) => {
+                setUserInfo(response.data);
+            })
+            .catch(err => { 
+                if (err.response.status === 401 || err.response.status === 404) {  }}
+            )
+        }
+        getId();
+    }, []);
+
+    useEffect(() => {
+        /**
+         * Description: Get the viewership details
          * Request: GET
          * Returns: N/A
          */
@@ -73,45 +113,102 @@ function Profile() {
         let viewed = '';
         let viewedId = '';
         let viewerId = '';
+        let numPosts = '';
+        let numFollowing = '';
+        let numFollowers = '';
         let otherUrl = '';
 
-        const isRealProfile = () => {
-            /**
-             * Description: Checks if the author account exists
-             * Request: GET
-             * Returns: N/A
-             */
-            console.log('Debug: <TLDR what the function is doing>')
-            axios
-            .get('/profile/' + username)
-            .then((response) => {
-                console.log('Debug: Profile Exists.')
-                person = response.data.personal
-                viewer = response.data.viewer
-                viewed = response.data.viewed
-                viewedId = response.data.viewedId
-                viewerId = response.data.viewerId
-                setPersonal(prevPersonal => ({...prevPersonal, person}))
-                setPersonal(prevViewer => ({...prevViewer, viewer}))
-                setPersonal(prevViewed => ({...prevViewed, viewed}))
-                setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
-                setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
-
-                otherUrl = 'other/' + viewedId;
-                setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
-            })
-            .catch(err => {
-                if (err.response.status === 404) {
-                    navigate('/notfound'); 
-                }
-                else if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); 
-                }
-            });
+        if (!state.isRemote) {
+            const isRealProfile = () => {
+                /**
+                 * Description: Checks if the author account exists
+                 * Request: GET
+                 * Returns: N/A
+                 */
+                console.log('Debug: <TLDR what the function is doing>')
+                axios
+                .get('/profile/' + username)
+                .then((response) => {
+                    console.log('Debug: Profile Exists.')
+                    person = response.data.personal
+                    viewer = response.data.viewer
+                    viewed = response.data.viewed
+                    viewedId = response.data.viewedId
+                    viewerId = response.data.viewerId
+                    numPosts = response.data.numPosts
+                    numFollowing = response.data.numFollowing
+                    numFollowers = response.data.numFollowers
+                    console.log("Everything", response.data)
+                    setPersonal(prevPersonal => ({...prevPersonal, person}))
+                    setPersonal(prevViewer => ({...prevViewer, viewer}))
+                    setPersonal(prevViewed => ({...prevViewed, viewed}))
+                    setPersonal(prevViewedId => ({...prevViewedId, viewedId}))
+                    setPersonal(prevViewerId => ({...prevViewerId, viewerId}))
+                    setPersonal(prevNumPosts => ({...prevNumPosts, numPosts}))
+                    setPersonal(prevNumFollowing => ({...prevNumFollowing, numFollowing}))
+                    setPersonal(prevNumFollowers => ({...prevNumFollowers, numFollowers}))
+    
+                    otherUrl = 'other/' + viewedId;
+                    setOtherUrl(prevOtherUrl => ({...prevOtherUrl, otherUrl}))
+                })
+                .catch(err => {
+                    if (err.response.status === 404) {
+                        navigate('/notfound'); 
+                    }
+                    else if (err.response.status === 401) {
+                        console.log("Debug: Not authorized.");
+                        navigate('/unauthorized'); 
+                    }
+                });
+            }
+            isRealProfile();
         }
-        isRealProfile();
-    }, [navigate, username])
+    }, [navigate, username, state.isRemote])
+
+    useEffect(() => {
+        let github = '';
+        let profileImage = '';
+        let about = '';
+        let pronouns = '';
+
+        if (personal.viewedId && !state.isRemote) {
+            const getProfileInfo = () => {
+                /**
+                 * Description: Gets account details of author
+                 * Request: GET
+                 * Returns: N/A
+                 */
+                console.debug("Debug: Getting user profile info");
+                axios
+                .get('/authors/' + personal.viewedId)
+                .then((response) => {
+                    console.log("Debug: Received user profile info");
+                    console.log("Profile Info", response.data);
+                    github = response.data.github
+                    profileImage = response.data.profileImage
+                    about = response.data.about
+                    pronouns = response.data.pronouns
+                    setProfileInfo(prevGithub => ({...prevGithub, github}))
+                    setProfileInfo(prevProfileImage => ({...prevProfileImage, profileImage}))
+                    setProfileInfo(prevAbout => ({...prevAbout, about}))
+                    setProfileInfo(prevPronouns => ({...prevPronouns, pronouns}))
+                })
+                .catch(err => {
+                    if (err.response.status === 404) {
+                        navigate('/notfound');
+                    }
+                    else if (err.response.status === 401) {
+                        navigate('/notauthorized');
+                    }
+                    else if (err.response.status === 500) {
+                        navigate('/servererror');
+                    }
+                })
+            }
+            getProfileInfo();
+        }
+    }, [navigate, personal, state.isRemote])
+
     useEffect(() => {
         /**
          * Description: Checks if the viewer has already sent a friend request
@@ -119,7 +216,7 @@ function Profile() {
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
-        if (!personal.person && personal.viewerId != null && personal.viewedId != null) { 
+        if (!personal.person && personal.viewerId != null && personal.viewedId != null && !state.isRemote) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
                 method: 'get',
@@ -139,7 +236,8 @@ function Profile() {
                 if (err.response.status === 404) { exists.current = false; }
             });
         }
-    }, [username, exists, personal]);
+    }, [personal, state.isRemote]);
+
     useEffect(() => {
         /**
          * Description: Checks if the author is a follower or a friend
@@ -148,7 +246,7 @@ function Profile() {
          * REFACTOR: CHECK 
          */
         console.log('Debug: <TLDR what the function is doing>')
-        if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null) {
+        if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null && !state.isRemote) {
             console.log('See if they are followers or friends.');
             let config = {
                 method: 'post',
@@ -168,10 +266,10 @@ function Profile() {
                 }
             })
             .catch(err => {
-                if (err.response.status === 500) { console.log('500 PAGE') }
+                if (err.response.status === 500) { navigate('/servererror') }
             });
         }
-    }, [username, personal, exists, requestButton])
+    }, [navigate, personal, exists, state.isRemote])
 
     const SendRequest = () => {
         /**
@@ -211,7 +309,7 @@ function Profile() {
                   } else if (err.response.status === 400) {
                     navigate('/badrequest');
                   } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror');
                   }
             });
         } else if (requestButton === 'Unfriend') {
@@ -230,7 +328,7 @@ function Profile() {
                   } else if (err.response.status === 400) {
                     navigate('/badrequest');
                   } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                   }
             });
         } else if (requestButton === "Unfollow") {
@@ -257,7 +355,7 @@ function Profile() {
                   } else if (err.response.status === 400) {
                     navigate('/badrequest');
                   } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                   }
             });
         }
@@ -270,15 +368,27 @@ function Profile() {
                     <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
-                    <h1 style={{paddingLeft: '.74em'}}>{username}'s Profile</h1>
-                    { personal.person ? null : 
-                        <button style={{marginLeft: '1.8em'}} className='post-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>}
-                    <h2 style={{paddingLeft: '1em'}}>Posts</h2>
-                    { (personal.person === null) ? null:
-                        (personal.person === true ?
-                        <Posts type={'personal'}/> : 
-                        <Posts type={otherUrl}/>) 
-                    }   
+                    { (profileInfo.profileImage === '') ? <img className='profile-image' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='profile-image' src={profileInfo.profileImage} alt='prof-userimg' width={130}/>}
+                    <h1 className='profile-username'>{username}</h1>
+                    <p className='profile-pronouns' >{profileInfo.pronouns}</p>
+                    { (state.isRemote || personal.person) ? null : 
+                        <button style={{marginLeft: '1.8em'}} className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>
+                    }
+                    { !state.isRemote ? 
+                        <div>
+                            <p className='profile-nums'>{personal.numPosts} Posts</p> 
+                            <p className='profile-nums'>{personal.numFollowing} Following</p> 
+                            <p className='profile-nums'>{personal.numFollowers} Followers</p>
+                            <p className='profile-about'>{profileInfo.about}</p>
+                        </div> : 
+                        null
+                    }
+                    
+                    <hr/>
+                    <br/>
+                    {
+                        personal.person === null ? state.isRemote === true ? <Posts url={state.url ? state.url : otherUrl} userInfo={userInfo}/> : null : personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>
+                    }
                 </div>
                 <div className='profColR'>
                     <RightNavBar/>

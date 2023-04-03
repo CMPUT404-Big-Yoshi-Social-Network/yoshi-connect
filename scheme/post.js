@@ -39,7 +39,12 @@ const postScheme = new Schema({
     commentCount: Number,
     published: String,
     visibility: String,
-    postTo: String,
+    shared: Boolean,
+    whoShared: [{
+        authorId: String,
+        host: String,
+        postId: String
+    }],
     unlisted: Boolean,},
     {versionKey: false
 });
@@ -61,7 +66,7 @@ const publicPostAuthorsScheme = new Schema({
 
 const publicScheme = new Schema({
     _id: String, //postId
-    author: publicPostAuthorsScheme,
+    author: basicAuthorScheme,
     origin: String,
     source: String,
     title: String,
@@ -73,7 +78,7 @@ const publicScheme = new Schema({
     commentCount: Number,
     published: String,
     visibility: String,
-    postTo: String,
+    shared: Boolean,
     unlisted: Boolean,},
     {versionKey: false
 })
@@ -108,7 +113,6 @@ inboxPostScheme = new Schema({
         commentCount: Number,
         published: String,
         visibility: String,
-        postTo: String,
         unlisted: Boolean,},
         {versionKey: false
 })
@@ -123,12 +127,22 @@ const inboxScheme = new Schema({
     requests: [{
         _id: String,
         goal: String,
-        summary: String,
-        actor: String,
-        actorId: String,
-        objectId: String,
-        object: String
-    }]},
+        actor: {
+            id: String,
+            host: String,
+            displayName: String,
+            url: String,
+            github: String,
+            profileImage: String
+        }, 
+        object: {
+            id: String,
+            host: String,
+            displayName: String,
+            url: String,
+            github: String,
+            profileImage: String
+        }}]},
     {versionKey: false
 })
 

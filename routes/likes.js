@@ -36,11 +36,19 @@ const { authLogin } = require('./auth.js');
 
 async function getLikes(authorId, postId, commentId, type){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the likes associated with a specific post / comment made by a specific author
+    Associated Endpoint: /authors/:authorId/posts/:postId/comments/:commentId/likes
+                         /authors/:authorId/posts/:postId/likes
+    Request Type: GET
+    Request Body: { Id: 902sq546w5498hea764r80re0z89bej, type: type }
+    Return: 400 Status (Bad Request) -- Invalid type given
+            404 Status (Not Found) -- No likes for the specific Post / Comment exists
+            200 Status (OK) -- Returns the sanitized likes
+                                        { "@context": "https://www.w3.org/ns/activitystreams",
+                                            summary: "abc likes your post",
+                                            type: "Like",
+                                            author: author,
+                                            object: https://yoshi-connect.herokuapp.com/f08d2d6579d5452ab282512d8cdd10d4 }
     */
     let objectId;
     if(type == "comment"){
@@ -90,11 +98,12 @@ async function getLikes(authorId, postId, commentId, type){
 
 async function addLike(like, authorId, postId){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Adds a like to the associated author's post / comment
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: N/A
+    Return: 400 Status (Bad Request) -- Invalid type given
+            200 Status (OK) -- Successfully added a like to post /comment
     */
     const type = like.type;
     const summary = like.summary;
@@ -142,10 +151,10 @@ async function addLike(like, authorId, postId){
 async function addLiked(authorId, objectId){
     /**
     Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { _id: 902sq546w5498hea764r80re0z89bej }
+    Return: N/A
     */
     //Add this object to the list of posts that the author has liked
     //extract author uuid from authorID
@@ -168,11 +177,11 @@ async function addLiked(authorId, objectId){
 //TODO Refactor this to work
 async function deleteLike(req, res){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes like from post / comment
+    Associated Endpoint: N/A
+    Request Type: DELETE
+    Request Body: N/A
+    Return: 200 Status (OK) -- Successfully deleted the like from a post / comment
     */
     let success = false;
     let numLikes = 0;

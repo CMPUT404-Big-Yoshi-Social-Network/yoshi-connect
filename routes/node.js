@@ -34,11 +34,19 @@ const crypto_js = require('crypto-js');
 
 async function getCreds(res, page, size, token, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets all incoming nodes which remote servers use to communicate
+    Associated Endpoint: /nodes/incoming
+    					 /nodes/outgoing
+	Request Type: GET
+    Request Body: { token: 5yy7bCMPrSXSv9knpS4gfz }
+    Return: 403 Status (Forbidden) -- Author does not have access rights
+			200 Status (OK) -- Returns a JSON containing an empty array or array with sanitized nodes
+								{ type: nodes,
+								items: [ { "type": "node",
+                						    	"id" : https://yoshi-connect.herokuapp.com/nodes/29c546d45f564a27871838825e3dbecb,
+												"host": https://yoshi-connect.herokuapp.com/,
+												"displayName": 'abc',
+												"url": https://yoshi-connect.herokuapp.com/nodes/29c546d45f564a27871838825e3dbecb } ]
     */
 	let coll = null
 	if (type == 'incoming') {
@@ -88,11 +96,20 @@ async function getCreds(res, page, size, token, type) {
 
 async function getCred(res, token, credId, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets a specific incoming or outgoing node to communicate with a specific server
+    Associated Endpoint: /nodes/incoming/:credId
+    					 /nodes/outgoing/:credId
+	Request Type: GET
+    Request Body: { token: 5yy7bCMPrSXSv9knpS4gfz, _id: 67c43c5cc6484d4c9197153328849d0f }
+    Return: 403 Status (Forbidden) -- Author does not have access rights
+			200 Status (OK) -- Returns JSON with
+									{ type: 'node',
+										node: { _id: 67c43c5cc6484d4c9197153328849d0f
+												displayName: "abc" 
+												url: "http://localhost:3000/api"
+												pasword: "abc"
+												allowed: false
+												auth: "Basic oJzOPEOFnoOWNfdNZsafNE39t" } }
     */
 	let coll = null
 	if (type == 'incoming') {
@@ -118,11 +135,20 @@ async function getCred(res, token, credId, type) {
 
 async function postCred(req, res, token, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Stores incoming / outgoing node (nodes used to communicate with our server)
+    Associated Endpoint: /nodes/incoming
+						 /nodes/outgoing
+    Request Type: POST
+    Request Body: { auth: "Basic abc:abc" }
+    Return: 403 Status (Forbidden) -- Author does not have access rights
+			200 Status (OK) -- Returns JSON with
+									{ type: 'node',
+										node: { _id: 67c43c5cc6484d4c9197153328849d0f
+												displayName: "abc"
+												url: "http://localhost:3000/api"
+												pasword: "abc"
+												allowed: false
+												auth: "Basic 29c546d45f564a27871838825e3dbecb" } }
     */
 	let coll = null
 	let auth = null
@@ -152,11 +178,22 @@ async function postCred(req, res, token, type) {
 
 async function putCred(req, res, credId, token, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Modifies an existing node that communicates with other servers or enables / disables this node
+    Associated Endpoint: /nodes/outgoing/:credId
+    Request Type: PUT
+    Request Body: { displayName: "abc"
+					password: "abc"
+					url = "" }
+    Return: 403 Status (Forbidden) --  Author does not have access rights
+			404 Status (Not Found) -- Cred not found in database
+			200 Status (OK) -- Returns JSON with
+									{ type: 'node',
+										node: { _id: 67c43c5cc6484d4c9197153328849d0f
+												displayName: "abc"
+												url: "http://localhost:3000/api"
+												pasword: "abc"
+												allowed: false
+												auth: "Basic oJzOPEOFnoOWNfdNZsafNE39t" } }
     */
 	let coll = null
 	if (type == 'incoming') {
@@ -180,11 +217,15 @@ async function putCred(req, res, credId, token, type) {
 
 async function deleteCred(token, credId, type) {
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes an existing incoming / outgoing node from the database
+    Associated Endpoint: /nodes/incoming/:credId
+						 /nodes/outgoing/:credId
+    Request Type: DELETE
+    Request Body: { _id: 67c43c5cc6484d4c9197153328849d0f }
+    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)	    
+			403 Status (Forbidden) --  Author does not have access rights
+			500 Status (Internal Server Error) -- Unable to delete Cred from database
+			204 Status (No Content) -- Cred was successfully deleted from database
     */
 	let coll = null
 	if (type == 'incoming') {
@@ -202,11 +243,11 @@ async function deleteCred(token, credId, type) {
 
 async function allowNode(res, credId, type){
 	/**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Associated Endpoint: /nodes/incoming/:credId
+    					 /nodes/outgoing/:credId
+	Request Type: PUT
+    Request Body: { _id: 67c43c5cc6484d4c9197153328849d0f }
+    Return: 200 Status (OK) -- Cred was successfully enabled / disabled
     */
 	let coll = null
 	if (type == 'incoming') {

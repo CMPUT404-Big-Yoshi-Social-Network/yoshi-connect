@@ -30,7 +30,7 @@ import './signup.css';
 
 export default function Signup() {
   /**
-   * Description:
+   * Description: Handles the creation and registration of a new Author
    * Functions: 
    *     - getAccount(): Sends a POST request to get the account for routing it to the public feed as well as saving the new author
    * Returns: N/A

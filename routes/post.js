@@ -27,7 +27,7 @@ const { PostHistory, PublicPost, Post, Image, Inbox } = require('../scheme/post.
 const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
-
+const { OutgoingCredentials } = require('../scheme/server');
 
 // UUID
 const crypto = require('crypto');
@@ -35,14 +35,18 @@ const crypto = require('crypto');
 // Additional Functions
 const { authLogin } = require('./auth.js');
 const { getAuthor } = require('./author.js');
+const { sendToForeignInbox } = require('./inbox.js');
 
 async function createPostHistory(author_id){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates the Author's post history
+    Associated Endpoint: N/A
+    Request Type: PUT
+    Request Body: {_id: 08a779b240624ff899823d1024ff3aa1,
+                    authorId: 29c546d45f564a27871838825e3dbecb ,
+                    num_posts: 0,
+                    posts: [] }
+    Return: N/A
     */
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let new_post_history = new PostHistory ({
@@ -57,11 +61,12 @@ async function createPostHistory(author_id){
 
 async function uploadImage(url, image) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Uploads an image related to a post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image
+    Request Type: POST 
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image,  
+                    src: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd }
+    Return: 200 Status (OK) -- Successfully uploaded the image to a post made by the Author
     */
     let newImage = new Image ({
         _id: url,  
@@ -73,11 +78,12 @@ async function uploadImage(url, image) {
 
 async function editImage(url, src) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Edits an image associated with a specific post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image 
+    Request Type: POST
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image }
+    Return: 404 Status (Not Found) -- Image was not found
+            200 Status (OK) -- Successfully edited the image from a post made by the Author
     */
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
@@ -88,11 +94,12 @@ async function editImage(url, src) {
 
 async function getImage(url) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the image associated with post made by a specific Author
+    Associated Endpoint: /authors/:authorId/posts/:postId/image
+    Request Type: GET
+    Request Body: { _id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/89c546d45f564a27800838825e3dbece/image }
+    Return: 404 Status (Not Found) -- Image was not found
+            200 Status (OK) -- Successfully retrieved the image from a post made by the Author
     */
     let image = await Image.findOne({_id: url});
     if (!image) { return [{}, 404]; }
@@ -101,11 +108,13 @@ async function getImage(url) {
 
 async function getPost(postId, auth, author){
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the posts associated with postId for the Author associated with authorId
+    Associated Endpoint: /authors/:authorId/posts/:postId 
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 404 Status (Not Found) -- Author ID was not found or Post associated with Author was not found
+            401 Status (Unauthorized) -- Authentication failed, post not visible
+            200 Status (OK) -- Returns Authour's post
     */
     let post = await PostHistory.aggregate([
         {
@@ -169,6 +178,7 @@ async function getPost(postId, auth, author){
         "contentType": post.contentType,
         "content": post.content,
         "author": author,
+        "shared": post.shared,
         "categories": post.categories,
         "count": post.commentCount,
         "likeCount": post.likeCount,
@@ -183,11 +193,15 @@ async function getPost(postId, auth, author){
 
 async function createPost(token, authorId, postId, newPost) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Creates the posts associated with postId for the Author associated with authorId to create a post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: PUT
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Token expired or is not authenticated
+            400 Status (Bad Request) -- Post details are invalid
+            404 Status (Not Found) -- Post associated with author ID was not found
+            500 Status (Internal Server Error) -- Unable to confrim post in database
+            200 Status (OK) -- Returns Authour's post
     */
     if(! (await authLogin(token, authorId))){ return [[], 401]; }
 
@@ -201,7 +215,6 @@ async function createPost(token, authorId, postId, newPost) {
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
-    const postTo = newPost.postTo;
 
     if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
         return [[], 400];
@@ -236,8 +249,7 @@ async function createPost(token, authorId, postId, newPost) {
         commentCount: 0,
         published: published,
         visibility: visibility,
-        unlisted: unlisted,
-        postTo: postTo
+        unlisted: unlisted
     };
 
     postHistory.posts.push(post);
@@ -262,9 +274,12 @@ async function createPost(token, authorId, postId, newPost) {
     if (visibility == 'PUBLIC') {
         post.author = {
             _id: author.id,
+            host: author.host,
             displayName: author.displayName,
+            url: author.url,
+            github: author.github,
             profileImage: author.profileImage,
-            pronouns: author.pronouns
+            pronouns: author.pronouns,
         }
         const publicPost = new PublicPost(post);
         await publicPost.save();
@@ -272,30 +287,279 @@ async function createPost(token, authorId, postId, newPost) {
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if(unlisted == "false" || unlisted == false){
+    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
+            /*
+            post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
             const follower = followers.followers[i].authorId;
             const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-
             inbox.posts.push(post);
             await inbox.save();
+            */
+            post.type = "post";
+            post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+            post.author = {
+                type: "author",
+                id: author.id,
+                host: author.host,
+                displayName: author.displayName,
+                url: author.url,
+                github: author.github,
+                profileImage: author.profileImage,
+            };
+            delete post._id;
+
+            //Send the post to other followers 
+            const follower = followers.followers[i];
+            const hosts = await getHostNames();
+            //TODO NEEDS TESTING
+            let followerHost = follower.id.split("/");
+            followerHost = followerHost[2];
+            for(let i = 0; i < hosts.length; i++){
+                if(i == 0 && followerHost == hosts[i].host){
+                    post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+                    const followerId = followers.followers[i].authorId;
+                    const inbox = await Inbox.findOne({"authorId": followerId}).clone();
+
+                    inbox.posts.push(post);
+                    inbox.num_posts++;
+                    await inbox.save();
+                }
+                else if(followerHost == followerHost[i]){
+                    let host = followerHost[i];
+                    let config = {
+                        url: follower.id + "/inbox",
+                        method: "post",
+                        headers:{
+                            "Authorization": host.auth,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data: post
+                    }
+
+                    axios.request(config)
+                    .then((request) => {
+                        console.log(request.data);
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                }
+            }
         }
     }
-
+        
     await likes;
     await comments;
     await savePostPromise;
     return await getPost(postId, authorId, author);
 }
 
+async function getHostNames(){
+    /**
+    Description: Gets the host names
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: N/A
+    Return: N/A
+    */
+    let hosts = [];
+
+    let currHost = process.env.DOMAIN_NAME.split("/");
+    hosts.push({host: currHost[2]});
+
+    let outs = await OutgoingCredentials.find().clone();
+    for(let i = 0; i < outs.length; i++){
+        let out = outs[i];
+        let foreignHost = out.url.split("/");
+        hosts.push({...out, host: foreignHost[2]});
+    }
+
+    return hosts;
+}
+
+async function sharePost(token, authorId, postId, newPost) {
+    /**
+    Description: Sends a POST request to share post assciated with a specific Author
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 404 Status (Not Found) -- Post from Author was not found in the database
+            500 Status (Internal Server Error) -- Unable to confrim post in database
+            200 Status (OK) -- Returns Authour's post
+    */
+    let authorPromise = getAuthor(authorId);
+    let forAuthor = '';
+    if (newPost.author._id !== undefined && newPost.author._id !== null) {
+        let a = await Author.findOne({_id: newPost.author._id.split('/authors/')[(newPost.author._id.split('/authors/')).length - 1]}).clone();
+        forAuthor = {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + a._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: a.username,
+            url: process.env.DOMAIN_NAME + "authors/" + a._id,
+            github: a.github,
+            profileImage: a.profileImage 
+        }
+    } else {
+        authorId
+        let a = await Author.findOne({_id: authorId}).clone();
+        forAuthor = {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + a._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: a.username,
+            url: process.env.DOMAIN_NAME + "authors/" + a._id,
+            github: a.github,
+            profileImage: a.profileImage 
+        }
+    }
+
+    const title = newPost.title;
+    const description = newPost.description;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = newPost.categories;
+    const published = new Date().toISOString();
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
+    const sharedPostId = String(crypto.randomUUID()).replace(/-/g, ""); 
+    const origin = newPost.origin;
+
+
+    let postFrom = '';
+    if (newPost.authorId === undefined) {
+        postFrom = newPost.source
+        postFrom = postFrom.split("/");
+        postFrom = postFrom[postFrom.length - 3];
+    } else {
+        postFrom = newPost.authorId
+    }
+
+    let postHistory = await PostHistory.findOne({authorId: authorId});
+    if (!postHistory) { return [[], 404]; }
+
+
+    let source = process.env.DOMAIN_NAME + 'authors/' + authorId + '/posts/' + sharedPostId;
+
+    const originalPH = await PostHistory.findOne({authorId: postFrom});
+    if (originalPH) {
+        const originalPost = originalPH.posts.id(newPost.postId);
+        if (originalPost) {
+            originalPost.whoShared.push({
+                authorId: authorId, 
+                host: process.env.DOMAIN_NAME,
+                postId: sharedPostId
+            });
+        }
+    }
+
+    let post = {
+        _id: sharedPostId,
+        title: title,
+        source: source,
+        origin: origin,
+        description: description,
+        contentType: contentType,
+        content: content,
+        authorId: authorId,
+        categories: [''],
+        likeCount: 0,
+        commentCount: 0,
+        published: published,
+        visibility: visibility,
+        unlisted: unlisted,
+        whoShared: [],
+        shared: true,
+        author: null
+    };
+
+    postHistory.posts.push(post);
+    postHistory.num_posts = postHistory.num_posts + 1;
+
+    let savePostPromise = postHistory.save();
+
+    let likes = LikeHistory({
+        type: "post",
+        Id: sharedPostId,
+        likes: [],
+    }).save();
+
+    let comments = CommentHistory({
+        postId: sharedPostId,
+        comments: [],
+    }).save();
+
+    let [author, status] = await authorPromise;
+    
+    if (status != 200) return [{}, 500];
+
+    if (visibility == 'PUBLIC') {
+        post.author = {
+            _id: author.id,
+            displayName: author.displayName,
+            profileImage: author.profileImage,
+            pronouns: author.pronouns
+        }
+        const publicPost = new PublicPost(post);
+        await publicPost.save();
+    }
+    //TODO make this faster
+    //if not unlisted send to all followers 
+    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        for(let i = 0; i < followers.followers.length; i++){
+            const follower = followers.followers[i];
+            if (follower.id.split('/authors/')[0] !== process.env.DOMAIN_NAME) {
+                // Remote Follower
+                const outgoings = await OutgoingCredentials.find().clone();
+                let auth = ''
+                for (let i = 0; i < outgoings.length; i++) {
+                    if (outgoings[i].url === follower.id.split('/authors/')[0]) {       
+                        auth = outgoings[i].auth;
+                    }
+                }
+                await sendToForeignInbox(follower.id, auth, {
+                    type: 'post',
+                    title: newPost.title,
+                    description: newPost.description,
+                    contentType: newPost.contentType,
+                    visibility: newPost.visibility,
+                    content: newPost.content,
+                    comments: newPost.comments,
+                    unlisted: newPost.unlisted,
+                    published: published,
+                    source: source,
+                    origin: newPost.origin,
+                    id: newPost.id,
+                    author: forAuthor
+                })
+            } else {
+                const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+
+                inbox.posts.push(post);
+                await inbox.save();
+            }
+        }
+    }
+
+    await likes;
+    await comments;
+    await savePostPromise;
+    return await getPost(sharedPostId, authorId, author);
+}
+
 async function updatePost(token, authorId, postId, newPost) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Sends the posts associated with postId for the Author associated with authorId to update the post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: POST 
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Token expired or is not authenticated
+            400 Status (Not Found) -- Post details are invalid
+            500 Status (Internal Server Error) -- Unable to fetch post history from database
+            200 Status (OK) -- Returns a JSON of the updated post object
     */
     if (!(await authLogin(token, authorId))) { return [{}, 401]; }
     const title = newPost.title;
@@ -306,7 +570,7 @@ async function updatePost(token, authorId, postId, newPost) {
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
 
-    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false')){
+    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false')){
         return [{}, 400];
     }
 
@@ -315,7 +579,7 @@ async function updatePost(token, authorId, postId, newPost) {
     if (!postHistory) { return [{}, 500]; }
 
     let post = postHistory.posts.id(postId);
-    if(unlisted == 'false' && visibility == "PUBLIC" && !post.unlisted && post.visibility == "PUBLIC") {
+    if((unlisted == 'false' || unlisted == false) && visibility == "PUBLIC" && !post.unlisted && post.visibility == "PUBLIC") {
         let publicPosts = await PublicPost.findOne({_id: postId}).clone();
         if(!publicPosts) return [{}, 500];
         publicPosts.title = title;
@@ -327,7 +591,7 @@ async function updatePost(token, authorId, postId, newPost) {
         publicPosts.categories = categories;
         await publicPosts.save();
     }
-    else if(unlisted == 'false' && visibility == "PUBLIC") {
+    else if((unlisted == 'false' || unlisted == false) && visibility == "PUBLIC") {
         let publicPost = {
             _id: postId,
             title: title,
@@ -342,12 +606,12 @@ async function updatePost(token, authorId, postId, newPost) {
             commentCount: post.commentCount,
             published: post.published,
             visibility: visibility,
-            unlisted: unlisted,
-            postTo: post.postTo
+            shared: post.shared, 
+            unlisted: unlisted
         };
         await (new PublicPost(publicPost)).save();
     }
-    else if(unlisted == "true" || visibility == "FRIENDS"){
+    else if((unlisted == "true" || unlisted == true) || visibility == "FRIENDS"){
         await PublicPost.findOneAndDelete({_id: postId}).clone();
     }
 
@@ -359,34 +623,38 @@ async function updatePost(token, authorId, postId, newPost) {
     post.unlisted = unlisted;
     post.categories = categories;
     await postHistory.save()
-    
-    /*
-    if(unlisted === "false"){
-        const followers = await Follower.findOne({authorId: authorId}).clone();
-        let promiseList = [];
-        for(let i = 0; i < followers.followers.length; i++){
-            const follower = followers.followers[i].authorId;
-            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-            inbox.posts.push(post);
-            promiseList.push(inbox.save());
-        }
 
-        for(let i = 0; i < promiseList.length; i++){
-            await promiseList[i];
-        }
-    }
-    */
     let author = await getAuthor(authorId);
     return await getPost(postId, token, author[0]);
 }
 
+async function createTombstone(authorId, postId) {
+    const phShared = await PostHistory.findOne({authorId: authorId});
+
+    if (!phShared) { return [{}, 404]; }
+
+    const pShared = postHistory.posts.id(postId);
+
+    if(!pShared) { return [{}, 404]; }
+
+    pShared.title = 'Shared Post Deleted!'
+    pShared.description = 'Sorry, but the original post has been deleted! -- YoshiConnect'
+    pShared.contentType = 'text/plain'
+    pShared.content = 'RIP Shared Post'
+    // TODO: Need to address the image for the tombstone for a deleted shared post
+
+    await phShared.save();
+}
+
 async function deletePost(token, authorId, postId) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Deletes the posts associated with postId for the Author associated with authorId to delete the post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: DELETE
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Author token is not authenticated
+            404 Status (Not Found) -- Post was not found
+            200 Status (OK) -- Successfully deleted post object from database
     */
     if (!( await authLogin(token, authorId))) { return [{}, 401]; }
 
@@ -400,6 +668,18 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
+
+    if (post.whoShared != []) {
+            const whoShared = post.whoShared; 
+            const outgoings = await OutgoingCredentials.find().clone();
+            for (let i = 0; i < whoShared.length; i++) {
+                const node = outgoings.find(item => item.url === whoShared[i].host)
+                if (node === undefined) {
+                    await createTombstone(authorId, postId);
+                }
+            }
+        }
+
 
     const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
     const comments = CommentHistory.findOneAndDelete({postId: postId});
@@ -419,11 +699,13 @@ async function deletePost(token, authorId, postId) {
 
 async function getPosts(token, page, size, author) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the posts associated with authorId for the Author themselves
+    Associated Endpoint: /authors/:authorId/posts/personal
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 400 Status (Bad Request) -- Invalid post
+            401 Status (Unauthorized) -- Author is not a follower or friend
+            200 Status (OK) -- Returns the post associated with author ID
     */
     if(page < 0 || size < 0){
         return [[], 400]
@@ -516,7 +798,7 @@ async function getPosts(token, page, size, author) {
             "author": author,
             "categories": post.categories,
             "count": post.commentCount,
-            "likeCount": post.likesCount,
+            "likeCount": post.likeCount,
             "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
             "commentSrc": post.commentSrc,
             "published": post.published,
@@ -530,11 +812,11 @@ async function getPosts(token, page, size, author) {
 
 async function fetchMyPosts(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets the Author's posts for themselves
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 200 Status (OK) -- Returns a JSON with an array of the Author's posts
     */
     const posts = await PostHistory.aggregate([
         {
@@ -587,11 +869,11 @@ async function fetchMyPosts(req, res) {
 
 async function fetchOtherPosts(req, res) {
     /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
+    Description: Gets other Author's posts
+    Associated Endpoint: N/A
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 200 Status (OK) -- Returns a JSON with an array of the other Author's posts
     */
     const posts = await PostHistory.aggregate([
         {
@@ -655,9 +937,11 @@ module.exports={
     deletePost,
     createPost,
     getPosts,
+    sharePost,
     fetchMyPosts,
     fetchOtherPosts,
     uploadImage,
     getImage,
-    editImage
+    editImage,
+    createTombstone
 }

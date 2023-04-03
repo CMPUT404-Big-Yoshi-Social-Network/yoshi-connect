@@ -83,14 +83,13 @@ function Authors() {
             }
         });
 
-        let updated = page + 1;
         config = {
             method: 'get',
             maxBodyLength: Infinity,
             url: url,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             params: {
-                page: updated,
+                page: page + 1,
                 size: size
             }
         }

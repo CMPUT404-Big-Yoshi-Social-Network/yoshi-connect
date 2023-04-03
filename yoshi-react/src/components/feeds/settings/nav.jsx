@@ -34,7 +34,7 @@ function SettingsNav() {
     /**
      * Description: Represents the left navigation bar
      * Functions:
-     *     - LogOut():
+     *     - LogOut(): Logs the user out
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -42,7 +42,7 @@ function SettingsNav() {
     
     const LogOut = () => {
         /**
-         * Description: Logs the user out
+         * Description: Logs the user out through a POST request
          * Request: POST
          * Returns: N/A
          */

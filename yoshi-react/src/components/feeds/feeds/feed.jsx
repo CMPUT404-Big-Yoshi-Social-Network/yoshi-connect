@@ -36,6 +36,18 @@ import Posts from '../../posts/posts.jsx';
 import './feed.css';
 
 export default function Feed() {
+    /**
+     * Description: Represents a Feed 
+     * Functions: 
+     *     - useCallback(): Logs an Author out 
+     *     - useEffect(): 
+     *          - Calls checkExpiry() to check if the token is expired before render
+     *          - Fetches the current author's id and the public and following (who the author follows) posts
+     *     - checkExpiry(): Checks if the Author has an expired token
+     *     - getId(): Get the Author's id
+     *     - getPosts(): Gets the current Author's followings posts and public (PSA) posts
+     * Returns: N/A
+     */
     const navigate = useNavigate();
     const path = useLocation().pathname;
     const [posts, setPosts] = useState([]);

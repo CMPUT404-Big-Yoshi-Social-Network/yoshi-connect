@@ -29,9 +29,9 @@ import axios from 'axios';
 
 function SearchOutcomes({url}) {
     /**
-     * Description: 
+     * Description: Represents the list of searches
      * Functions: 
-     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     *     - useEffect(): Fetches the form of the search 
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -40,9 +40,9 @@ function SearchOutcomes({url}) {
 
     useEffect(() => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Fetches the form of the search  
+         * Request: GET    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         setFindings(true);

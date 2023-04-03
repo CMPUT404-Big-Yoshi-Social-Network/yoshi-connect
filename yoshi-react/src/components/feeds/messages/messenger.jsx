@@ -24,8 +24,10 @@ import React from "react";
 
 function Messenger(props) {
     /**
-     * Description:    
-     * Returns: 
+     * Description: Represents the message from another server 
+     * Functions: 
+     *     - useEffect(): Fetches the message from the messenger
+     * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
     return (

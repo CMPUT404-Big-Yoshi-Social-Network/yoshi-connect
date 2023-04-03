@@ -26,9 +26,10 @@ import { useNavigate } from 'react-router-dom';
 
 function Request(props) {
     /**
-     * Description: 
+     * Description: Represents a Request
      * Functions: 
-     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     *     - addRequest(): Creates a request
+     *     - rejectRequest(): Deletes a request from the Author's inbox
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -36,11 +37,11 @@ function Request(props) {
 
     const addRequest = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Creates a request through a PUT request
+         * Request: PUT   
+         * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
+        console.log('Debug: Creating request')
         let aId = props.actor.id
         aId = aId.split("/");
         aId = aId[aId.length - 1];
@@ -71,9 +72,9 @@ function Request(props) {
 
     const rejectRequest = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Deletes a request from the Author's inbox through a DELETE request  
+         * Request: DELETE    
+         * Returns: N/A
          */
         let aId = props.actor.id
         aId = aId.split("/");

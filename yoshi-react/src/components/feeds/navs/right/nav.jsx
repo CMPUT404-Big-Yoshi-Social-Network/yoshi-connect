@@ -35,7 +35,9 @@ import './nav.css';
 
 function RightNavBar() {
     /**
-     * Description: Represents the right navigation bar
+     * Description: Represents the right navigation bar 
+     * Functions: 
+     *         - useEffect(): Fetches the Author's profile info
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -46,6 +48,11 @@ function RightNavBar() {
     const navigate = useNavigate();
     
     useEffect(() => {
+        /**
+         * Description: Fetches the Author's profile info through sending a GET request
+         * Request: GET
+         * Returns: N/A
+         */
         const getId = () => {
             axios
             .get('/userinfo/')

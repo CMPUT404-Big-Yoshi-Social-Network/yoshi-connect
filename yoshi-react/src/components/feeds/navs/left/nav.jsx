@@ -35,7 +35,8 @@ import './nav.css';
 
 function LeftNavBar(props) {
     /**
-     * Description:  
+     * Description: Represents the left dynamic navigation bar 
+     * Functions: N/A
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')

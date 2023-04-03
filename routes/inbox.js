@@ -120,7 +120,6 @@ async function getInbox(token, authorId, page, size){
     for(let i = 0; i < posts.length; i++){
         promiseQueue.push(axios.get(posts[i]._id)
         .then((response) => {
-            console.log(response.data);
             return response.data
         })
         .catch((err) => {

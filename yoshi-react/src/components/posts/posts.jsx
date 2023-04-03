@@ -29,82 +29,18 @@ import axios from 'axios';
 // Child Component
 import Post from './post.jsx';
 
-function Posts(props) { 
+function Posts({url, userInfo}) { 
     /**
      * Description:  
      * Request: (if axios is used)    
      * Returns: 
      */
     console.log('Debug: <TLDR what the function is doing>')
-    const [posts, setPosts] = useState([]);  
+    const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
-    const [userInfo, setUserInfo] = useState({})
     const size = 20;
     const navigate = useNavigate();
-    const [url, setUrl] = useState('');
-    const [viewerId, setViewerId] = useState('');
-    let type = '';
-    if (props.type !== undefined) {
-        if (props.type.otherUrl) {
-            type = props.type.otherUrl
-        } else {
-            type = props.type
-        }
-    }
-
-    useEffect(() => {
-        if (props.posts !== undefined) {
-            setPosts(props.posts)
-        }
-        if (type === 'public') {
-            setUrl('/posts/' + type);
-        }
-    }, [props.posts, type])
-
-    useEffect(() => {
-
-        /**
-         * Description: Fetches the current author's id and the public and following (who the author follows) posts  
-         * Returns: N/A
-         */
-        console.log('Debug: <TLDR what the function is doing>')
-        let id = ''
-        const getId = () => {
-            /**
-             * Description: Sends a POST request to get the current author's id 
-             * Request: POST
-             * Returns: N/A
-             */
-            console.log('Debug: <TLDR what the function is doing>')
-            axios
-            .get('/userinfo/')
-            .then((response) => {
-                id = response.data.id.split("");
-                id = id[id.length - 1];
-                setViewerId(id);
-                if (props.posts === undefined) {
-                    setUserInfo(response.data);
-                    let viewerId = response.data.authorId;
-                    setViewerId(viewerId);
-                    if (type === 'inbox') {
-                        setUrl(response.data.id + '/inbox');
-                    } else if (type === 'personal') {
-                        setUrl('/authors/' + id + '/posts/personal')
-                    } else {
-                        setUrl('/posts/' + type);
-                    }
-                }
-            })
-            .catch(err => { 
-                if (err.response.status === 401 || err.response.status === 404) { 
-                    setViewerId('') 
-                }
-            });
-        }
-        getId();
-        
-    }, [type, props.posts]);
 
     useEffect(() => {
         /**
@@ -112,61 +48,60 @@ function Posts(props) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
-       if (url && props.posts === undefined) {
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: url,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            params: {
-                page: page,
-                size: size
+        if (url) {
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: url,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: page,
+                    size: size
+                }
             }
-        }
 
-        axios.get(url, config)
-        .then((response) => {
-            setPosts(response.data.items);
-        })
-        .catch(err => {
-            if (err.response.status === 404) {
-                setPosts([]);
-            } else if (err.response.status === 401) {
-                navigate('/unauthorized');
-            } else if (err.response.status === 500) {
-                setPosts([]);
+            axios.get(url, config)
+            .then((response) => {
+                setPosts(response.data.items);
+            })
+            .catch(err => {
+                if (err.response.status === 404) {
+                    setPosts([]);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                } else if (err.response.status === 500) {
+                    setPosts([]);
+                }
+            });
+            
+            let updated = page + 1;
+            config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: url,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: {
+                    page: updated,
+                    size: size
+                }
             }
-        });
-        
-        let updated = page + 1;
-        config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: url,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            params: {
-                page: updated,
-                size: size
-            }
-        }
 
-        axios.get(url, config)
-        .then((response) => { 
-            if (response.data[0]) { setSeeMore(true); }
-        })
-        .catch(err => {
-            if (err.response.status === 500) {
-                setPosts([]);
-            } else if (err.response.status === 404) {
-                setSeeMore(true);
-            } else if (err.response.status === 401) {
-                navigate('/unauthorized');
-            }
-        });
-        
-       } 
-    }, [url, navigate, page, size, props.posts]);
+            axios.get(url, config)
+            .then((response) => { 
+                if (response.data[0]) { setSeeMore(true); }
+            })
+            .catch(err => {
+                if (err.response.status === 500) {
+                    setPosts([]);
+                } else if (err.response.status === 404) {
+                    setSeeMore(true);
+                } else if (err.response.status === 401) {
+                    navigate('/unauthorized');
+                }
+            });
+            
+        } 
+    }, [url, navigate, page, size]);
 
     const getMore = () => {
         /**
@@ -254,7 +189,7 @@ function Posts(props) {
                 <div> 
                     <Pagination>
                         {Object.keys(posts).map((post, idx) => (
-                            <Post key={idx} viewerId={viewerId} post={posts[post]} author={userInfo}/>
+                            <Post key={idx} viewerId={userInfo.authorId} post={posts[post]} author={userInfo}/>
                         ))}  
                         { seeMore ? null :
                             <div>

@@ -208,10 +208,8 @@ async function sendRequest(authorId, foreignId, res) {
     const request = {
         _id: uuid,
         goal: type,
-        actor: actor.username,
-        actorId: actor._id,
-        objectId: object._id,
-        object: object.username
+        actor: actor, 
+        object: object
     }
 
     const inbox = await Inbox.findOne({authorId: foreignId});
@@ -333,8 +331,6 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status, is
             _id: uuid,
             goal: status,
             actor: request.actor,
-            actorId: request.actorId,
-            objectId: request.objectId,
             object: request.object
         }
         actorInbox.requests.push(newRequest);

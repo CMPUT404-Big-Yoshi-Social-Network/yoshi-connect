@@ -29,6 +29,7 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "gh-recent-activity": "^1.1.2",
     "install": "^0.13.0",
     "mongoose": "^6.9.1",
     "multer": "^1.4.5-lts.1",

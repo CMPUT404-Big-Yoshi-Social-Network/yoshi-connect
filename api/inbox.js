@@ -165,50 +165,79 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
  *        description: OK, successfully posts to the Inbox
  */
 router.post('/', async (req, res) => {
-
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
-
-		const [scheme, data] = authHeader.split(" ");
-		if(scheme === "Basic") {
-			const credential = Buffer.from(data, 'base64').toString('ascii');
-			const [serverName, password] = credential.split(":");
-			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
-				authorized = true;
-			}
+		if( await IncomingCredentials.findOne({auth: authHeader})) {
+			authorized = true;
 		}
 	}
 
-	let authorId;
-	if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
-		if (req.body.author !== undefined) {
+	if(req.cookies.token){
+		let authorId;
+		const token = req.cookies.token;
+		if(!token){
+			return res.sendStatus(401);
+		}
+		if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
 			authorId = req.body.author.id.split("/");
 			authorId = authorId[authorId.length - 1];
-		} else {
-			authorId = req.body.authorId;
+		}
+		else if(req.body.type.toLowerCase() == "follow"){
+			authorId = req.body.actor.id.split("/");
+			authorId = authorId[authorId.length - 1];
+		}
+		else{
+			return res.sendStatus(400);
+		}
+
+		if( await authLogin(token, authorId)){
+			authorized = true;
 		}
 	}
-	else if(req.body.type.toLowerCase() == "follow"){
-		authorId = req.body.actor.id;
-		authorId = authorId.split("/");
-		authorId = authorId[authorId.length - 1];
-	}
-	else{
-		return res.sendStatus(400);
-	}
 
-	if(await authLogin(req.cookies.token, authorId)){
-		authorized = true;
-	}
 
 	//TODO fix this once and for all
-	if(!authorized){
+	if(!authorized && req.headers["x-requested-with"] != "XMLHttpRequest"){
 		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
 		return res.sendStatus(401);
 	}
+	else if(!authorized){
+		return res.sendStatus(401);
+	}
 
+	if (req.body.type.toLowerCase() !== 'like') {
+		let idURL = req.params.authorId.split("/");
+		let host = process.env.DOMAIN_NAME.split("/")
+		host = host[host.length - 2];
+		if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[2] == host && idURL[3] == "authors"){
+			req.params.authorId = idURL[4];
+		}
+		else if((idURL[0] == "http:" || idURL[0] == "https:") && idURL.find(element => element === "authors")){
+			//Check if the host name is in mongo
+			//If not then 401
+			//Else send a post request to that server with the associated request
+			let outgoings = await OutgoingCredentials.find().clone();
+			for(let i = 0; i < outgoings.length; i++){
+				let outgoing = outgoings[i];
+				let url = outgoing.url.split("/");
+				url = url[url.length - 1];
+				if(url != idURL[2]){
+					continue;
+				}
 	
+				let [response, status] = await sendToForeignInbox(req.params.authorId, outgoing.auth, req.body);
+				if(status > 200 && status < 300){
+					return res.json(response);
+				}
+				return res.sendStatus(status);
+			}
+			return res.sendStatus(400);
+		}
+	}
+	
+
+	//NEED to fix req.body.author.id to the id of the inbox haver
 	const type = req.body.type.toLowerCase();
 	let response, status;
 	if(type === "post"){
@@ -235,7 +264,9 @@ router.post('/', async (req, res) => {
 			// remote
 			actor = req.body.actor;
 		}
-		[response, status] = await postInboxRequest(actor, req.params.authorId);
+		if (req.params.authorId !== undefined && req.params.authorId !== null) {
+			[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type);
+		} 
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);
@@ -254,13 +285,7 @@ router.post('/', async (req, res) => {
 	if(type === "post"){
 		//[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	else if (type === "follow") {
-		response = {
-			type: "follow",
-			summary: response.summary,
-			actor: response.actor,
-			object: response.object
-		}
+	else if(type === "follow"){
 	}
 	else if(type === "comment"){
 		response = {

@@ -120,7 +120,6 @@ async function getInbox(token, authorId, page, size){
     for(let i = 0; i < posts.length; i++){
         promiseQueue.push(axios.get(posts[i]._id)
         .then((response) => {
-            console.log(response.data);
             return response.data
         })
         .catch((err) => {
@@ -175,96 +174,6 @@ async function getInbox(token, authorId, page, size){
     };
 
     return [response, 200];
-}
-
-async function postInbox(req, res){
-    /**
-    Description: Posts an object into the Author's inbox
-    Associated Endpoint: N/A
-    Request Type: POST 
-    Request Body: N/A
-    Return: 200 Status (OK) -- Successfully posts to the Inbox
-            400 Status (Bad Request) -- No valid type specified in request
-    */
-    if(req.body.type === "post") {
-        const title = req.body.title;
-        const id = req.body._id;
-        const description = req.body.description;
-        const contentType = req.body.contentType;
-        const content = req.body.content;
-        const categories = req.body.categories;
-        const count = req.body.count;
-        const comments = req.body.comments;
-        const published = req.body.published;
-        const visibility = req.body.visibility;
-        const unlisted = req.body.unlisted;
-        const authorId = req.body.authorId;
-
-        if ( title === undefined || id === undefined || description === undefined || 
-            contentType === undefined || content === undefined || categories === undefined || 
-            count === undefined || comments === undefined|| published === undefined || visibility === undefined || 
-            unlisted === undefined || authorId === undefined ) { 
-                return res.sendStatus(400); 
-        }
-
-        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-        const post = Post({
-                _id: uuid,
-                title: title,
-                description: description,
-                contentType: contentType,
-                content: content,
-                authorId: authorId,
-                categories: categories,
-                count: 0,
-                likes: [],
-                comments: [],
-                published: published,
-                visibility: visibility,
-                specifics: specifics,
-                unlisted: unlisted,
-                image: ""
-        });
-
-        postInboxPost(post, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "follow") {
-        const senderUUID = await Author.findOne({username: req.body.data.sender});
-        const receiverUUID = await Author.findOne({username: req.body.data.receiver});
-        let uuidReq = String(crypto.randomUUID()).replace(/-/g, "");
-        const request = new Request({
-            _id: uuidReq,
-            senderId: req.body.sender,
-            senderUUID: senderUUID,
-            receiverId: req.body.receiver,
-            receiverUUID: receiverUUID,
-        });
-
-        postInboxRequest(request, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "like") {
-        
-        let uuidLike = String(crypto.randomUUID()).replace(/-/g, "");
-        const like = new Like({
-            _id: uuidLike,
-            liker: req.body.liker
-        });
-
-        postInboxLike(like, req.params.author_id);
-    } else if (req.body.type === "comment") {
-        let uuidCom = String(crypto.randomUUID()).replace(/-/g, "");
-        const comment = new Comment({
-            _id: uuidCom,
-            commenter: req.body.commenter,
-            comment: req.body.comment
-        });
-
-        postInboxComment(comment, req.params.author_id);
-    } else {
-        res.sendStatus(400);
-    }
 }
 
 async function postInboxPost(post, recieverAuthorId){
@@ -330,9 +239,9 @@ async function postInboxLike(like, authorId){
 
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
     let author = like.author;
-    if(!validateAuthorObject(author)){
-        return [{}, 400];
-    }
+    // if(!validateAuthorObject(author)){
+    //     return [{}, 400];
+    // }
 
     author = {
         _id: author.id,
@@ -447,23 +356,61 @@ async function postInboxComment(newComment, recieverAuthorId){
     return [comment, 200];
 }
 
-async function postInboxRequest(actor, receiverAuthorId) {
-    const object = await Author.findOne({_id: receiverAuthorId});
-
-    let summary = actor.displayName + ' wants to follow ' + object.username;
+async function postInboxRequest(actor, obj, receiverAuthorId, type) {
+    let object = '';
+    let resObj = '';
+    if (obj !== undefined && obj !== null) {
+        object = obj
+        resObj = object;
+    } else {
+        object = await Author.findOne({_id: receiverAuthorId});
+        resObj = {
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage 
+        }
+    }
 
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let authorId = actor.id;
     authorId = authorId.split("/");
     authorId = authorId[authorId.length - 1];
 
-    const request = {
-        _id: uuid,
-        goal: 'follow',
-        actor: actor.displayName,
-        actorId: authorId,
-        objectId: object._id,
-        object: object.username
+    let summary = ''
+    let request = ''
+    if (type !== 'accept') {
+        summary = actor.displayName + ' wants to follow ' + resObj.displayName;
+        request = {
+            _id: uuid,
+            goal: type,
+            actor: {
+                id: actor.id,
+                host: actor.host,
+                displayName: actor.displayName,
+                url: actor.url,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }, 
+            object: resObj
+        }
+    } else {
+        summary = actor.displayName + ' accepted ' + object.displayName + ' follow request.';
+        request = {
+            _id: uuid,
+            goal: type,
+            actor: {
+                id: actor.id,
+                host: actor.host,
+                displayName: actor.displayName,
+                url: actor.url,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }, 
+            object: resObj
+        }
     }
 
     const inbox = await Inbox.findOne({authorId: receiverAuthorId});
@@ -481,15 +428,7 @@ async function postInboxRequest(actor, receiverAuthorId) {
             github: actor.github,
             profileImage: actor.profileImage
         }, 
-        object: {
-            type: 'author',
-            id: process.env.DOMAIN_NAME + "authors/" + object._id,
-            host: process.env.DOMAIN_NAME,
-            displayName: object.username,
-            url: process.env.DOMAIN_NAME + "authors/" + object._id,
-            github: object.github,
-            profileImage: object.profileImage 
-        }
+        object: resObj
     }
 
     return [jsonRequest, 200];
@@ -532,10 +471,10 @@ async function sendToForeignInbox(url, auth, data){
     */
     let config = {
         url: url + "/inbox",
-        method: "post",
+        method: "POST",
         headers:{
             "Authorization": auth,
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
         },
         data: data
     }
@@ -545,14 +484,12 @@ async function sendToForeignInbox(url, auth, data){
     let status;
     await axios.request(config)
     .then((res) => {
-        console.log(res.data);
         response = res.data;
         status = 200;
     })
     .catch((err) => {
-        console.log(err.response)
-        status = err.response.status;
-    })
+        console.log(err)
+     })
 
     return [response, status];
 }

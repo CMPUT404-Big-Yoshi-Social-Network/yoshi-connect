@@ -53,6 +53,7 @@ function PublicFeed() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewerId] = useState('')
+    const [userInfo, setUserInfo] = useState({});
 
     useEffect(() => {
         /**
@@ -70,6 +71,7 @@ function PublicFeed() {
             axios
             .get('/userinfo/')
             .then((response) => {
+                setUserInfo(response.data);
                 let viewerId = response.data.authorId;
                 setViewerId(viewerId)
             })
@@ -88,7 +90,7 @@ function PublicFeed() {
                     <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts type={'public'}/>               
+                    <Posts url={'/posts/public'} userInfo={userInfo}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

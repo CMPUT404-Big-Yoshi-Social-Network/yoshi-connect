@@ -88,7 +88,8 @@ function Settings() {
                     setNewAuthor({ newEmail: '' })
                     setViewer({ viewerId: '' })
                 } else if (err.response.status === 401) {
-                    navigate('/unauthorized')
+                    // navigate('/unauthorized')
+                    navigate("/welcome")
                 }
             });
         }
@@ -175,7 +176,7 @@ function Settings() {
                                         type="password" className='account-details-box'/>
                                 </Form.Group>
                                 <Form.Group className="account-details-a">
-                                    <p>GitHub Username</p>
+                                    <p>GitHub Link</p>
                                     <Form.Control
                                         name="github"
                                         onChange={(e) => {setNewAuthor({...newAuthor, newGithub: e.target.value})}}

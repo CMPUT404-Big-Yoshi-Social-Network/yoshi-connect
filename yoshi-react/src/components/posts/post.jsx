@@ -36,10 +36,10 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
-    let postId = post.id ? post.id.split('/') : undefined;
-    postId = postId ? postId[postId.length - 1] : undefined;
-    let authorId = post.author ? post.author.id.split('/') : undefined;
-    authorId = authorId ? authorId[authorId.length - 1] : undefined;
+    // let postId = post.id ? post.id.split('/') : undefined;
+    // postId = postId ? postId[postId.length - 1] : undefined;
+    // let authorId = post.author ? post.author.id.split('/') : undefined;
+    // authorId = authorId ? authorId[authorId.length - 1] : undefined;
     let published = post.published.substring(0,10);
     
 
@@ -123,35 +123,34 @@ function Post({viewerId, post, author}) {
 
     const addLike = () => {
         if(author){
-        let body = {
-            type: "like",
-            summary: "DisplayName likes your post",
-            author: author,
-            object: post.id
-        }
-
-        axios.post(post.author.id + '/inbox', body, {
-            headers: {
+            let body = {
+                type: "like",
+                summary: author.displayName + " likes your post",
+                author: author,
+                object: post.id
+            }
+            let id = post.author.id.split("/");
+			id = id[id.length - 1];
+            axios.post('/authors/' + id + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
-            }
-        })
-        .then((response) => {
-            setLike(true);
-            setNumLikes(numLikes + 1);
-        })
-        .catch((err) => {
-            if(err.response){
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                } else if (err.response.status === 400) {
-                    navigate('/badrequest')
-                } else if (err.response.status === 404) {
-                    navigate('/notfound')
-                } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+            })
+            .then((response) => {
+                setLike(true);
+                setNumLikes(numLikes + 1);
+            })
+            .catch((err) => {
+                if(err.response){
+                    if (err.response.status === 401) {
+                        navigate('/unauthorized')
+                    } else if (err.response.status === 400) {
+                        navigate('/badrequest')
+                    } else if (err.response.status === 404) {
+                        navigate('/notfound')
+                    } else if (err.response.status === 500) {
+                        console.log('500 PAGE')
+                    }
                 }
-            }
-        });
+            });
         }
     }
 
@@ -225,7 +224,7 @@ function Post({viewerId, post, author}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                    { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
+                    { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
                     <p>{published}</p>
                     <br></br>

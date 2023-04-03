@@ -42,8 +42,12 @@ async function getPublicLocalPosts(page, size) {
             200 Status (OK) -- Returns JSON with type and items (all posts)
     */
     // TODO: Paging
+
     if(!page) page = 1;
     if(!size) size = 5;
+
+    page = parseInt(page);
+    size = parseInt(size);
 
     if(page < 0 || size < 0) return [{}, 400];
 

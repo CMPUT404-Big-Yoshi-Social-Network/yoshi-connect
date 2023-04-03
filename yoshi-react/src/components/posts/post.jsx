@@ -115,7 +115,7 @@ function Post({viewerId, post, author}) {
                 } else if (err.response.status === 404) {
                     navigate('/notfound')
                 } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                 }
             }
          });
@@ -148,7 +148,7 @@ function Post({viewerId, post, author}) {
                 } else if (err.response.status === 404) {
                     navigate('/notfound')
                 } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                 }
             }
         });
@@ -176,7 +176,7 @@ function Post({viewerId, post, author}) {
                 } else if (err.response.status === 404) {
                     navigate('/notfound')
                 } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                 }
             }
         });
@@ -210,7 +210,7 @@ function Post({viewerId, post, author}) {
                 } else if (err.response.status === 404) {
                     navigate('/notfound');
                 } else if (err.response.status === 500) {
-                    console.log('500 PAGE');
+                    navigate('/servererror')
                 }
             }
         });

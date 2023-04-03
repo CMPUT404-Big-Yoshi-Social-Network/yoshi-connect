@@ -216,6 +216,16 @@ function CreatePost() {
                             <option value="True">True</option>
                         </select>
 
+                        <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' className='category-input'></input>
+
+                        <p className='category-p'>Categories:</p>
+                        { categories.map((category, idx) => (
+                            <div className='category-list' key={idx}>
+                                <span>{category}</span>
+                                <span className='category-close' onClick={() => removeCategory(idx)}>x</span>
+                            </div> 
+                        ))}
+
                         <label><p style={{color:"white"}}>Message To:</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
                             setData({...data, postTo: e.target.value})
@@ -230,7 +240,7 @@ function CreatePost() {
                         <input className={"postMenuInput"} type="text" onChange={(e) => {
                             setData({...data, description: e.target.value})
                         }}></input>
-
+                    
 
                         <label><p style={{color:"white"}}>Content</p></label>
                         <textarea className={"postMenuInput"} id={"description"} name={"description"} rows={"8"}
@@ -254,18 +264,6 @@ function CreatePost() {
 
                         <div style={{color:"white", textAlign:"right"}}>
                             {item.size} of 10MB
-                        </div>
-
-                        <p>Categories</p>
-                        
-                        <div>
-                            { categories.map((category, idx) => (
-                                <div key={idx}>
-                                    <span class='category'>{category}</span>
-                                    <span class='close' onClick={() => removeCategory(idx)}>x</span>
-                                </div> 
-                            ))}
-                            <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
                         </div>
 
                         <button className={"createPostButton"} type={"button"} onClick={savePost}>Create Post</button>

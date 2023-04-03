@@ -94,10 +94,10 @@ function Node({node, url}) {
                 <div>
                     { node.displayName }
                     <div>
-                        <button type="button" id='delete' onClick={() => deleteNode(url)}>Delete</button>
-                        <button type="button" id='enable' onClick={() => allowNode(url)}>Enable</button>
-                        <button type="button" id='disable' onClick={() => allowNode(url)}>Disable</button>
-                        <Popup trigger={<button>Modify</button>} position="right center">
+                        <button className='author-buttons' type="button" id='delete' onClick={() => deleteNode(url)}>Delete</button>
+                        <button className='author-buttons' type="button" id='enable' onClick={() => allowNode(url)}>Enable</button>
+                        <button className='author-buttons' type="button" id='disable' onClick={() => allowNode(url)}>Disable</button>
+                        <Popup trigger={<button className='author-buttons'>Modify</button>} position="right center">
                             <ModifyNode node={node} url={url}/>
                         </Popup>
                     </div>

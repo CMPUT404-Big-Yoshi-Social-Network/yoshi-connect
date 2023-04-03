@@ -31,11 +31,24 @@ import LeftNavBar from "../feeds/navs/left/nav";
 import RightNavBar from "../feeds/navs/right/nav";
 
 function SinglePost() { 
+    /**
+     * Description: Represents a single Post
+     * Functions: 
+     *     - useEffect(): 
+     *          - Fetches the user info from a specific Post
+     *          - Fetches the Post through a GET request
+     * Returns: N/A
+     */
     const [post, setPost] = useState([]);
     const [viewerId, setViewerId] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
+        /**
+         * Description: Fetches the user info from a specific Post through a GET request
+         * Request: GET    
+         * Returns: N/A
+         */
         const getId = () => {
 
             axios
@@ -52,6 +65,11 @@ function SinglePost() {
     }, []);
 
     useEffect(() => {
+        /**
+         * Description: Fetches the Post through a GET request
+         * Request: GET    
+         * Returns: N/A
+         */
         let url = window.location.href.split("/");
         let authorId = url[url.length - 3];
         let postId = url[url.length - 1];

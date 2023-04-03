@@ -184,7 +184,7 @@ function Posts({url, userInfo}) {
         <div>
             { posts.length === 0 ? 
                 <div>
-                    <h4>No posts to show.</h4>
+                    <h4 className="post-none"> No posts to show.</h4>
                 </div> : 
                 <div> 
                     <Pagination>
@@ -193,7 +193,7 @@ function Posts({url, userInfo}) {
                         ))}  
                         { seeMore ? null :
                             <div>
-                                <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
+                                <p className='post-seemore' disabled={seeMore} onClick={getMore}>See More</p>
                             </div>
                         }
                     </Pagination>  

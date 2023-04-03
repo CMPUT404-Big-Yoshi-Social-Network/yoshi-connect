@@ -54,6 +54,9 @@ import Errors from './components/user-error/errors.jsx';
 // API Docs
 import ApiDocs from "./components/apiDocs/apiDocs.jsx";
 
+// GitHub
+import GitHub from "./components/feeds/settings/github.jsx"
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -122,6 +125,10 @@ const router = createBrowserRouter([
   {
     path: '/servererror/',
     element: <Errors/>
+  }, 
+  {
+    path: '/github/', 
+    element: <GitHub/>
   }
 ])
   

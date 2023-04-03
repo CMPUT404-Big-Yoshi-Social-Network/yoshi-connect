@@ -34,7 +34,7 @@ const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
-const { IncomingCredentials } = require('../scheme/server');
+const { IncomingCredentials, OutgoingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
 const { Author } = require('../scheme/author');
 
@@ -169,18 +169,26 @@ router.post('/', async (req, res) => {
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
-
 		const [scheme, data] = authHeader.split(" ");
 		if(scheme === "Basic") {
 			const credential = Buffer.from(data, 'base64').toString('ascii');
 			const [serverName, password] = credential.split(":");
-			if( await IncomingCredentials.findOne({displayName: serverName, password: password})) {
+			if(await OutgoingCredentials.findOne({displayName: serverName, password: password}) || await IncomingCredentials.findOne({displayName: serverName, password: password})) {
 				authorized = true;
-			}
+			} 
+		}
+	} else {
+		if (await authLogin(req.cookies.token, authorId)) {
+			authorized = true;
 		}
 	}
 
 	let authorId;
+
+	if (req.body === undefined || req.body === null || req.body.type === undefined || req.body.type === null) {
+		return res.sendStatus(400);
+	}
+
 	if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
 		if (req.body.author !== undefined) {
 			authorId = req.body.author.id.split("/");
@@ -189,17 +197,13 @@ router.post('/', async (req, res) => {
 			authorId = req.body.authorId;
 		}
 	}
-	else if(req.body.type.toLowerCase() == "follow"){
+	else if(req.body.type.toLowerCase() == "follow" || req.body.type.toLowerCase() == 'accept'){
 		authorId = req.body.actor.id;
 		authorId = authorId.split("/");
 		authorId = authorId[authorId.length - 1];
 	}
 	else{
 		return res.sendStatus(400);
-	}
-
-	if(await authLogin(req.cookies.token, authorId)){
-		authorized = true;
 	}
 
 	//TODO fix this once and for all
@@ -215,7 +219,7 @@ router.post('/', async (req, res) => {
 		//For other servers to send their authors posts to us
 		[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	else if(type === "follow"){
+	else if(type === "follow" || type === 'accept'){
 		//For local/remote authors to server 
 		let actor = null;
 		if (req.body.actor.status !== undefined) {
@@ -235,7 +239,7 @@ router.post('/', async (req, res) => {
 			// remote
 			actor = req.body.actor;
 		}
-		[response, status] = await postInboxRequest(actor, req.params.authorId);
+		[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type);
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);
@@ -254,9 +258,9 @@ router.post('/', async (req, res) => {
 	if(type === "post"){
 		//[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
-	else if (type === "follow") {
+	else if (type === "follow" || type === 'accept') {
 		response = {
-			type: "follow",
+			type: type,
 			summary: response.summary,
 			actor: response.actor,
 			object: response.object

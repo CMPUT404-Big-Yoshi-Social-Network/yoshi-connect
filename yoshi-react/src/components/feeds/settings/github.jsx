@@ -24,7 +24,6 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getUserActivity } from "gh-recent-activity";
-// import GitHubFeed from 'react-github-activity'
 
 // Child Component
 import TopNav from '../navs/top/nav.jsx';
@@ -42,70 +41,12 @@ function GitHub() {
      *     - useEffect(): Before rendering, checks if the author is logged in to authorize routing
      * Returns: N/A
      */
-    const test = 
     
-    [
-        {
-          "text": "Created profile-pic branch on CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-          "user": {
-            "name": "Holy-Hero",
-            "link": "https://github.com/Holy-Hero",
-            "img": "https://avatars.githubusercontent.com/u/47871461?"
-          },
-          "repo": {
-            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
-          },
-          "created": {
-            "type": "branch",
-            "branch": "profile-pic"
-          },
-          "type": "create"
-        },
-        {
-          "text": "Opened PR at CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-          "user": {
-            "name": "Holy-Hero",
-            "link": "https://github.com/Holy-Hero",
-            "img": "https://avatars.githubusercontent.com/u/47871461?"
-          },
-          "repo": {
-            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
-          },
-          "pr": {
-            "prNumber": 118,
-            "state": "open",
-            "title": "Unit test backend",
-            "url": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/pull/118"
-          },
-          "type": "pull_request"
-        },
-        {
-          "text": "Closed PR at CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-          "user": {
-            "name": "Holy-Hero",
-            "link": "https://github.com/Holy-Hero",
-            "img": "https://avatars.githubusercontent.com/u/47871461?"
-          },
-          "repo": {
-            "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-            "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
-          },
-          "pr": {
-            "prNumber": 117,
-            "state": "closed",
-            "title": "Unit test backend",
-            "url": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/pull/117"
-          },
-          "type": "pull_request"
-        }
-      ]
 
     const navigate = useNavigate();
     const [data, setData] = useState({
         viewer: "",
-        github: "",
+        githubUsername: "",
         activities: [],
         pfp: ""
     }) 
@@ -126,25 +67,26 @@ function GitHub() {
             axios
             .get('/userinfo', config)
             .then((response) => {
-                setData({...data, veiwer: response.data.authorId, github: response.data.github, activities: test, pfp: test[0].user.img})
-                // if (response.data.github !== "") {
-                //     getUserActivity(response.data.github).then((res) => {
-                //         for (let i = 0; i < res.length; i++) {
-                //             data.activities.push(res[i])
-                //         }
-                //     })
-                // }
+                setData({...data, veiwer: response.data.authorId})
+                if (response.data.github !== "") {
+                    getUserActivity(response.data.github.split("/")[3]).then((res) => {
+                      if (res) {setData({...data, pfp: res[0].user.img, githubUsername: res[0].user.name})}  
+                      for (let i = 0; i < res.length; i++) {
+                          data.activities.push(res[i])
+                      }
+                    })
+                }
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
-                    setData({...data, veiwer: "", github: ""})
+                    setData({...data, veiwer: "", githubUsername: ""})
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized')
                 }   
             });
         }
         getAuthor();
-    }, [navigate])
+    }, [navigate, data])
 
     return (
         <div>
@@ -156,7 +98,7 @@ function GitHub() {
                 </div>
                 <div className='pubColM'>
                     {data.activities === [] ? null : <img className="pfp" src={data.pfp} alt=""/>}
-                    <img src={"https://ghchart.rshah.org/" + data.github} alt="" style={{margins: "10em", padding: "1em" }}/>
+                    <img src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" style={{margins: "10em", padding: "1em" }}/>
                     {Object.keys(data.activities).map((activity, idx) => (
                         <Activity key={idx} activity={data.activities[activity]}/>
                     ))}

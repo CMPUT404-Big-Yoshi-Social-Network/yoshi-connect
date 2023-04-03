@@ -240,7 +240,7 @@ async function postInbox(req, res){
             receiverUUID: receiverUUID,
         });
 
-        postInboxRequest(request, req.params.author_id);
+        postInboxRequest(request, req.params.author_id, res.body.type);
 
         return res.sendStatus(200);
     } else if(req.body.type === "like") {
@@ -446,23 +446,52 @@ async function postInboxComment(newComment, recieverAuthorId){
     return [comment, 200];
 }
 
-async function postInboxRequest(actor, receiverAuthorId) {
-    const object = await Author.findOne({_id: receiverAuthorId});
-
-    let summary = actor.displayName + ' wants to follow ' + object.username;
+async function postInboxRequest(actor, obj, receiverAuthorId, type) {
+    let object = '';
+    let resObj = '';
+    if (obj !== undefined || obj !== null) {
+        object = obj
+        resObj = '';
+    } else {
+        object = await Author.findOne({_id: receiverAuthorId});
+        resObj = {
+            type: 'author',
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage 
+        }
+    }
 
     let uuid = String(crypto.randomUUID()).replace(/-/g, "");
     let authorId = actor.id;
     authorId = authorId.split("/");
     authorId = authorId[authorId.length - 1];
 
-    const request = {
-        _id: uuid,
-        goal: 'follow',
-        actor: actor.displayName,
-        actorId: authorId,
-        objectId: object._id,
-        object: object.username
+    let summary = ''
+    let request = ''
+    if (type !== 'accept') {
+        summary = actor.displayName + ' wants to follow ' + object.username;
+        request = {
+            _id: uuid,
+            goal: type,
+            actor: actor.displayName,
+            actorId: authorId,
+            objectId: object._id,
+            object: object.username
+        }
+    } else {
+        summary = actor.displayName + ' accepted ' + object.displayName + ' follow request.';
+        request = {
+            _id: uuid,
+            goal: type,
+            actor: actor.displayName,
+            actorId: authorId,
+            objectId: object._id,
+            object: object.displayName
+        }
     }
 
     const inbox = await Inbox.findOne({authorId: receiverAuthorId});
@@ -480,15 +509,7 @@ async function postInboxRequest(actor, receiverAuthorId) {
             github: actor.github,
             profileImage: actor.profileImage
         }, 
-        object: {
-            type: 'author',
-            id: process.env.DOMAIN_NAME + "authors/" + object._id,
-            host: process.env.DOMAIN_NAME,
-            displayName: object.username,
-            url: process.env.DOMAIN_NAME + "authors/" + object._id,
-            github: object.github,
-            profileImage: object.profileImage 
-        }
+        object: resObj
     }
 
     return [jsonRequest, 200];

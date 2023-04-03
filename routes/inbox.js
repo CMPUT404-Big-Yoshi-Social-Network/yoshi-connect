@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemes
-const { Post, Inbox, PostHistory } = require('../scheme/post.js');
+const { Post, Inbox, PostHistory, PublicPost } = require('../scheme/post.js');
 const { Like, Comment, CommentHistory, LikeHistory } = require('../scheme/interactions.js');
 const { Request } = require('../scheme/relations.js');
 const { Author } = require('../scheme/author.js');

@@ -98,6 +98,7 @@ function Messages() {
             .get('/authors/' + viewer.viewerId + '/inbox', config)
             .then((response) => {
                 posts = response.data.items;
+                posts = posts.filter((post1,i,a)=>a.findIndex(post2=>(post2.title===post1.title))===i)
                 if (response.data.items !== undefined && response.data.items.length !== 0) {
                     for (let i = 0; i < response.data.items.length; i++) {
                         if (response.data.items[i].visibility === 'PRIVATE') {

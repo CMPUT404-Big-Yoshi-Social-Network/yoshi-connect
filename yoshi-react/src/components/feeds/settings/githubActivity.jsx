@@ -47,8 +47,7 @@ function Activity({activity}) {
 
 
     return (
-        <div style={{padding: "1em"}}>
-            <hr className='github-hr'/>
+        <div className='github-feed'>
             <p className='github-p'>{activity.user.name} {activity.text}</p>
             {/* <hr className='github-hr'/> */}
         </div>

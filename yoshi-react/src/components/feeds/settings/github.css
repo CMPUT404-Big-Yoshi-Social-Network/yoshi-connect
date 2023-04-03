@@ -53,12 +53,16 @@ Foundation; All Rights Reserved
 .github-hr{
     position: relative;
     color: #3a3a3a;
-    margin-top: -2em;
+    margin-top: -1em;
 }
 
 .github-p {
     position: relative;
-    margin-top: 2em;
     text-align: center;
 }
-
+.github-feed{
+    background-color:  #24292F;
+    margin: 1em 10em;
+    padding: 1em;
+    border-radius: 1.5em;
+}

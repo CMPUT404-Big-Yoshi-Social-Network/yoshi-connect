@@ -28,9 +28,24 @@ import FileBase64 from 'react-file-base64';
 import './create.css';
 
 function EditPost({viewerId, post}) {
+    /**
+     * Description: Represents the updated post 
+     * Functions: 
+     *     - saveCategory(): Saves the post category
+     *     - removeCategory(): Removes/filters the post category  
+     *     - useEffect: Fetches the author ID and post ID to check if the viwer already liked the post
+     *     - modifyPost(): Updates the post's contents
+     * Returns: N/A
+     */
+    console.log('Debug: Editing post')
+
     const [categories, setCategories] = useState(post.categories)
 
     function saveCategory(e) {
+        /**
+         * Description: Saves the post category
+         * Returns: N/A
+         */
         if (e.key !== 'Enter') {
             return
         } 
@@ -43,6 +58,10 @@ function EditPost({viewerId, post}) {
     }
 
     function removeCategory(idx) {
+        /**
+         * Description: Removes/filters the post category
+         * Returns: N/A
+         */
         setCategories(categories.filter((category,i) => i !== idx))
     }
 
@@ -54,6 +73,11 @@ function EditPost({viewerId, post}) {
      });
 
     useEffect(() => { 
+        /**
+         * Description: Checks if the viwer already liked the post 
+         * Request: GET    
+         * Returns: N/A
+         */
         console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
             axios
@@ -67,12 +91,7 @@ function EditPost({viewerId, post}) {
         getImage();
     }, [post, item])
 
-    /**
-     * Description: Sends a POST request to get the post content and handles the content update of that post 
-     * Request: POST    
-     * Returns: N/A
-     */
-    console.log('Debug: <TLDR what the function is doing>')
+    
     const [data, setData] = useState({
         title: post.title,
         desc: post.description,
@@ -87,11 +106,12 @@ function EditPost({viewerId, post}) {
     
     const modifyPost = (e) => {
         /**
-         * Description: Sends a POST request of the updated post conetents 
+         * Description: Handles the content update of that post through a POST request
          * Request: POST    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
+        console.log('Debug: Modifying post')
+
         e.preventDefault()
         
         let body = {

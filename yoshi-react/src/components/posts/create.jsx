@@ -35,18 +35,22 @@ function CreatePost() {
     /**
      * Description: Represents the CreatePost Form 
      * Functions: 
-     *     - saveCategory(): Saves the post category into the database 
+     *     - saveCategory(): Saves the post category
      *     - removeCategory(): Removes/filters the post category  
      *     - useEffect: Fetches the Author's info related to the authorId
      *     - savePost(): Saves a newly created post with the accompanying data in the database
      *     - togglePostMenu(): Toggles the Post Menu
      * Returns: N/A
      */
-    console.log('Debug: CreatePost() <TLDR what the function is doing>')
+    console.log('Debug: Creating post form')
 
     const [categories, setCategories] = useState([])
 
     function saveCategory(e) {
+        /**
+         * Description: Saves the post category
+         * Returns: N/A
+         */
         if (e.key !== 'Enter') {
             return
         } 
@@ -59,6 +63,10 @@ function CreatePost() {
     }
 
     function removeCategory(idx) {
+        /**
+         * Description: Removes/filters the post category
+         * Returns: N/A
+         */
         setCategories(categories.filter((category,i) => i !== idx))
     }
 

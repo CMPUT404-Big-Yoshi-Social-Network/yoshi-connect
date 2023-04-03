@@ -24,22 +24,52 @@ import './github.css';
 /*
 Example of activity
  {
-            "text": "Created sharing-local branch on CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-            "user": {
-              "name": "Holy-Hero",
-              "link": "https://github.com/Holy-Hero",
-              "img": "https://avatars.githubusercontent.com/u/47871461?"
-            },
-            "repo": {
-              "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
-              "link": "https://github.com/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
-            },
-            "created": {
-              "type": "branch",
-              "branch": "sharing-local"
-            },
-            "type": "create"
-          }
+    "id": "28050509152",
+    "type": "PushEvent",
+    "actor": {
+      "id": 47871461,
+      "login": "Holy-Hero",
+      "display_login": "Holy-Hero",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Holy-Hero",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47871461?"
+    },
+    "repo": {
+      "id": 586055695,
+      "name": "CMPUT404-Big-Yoshi-Social-Network/yoshi-connect",
+      "url": "https://api.github.com/repos/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect"
+    },
+    "payload": {
+      "repository_id": 586055695,
+      "push_id": 13110868152,
+      "size": 1,
+      "distinct_size": 1,
+      "ref": "refs/heads/profile-pic",
+      "head": "75f09894a20a12b68eaff929088dfaa8fb6363c1",
+      "before": "97220f57b164ce7d48f6462920aa87fe326d0d6e",
+      "commits": [
+        {
+          "sha": "75f09894a20a12b68eaff929088dfaa8fb6363c1",
+          "author": {
+            "email": "88dark.allan@gmail.com",
+            "name": "Allan"
+          },
+          "message": "Added profile pic",
+          "distinct": true,
+          "url": "https://api.github.com/repos/CMPUT404-Big-Yoshi-Social-Network/yoshi-connect/commits/75f09894a20a12b68eaff929088dfaa8fb6363c1"
+        }
+      ]
+    },
+    "public": true,
+    "created_at": "2023-03-29T05:08:52Z",
+    "org": {
+      "id": 122124281,
+      "login": "CMPUT404-Big-Yoshi-Social-Network",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/CMPUT404-Big-Yoshi-Social-Network",
+      "avatar_url": "https://avatars.githubusercontent.com/u/122124281?"
+    }
+  }
   */
 
 
@@ -48,7 +78,13 @@ function Activity({activity}) {
 
     return (
         <div className='github-feed'>
-            <p className='github-p'>{activity.user.name} {activity.text}</p>
+            <p className='github-p'> 
+                <span>{activity.actor.login} </span>
+                <span>{activity.type.split("Event")[0].toLowerCase()} </span>
+                <span>{activity.type.split("Event")[0] === "Create" ? "branch " + activity.payload.ref : "to branch " + activity.payload.ref.split("/")[2]} </span>
+                <span>{activity.type.split("Event")[0] === "Create" ? "for" : "from"} {activity.repo.name} </span>
+                <span>at {activity.created_at.split("T")[1].slice(0, 8)} on {activity.created_at.split("T")[0]} </span>
+            </p>
             {/* <hr className='github-hr'/> */}
         </div>
     )

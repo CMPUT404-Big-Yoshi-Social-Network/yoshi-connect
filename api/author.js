@@ -399,60 +399,6 @@ router.get('/:authorId/postTo/:username', async (req, res) => {
 	return res.json(author);
 })
 
-/**
- * @openapi
- * /search/:username:
- *  post:
- *    summary: Searches for a list of names locally and remotely that match the searched username
- *    tags:
- *      - author
- *    parameters:
- *      - in: path
- *        name: username
- *        schema:
- *          type: string
- *        description: username of an Author
- *    responses:
- *      200:
- *        description: OK, successfully found a list of Authors matching username
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                type:
- *                  type: string
- *                  description: JSON type 
- *                  example: authors
- *                items: 
- *                  type: array
- *                  items: 
- *                    type: object
- *                  description: array of Authors fetch from database that are from local and remote servers (matching username)
- *                  example: 
- *                    - type: author
- *                      id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                      authorId: 29c546d45f564a27871838825e3dbecb
- *                      host: https://yoshi-connect.herokuapp.com/
- *                      displayName: kc
- *                      url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                      github: https://github.com/kezzayuno
- *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
- *                      about: i am a code monkey
- *                      pronouns: she/her
- *                    - type: author
- *                      id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                      authorId: 3ec2a2a0685445509a3ea1dd3093639f
- *                      host: https://yoshi-connect.herokuapp.com/
- *                      displayName: kc
- *                      url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                      github: https://github.com/Holy-Hero
- *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
- *                      about: i love hatsune miku
- *                      pronouns: he/him
- *      404:
- *        description: Not Found, Author was not found
- */
 router.get('/search/:username', async (req, res) => {
 	const username = req.params.username;
 	const localAuthor = await Author.findOne({username: username}); 

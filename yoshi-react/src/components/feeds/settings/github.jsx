@@ -157,7 +157,7 @@ function GitHub() {
             axios
             .get('/userinfo', config)
             .then((response) => {
-                setData({...data, veiwer: response.data.authorId})
+                setData({...data, viewer: response.data.authorId})
                 // if (response.data.github !== "") {
                 //     getUserActivity(response.data.github.split("/")[3]).then((res) => {
                 //       if (res) {setData({...data, pfp: res[0].user.img, githubUsername: res[0].user.name})}  
@@ -169,7 +169,7 @@ function GitHub() {
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
-                    setData({...data, veiwer: "", githubUsername: ""})
+                    setData({...data, viewer: "", githubUsername: ""})
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized')
                 }   

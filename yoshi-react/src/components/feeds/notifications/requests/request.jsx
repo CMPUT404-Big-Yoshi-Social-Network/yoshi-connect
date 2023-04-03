@@ -26,9 +26,10 @@ import { useNavigate } from 'react-router-dom';
 
 function Request(props) {
     /**
-     * Description: 
+     * Description: Represents a Request
      * Functions: 
-     *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
+     *     - addRequest(): Creates a request
+     *     - rejectRequest(): Deletes a request from the Author's inbox
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -36,21 +37,27 @@ function Request(props) {
 
     const addRequest = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Creates a request through a PUT request
+         * Request: PUT   
+         * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
+        console.log('Debug: Creating request')
+        let aId = props.actor.id
+        aId = aId.split("/");
+        aId = aId[aId.length - 1];
+        let oId = props.object.id
+        oId = oId.split("/");
+        oId = oId[oId.length - 1];
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/authors/' + props.actorId + '/followers/' + props.objectId,
+            url: '/authors/' + aId + '/followers/' + oId,
             headers: {
                 'Content-Type': 'application/json'
             }
         }
         axios
-        .put('/authors/' + props.actorId + '/followers/' + props.objectId, config)
+        .put('/authors/' + aId + '/followers/' + oId, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {
@@ -65,14 +72,19 @@ function Request(props) {
 
     const rejectRequest = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Deletes a request from the Author's inbox through a DELETE request  
+         * Request: DELETE    
+         * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
-        console.log('Debug: Rejecting Author')
+        let aId = props.actor.id
+        aId = aId.split("/");
+        aId = aId[aId.length - 1];
+        let oId = props.object.id
+        oId = oId.split("/");
+        oId = oId[oId.length - 1];
+
         axios
-        .delete('/authors/' + props.actorId + '/inbox/requests/' + props.objectId)
+        .delete('/authors/' + aId + '/inbox/requests/' + oId)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {
@@ -88,12 +100,12 @@ function Request(props) {
         <div id='request'>
             { props.goal !== 'accept' && props.goal !== 'reject' ? 
                 <div>
-                    { props.actor }
+                    { props.actor.displayName }
                     <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
                     <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
                 </div> :
                 props.goal === 'accept' ? 
-                    <div>{ props.object } accepted your request!</div> :
+                    <div>{ props.object.displayName } accepted your request!</div> :
                     null
             }
         </div>

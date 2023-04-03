@@ -28,13 +28,21 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 
 function SearchCard(props) {
+    /**
+     * Description: Represents the Search Card
+     * Functions: 
+     *     - getId(): Gets the current Author's id 
+     *     - useEffect(): 
+     *          - Fetches the current Author's id and the public and following (who the author follows) posts
+     *          - Sends a DELETE request to delete a comment on a specific post 
+     *     - sendRequest(): Sends a request to the Author's inbox
+     *     - seePosts(): Displays posts from other servers
+     * Returns: N/A
+     */
     const username = props.username !== undefined ? props.username : props.displayName
     const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
     const [requestButton, setRequestButton] = useState('Add');
-    /**
-     * Description:     
-     * Returns: 
-     */
+    
     console.log('Debug: <TLDR what the function is doing>')
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
@@ -111,33 +119,42 @@ function SearchCard(props) {
     }, [id, viewerId, host]);
 
     const sendRequest = () => {
+        /**
+         * Description: Sends a request to the Author's inbox through sending a POST request
+         * Request: POST
+         * Returns: N/A
+         */
         if (requestButton === "Add") { 
             setRequestButton('Sent');
             let config = '';
             let url = '';
-            if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
-                url = '/authors/' + id + '/inbox'
-                config = {
-                    actor: {
-                        id: host + 'authors/' + viewerId,
-                        status: 'local'
-                    },
-                    type: 'follow'
+            if (id !== undefined) {
+                if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
+                    url = '/authors/' + id + '/inbox'
+                    config = {
+                        actor: {
+                            id: host + 'authors/' + viewerId,
+                            status: 'local'
+                        },
+                        type: 'follow'
+                    }
+                } else {
+                    url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
+                    config = {
+                        summary: viewer.displayName + " wants to follow " + username,
+                        actor: viewer,
+                        actorId: viewerId,
+                        objectId: id,
+                        object: props
+                    }
                 }
-            } else {
-                url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
-                config = {
-                    summary: viewer.displayName + " wants to follow " + username,
-                    actor: viewer,
-                    actorId: viewerId,
-                    objectId: id,
-                    object: props
-                }
+                axios
+                .post(url, config, {
+                    "X-Requested-With": "XMLHttpRequest"
+                })
+                .then((response) => { })
+                .catch(err => { });
             }
-            axios
-            .post(url, config)
-            .then((response) => { })
-            .catch(err => { });
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
             axios
@@ -195,26 +212,15 @@ function SearchCard(props) {
     }
 
     const seePosts = () => {
+        /**
+         * Description: Displays posts from other servers
+         * Returns: N/A
+         */
         if (props.host === 'https://yoshi-connect.herokuapp.com/' || props.host === 'http://localhost:3000/') {
             navigate('/users/' + username);
         } else {
             let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/nodes/outgoing/authors/' + id + '/posts',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                params: {
-                    page: 1,
-                    size: 5
-                }
-            }
-            axios
-            .get('/nodes/outgoing/authors/' + id + '/posts', config)
-            .then((response) => { 
-                navigate('/users/' + username, { state: { posts: response.data.items, isRemote: true } })
-            })
-            .catch(err => { })
+            navigate('/users/' + username, { state: { url: '/nodes/outgoing/authors/' + id + '/posts', isRemote: true } })
         }
     }
 

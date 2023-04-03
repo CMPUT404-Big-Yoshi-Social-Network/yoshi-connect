@@ -74,8 +74,11 @@ Example of activity
 
 
 function Activity({activity}) {
-    
-
+    /**
+     * Description: Represents the connection between YoshiConnect and GitHub Activity
+     * Functions: N/A
+     * Returns: N/A
+     */
 
     return (
         <div className='github-feed'>

@@ -138,6 +138,15 @@ async function addLike(like, authorId, postId){
         let post = postHistory.posts.id(Id);
         post.like_count++;
         await postHistory.save();
+
+        if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
+            let publicPost = await PublicPost.findOne({postId: postId});
+            if(publicPost){
+                publicPost.likeCount++;
+                await publicPost.save();
+            }
+        }
+
     }
     else{ return [{}, 400]; }
 
@@ -164,7 +173,9 @@ async function addLiked(authorId, objectId){
     if(!liked){
         return;
     }
-
+    if(liked.liked.id(objectId)){
+        return 503;
+    }
     let object = objectId.split("/");
     let type = object[object.length - 2];
     

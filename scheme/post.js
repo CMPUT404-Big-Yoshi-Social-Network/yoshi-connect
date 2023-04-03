@@ -127,12 +127,22 @@ const inboxScheme = new Schema({
     requests: [{
         _id: String,
         goal: String,
-        summary: String,
-        actor: String,
-        actorId: String,
-        objectId: String,
-        object: String
-    }]},
+        actor: {
+            id: String,
+            host: String,
+            displayName: String,
+            url: String,
+            github: String,
+            profileImage: String
+        }, 
+        object: {
+            id: String,
+            host: String,
+            displayName: String,
+            url: String,
+            github: String,
+            profileImage: String
+        }}]},
     {versionKey: false
 })
 

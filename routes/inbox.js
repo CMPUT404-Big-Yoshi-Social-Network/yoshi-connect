@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemes
-const { Post, Inbox, PostHistory } = require('../scheme/post.js');
-const { Like, Comment, CommentHistory } = require('../scheme/interactions.js');
-const { Request } = require('../scheme/relations.js');
+const { Post, Inbox, PostHistory, PublicPost } = require('../scheme/post.js');
+const { Like, Comment, CommentHistory, LikeHistory } = require('../scheme/interactions.js');
+const { Request, Follower } = require('../scheme/relations.js');
 const { Author } = require('../scheme/author.js');
 const axios = require('axios');
 
@@ -19,7 +19,92 @@ const { validateAuthorObject, getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
-const { createPost } = require('./post.js');
+const { OutgoingCredentials } = require('../scheme/server.js');
+
+async function getPost(postId, auth, author){
+    /**
+    Description: Gets the posts associated with postId for the Author associated with authorId
+    Associated Endpoint: /authors/:authorId/posts/:postId 
+    Request Type: GET
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 404 Status (Not Found) -- Author ID was not found or Post associated with Author was not found
+            401 Status (Unauthorized) -- Authentication failed, post not visible
+            200 Status (OK) -- Returns Authour's post
+    */
+    let post = await PostHistory.aggregate([
+        {
+            $match: {'authorId': author.authorId}
+        },
+        {
+            $unwind: "$posts"
+        },
+        {
+            $match: {'posts._id' : postId}
+        }
+    ]);
+    
+    if (post.length == 0 || !post[0].posts) { return [{}, 404]; }
+
+    post = post[0].posts
+
+    if(post.visibility == "FRIENDS"){
+        let follower = false;
+        if(!auth){
+            return [{}, 401];
+        }
+        else if(auth == "server"){
+            follower = true;
+        }
+        else{
+            let login = await Login.findOne({token: auth});
+
+            if(!login){
+                return [{}, 401];
+            }
+
+            //TODO ONLY WORKS FOR CURRENT SERVER NOT MULTIPLE
+            let authorId = author.id.split("/");
+            authorId = authorId[authorId.length - 1];
+            let following = await Following.findOne({authorId: authorId});
+
+            if(!following || !following.followings){
+                return [{}, 401];
+            }
+
+            for(let i = 0; i < following.followings.length; i++){
+                follow = following.followings[i];
+                if(follow.authorId = login.authorId){
+                    follower = true;
+                    break;
+                }
+            }
+        }
+        
+        if(!follower) return [{}, 401];
+    }
+
+    post = {
+        "type": "post",
+        "title" : post.title,
+        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
+        "source": post.source,
+        "origin": post.origin,
+        "description": post.description,
+        "contentType": post.contentType,
+        "content": post.content,
+        "author": author,
+        "shared": post.shared,
+        "categories": post.categories,
+        "count": post.commentCount,
+        "likeCount": post.likeCount,
+        "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
+        "commentSrc": post.commentSrc,
+        "published": post.published,
+        "visibility": post.visibility,
+        "unlisted": post.unlisted
+    }
+    return [post, 200]   
+}
 
 async function getInbox(token, authorId, page, size){
     /**
@@ -126,7 +211,6 @@ async function getInbox(token, authorId, page, size){
             console.log(err);
         }))
     }
-
     for(let i = 0; i < posts.length; i++){
         let updatedPost = await promiseQueue[i];
         let post;
@@ -138,10 +222,11 @@ async function getInbox(token, authorId, page, size){
             post.author._id = post.author.id;
             post.commentCount = post.count
         }
+        console.log(posts[i])
         posts[i] = {
             "type": "post",
             "title": post.title,
-            "id": !updatedPost ? post.author._id + '/posts/' + post._id : post.id,
+            "id": post._id ? post._id : post.id,
             "source": post.source,
             "origin": post.origin,
             "description": post.description,
@@ -172,98 +257,222 @@ async function getInbox(token, authorId, page, size){
         author: process.env.DOMAIN_NAME + "authors/" + authorId,
         items: posts
     };
-
     return [response, 200];
 }
 
-async function postInbox(req, res){
+async function createPost(token, authorId, postId, newPost) {
     /**
-    Description: Posts an object into the Author's inbox
-    Associated Endpoint: N/A
-    Request Type: POST 
-    Request Body: N/A
-    Return: 200 Status (OK) -- Successfully posts to the Inbox
-            400 Status (Bad Request) -- No valid type specified in request
+    Description: Creates the posts associated with postId for the Author associated with authorId to create a post
+    Associated Endpoint: /authors/:authorId/posts/:postId
+    Request Type: PUT
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb, postId: 902sq546w5498hea764r80re0z89becb }
+    Return: 401 Status (Unauthorized) -- Token expired or is not authenticated
+            400 Status (Bad Request) -- Post details are invalid
+            404 Status (Not Found) -- Post associated with author ID was not found
+            500 Status (Internal Server Error) -- Unable to confrim post in database
+            200 Status (OK) -- Returns Authour's post
     */
-    if(req.body.type === "post") {
-        const title = req.body.title;
-        const id = req.body._id;
-        const description = req.body.description;
-        const contentType = req.body.contentType;
-        const content = req.body.content;
-        const categories = req.body.categories;
-        const count = req.body.count;
-        const comments = req.body.comments;
-        const published = req.body.published;
-        const visibility = req.body.visibility;
-        const unlisted = req.body.unlisted;
-        const authorId = req.body.authorId;
+    let authorPromise = getAuthor(authorId);
+    const title = newPost.title;
+    const description = newPost.description;
+    const contentType = newPost.contentType;
+    const content = newPost.content;
+    const categories = [''];
+    const published = new Date().toISOString();
+    const visibility = newPost.visibility;
+    const unlisted = newPost.unlisted;
 
-        if ( title === undefined || id === undefined || description === undefined || 
-            contentType === undefined || content === undefined || categories === undefined || 
-            count === undefined || comments === undefined|| published === undefined || visibility === undefined || 
-            unlisted === undefined || authorId === undefined ) { 
-                return res.sendStatus(400); 
-        }
-
-        let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-        const post = Post({
-                _id: uuid,
-                title: title,
-                description: description,
-                contentType: contentType,
-                content: content,
-                authorId: authorId,
-                categories: categories,
-                count: 0,
-                likes: [],
-                comments: [],
-                published: published,
-                visibility: visibility,
-                specifics: specifics,
-                unlisted: unlisted,
-                image: ""
-        });
-
-        postInboxPost(post, req.params.author_id);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "follow") {
-        const senderUUID = await Author.findOne({username: req.body.data.sender});
-        const receiverUUID = await Author.findOne({username: req.body.data.receiver});
-        let uuidReq = String(crypto.randomUUID()).replace(/-/g, "");
-        const request = new Request({
-            _id: uuidReq,
-            senderId: req.body.sender,
-            senderUUID: senderUUID,
-            receiverId: req.body.receiver,
-            receiverUUID: receiverUUID,
-        });
-
-        postInboxRequest(request, req.params.author_id, res.body.type);
-
-        return res.sendStatus(200);
-    } else if(req.body.type === "like") {
-        
-        let uuidLike = String(crypto.randomUUID()).replace(/-/g, "");
-        const like = new Like({
-            _id: uuidLike,
-            liker: req.body.liker
-        });
-
-        postInboxLike(like, req.params.author_id);
-    } else if (req.body.type === "comment") {
-        let uuidCom = String(crypto.randomUUID()).replace(/-/g, "");
-        const comment = new Comment({
-            _id: uuidCom,
-            commenter: req.body.commenter,
-            comment: req.body.comment
-        });
-
-        postInboxComment(comment, req.params.author_id);
-    } else {
-        res.sendStatus(400);
+    if(!title || !description || !contentType || !content || !categories){
+        return [[], 400];
     }
+
+    let postHistory = await PostHistory.findOne({authorId: authorId});
+    if (!postHistory) {
+        return [[], 404];
+    }
+
+    if(postId != undefined){
+        let oldPost = postHistory.posts.id(postId);
+        if (oldPost) return [[], 400];
+    }
+    
+    if (!postId) { postId = String(crypto.randomUUID()).replace(/-/g, ""); }
+
+    let source = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
+    let origin = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
+
+    let post = {
+        _id: postId,
+        title: title,
+        source: source,
+        origin: origin,
+        description: description,
+        contentType: contentType,
+        content: content,
+        authorId: authorId,
+        categories: categories,
+        likeCount: 0,
+        commentCount: 0,
+        published: published,
+        visibility: visibility,
+        unlisted: unlisted,
+        author: ''
+    };
+
+    postHistory.posts.push(post);
+    postHistory.num_posts = postHistory.num_posts + 1;
+
+    let savePostPromise = postHistory.save();
+
+    let likes = LikeHistory({
+        type: "post",
+        Id: postId,
+        likes: [],
+    }).save();
+
+    let comments = CommentHistory({
+        postId: postId,
+        comments: [],
+    }).save();
+
+    let [author, status] = await authorPromise;
+    if (status != 200) return [{}, 500];
+
+    if (visibility == 'PUBLIC') {
+        post.author = {
+            _id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+            pronouns: author.pronouns,
+        }
+        const publicPost = new PublicPost(post);
+        await publicPost.save();
+    }
+
+    //TODO make this faster
+    //if not unlisted send to all followers 
+    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false) && (newPost.postTo === '' || newPost.postTo === null || newPost.postTo === undefined)){
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        post.type = "post";
+        post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+        post.author = {
+            type: "author",
+            id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+        };
+        delete post._id;
+        for(let i = 0; i < followers.followers.length; i++){
+            /*
+            post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+            const follower = followers.followers[i].authorId;
+            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+            inbox.posts.push(post);
+            await inbox.save();
+            */
+        
+            //Send the post to other followers 
+            const follower = followers.followers[i];
+            const hosts = await getHostNames();
+            //TODO NEEDS TESTING
+            let followerHost = follower.id.split("/");
+            followerHost = followerHost[2];
+            for(let i = 0; i < hosts.length; i++){
+                if(i == 0 && followerHost == hosts[i].host){
+                    post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+                    
+                    const followerId = followers.followers[i].authorId;
+                    const inbox = await Inbox.findOne({"authorId": followerId}).clone();
+
+                    inbox.posts.push(post);
+                    inbox.num_posts++;
+                    await inbox.save();
+                    
+                }
+                else if(followerHost == followerHost[i]){
+                    let host = followerHost[i];
+                    let config = {
+                        url: follower.id + "/inbox",
+                        method: "post",
+                        headers:{
+                            "Authorization": host.auth,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data: post
+                    }
+
+                    axios.request(config)
+                    .then((request) => {
+                        console.log(request.data);
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+                }
+            }
+        }
+    }
+
+    await likes;
+    await comments;
+    await savePostPromise;
+
+    if (newPost.postTo !== '' || newPost.postTo !== null || newPost.postTo !== undefined) {
+        let objectHost = newPost.postTo.id.split('/authors/')
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].url === objectHost[0]) {       
+                auth = outgoings[i].auth;
+            }
+        }
+        let config = {
+            host: objectHost[0],
+            url: newPost.postTo.id + '/inbox',
+            method: "POST",
+            headers:{
+                "Authorization": auth,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                "type": "post",
+                "title": post.title,
+                "id": author.id + '/posts/' + postId,
+                "source": post.source,
+                "origin": post.origin,
+                "description": post.description,
+                "contentType": post.contentType,
+                "content": post.content,
+                "author": author, 
+                "categories": post.categories,
+                "count": 0,
+                "comments": author.id + '/posts/' + postId + '/comments',
+                "commentSrc": {
+                    "type": 'comments',
+                    "page": 1, 
+                    "size": 5,
+                    "post": author.id + '/posts/' + postId,
+                    "id": author.id + '/posts/' + postId + '/comments',
+                    "comments": []
+                },
+                "published": post.published,
+                "visibility": post.visibility,
+                "unlisted": post.unlisted
+            }
+        }
+        await axios.request(config)
+        .then((res) => { })
+        .catch((err) => { 
+            console.log(err)
+        })
+    }
+    return await getPost(postId, authorId, author);
 }
 
 async function postInboxPost(post, recieverAuthorId){
@@ -277,7 +486,8 @@ async function postInboxPost(post, recieverAuthorId){
             200 Status (OK) -- Successfully posts a post to the Inbox
     */
     if (post.id === undefined) {
-        post = (await createPost(null, post.authorId, post.id, {...post}))[0];
+        let [newPost, status] = await createPost(null, post.authorId, post.id, {...post});
+        post = newPost;
     }
     const type = post.type;
     const title = post.title;
@@ -287,31 +497,21 @@ async function postInboxPost(post, recieverAuthorId){
     const description = post.description;
     const contentType = post.contentType;
     const content = post.content;
-    const authorType = post.author.type;
-    const authorId = post.author.id;
-    const authorHost = post.author.host;
-    const authorDisplayName = post.author.displayName;
-    const authorUrl = post.author.url;
-    const authorGithub = post.author.github;
-    const authorProfileImage = post.author.profileImage;
-    const categories = post.categories;
     const published = post.published;
     const visibility = post.visibility;
-    const unlisted = post.unlisted;
-
-    if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !authorType || !authorId ||
-        !authorHost || !authorDisplayName || !authorUrl || !authorGithub || !authorProfileImage || !categories || 
-        !published || !visibility || !unlisted)
+    if( !type || !title || !id || !source || !origin || !description || !contentType || !content || 
+        !published || !visibility)
     {
         return [{}, 400];
     }
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
-
-    post._id = id
-    inbox.posts.push(post);
-    await inbox.save();
-    delete post._id;
+    if (inbox) {
+        post._id = id
+        inbox.posts.push(post);
+        await inbox.save();
+        delete post._id;
+    }
     return [post, 200]
 }
 
@@ -326,36 +526,64 @@ async function postInboxLike(like, authorId){
     */
     authorId = authorId.split("/");
     authorId = authorId[authorId.length - 1];
+    objectHost = like.object.split("/");
+    objectHost = objectHost[2];
+    let host = process.env.DOMAIN_NAME.split("/");
+    host = host[2]
+    if (host === objectHost) {
+        const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
+        let author = like.author;
+        // if(!validateAuthorObject(author)){
+        //     return [{}, 400];
+        // }
+        author = {
+            _id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github, 
+            profileImage: author.profileImage
+        };
+    
+        if(await addLiked(author._id, like.object)){
+            return [like, 403];
+        }
+        await addLike(like, authorId); 
+    
+        const inboxLike = {
+            author: author,
+            object: like.object,
+            summary: like.summary
+        }
+    
+        inbox.likes.push(inboxLike);
+    
+        inbox.save();
+    } else {
+        let obj = (like.object.split('/authors/'))[(like.object.split('/authors/')).length - 1]
+        obj = obj.split('/posts/')
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].url === objectHost) {       
+                auth = outgoings[i].auth;
+            }
+        }
+        var config = {
+            host: objectHost,
+            url: objectHost + obj[obj.length - 1] + '/inbox',
+            method: 'POST',
+            headers: {
+                'Authorization': auth,
+                'Content-Type': 'application/json'
+            },
+            data: like
+        };
 
-    const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
-    let author = like.author;
-    if(!validateAuthorObject(author)){
-        return [{}, 400];
+        await axios.request(config)
+        .then( res => { })
+        .catch( error => { })
     }
-
-    author = {
-        _id: author.id,
-        host: author.host,
-        displayName: author.displayName,
-        url: author.url,
-        github: author.github, 
-        profileImage: author.profileImage
-    };
-
-    if(await addLiked(author._id, like.object)){
-        return [like, 403];
-    }
-    await addLike(like, authorId); 
-
-    const inboxLike = {
-        author: author,
-        object: like.object,
-        summary: like.summary
-    }
-
-    inbox.likes.push(inboxLike);
-
-    inbox.save();
 
     return [like, 200];
 }
@@ -417,6 +645,14 @@ async function postInboxComment(newComment, recieverAuthorId){
     if(!post){ return [{}, 404]; }
     post.commentCount++;
     await postHistory.save();
+
+    if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
+        let publicPost = await PublicPost.findOne({_id: postId});
+        if(publicPost){
+            publicPost.commentCount = post.commentCount;
+            await publicPost.save();
+        }
+    }
     
     const commentHistory = await CommentHistory.findOne({postId: postId});
     if(!commentHistory){ return [{}, 500]; }
@@ -449,13 +685,12 @@ async function postInboxComment(newComment, recieverAuthorId){
 async function postInboxRequest(actor, obj, receiverAuthorId, type) {
     let object = '';
     let resObj = '';
-    if (obj !== undefined || obj !== null) {
+    if (obj !== undefined && obj !== null) {
         object = obj
-        resObj = '';
+        resObj = object;
     } else {
         object = await Author.findOne({_id: receiverAuthorId});
         resObj = {
-            type: 'author',
             id: process.env.DOMAIN_NAME + "authors/" + object._id,
             host: process.env.DOMAIN_NAME,
             displayName: object.username,
@@ -473,24 +708,34 @@ async function postInboxRequest(actor, obj, receiverAuthorId, type) {
     let summary = ''
     let request = ''
     if (type !== 'accept') {
-        summary = actor.displayName + ' wants to follow ' + object.username;
+        summary = actor.displayName + ' wants to follow ' + resObj.displayName;
         request = {
             _id: uuid,
             goal: type,
-            actor: actor.displayName,
-            actorId: authorId,
-            objectId: object._id,
-            object: object.username
+            actor: {
+                id: actor.id,
+                host: actor.host,
+                displayName: actor.displayName,
+                url: actor.url,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }, 
+            object: resObj
         }
     } else {
         summary = actor.displayName + ' accepted ' + object.displayName + ' follow request.';
         request = {
             _id: uuid,
             goal: type,
-            actor: actor.displayName,
-            actorId: authorId,
-            objectId: object._id,
-            object: object.displayName
+            actor: {
+                id: actor.id,
+                host: actor.host,
+                displayName: actor.displayName,
+                url: actor.url,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }, 
+            object: resObj
         }
     }
 
@@ -537,12 +782,25 @@ async function deleteInbox(token, authorId){
 }
 
 async function sendToForeignInbox(url, auth, data){
+    /** 
+    Description: Sends a request to the foreign inbox
+    Associated Endpoint: N/A
+    Request Type: POST
+    Request Body: { url: url + "/inbox",
+                    method: "post",
+                    headers:{
+                        "Authorization": auth,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: data }
+    Return: 200 Status (OK) -- Successfully sent the request to the foreign inbox
+    */
     let config = {
         url: url + "/inbox",
-        method: "post",
+        method: "POST",
         headers:{
             "Authorization": auth,
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
         },
         data: data
     }
@@ -552,14 +810,12 @@ async function sendToForeignInbox(url, auth, data){
     let status;
     await axios.request(config)
     .then((res) => {
-        console.log(res.data);
         response = res.data;
         status = 200;
     })
     .catch((err) => {
-        console.log(err.response)
-        status = err.response.status;
-    })
+        console.log(err)
+     })
 
     return [response, status];
 }

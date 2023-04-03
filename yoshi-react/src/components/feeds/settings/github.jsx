@@ -41,7 +41,6 @@ function GitHub() {
      *     - useEffect(): Before rendering, checks if the author is logged in to authorize routing
      * Returns: N/A
      */
-    
 
     const navigate = useNavigate();
     const [data, setData] = useState({

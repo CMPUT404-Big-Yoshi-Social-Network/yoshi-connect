@@ -170,6 +170,7 @@ async function getComment(authorId, postId, commentId, token) {
     //TODO check visibility
 
     const comment = commentHistory.comments.id(commentId);
+    
 
     let sanitizedComment = {
         type: "comment",
@@ -250,125 +251,81 @@ async function createComment(token, authorId, postId, newComment) {
     }
 
     let comments = await CommentHistory.findOne({postId: postId}); 
-    author._id = author.id;
-    comments.comments.push({
-        _id: id,
-        author: author,
-        likeCount: 0,
-        comment: comment,
-        contentType: contentType,
-        published: published,
-    });
-    await comments.save();
-    
-    let like = new LikeHistory({
-        type: "comment",
-        Id: id,
-        likes: []
-    });
-
-    await like.save();
-
-    inboxComment = {
-        _id: id,
-        author: author,
-        comment: comment,
-        contentType: contentType,
-        published: published,
-        object: postId,
-    };
-
-    const inbox = await Inbox.findOne({authorId: authorId});
-    inbox.comments.push({
-        _id: id,
-        author: author,
-        comment: comment,
-        contentType: contentType,
-        published: published,
-        object: postId,
-    });
-    await inbox.save();
-    delete author._id;
-
-    return [inboxComment, 200];
-}
-
-async function deleteComment(req, res){
-    /**
-    Description: Deletes a comment on a specific post
-    Associated Endpoint: N/A
-    Request Type: DELETE
-    Request Body: (for example: { commentId: 6d45f566w5498e78tgy436h48dh96a })
-    Return: 200 Status (OK) -- Return a JSON with
-                                        { status: success,
-                                            numComments: numComments }
-    */
-    let success = false;
-    let numComments = 0;
-    let publicPost = await PublicPost.find();
-    await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
-        if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
-            if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.commentId);
-                history.posts[post_idx].comments.splice(com_idx, 1);
-                history.posts[post_idx].count - 1;
-                numComments = history.posts[post_idx].count;
-                success = true;
-                await history.save();
-
-                for (let i = 0; i < publicPost[0].posts.length; i++) {
-                    if (publicPost[0].posts[i].post._id === req.body.postId) {
-                        let com_idx = publicPost[0].posts[i].post.comments.map(obj => obj._id).indexOf(req.body.commentId);
-                        publicPost[0].posts[i].post.comments.splice(com_idx, 1);
-                        publicPost[0].posts[i].post.count - 1;
-                        numComments = publicPost[0].posts[i].post.count;
-                        await publicPost[0].save();
-                    }
-                }
+    if (!comments) {
+        // Must be a remote post
+        let id = newComment.author._id ? newComment.author._id : newComment.author.id
+        let obj = (id.split('/authors/'))[(id.split('/authors/')).length - 1]
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].url === obj) {       
+                auth = outgoings[i].auth;
             }
         }
-    }).clone()
-    
-    return res.json({
-        status: success,
-        numComments: numComments
-    })
-}
-
-async function editComment(req, res){
-    /**
-    Description: Edits a comment on a specific post
-    Associated Endpoint: N/A
-    Request Type: POST
-    Request Body: { commentId: 6d45f566w5498e78tgy436h48dh96a }
-    Return: 200 Status (OK) -- Returns a JSON { status: success }
-    */
-    let success = false;
-    let publicPost = await PublicPost.find();
-    await PostHistory.findOne({authorId: req.body.data.authorId}, async function(err, history){
-        if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.data.postId);
-            if (post_idx > -1) { 
-                let com_idx = history.posts[post_idx].comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                history.posts[post_idx].comments[com_idx].comment = req.body.data.comment;
-                history.save();
-                success = true;
+        var config = {
+            host: obj,
+            url: id + '/inbox',
+            method: 'POST',
+            headers: {
+                'Authorization': auth,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                type: 'comment',
+                author: newComment.author,
+                likeCount: 0,
+                comment: comment,
+                contentType: contentType,
+                published: published,
             }
+        };
 
-            for (let i = 0; i < publicPost[0].posts.length; i++) {
-                if (publicPost[0].posts[i].post._id === req.body.data.postId) {
-                    let com_idx = publicPost[0].posts[i].post.comments.map(obj => obj._id).indexOf(req.body.data.commentId);
-                    publicPost[0].posts[i].post.comments[com_idx].comment = req.body.data.comment;
-                    publicPost[0].posts[i].post.count - 1;
-                    numComments = publicPost[0].posts[i].post.count;
-                    await publicPost[0].save();
-                }
-            }
-        }
-    }).clone()
+        await axios.request(config)
+        .then( res => { })
+        .catch( error => { })
+    } else {
+        author._id = author.id;
+        comments.comments.push({
+            _id: id,
+            author: author,
+            likeCount: 0,
+            comment: comment,
+            contentType: contentType,
+            published: published,
+        });
+        await comments.save();
+        
+        let like = new LikeHistory({
+            type: "comment",
+            Id: id,
+            likes: []
+        });
     
-    return res.json({ status: success })
+        await like.save();
+    
+        inboxComment = {
+            _id: id,
+            author: author,
+            comment: comment,
+            contentType: contentType,
+            published: published,
+            object: postId,
+        };
+    
+        const inbox = await Inbox.findOne({authorId: authorId});
+        inbox.comments.push({
+            _id: id,
+            author: author,
+            comment: comment,
+            contentType: contentType,
+            published: published,
+            object: postId,
+        });
+        await inbox.save();
+        delete author._id;
+    
+        return [inboxComment, 200];
+    }
 }
 
 module.exports = {

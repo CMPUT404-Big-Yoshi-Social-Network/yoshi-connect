@@ -33,8 +33,9 @@ import SearchOutcomes from './searches';
 
 function TopNav(props) {
     /**
-     * Description:      
-     * Returns: 
+     * Description: Represents the top navigation bar 
+     * Functions: N/A
+     * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [newAuthor, setNewAuthor] = useState({newSearch: ''})

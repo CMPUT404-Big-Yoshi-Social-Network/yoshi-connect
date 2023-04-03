@@ -43,32 +43,6 @@ const { PostHistory, Inbox } = require('../scheme/post.js');
 const { checkUsername, checkExpiry } = require('./auth.js');
 const { Liked, LikedHistory } = require('../scheme/interactions.js');
 
-async function createInbox(username, authorId){
-    /**
-    Description: Creates the Author's inbox in the database
-    Associated Endpoint: N/A
-    Request Type: PUT
-    Request Body: { _id: 29c546d45f564a27871838825e3dbecb,
-                    authorId: 29c546d45f564a27871838825e3dbecb,
-                    username: abc, 
-                    posts: [], 
-                    likes: [],
-                    comments: [],
-                    requests: [] }
-    Return: N/A
-    */
-    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
-    await Inbox({
-        _id: uuid,
-        authorId: authorId,
-        username: username,
-        posts: [],
-        likes:[],
-        comments: [],
-        requests: []
-    }).save();
-}
-
 async function registerAuthor(req, res){
     /**
     Description: Registers the Author to the database
@@ -349,7 +323,7 @@ function validateAuthorObject(author){
     Request Body: N/A
     Return: N/A
     */
-    if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
+    if(author == undefined || author.id == undefined || author.host == undefined || author.displayName == undefined || author.url == undefined || author.github == undefined || author.profileImage == undefined){
         return false;
     }
 

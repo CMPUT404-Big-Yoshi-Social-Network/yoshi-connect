@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getFollowings, deleteFollowing } = require('../routes/friend');
+const { getFollowings, deleteFollowing, addFollowing } = require('../routes/friend');
 const { checkExpiry } = require('../routes/auth');
 
 // OpenAPI
@@ -132,6 +132,18 @@ router.get('/', async (req, res) => {
     type: "followings",
     items: sanitizedObjects
   });
+})
+
+router.put('/:foreignAuthorId', async (req, res) => {
+  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
+  const authorId = req.params.authorId;
+  const foreignId = req.params.foreignAuthorId;
+
+  const follower = await addFollowing(req.cookies.token, authorId, foreignId, req.body, req, res);
+
+  if (follower == 400 || follower == 404 || follower == 401) {
+    return res.sendStatus(follower);
+  }
 })
 
 /**

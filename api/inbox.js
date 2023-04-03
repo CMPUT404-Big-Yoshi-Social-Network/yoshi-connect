@@ -165,7 +165,6 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
  *        description: OK, successfully posts to the Inbox
  */
 router.post('/', async (req, res) => {
-
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
@@ -180,12 +179,17 @@ router.post('/', async (req, res) => {
 		if(!token){
 			return res.sendStatus(401);
 		}
-		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
-			authorId = req.body.author.id.split("/");
-			authorId = authorId[authorId.length - 1];
+		if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
+			if (req.body.authorId) {
+				authorId = req.body.authorId
+			} else {
+				authorId = req.body.author.id.split("/");
+				authorId = authorId[authorId.length - 1];
+			}
 		}
-		else if(req.body.type == "follow"){
-			authorId = req.body.actor.id;
+		else if(req.body.type.toLowerCase() == "follow"){
+			authorId = req.body.actor.id.split("/");
+			authorId = authorId[authorId.length - 1];
 		}
 		else{
 			return res.sendStatus(400);
@@ -206,33 +210,34 @@ router.post('/', async (req, res) => {
 		return res.sendStatus(401);
 	}
 
-	
-	let idURL = req.params.authorId.split("/");
-	let host = process.env.DOMAIN_NAME.split("/")
-	host = host[host.length - 2];
-	if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[2] == host && idURL[3] == "authors"){
-		req.params.authorId = idURL[4];
-	}
-	else if((idURL[0] == "http:" || idURL[0] == "https:") && idURL.find(element => element === "authors")){
-		//Check if the host name is in mongo
-		//If not then 401
-		//Else send a post request to that server with the associated request
-		let outgoings = await OutgoingCredentials.find().clone();
-		for(let i = 0; i < outgoings.length; i++){
-			let outgoing = outgoings[i];
-			let url = outgoing.url.split("/");
-			url = url[url.length - 1];
-			if(url != idURL[2]){
-				continue;
-			}
-
-			let [response, status] = await sendToForeignInbox(req.params.authorId, outgoing.auth, req.body);
-			if(status > 200 && status < 300){
-				return res.json(response);
-			}
-			return res.sendStatus(status);
+	if (req.body.type.toLowerCase() !== 'like') {
+		let idURL = req.params.authorId.split("/");
+		let host = process.env.DOMAIN_NAME.split("/")
+		host = host[2];
+		if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[2] == host && idURL[3] == "authors"){
+			req.params.authorId = idURL[4];
 		}
-		return res.sendStatus(400);
+		else if((idURL[0] == "http:" || idURL[0] == "https:") && idURL.find(element => element === "authors")){
+			//Check if the host name is in mongo
+			//If not then 401
+			//Else send a post request to that server with the associated request
+			let outgoings = await OutgoingCredentials.find().clone();
+			for(let i = 0; i < outgoings.length; i++){
+				let outgoing = outgoings[i];
+				let url = outgoing.url.split("/");
+				url = url[url.length - 1];
+				if(url != idURL[2]){
+					continue;
+				}
+	
+				let [response, status] = await sendToForeignInbox(req.params.authorId, outgoing.auth, req.body);
+				if(status > 200 && status < 300){
+					return res.json(response);
+				}
+				return res.sendStatus(status);
+			}
+			return res.sendStatus(400);
+		}
 	}
 	
 
@@ -245,7 +250,27 @@ router.post('/', async (req, res) => {
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 
-		[response, status] = await postInboxFollow(req.body);
+		let actor = null;
+		if (req.body.actor.status !== undefined) {
+			let actorId = req.body.actor.id;
+			actorId = actorId.split("/");
+			actorId = actorId[actorId.length - 1];
+			const actorDoc = await Author.findOne({_id: actorId});
+			actor = {
+				id: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
+				host: process.env.DOMAIN_NAME,
+				displayName: actorDoc.username,
+				url: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
+				github: actorDoc.github,
+				profileImage: actorDoc.profileImage
+			}
+		} else {
+			// remote
+			actor = req.body.actor;
+		}
+		if (req.params.authorId !== undefined && req.params.authorId !== null) {
+			[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type);
+		} 
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);
@@ -262,7 +287,7 @@ router.post('/', async (req, res) => {
 	}
 
 	if(type === "post"){
-		//[response, status] = await postInboxPost(req.body, req.params.authorId);
+		[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
 	else if(type === "follow"){
 	}
@@ -277,7 +302,9 @@ router.post('/', async (req, res) => {
 		}
 	}
 
-	return res.json(response);
+	if (req.body.postTo === '' && req.body.postTo === null && req.body.postTo === undefined) {
+		return res.json(response);
+	}
 })
 
 // TBA 200

@@ -230,7 +230,7 @@ function SearchCard(props) {
         <div>
             { !props && username === undefined ? null : 
                 <div className="search-card">
-                    <h4>{host}</h4>
+                    <h4>{host.split("/")[2] === "localhost:3000" ? host.split("/")[2] : host.split("/")[2].split(".")[0] === "www" ? host.split("/")[2].split(".")[1] + "." + host.split("/")[2].split(".")[2]: host.split("/")[2].split(".")[0] }</h4>
                     <p className="search-username">{username}</p>
                     <Button className="search-button" onClick={seePosts} type="submit">View Profile</Button>
                     { id === viewerId ? null : 

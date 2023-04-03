@@ -174,8 +174,9 @@ function Post({viewerId, post, author}) {
             object: post.id
         };
 
-        console.log('/authors/' + authorId + '/posts/' + postId + '/comments')
-        axios.post('/authors/' + encodeURIComponent(post.author.id) + '/inbox', body)
+        axios.post('/authors/' + encodeURIComponent(post.author.id) + '/inbox', body, {
+            "X-Requested-With": "XMLHttpRequest"
+        })
         .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);

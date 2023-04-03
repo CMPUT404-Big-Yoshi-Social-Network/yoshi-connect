@@ -33,17 +33,32 @@ Foundation; All Rights Reserved
 }
 
 .github-pfp {
-
+    position: absolute;
+    margin-top: 1em;
+    margin-left: 10em;
 }
 
 .github-username{
-
+    position: absolute;
+    margin-top: 5em;
+    margin-left: 4.9em;
 }
 .github-chart {
-
+    position: relative;
+    margin-top: 2em;
+    margin-left: 30em;
+    margin-bottom: 4em;
 }
 
-.github-feed {
+.github-hr{
+    position: relative;
+    color: #3a3a3a;
+    margin-top: -2em;
+}
 
+.github-p {
+    position: relative;
+    margin-top: 2em;
+    text-align: center;
 }
 

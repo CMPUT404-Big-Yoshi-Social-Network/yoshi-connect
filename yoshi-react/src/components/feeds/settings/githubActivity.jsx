@@ -17,6 +17,9 @@ Foundation; All Rights Reserved
 // Functionality 
 import React from 'react';
 
+// Styling
+import './github.css';
+
 
 /*
 Example of activity
@@ -45,9 +48,9 @@ function Activity({activity}) {
 
     return (
         <div style={{padding: "1em"}}>
-            <span>{activity.user.name} </span>
-            <span>{activity.text} </span>
-            <br/>
+            <hr className='github-hr'/>
+            <p className='github-p'>{activity.user.name} {activity.text}</p>
+            {/* <hr className='github-hr'/> */}
         </div>
     )
 }

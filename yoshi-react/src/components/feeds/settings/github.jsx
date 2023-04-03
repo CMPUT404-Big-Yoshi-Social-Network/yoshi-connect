@@ -193,7 +193,7 @@ function GitHub() {
                     <img className='github-chart' src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" style={{margins: "10em", padding: "1em" }}/>
                     {console.log(data.activities)}
                     {Object.keys(data.activities).map((activity, idx) => (
-                        <Activity className='github-feed' key={idx} activity={data.activities[activity]}/>
+                        <Activity key={idx} activity={data.activities[activity]}/>
                     ))}
                     </div>
                 <div className='pubColR'>

@@ -121,7 +121,7 @@ function Post({viewerId, post, author}) {
                 } else if (err.response.status === 404) {
                     navigate('/notfound')
                 } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                 }
             }
          });
@@ -144,24 +144,23 @@ function Post({viewerId, post, author}) {
 			id = id[id.length - 1];
             axios.post('/authors/' + id + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
-            })
-            .then((response) => {
-                setLike(true);
-                setNumLikes(numLikes + 1);
-            })
-            .catch((err) => {
-                if(err.response){
-                    if (err.response.status === 401) {
-                        navigate('/unauthorized')
-                    } else if (err.response.status === 400) {
-                        navigate('/badrequest')
-                    } else if (err.response.status === 404) {
-                        navigate('/notfound')
-                    } else if (err.response.status === 500) {
-                        console.log('500 PAGE')
-                    }
+        })
+        .then((response) => {
+            setLike(true);
+            setNumLikes(numLikes + 1);
+        })
+        .catch((err) => {
+            if(err.response){
+                if (err.response.status === 401) {
+                    navigate('/unauthorized')
+                } else if (err.response.status === 400) {
+                    navigate('/badrequest')
+                } else if (err.response.status === 404) {
+                    navigate('/notfound')
+                } else if (err.response.status === 500) {
+                    navigate('/servererror')
                 }
-            });
+            }});
         }
     }
 
@@ -186,7 +185,7 @@ function Post({viewerId, post, author}) {
                 } else if (err.response.status === 404) {
                     navigate('/notfound')
                 } else if (err.response.status === 500) {
-                    console.log('500 PAGE')
+                    navigate('/servererror')
                 }
             }
         });
@@ -222,7 +221,7 @@ function Post({viewerId, post, author}) {
                 } else if (err.response.status === 404) {
                     navigate('/notfound');
                 } else if (err.response.status === 500) {
-                    console.log('500 PAGE');
+                    navigate('/servererror')
                 }
             }
         });

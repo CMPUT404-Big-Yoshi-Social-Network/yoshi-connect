@@ -372,19 +372,19 @@ function Profile() {
                     <h1 className='profile-username'>{username}</h1>
                     <p className='profile-pronouns' >{profileInfo.pronouns}</p>
                     { (state.isRemote || personal.person) ? null : 
-                        <button style={{marginLeft: '1.8em'}} className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>
+                        <button className='profile-buttons' type="button" id='request' onClick={() => SendRequest()}>{requestButton}</button>
                     }
                     { !state.isRemote ? 
                         <div>
-                            <p className='profile-nums'>{personal.numPosts} Posts</p> 
-                            <p className='profile-nums'>{personal.numFollowing} Following</p> 
-                            <p className='profile-nums'>{personal.numFollowers} Followers</p>
+                            <p className='profile-num1'>{personal.numPosts} Posts</p> 
+                            <p className='profile-num2'>{personal.numFollowing} Following</p> 
+                            <p className='profile-num3'>{personal.numFollowers} Followers</p>
                             <p className='profile-about'>{profileInfo.about}</p>
                         </div> : 
                         null
                     }
                     
-                    <hr/>
+                    <hr className='profile-hr'/>
                     <br/>
                     {
                         personal.person === true ? <Posts url={'personal'} userInfo={userInfo}/> : 

@@ -32,9 +32,39 @@ Foundation; All Rights Reserved
     background-color: #090D0E;
 }
 
-.pfp {
+.github-pfp {
+    position: absolute;
+    margin-top: 1em;
+    margin-left: 10em;
+}
+
+.github-username{
+    position: absolute;
+    margin-top: 5em;
+    margin-left: 4.9em;
+}
+.github-chart {
     position: relative;
-    height: 10em;
-    top: 2em;
-    right: 2em;
+    margin-top: 3em;
+    margin-left: 24.5em;
+    margin-bottom: 5em;
+}
+
+.github-hr{
+    position: relative;
+    color: #3a3a3a;
+    margin-top: -1em;
+}
+
+.github-p {
+    font-size: 20px;
+    position: relative;
+    text-align: center;
+}
+.github-feed{
+    background-color:  #24292F;
+    margin: 1em 10em;
+    padding: 1em;
+    border: .1em solid #d2f364;
+    border-radius: 1.5em;
 }

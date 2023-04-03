@@ -120,7 +120,7 @@ async function getFriends(id){
     }
 }
 
-async function addFollowing(token, authorId, foreignId, body, req, res){
+async function addFollowing(actor, object){
     /**
     Description: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
     Associated Endpoint: /authors/:authorId/followers/:foreignAuthorId
@@ -128,11 +128,39 @@ async function addFollowing(token, authorId, foreignId, body, req, res){
     Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
     Return: 404 Status (Not Found) -- Unable to find a request object from the foreignAuthorId to the authorId
     */
-    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
-    let idx = inbox.requests.map(obj => obj.actor.id.split('/authors/')[(obj.actor.id.split('/authors/')).length - 1]).indexOf(authorId);
-    if (idx <= -1) { return 404; } 
+    let uuidF = String(crypto.randomUUID()).replace(/-/g, "");
+    let authorId = actor.id.split('/authors/')[(actor.id.split('/authors/')).length - 1]
+    let foreignId = object.id.split('/authors/')[(object.id.split('/authors/')).length - 1]
 
-    await senderAdded(authorId, foreignId, req, res);
+    await Following.findOne({authorId: authorId}, async function(err, following){
+        if (following) {
+            const newF = {
+                _id: uuidF,
+                id: object.id,
+                authorId: foreignId,
+                displayName: object.displayName,
+                github: object.github,
+                profileImage: object.profileImage
+            }
+            following.followings.push(newF);
+            await following.save();
+        } else {
+            var following = {
+                _id: uuidF,
+                username: actor.displayName,
+                authorId: authorId,
+                followings: [{
+                    _id: uuidF,
+                    id: object.id,
+                    authorId: foreignId,
+                    displayName: object.displayName,
+                    github: object.github,
+                    profileImage: object.profileImage
+                }]
+            };
+            following.save(async (err, following, next) => { if (err) { } })
+        }
+    }).clone();
 }
 
 async function addFollower(token, authorId, foreignId, body, req, res){

@@ -26,6 +26,7 @@ const express = require('express');
 const { getCreds, getCred, postCred, putCred, allowNode, deleteCred } = require('../routes/node');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
+const { addFollowing } = require('../routes/friend');
 
 // OpenAPI
 const {options} = require('../openAPI/options.js');
@@ -1044,6 +1045,9 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                     }
                   };
               }
+            }
+            if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api' || outgoings[i].url === 'https://sociallydistributed.herokuapp.com') {
+                await addFollowing(req.body.actor, req.body.object);
             }
             await axios.request(config)
             .then( res => { })

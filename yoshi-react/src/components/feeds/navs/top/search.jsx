@@ -136,7 +136,7 @@ function SearchCard(props) {
             }
             axios
             .post(url, config, {
-                "X-Requested-With": "XMLHttpRequest"
+                headers: {"X-Requested-With": "XMLHttpRequest"}
             })
             .then((response) => { })
             .catch(err => { });

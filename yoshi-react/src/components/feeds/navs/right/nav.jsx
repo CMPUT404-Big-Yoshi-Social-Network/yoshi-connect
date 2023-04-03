@@ -31,6 +31,7 @@ import CreatePost from '../../../posts/create.jsx';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import Button from 'react-bootstrap/Button';
 import './nav.css';
 
 function RightNavBar() {
@@ -43,6 +44,7 @@ function RightNavBar() {
         username: "", 
         pic: ""
     });
+    const [logged, setLogged] = useState(false);
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -60,9 +62,48 @@ function RightNavBar() {
         getId();
     }, [navigate])
 
+    useEffect(() => {
+        /**
+         * Description: Calls checkExpiry() to check if the token is expired before render 
+         * Returns: N/A
+         */
+        const checkExpiry = () => {
+            /**
+             * Description: Sends a GET request checking if the author has an expired token (if so, they will be logged out and 
+             *              redirected to the Welcome component) 
+             * Request: GET
+             * Returns: N/A
+             */
+            let config = {
+                method: 'get',
+                maxBodyLength: Infinity,
+                url: '/feed',
+            }
+    
+            axios
+            .get('/server/feed', config)
+            .then((response) => {
+                // if (response.data.status === "Expired") {
+                //     console.log("Debug: Your token is expired.")
+                //     navigate('/');
+                // } else {
+                //     console.log('Debug: Your token is not expired.')
+                // }
+                console.log("RESPONSE:", response)
+            })
+            .catch(err => {
+                if (err.response.status === 401) {
+                    console.log("Debug: Not authorized.");
+                    navigate('/unauthorized'); 
+                }
+            });
+        }
+        checkExpiry();
+    }, [navigate]) 
+
     return (
         <Navbar className="right-column">
-            <Container>
+            { logged ? <Container>
                 <Nav>
                     <div className='rn-div'>
                     {/* TODO: Needs to fetch username  */}
@@ -91,7 +132,12 @@ function RightNavBar() {
                         <img className='rn-pubCogImg' alt='rn-pubCogImg' src='/images/public/icon_settings.png' width={25}/>
                     </a>
                 </div>
-            </Container>
+            </Container> :
+            <div>
+                <Button className='welcome-button' href='/signup' data-testid="signup">Sign Up</Button>
+                <Button className='welcome-button' href='/login' data-testid="login">Log In</Button>
+            </div>
+            }
         </Navbar>
     )
 }

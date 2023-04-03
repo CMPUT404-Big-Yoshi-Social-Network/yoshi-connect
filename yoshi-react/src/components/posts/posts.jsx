@@ -68,7 +68,7 @@ function Posts({url, userInfo}) {
                 if (err.response.status === 404) {
                     setPosts([]);
                 } else if (err.response.status === 401) {
-                    navigate('/unauthorized');
+                    setPosts([]);
                 } else if (err.response.status === 500) {
                     setPosts([]);
                 }
@@ -96,7 +96,7 @@ function Posts({url, userInfo}) {
                 } else if (err.response.status === 404) {
                     setSeeMore(true);
                 } else if (err.response.status === 401) {
-                    navigate('/unauthorized');
+                    setPosts([]);
                 }
             });
             

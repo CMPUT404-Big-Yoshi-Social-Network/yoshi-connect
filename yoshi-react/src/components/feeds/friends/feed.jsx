@@ -42,7 +42,7 @@ function FriendFeed() {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
-    const [viewer, setViewerId] = useState({ viewerId: '' })
+    const [userInfo, setUserInfo] = useState({})
 
     useEffect(() => {
         /**
@@ -55,12 +55,10 @@ function FriendFeed() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                let viewerId = response.data.authorId;
-                setViewerId({ viewerId: viewerId })
+                setUserInfo(response.data);
             })
-            .catch(err => { if (err.response.status === 404) { 
-                setViewerId('')
-            } 
+            .catch(err => {  
+
             });
         }
         getId();
@@ -68,13 +66,13 @@ function FriendFeed() {
 
     return (
         <div>
-            <TopNav authorId={viewer.viewerId}/>
+            <TopNav authorId={userInfo.authorId}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={viewer.viewerId}/>
+                    <LeftNavBar authorId={userInfo.authorId}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts type={'inbox'}/>  
+                    <Posts url={"/authors/" + userInfo.authorId + "/inbox"} userInfo={userInfo}/>  
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

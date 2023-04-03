@@ -1001,6 +1001,10 @@ router.get('/outgoing/authors/:authorId/liked', async (req, res) => {
  *               contentType: text/plain
  */
 router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
+    if(req == undefined || req.body == undefined || req.body.actor == undefined || req.body.object == undefined){
+        return res.sendStatus(400);
+    }
+
     const outgoings = await OutgoingCredentials.find().clone();
 
     for (let i = 0; i < outgoings.length; i++) {

@@ -430,7 +430,6 @@ async function createPost(token, authorId, postId, newPost) {
                 auth = outgoings[i].auth;
             }
         }
-        console.log(author)
         let config = {
             host: objectHost[0],
             url: newPost.postTo.id + '/inbox',

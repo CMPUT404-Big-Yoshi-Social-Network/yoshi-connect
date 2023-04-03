@@ -302,7 +302,9 @@ router.post('/', async (req, res) => {
 		}
 	}
 
-	return res.json(response);
+	if (req.body.postTo !== '' && req.body.postTo !== null && req.body.postTo !== undefined) {
+		return res.json(response);
+	}
 })
 
 // TBA 200

@@ -30,6 +30,9 @@ const { PostHistory, Inbox } = require('../scheme/post.js');
 // Additional Functions
 const { senderAdded } = require('./request.js');
 
+// UUID
+const crypto = require('crypto');
+
 // Additional Functions
 const {authLogin} = require('./auth.js');
 const { OutgoingCredentials } = require('../scheme/server.js');

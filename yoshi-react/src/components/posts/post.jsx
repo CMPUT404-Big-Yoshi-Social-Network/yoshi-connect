@@ -204,10 +204,11 @@ function Post({viewerId, post, author}) {
             author: author,
             comment: comment.newComment,
             contentType: "text/plaintext",
+            object: post.id
         };
 
         console.log('/authors/' + authorId + '/posts/' + postId + '/comments')
-        axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
+        axios.post('/authors/' + encodeURIComponent(post.author.id) + '/inbox', body)
         .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);

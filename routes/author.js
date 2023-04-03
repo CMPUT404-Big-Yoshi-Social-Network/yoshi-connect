@@ -323,7 +323,7 @@ function validateAuthorObject(author){
     Request Body: N/A
     Return: N/A
     */
-    if(!author || !author.id || !author.host || !author.displayName || !author.url || !author.github || !author.profileImage){
+    if(author == undefined || author.id == undefined || author.host == undefined || author.displayName == undefined || author.url == undefined || author.github == undefined || author.profileImage == undefined){
         return false;
     }
 

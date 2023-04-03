@@ -297,12 +297,14 @@ async function createPost(token, authorId, postId, newPost) {
             for(let i = 0; i < hosts.length; i++){
                 if(i == 0 && followerHost == hosts[i].host){
                     post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+                    post.author._id = post.author.id;
                     const followerId = followers.followers[i].authorId;
                     const inbox = await Inbox.findOne({"authorId": followerId}).clone();
 
                     inbox.posts.push(post);
                     inbox.num_posts++;
                     await inbox.save();
+                    delete post.author._id;
                 }
                 else if(followerHost == followerHost[i]){
                     let host = followerHost[i];

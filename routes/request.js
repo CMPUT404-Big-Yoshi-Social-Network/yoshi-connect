@@ -256,7 +256,7 @@ async function sendRequest(authorId, foreignId, res) {
     }
 }
 
-async function deleteRequest(res, actor, object, foreignId, authorId, status, isLocal) {
+async function deleteRequest(res, actor, object, authorId, foreignId, status, isLocal) {
     /**
     Description: Deletes an Author's inbox requests
     Associated Endpoint: /authors/:authorId/inbox/requests/:foreignAuthorId

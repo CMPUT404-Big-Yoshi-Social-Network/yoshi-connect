@@ -358,7 +358,7 @@ function Profile() {
                         null
                     }
                     
-                    <hr/>
+                    <hr className='profile-hr'/>
                     <br/>
                     {
                         personal.person === null ? state.isRemote === true ? <Posts posts={state.posts}/> : null : personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>

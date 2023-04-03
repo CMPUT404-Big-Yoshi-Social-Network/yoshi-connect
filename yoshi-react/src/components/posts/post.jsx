@@ -253,7 +253,7 @@ function Post({viewerId, post, author}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author}> </Comments>
+                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author} liked={post}> </Comments>
                         </div>}
                         <br></br>
                     <div>

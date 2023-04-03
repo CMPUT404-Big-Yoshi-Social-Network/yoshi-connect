@@ -51,6 +51,8 @@ async function getComments(postId, authorId, page, size) {
                                         id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4/comments }
     */
     let comments = undefined
+    page = parseInt(page);
+    size = parseInt(size);
     //TODO Avoid duplicated code by using a list of objects and modifying them before sending
     if(page > 1){
         comments = await CommentHistory.aggregate([

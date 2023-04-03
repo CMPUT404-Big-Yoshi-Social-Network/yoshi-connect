@@ -696,6 +696,9 @@ async function getPosts(token, page, size, author) {
         return [[], 400]
     }
 
+    page = parseInt(page);
+    size = parseInt(size);
+
     let login = Login.findOne({token: token});
 
     let aggregatePipeline = [

@@ -45,9 +45,9 @@ Foundation; All Rights Reserved
 }
 .github-chart {
     position: relative;
-    margin-top: 2em;
-    margin-left: 30em;
-    margin-bottom: 4em;
+    margin-top: 3em;
+    margin-left: 24.5em;
+    margin-bottom: 5em;
 }
 
 .github-hr{
@@ -57,6 +57,7 @@ Foundation; All Rights Reserved
 }
 
 .github-p {
+    font-size: 20px;
     position: relative;
     text-align: center;
 }
@@ -64,5 +65,6 @@ Foundation; All Rights Reserved
     background-color:  #24292F;
     margin: 1em 10em;
     padding: 1em;
+    border: .1em solid #d2f364;
     border-radius: 1.5em;
 }

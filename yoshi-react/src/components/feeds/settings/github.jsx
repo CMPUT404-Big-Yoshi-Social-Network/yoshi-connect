@@ -190,7 +190,7 @@ function GitHub() {
                 <div className='pubColM'>
                     {data.activities === [] ? null : <img className="github-pfp" src={data.pfp} alt="" width={150}/>}
                     <h1 className="github-username">{data.githubUsername}</h1>
-                    <img className='github-chart' src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" style={{margins: "10em", padding: "1em" }}/>
+                    <img className='github-chart' src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" width={800}/>
                     {console.log(data.activities)}
                     {Object.keys(data.activities).map((activity, idx) => (
                         <Activity key={idx} activity={data.activities[activity]}/>

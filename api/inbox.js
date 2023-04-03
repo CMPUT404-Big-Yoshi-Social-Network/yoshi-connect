@@ -302,7 +302,7 @@ router.post('/', async (req, res) => {
 		}
 	}
 
-	if (req.body.postTo === '' && req.body.postTo === null && req.body.postTo === undefined) {
+	if (req.body.postTo === '' || req.body.postTo === null || req.body.postTo === undefined) {
 		return res.json(response);
 	}
 })

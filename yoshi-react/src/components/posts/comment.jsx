@@ -45,11 +45,10 @@ function Comment({viewerId, comment, author, url, liked}) {
                 type: "like",
                 summary: author.displayName + " likes your comment",
                 author: author,
-                object: liked.id
+                object: comment.id
             }
-            let id = liked.author.id.split("/");
-			id = id[id.length - 1];
-            axios.post('/authors/' + id + '/inbox', body, {
+
+            axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
             })
             .then((response) => {

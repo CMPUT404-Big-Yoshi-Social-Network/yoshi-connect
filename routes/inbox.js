@@ -201,56 +201,56 @@ async function getInbox(token, authorId, page, size){
         posts = posts[0].posts_array
     }
 
-    // let promiseQueue = [];
-    // for(let i = 0; i < posts.length; i++){
-    //     promiseQueue.push(axios.get(posts[i]._id)
-    //     .then((response) => {
-    //         return response.data
-    //     })
-    //     .catch((err) => {
-    //         console.log(err);
-    //     }))
-    // }
-    // for(let i = 0; i < posts.length; i++){
-    //     // let updatedPost = await promiseQueue[i];
-    //     // let post;
-    //     // if(!updatedPost){
-    //     //     post = posts[i];
-    //     // }
-    //     // else{
-    //     //     post = updatedPost;
-    //     //     post.author._id = post.author.id;
-    //     //     post.commentCount = post.count
-    //     // }
-    //     console.log(posts[i])
-    //     posts[i] = {
-    //         "type": "post",
-    //         "title": post.title,
-    //         "id": post.id,
-    //         "source": post.source,
-    //         "origin": post.origin,
-    //         "description": post.description,
-    //         "contentType": post.contentType,
-    //         "content": post.content,
-    //         "author": {
-    //             type: "author",
-    //             id: post.author._id,
-    //             host: post.author.host,
-    //             displayName: post.author.displayName,
-    //             profileImage: post.author.profileImage,
-    //             url: post.author.url,
-    //             github: post.author.github,
-    //         },
-    //         "categories": post.categories,
-    //         "count": post.commentCount ? post.commentCount : 0,
-    //         "likeCount": post.likeCount ? post.likeCount : 0,
-    //         "comments": post.author._id + '/posts/' + post._id + '/comments/',
-    //         "commentSrc": post.commentSrc,
-    //         "published": post.published,
-    //         "visibility": post.visibility,
-    //         "unlisted": post.unlisted,
-    //     }
-    // }
+    let promiseQueue = [];
+    for(let i = 0; i < posts.length; i++){
+        promiseQueue.push(axios.get(posts[i]._id)
+        .then((response) => {
+            return response.data
+        })
+        .catch((err) => {
+            console.log(err);
+        }))
+    }
+    for(let i = 0; i < posts.length; i++){
+        let updatedPost = await promiseQueue[i];
+        let post;
+        if(!updatedPost){
+            post = posts[i];
+        }
+        else{
+            post = updatedPost;
+            post.author._id = post.author.id;
+            post.commentCount = post.count
+        }
+        console.log(posts[i])
+        posts[i] = {
+            "type": "post",
+            "title": post.title,
+            "id": post._id ? post._id : post.id,
+            "source": post.source,
+            "origin": post.origin,
+            "description": post.description,
+            "contentType": post.contentType,
+            "content": post.content,
+            "author": {
+                type: "author",
+                id: post.author._id,
+                host: post.author.host,
+                displayName: post.author.displayName,
+                profileImage: post.author.profileImage,
+                url: post.author.url,
+                github: post.author.github,
+            },
+            "categories": post.categories,
+            "count": post.commentCount ? post.commentCount : 0,
+            "likeCount": post.likeCount ? post.likeCount : 0,
+            "comments": post.author._id + '/posts/' + post._id + '/comments/',
+            "commentSrc": post.commentSrc,
+            "published": post.published,
+            "visibility": post.visibility,
+            "unlisted": post.unlisted,
+        }
+    }
 
     let response = {
         type: "inbox",
@@ -356,6 +356,18 @@ async function createPost(token, authorId, postId, newPost) {
     //if not unlisted send to all followers 
     if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false) && (newPost.postTo === '' || newPost.postTo === null || newPost.postTo === undefined)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
+        post.type = "post";
+        post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+        post.author = {
+            type: "author",
+            id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+        };
+        delete post._id;
         for(let i = 0; i < followers.followers.length; i++){
             /*
             post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
@@ -364,19 +376,7 @@ async function createPost(token, authorId, postId, newPost) {
             inbox.posts.push(post);
             await inbox.save();
             */
-            post.type = "post";
-            post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
-            post.author = {
-                type: "author",
-                id: author.id,
-                host: author.host,
-                displayName: author.displayName,
-                url: author.url,
-                github: author.github,
-                profileImage: author.profileImage,
-            };
-            delete post._id;
-
+        
             //Send the post to other followers 
             const follower = followers.followers[i];
             const hosts = await getHostNames();
@@ -386,12 +386,14 @@ async function createPost(token, authorId, postId, newPost) {
             for(let i = 0; i < hosts.length; i++){
                 if(i == 0 && followerHost == hosts[i].host){
                     post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+                    
                     const followerId = followers.followers[i].authorId;
                     const inbox = await Inbox.findOne({"authorId": followerId}).clone();
 
                     inbox.posts.push(post);
                     inbox.num_posts++;
                     await inbox.save();
+                    
                 }
                 else if(followerHost == followerHost[i]){
                     let host = followerHost[i];
@@ -514,9 +516,11 @@ async function postInboxLike(like, authorId){
     */
     authorId = authorId.split("/");
     authorId = authorId[authorId.length - 1];
-    let objectHost = like.object.split('/authors/')
-    objectHost = objectHost[0]
-    if (process.env.DOMAIN_NAME === objectHost) {
+    objectHost = like.object.split("/");
+    objectHost = objectHost[2];
+    let host = process.env.DOMAIN_NAME.split("/");
+    host = host[2]
+    if (host === objectHost) {
         const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
         let author = like.author;
         // if(!validateAuthorObject(author)){
@@ -563,9 +567,7 @@ async function postInboxLike(like, authorId){
                 'Authorization': auth,
                 'Content-Type': 'application/json'
             },
-            data: {
-                ...like
-            }
+            data: like
         };
 
         await axios.request(config)
@@ -633,6 +635,14 @@ async function postInboxComment(newComment, recieverAuthorId){
     if(!post){ return [{}, 404]; }
     post.commentCount++;
     await postHistory.save();
+
+    if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
+        let publicPost = await PublicPost.findOne({_id: postId});
+        if(publicPost){
+            publicPost.commentCount = post.commentCount;
+            await publicPost.save();
+        }
+    }
     
     const commentHistory = await CommentHistory.findOne({postId: postId});
     if(!commentHistory){ return [{}, 500]; }

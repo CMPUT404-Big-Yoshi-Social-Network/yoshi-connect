@@ -90,7 +90,7 @@ function PublicFeed() {
                     <LeftNavBar authorId={viewer}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts url={'/posts/public'} userInfo={userInfo}/>               
+                    <Posts url={'/posts/public/local'} userInfo={userInfo}/>               
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

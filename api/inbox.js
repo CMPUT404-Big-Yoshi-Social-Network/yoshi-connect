@@ -213,7 +213,7 @@ router.post('/', async (req, res) => {
 	if (req.body.type.toLowerCase() !== 'like') {
 		let idURL = req.params.authorId.split("/");
 		let host = process.env.DOMAIN_NAME.split("/")
-		host = host[host.length - 2];
+		host = host[2];
 		if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[2] == host && idURL[3] == "authors"){
 			req.params.authorId = idURL[4];
 		}

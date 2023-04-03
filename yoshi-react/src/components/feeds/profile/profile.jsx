@@ -388,7 +388,7 @@ function Profile() {
                     <hr/>
                     <br/>
                     {
-                        personal.person === null ? state.isRemote === true ? <Posts url={state.url ? state.url : otherUrl} userInfo={userInfo}/> : null : personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>
+                        personal.person === null ? state.isRemote === true ? <Posts url={state.url ? state.url : otherUrl.otherUrl} userInfo={userInfo}/> : null : personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>
                     }
                 </div>
                 <div className='profColR'>

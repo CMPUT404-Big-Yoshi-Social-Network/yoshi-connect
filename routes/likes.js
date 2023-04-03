@@ -159,7 +159,7 @@ async function addLike(like, authorId, postId){
 
 async function addLiked(authorId, objectId){
     /**
-    Description: 
+    Description: Saves a like associated with a specific post / comment
     Associated Endpoint: N/A
     Request Type: POST
     Request Body: { _id: 902sq546w5498hea764r80re0z89bej }

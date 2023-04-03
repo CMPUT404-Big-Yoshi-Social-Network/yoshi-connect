@@ -156,7 +156,7 @@ function CreatePost() {
             .catch((e) =>{ console.log(e); })
         } else {
             body.type = 'post'
-            await axios
+            axios
             .get('/authors/' + data.authorId + '/postTo/' + body.postTo)
             .then((response) => {
                 body.postTo = response.data;

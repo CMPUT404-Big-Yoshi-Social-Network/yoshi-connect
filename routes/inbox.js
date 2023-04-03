@@ -416,16 +416,24 @@ async function createPost(token, authorId, postId, newPost) {
             }
         }
     }
-        
+
     await likes;
     await comments;
     await savePostPromise;
 
     if (newPost.postTo !== '' || newPost.postTo !== null || newPost.postTo !== undefined) {
         let objectHost = newPost.postTo.id.split('/authors/')
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].url === objectHost[0]) {       
+                auth = outgoings[i].auth;
+            }
+        }
+        console.log(author)
         let config = {
             host: objectHost[0],
-            url: newPost.postTo.id,
+            url: newPost.postTo.id + '/inbox',
             method: "POST",
             headers:{
                 "Authorization": auth,
@@ -434,22 +442,22 @@ async function createPost(token, authorId, postId, newPost) {
             data: {
                 "type": "post",
                 "title": post.title,
-                "id": post.author.id + '/posts/' + postId,
+                "id": author.id + '/posts/' + postId,
                 "source": post.source,
                 "origin": post.origin,
                 "description": post.description,
                 "contentType": post.contentType,
                 "content": post.content,
-                "author": post.author, 
+                "author": author, 
                 "categories": post.categories,
                 "count": 0,
-                "comments": post.author.id + '/posts/' + postId + '/comments',
+                "comments": author.id + '/posts/' + postId + '/comments',
                 "commentSrc": {
                     "type": 'comments',
                     "page": 1, 
                     "size": 5,
-                    "post": post.author.id + '/posts/' + postId,
-                    "id": post.author.id + '/posts/' + postId + '/comments',
+                    "post": author.id + '/posts/' + postId,
+                    "id": author.id + '/posts/' + postId + '/comments',
                     "comments": []
                 },
                 "published": post.published,
@@ -459,7 +467,9 @@ async function createPost(token, authorId, postId, newPost) {
         }
         await axios.request(config)
         .then((res) => { })
-        .catch((err) => { })
+        .catch((err) => { 
+            console.log(err)
+        })
     }
     return await getPost(postId, authorId, author);
 }
@@ -495,11 +505,12 @@ async function postInboxPost(post, recieverAuthorId){
     }
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
-
-    post._id = id
-    inbox.posts.push(post);
-    await inbox.save();
-    delete post._id;
+    if (inbox) {
+        post._id = id
+        inbox.posts.push(post);
+        await inbox.save();
+        delete post._id;
+    }
     return [post, 200]
 }
 

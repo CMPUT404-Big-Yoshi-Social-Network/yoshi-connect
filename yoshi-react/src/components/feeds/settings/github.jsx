@@ -69,7 +69,7 @@ function GitHub() {
             axios
             .get('/userinfo', config)
             .then((response) => {
-                setData(d => ({...d, veiwer: response.data.authorId}))
+                setData(d => ({...d, viewer: response.data.authorId}))
                 if (response.data.github !== "") {
                   axios.get("https://api.github.com/users/" + response.data.github.split("/")[3] + "/events")
                   .then((res) => {
@@ -95,7 +95,7 @@ function GitHub() {
     return (
         <div>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.min.css"></link>
-            <TopNav/>
+            <TopNav authorId={data.viewer}/>
             <div className='pubRow'>
                 <div className='pubColL'>
                     {/* <LeftNavBar authorId={data.viewer}/> */}

@@ -227,7 +227,8 @@ async function createPost(token, authorId, postId, newPost) {
         commentCount: 0,
         published: published,
         visibility: visibility,
-        unlisted: unlisted
+        unlisted: unlisted,
+        author: ''
     };
 
     postHistory.posts.push(post);
@@ -292,39 +293,43 @@ async function createPost(token, authorId, postId, newPost) {
             const follower = followers.followers[i];
             const hosts = await getHostNames();
             //TODO NEEDS TESTING
-            let followerHost = follower.id.split("/");
-            followerHost = followerHost[2];
-            for(let i = 0; i < hosts.length; i++){
-                if(i == 0 && followerHost == hosts[i].host){
-                    post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
-                    post.author._id = post.author.id;
-                    const followerId = followers.followers[i].authorId;
-                    const inbox = await Inbox.findOne({"authorId": followerId}).clone();
-
-                    inbox.posts.push(post);
-                    inbox.num_posts++;
-                    await inbox.save();
-                    delete post.author._id;
-                }
-                else if(followerHost == followerHost[i]){
-                    let host = followerHost[i];
-                    let config = {
-                        url: follower.id + "/inbox",
-                        method: "post",
-                        headers:{
-                            "Authorization": host.auth,
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        data: post
+            if (follower.id !== undefined) {
+                let followerHost = follower.id.split("/");
+                followerHost = followerHost[2];
+                for(let i = 0; i < hosts.length; i++){
+                    let inbox = null;
+                    if(i == 0 && followerHost == hosts[i].host){
+                        post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+                        post.author._id = post.author.id;
+                        const followerId = followers.followers[i].authorId;
+                        inbox = await Inbox.findOne({"authorId": followerId}).clone();
+                        if (inbox) {
+                            inbox.posts.push(post);
+                            inbox.num_posts++;
+                            await inbox.save();
+                            delete post.author._id;
+                        }
                     }
-
-                    axios.request(config)
-                    .then((request) => {
-                        console.log(request.data);
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
+                    if(followerHost == followerHost[i] && (inbox === null || inbox === undefined)){
+                        let host = followerHost[i];
+                        let config = {
+                            url: follower.id + "/inbox",
+                            method: "post",
+                            headers:{
+                                "Authorization": host.auth,
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            data: post
+                        }
+    
+                        axios.request(config)
+                        .then((request) => {
+                            console.log(request.data);
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+                    }
                 }
             }
         }

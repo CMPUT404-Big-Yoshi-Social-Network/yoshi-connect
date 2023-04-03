@@ -462,7 +462,7 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
 				if(outgoing.url === "http://www.distribution.social"){
 					config = {
 						host: outgoings[i].url,
-						url: outgoings[i].url + '/api/authors/' + authorId + '/posts',
+						url: outgoings[i].url + '/authors/' + authorId + '/posts',
 						method: 'GET',
 						headers: {
 							'Authorization': outgoing.auth,
@@ -503,6 +503,7 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
 
 				await axios.request(config)
 				.then( res => {
+                    console.log(res.data)
                     if(res.data && res.data.items && res.data.items.length != 0 ){
 					    posts = res.data.items
                     }
@@ -510,10 +511,7 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
                         error = true;
                     }
 				})
-				.catch( err => {
-                    console.log(config); 
-					error = true;
-				});
+				.catch( err => { error = true; });
 				page++;
 			}
 		}

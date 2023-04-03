@@ -41,16 +41,22 @@ function Request(props) {
          * Returns: 
          */
         console.log('Debug: <TLDR what the function is doing>')
+        let aId = props.actor.id
+        aId = aId.split("/");
+        aId = aId[aId.length - 1];
+        let oId = props.object.id
+        oId = oId.split("/");
+        oId = oId[oId.length - 1];
         let config = {
             method: 'put',
             maxBodyLength: Infinity,
-            url: '/authors/' + props.actorId + '/followers/' + props.objectId,
+            url: '/authors/' + aId + '/followers/' + oId,
             headers: {
                 'Content-Type': 'application/json'
             }
         }
         axios
-        .put('/authors/' + props.actorId + '/followers/' + props.objectId, config)
+        .put('/authors/' + aId + '/followers/' + oId, config)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {
@@ -69,10 +75,15 @@ function Request(props) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
-        console.log('Debug: Rejecting Author')
+        let aId = props.actor.id
+        aId = aId.split("/");
+        aId = aId[aId.length - 1];
+        let oId = props.object.id
+        oId = oId.split("/");
+        oId = oId[oId.length - 1];
+
         axios
-        .delete('/authors/' + props.actorId + '/inbox/requests/' + props.objectId)
+        .delete('/authors/' + aId + '/inbox/requests/' + oId)
         .then((response) => { })
         .catch(err => {
             if (err.response.status === 401) {
@@ -88,12 +99,12 @@ function Request(props) {
         <div id='request'>
             { props.goal !== 'accept' && props.goal !== 'reject' ? 
                 <div>
-                    { props.actor }
+                    { props.actor.displayName }
                     <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
                     <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
                 </div> :
                 props.goal === 'accept' ? 
-                    <div>{ props.object } accepted your request!</div> :
+                    <div>{ props.object.displayName } accepted your request!</div> :
                     null
             }
         </div>

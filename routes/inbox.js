@@ -477,20 +477,32 @@ async function postInboxRequest(actor, obj, receiverAuthorId, type) {
         request = {
             _id: uuid,
             goal: type,
-            actor: actor.displayName,
-            actorId: authorId,
-            objectId: object._id,
-            object: object.username
+            actor: {
+                type: 'author',
+                id: actor.id,
+                host: actor.host,
+                displayName: actor.displayName,
+                url: actor.url,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }, 
+            object: resObj
         }
     } else {
         summary = actor.displayName + ' accepted ' + object.displayName + ' follow request.';
         request = {
             _id: uuid,
             goal: type,
-            actor: actor.displayName,
-            actorId: authorId,
-            objectId: object._id,
-            object: object.displayName
+            actor: {
+                type: 'author',
+                id: actor.id,
+                host: actor.host,
+                displayName: actor.displayName,
+                url: actor.url,
+                github: actor.github,
+                profileImage: actor.profileImage
+            }, 
+            object: resObj
         }
     }
 

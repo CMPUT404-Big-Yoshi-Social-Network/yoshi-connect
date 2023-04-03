@@ -34,7 +34,7 @@ function Comment({viewerId, comment, author, url}) {
      */
     console.log('Debug: Comment() <TLDR what the function is doing>')
 
-    const [liked, setLiked] = useState(true);
+    const [liked, setLiked] = useState(false);
     const commentSplit = comment.id.split("/")
     const commentId = commentSplit[commentSplit.length - 1] 
 
@@ -54,7 +54,7 @@ function Comment({viewerId, comment, author, url}) {
         
         axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body)
         .then((response) => {
-
+            setLiked(!liked)
         })
         .catch((err) => { 
             
@@ -74,6 +74,7 @@ function Comment({viewerId, comment, author, url}) {
                 for(let i = 0; i < likes.length; i++){
                     let like = likes[i];
                     let likeAuthorId = like.author.url.split("/");
+                    console.log(likeAuthorId)
                     likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
                     if(likeAuthorId === viewerId){
                         setLiked(true);
@@ -92,7 +93,7 @@ function Comment({viewerId, comment, author, url}) {
         <div id='comment'>
             <h4>{ comment !== undefined ? comment.author.displayName : null}</h4>
             { comment ? comment.comment : null }
-            { liked ? <button className='post-buttons' >Already Liked</button> :
+            { !liked ? <button className='post-buttons' >Already Liked</button> :
                 <button className='post-buttons' onClick={likeComment}>Like</button> }
         </div>
     )

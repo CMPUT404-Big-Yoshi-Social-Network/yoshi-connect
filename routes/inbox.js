@@ -458,7 +458,7 @@ async function deleteInbox(token, authorId){
 async function sendToForeignInbox(url, auth, data){
     let config = {
         url: url + "/inbox",
-        method: "post",
+        method: "POST",
         headers:{
             "Authorization": auth,
             'Content-Type': 'application/x-www-form-urlencoded'

@@ -483,12 +483,25 @@ async function sharePost(token, authorId, postId, newPost) {
     //if not unlisted send to all followers 
     if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
+        console.log(followers)
         for(let i = 0; i < followers.followers.length; i++){
             const follower = followers.followers[i].authorId;
-            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
+            if (follower.id.split('/authors/')[(follower.id.split('/authors/')).length - 1] !== process.env.DOMAIN_NAME) {
+                // Remote Follower
+                const outgoings = await OutgoingCredentials.find().clone();
+                let auth = ''
+                for (let i = 0; i < outgoings.length; i++) {
+                    if (outgoings[i].url === follower.id.split('/authors/')[0]) {       
+                        auth = outgoings[i].auth;
+                    }
+                }
+                sendToForeignInbox(follower.id, auth, newPost)
+            } else {
+                const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
 
-            inbox.posts.push(post);
-            await inbox.save();
+                inbox.posts.push(post);
+                await inbox.save();
+            }
         }
     }
 

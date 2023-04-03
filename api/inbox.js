@@ -270,6 +270,7 @@ router.post('/', async (req, res) => {
 		} 
 	}
 	else if(type === "like"){
+		console.log('ere')
 		[response, status] = await postInboxLike(req.body, req.params.authorId);
 	}
 	else if(type === "comment"){

@@ -152,7 +152,7 @@ async function getInbox(token, authorId, page, size){
                 $skip: (page - 1) * size
             },
             {
-                $limit: size
+                $limit: size ? size : 5
             },
             {
                 $group: {
@@ -180,7 +180,7 @@ async function getInbox(token, authorId, page, size){
                 $sort: { "posts.published": -1 }
             },
             {
-                $limit: size
+                $limit: size ? size : 5
             },
             {
                 $group: {

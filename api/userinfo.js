@@ -91,13 +91,14 @@ const router = express.Router({mergeParams: true});
  *        description: Not Found, Authour was not found
  */
 router.get('/', async (req,res) => {
-    if (!req.cookies.token) { return res.sendStatus(401); }
+    if (req.cookies.token) {
+        const [userinfo, status] = await getUserInfo(req.cookies.token);
+        if (status != 200) { return res.sendStatus(status); }
 
-    const [userinfo, status] = await getUserInfo(req.cookies.token);
-
-    if (status != 200) { return res.sendStatus(status); }
-
-    return res.json(userinfo);
+        return res.json(userinfo);
+    } else {
+        res.json(null)
+    }
 })
 
 module.exports = router;

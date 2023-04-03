@@ -330,11 +330,38 @@ function validateAuthorObject(author){
     return true;
 }
 
+async function createInbox(username, authorId){
+    /**
+    Description: Creates the Author's inbox in the database
+    Associated Endpoint: N/A
+    Request Type: PUT
+    Request Body: { _id: 29c546d45f564a27871838825e3dbecb,
+                    authorId: 29c546d45f564a27871838825e3dbecb,
+                    username: abc, 
+                    posts: [], 
+                    likes: [],
+                    comments: [],
+                    requests: [] }
+    Return: N/A
+    */
+    let uuid = String(crypto.randomUUID()).replace(/-/g, "");
+    await Inbox({
+        _id: uuid,
+        authorId: authorId,
+        username: username,
+        posts: [],
+        likes:[],
+        comments: [],
+        requests: []
+    }).save();
+}
+
 module.exports={
     registerAuthor,
     getProfile,
     getAuthor,
     updateAuthor,
     getAuthors,
-    validateAuthorObject
+    validateAuthorObject,
+    createInbox
 }

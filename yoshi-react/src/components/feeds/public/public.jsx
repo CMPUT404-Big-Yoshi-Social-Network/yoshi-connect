@@ -71,9 +71,11 @@ function PublicFeed() {
             axios
             .get('/userinfo/')
             .then((response) => {
-                setUserInfo(response.data);
-                let viewerId = response.data.authorId;
-                setViewerId(viewerId)
+                if (response.data !== null) {
+                    setUserInfo(response.data);
+                    let viewerId = response.data.authorId;
+                    setViewerId(viewerId)
+                }
             })
             .catch(err => { 
                 if (err.response.status === 401 || err.response.status === 404) { setViewerId('') }}

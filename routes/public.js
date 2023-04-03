@@ -109,28 +109,53 @@ async function getPublicPostsXServer(page, size){
         const outgoing = outgoings[i];
         const host = outgoing.url;
         let endpoint = "";
+        var config = '';
+        const auth = outgoing.auth;
         if(host == "http://www.distribution.social"){
             endpoint = "/api/posts/public"
+            var config = {
+                url: host + endpoint,
+                method: 'GET',
+                host: host,
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': auth,
+                    'Accept': 'application/json'
+                }
+            }
         }
         else if(host == "https://sociallydistributed.herokuapp.com"){
             endpoint = "/posts/public"
+            var config = {
+                url: host + endpoint,
+                method: 'GET',
+                host: host,
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': auth,
+                    'Accept': 'application/json'
+                },
+                params: {
+                    page: page,
+                    size: size,
+                }
+            }
         }
         else if(host == "https://bigger-yoshi.herokuapp.com/api"){
             endpoint = "/authors/posts";
-        }
-        const auth = outgoing.auth;
-        var config = {
-            url: host + endpoint,
-            method: 'GET',
-            host: host,
-            headers:{
-                'Content-Type': 'application/json',
-                'Authorization': auth,
-                'Accept': 'application/json'
-            },
-            params: {
-                page: page,
-                size: size,
+            var config = {
+                url: host + endpoint,
+                method: 'GET',
+                host: host,
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': auth,
+                    'Accept': 'application/json'
+                },
+                params: {
+                    page: page,
+                    size: size,
+                }
             }
         }
 

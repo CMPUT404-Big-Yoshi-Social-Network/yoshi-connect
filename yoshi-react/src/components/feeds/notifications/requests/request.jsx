@@ -101,8 +101,8 @@ function Request(props) {
             { props.goal !== 'accept' && props.goal !== 'reject' ? 
                 <div>
                     { props.actor.displayName }
-                    <button type="button" id='accept' onClick={() => addRequest()}>Add</button>
-                    <button type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
+                    <button className="search-button" type="button" id='accept' onClick={() => addRequest()}>Add</button>
+                    <button className="search-button" type="button" id='reject' onClick={() => rejectRequest()}>Reject</button>
                 </div> :
                 props.goal === 'accept' ? 
                     <div>{ props.object.displayName } accepted your request!</div> :

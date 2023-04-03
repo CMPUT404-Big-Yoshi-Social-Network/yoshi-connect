@@ -34,11 +34,13 @@ async function getUserInfo(token){
             500 Status (Internal Server Error) -- Unable to retreive author from database
             200 Status (OK) -- Returns Author's authorId 
     */
-    if (await checkExpiry(token)) { return [{}, 401]; }
-    
     const login = await Login.findOne({token: token}); 
 
-    return await getAuthor(login.authorId);
+    if (login?.authorId !== undefined) {
+        return await getAuthor(login.authorId);
+    } else {
+        return [null, 200]
+    }
 }
 
 module.exports = {

@@ -52,7 +52,6 @@ function Messages() {
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 5;
-    console.log(currentMessenger)
 
     useEffect(() => {
         /**
@@ -99,6 +98,7 @@ function Messages() {
             .get('/authors/' + viewer.viewerId + '/inbox', config)
             .then((response) => {
                 posts = response.data.items;
+                posts = posts.filter((post1,i,a)=>a.findIndex(post2=>(post2.title===post1.title))===i)
                 if (response.data.items !== undefined && response.data.items.length !== 0) {
                     for (let i = 0; i < response.data.items.length; i++) {
                         if (response.data.items[i].visibility === 'PRIVATE') {
@@ -233,7 +233,7 @@ function Messages() {
                             <div> 
                                 <Pagination>
                                     {Object.keys(posts).map((post, idx) => (
-                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]}/>
+                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]} author={viewer.viewerId}/>
                                     ))}  
                                     { seeMore ? null :
                                         <div>

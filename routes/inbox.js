@@ -421,9 +421,8 @@ async function createPost(token, authorId, postId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-
-    if (newPost.postTo !== '' || newPost.postTo !== null || newPost.postTo !== undefined) {
-        let objectHost = newPost.postTo.id.split('/authors/')
+    if (newPost.postTo !== '' && newPost.postTo !== null && newPost.postTo !== undefined) {
+        let objectHost = newPost.postTo._id ? newPost.postTo._id : newPost.postTo.id.split('/authors/')
         const outgoings = await OutgoingCredentials.find().clone();
         let auth = ''
         for (let i = 0; i < outgoings.length; i++) {
@@ -525,16 +524,12 @@ async function postInboxLike(like, authorId){
     */
     authorId = authorId.split("/");
     authorId = authorId[authorId.length - 1];
-    objectHost = like.object.split("/");
-    objectHost = objectHost[2];
-    let host = process.env.DOMAIN_NAME.split("/");
-    host = host[2]
+    objectHost = like.object.split("authors/");
+    objectHost = objectHost[0];
+    let host = process.env.DOMAIN_NAME;
     if (host === objectHost) {
         const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
         let author = like.author;
-        // if(!validateAuthorObject(author)){
-        //     return [{}, 400];
-        // }
         author = {
             _id: author.id,
             host: author.host,

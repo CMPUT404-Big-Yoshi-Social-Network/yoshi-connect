@@ -212,7 +212,7 @@ async function allowAuthor(req, res){
                                                     "profileImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd",
                                                     admin: true }
     */
-    const author = await Author.findOne({username: req.body.displayname}).clone();
+    const author = await Author.findOne({username: req.body.username}).clone();
     if (author.allowed) {
         author.allowed = false;
     } else {

@@ -25,12 +25,19 @@ import React, { useEffect, useState } from "react";
 
 function Messenger(props) {
     /**
-     * Description:    
-     * Returns: 
+     * Description: Represents the message from another server 
+     * Functions: 
+     *     - useEffect(): Fetches the message from the messenger
+     * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [author, setAuthor] = useState()
     useEffect(() => {
+        /**
+         * Description: Fetches the message from the messenger through sending a GET request
+         * Request: GET
+         * Returns: N/A
+         */
         let id = props.currentMessenger.split('/')
         id = id[id.length - 1]
         let host = props.currentMessenger.split('/authors/')

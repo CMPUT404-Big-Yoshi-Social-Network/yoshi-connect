@@ -36,9 +36,10 @@ function Messages({currMess}) {
     /**
      * Description: Represents the Messages page that authors will keep their private posts with specific authors 
      * Functions: 
-     *     - checkExpiry(): Checks if the current token is expired
-     *     - useEffect(): Checks if the current token is expired before render, so that the author can be logged out if needed 
-     *     - logOut(): Logs out an author and sends them to the Welcome component 
+     *     - useEffect(): 
+     *          - Fetches the author's account details
+     *          - Fetches the Author's messages from the inbox 
+     *     - getMore(): Fetches more messages from the Author's account 
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
@@ -54,8 +55,8 @@ function Messages({currMess}) {
 
     useEffect(() => {
         /**
-         * Description: Before render, checks the author's account details
-         * Request: POST
+         * Description: Before render, fetches the author's account details through a GET request
+         * Request: GET
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
@@ -74,8 +75,8 @@ function Messages({currMess}) {
 
     useEffect(() => {
         /**
-         * Description: Before render, checks the author's account details
-         * Request: POST
+         * Description: Before render, fetches the Author's messages from the inbox through a GET request
+         * Request: GET
          * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
@@ -149,9 +150,9 @@ function Messages({currMess}) {
 
     const getMore = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Fetches more messages from the Author's account through a GET request 
+         * Request: GET    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {

@@ -28,7 +28,17 @@ import Messenger from './messenger.jsx';
 import Messages from "./messages.jsx";
 
 function MessagesNav({authorId, messengers, currentMessenger}) {
+    /**
+     * Description: Represents the left navigation bar that holds the messages inbox 
+     * Functions: 
+     *     - selectedMessenger(): Selects a Message from the Author's inbox to view 
+     * Returns: N/A
+     */
     const selectedMessenger = (messenger) => { 
+        /**
+         * Description: Selects a Message from the Author's inbox to view 
+         * Returns: N/A
+         */
         Messages(messenger);
     }
     return (

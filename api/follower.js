@@ -253,7 +253,6 @@ router.get('/:foreignAuthorId', async (req, res) => {
  *        description: OK, successfully added follower to the follower document for Author associated with authorId
  */
 router.put('/:foreignAuthorId', async (req, res) => {
-  if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
 

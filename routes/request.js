@@ -30,6 +30,8 @@ const crypto = require('crypto');
 const { Author } = require('../scheme/author.js');
 const { Request, Follower, Following } = require('../scheme/relations.js');
 const { Inbox } = require('../scheme/post.js');
+const { OutgoingCredentials } = require('../scheme/server.js');
+const axios = require('axios');
 
 async function senderAdded(authorId, foreignId, req, res) {
     /**
@@ -42,7 +44,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     */
     let success = true;
     let isLocal = true;
-    const actor = await Author.findOne({_id: authorId});
+    let actor = await Author.findOne({_id: authorId});
     if (actor === null || actor === undefined) {
         // Must be from another server
         const outgoings = await OutgoingCredentials.find().clone();
@@ -64,13 +66,13 @@ async function senderAdded(authorId, foreignId, req, res) {
                     if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
                     var config = {
                         host: outgoings[i].url,
-                        url: outgoings[i].url + '/authors/' + authorId + '/',
+                        url: outgoings[i].url + '/authors/' + authorId,
                         method: 'GET',
                         headers: {
                             'Authorization': auth,
                             'Content-Type': 'application/json'
                         }
-                      };              
+                      };            
                   } else {
                       var config = {
                         host: outgoings[i].url,
@@ -333,7 +335,7 @@ async function deleteRequest(res, actor, object, foreignId, authorId, status, is
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
 
     let summary = '';
-    let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
+    let idx = inbox.requests.map(obj => obj.actor.id.split('/authors/')[(obj.actor.id.split('/authors/')).length - 1]).indexOf(authorId);
     let request = inbox.requests[idx]
     inbox.requests.splice(idx, 1);
     inbox.save();

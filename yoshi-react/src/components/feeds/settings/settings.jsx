@@ -79,7 +79,7 @@ function Settings() {
                 let viewerId = response.data.authorId;
                 setNewAuthor({ newUsername: username })
                 setNewAuthor({ newEmail: email })
-                setNewAuthor({ image: response.data.profileImage })
+                setNewAuthor({ newImage: response.data.profileImage })
                 setViewer(viewerId)
             })
             .catch(err => { 
@@ -97,6 +97,7 @@ function Settings() {
     }, [navigate])
     
     const modify = (e) => {
+        console.log(newAuthor)
         /**
          * Description: Updates the author's account details
          * Request: PUT

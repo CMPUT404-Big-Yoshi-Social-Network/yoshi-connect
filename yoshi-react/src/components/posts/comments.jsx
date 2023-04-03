@@ -45,6 +45,7 @@ function Comments(params) {
          * Request: GET
          * Returns: N/A
          */
+        console.log(params.url)
         axios.get(params.url)
         .then((response) => {
             if(response.data.comments){

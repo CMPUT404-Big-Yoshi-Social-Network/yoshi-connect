@@ -35,11 +35,15 @@ function MessagesNav({authorId, messengers, currentMessenger}) {
      * Returns: N/A
      */
     const selectedMessenger = (messenger) => { 
+<<<<<<< HEAD
         /**
          * Description: Selects a Message from the Author's inbox to view 
          * Returns: N/A
          */
         Messages(messenger);
+=======
+        Messages(messenger.url);
+>>>>>>> 6350a9d5b2f87a728a313cc1af97bd19f221ea4d
     }
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
@@ -47,7 +51,7 @@ function MessagesNav({authorId, messengers, currentMessenger}) {
             { messengers === undefined || messengers.length === 0 ? null :
                 <div>
                     {Object.keys(messengers).map((messenger, idx) => (
-                        <Button key={idx} onClick={() => selectedMessenger(messenger)}><Messenger key={idx} authorId={authorId} currentMessenger={currentMessenger}/></Button>
+                        <Button key={idx} onClick={() => selectedMessenger(messenger)}><Messenger key={idx} authorId={authorId} messenger={messengers[messenger]} currentMessenger={currentMessenger}/></Button>
                     ))}
                 </div>
             }

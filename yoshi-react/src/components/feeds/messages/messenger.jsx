@@ -20,8 +20,7 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 function Messenger(props) {
     /**
@@ -31,6 +30,7 @@ function Messenger(props) {
      * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
+<<<<<<< HEAD
     const [author, setAuthor] = useState()
     useEffect(() => {
         /**
@@ -57,9 +57,12 @@ function Messenger(props) {
             .catch(err => { });
         }
     }, [props]);
+=======
+    console.log(props)
+>>>>>>> 6350a9d5b2f87a728a313cc1af97bd19f221ea4d
     return (
         <div id='messenger'>
-            {author?.displayName !== undefined ? author.displayName : null }
+            {props.messenger?.displayName !== undefined ? props.messenger.displayName : null }
         </div>
     )
 }

@@ -36,6 +36,19 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
+    /**
+     * Description: Represents a Post 
+     * Functions: 
+     *     - useEffect(): 
+     *             - Fetches the image associated with a specific post
+     *             - Fetches the likes associated with a specific post
+     *     - deletePost(): Deletes a Post
+     *     - addLike(): Sends a like object to the Author's inbox
+     *     - removeLike(): Deletes a like from a post
+     *     - makeComment(): Sends a Comment
+     * Returns: N/A
+     */
+
     let postId = post.id ? post.id.split('/') : undefined;
     postId = postId ? postId[postId.length - 1] : undefined;
     let authorId = post.author ? post.author.id.split('/') : undefined;
@@ -52,14 +65,13 @@ function Post({viewerId, post, author}) {
     const [image, setImage] = useState("");
     // const [items, setItems] = useState(undefined);
     const navigate = useNavigate();
-
-    /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
-         */
     
     useEffect(() => {
+        /**
+         * Description: Fetches the image associated with a specific post through a GET request
+         * Request: GET    
+         * Returns: N/A
+         */
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             axios
@@ -75,7 +87,12 @@ function Post({viewerId, post, author}) {
         getImage();
     }, [post.id])
 
-    useEffect(() => {  
+    useEffect(() => { 
+        /**
+         * Description: Fetches the likes associated with a specific post through a GET request
+         * Request: GET    
+         * Returns: N/A
+         */ 
         const getLikes = () => {
             axios.get(post.id + '/likes')
             .then((response) => { 
@@ -99,9 +116,9 @@ function Post({viewerId, post, author}) {
 
     const deletePost = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Deletes a Post through a delete request 
+         * Request: DELETE   
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         axios.delete(post.id)
@@ -122,6 +139,11 @@ function Post({viewerId, post, author}) {
     }
 
     const addLike = () => {
+        /**
+         * Description: Sends a like object to the Author's inbox through a POST request 
+         * Request: POST   
+         * Returns: N/A
+         */
         if(author){
             let body = {
                 type: "like",
@@ -156,9 +178,9 @@ function Post({viewerId, post, author}) {
 
     const removeLike = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Deletes a like from a post through a DELETE request 
+         * Request: DELETE    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         axios.delete(post.id + '/likes')
@@ -183,9 +205,9 @@ function Post({viewerId, post, author}) {
 
     const makeComment = () => {
         /**
-         * Description:  
-         * Request: (if axios is used)    
-         * Returns: 
+         * Description: Sends a Comment through a POST request
+         * Request: POST    
+         * Returns: N/A
          */
         console.log('Debug: <TLDR what the function is doing>')
         let body = {
@@ -214,8 +236,6 @@ function Post({viewerId, post, author}) {
             }
         });
     }
-    
-    
 
     return (
         <div className="post">

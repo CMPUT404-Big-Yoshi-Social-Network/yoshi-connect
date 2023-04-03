@@ -27,10 +27,10 @@ import Pagination from 'react-bootstrap/Pagination';
 import Post from './post.jsx';
 
 function RemotePosts(props) { 
-    /**
-     * Description:  
-     * Request: (if axios is used)    
-     * Returns: 
+   /**
+     * Description: Represents remote Posts from other servers
+     * Functions: N/A
+     * Returns: N/A
      */
     console.log('Debug: <TLDR what the function is doing>')
 

@@ -5,7 +5,7 @@ mongoose.set('strictQuery', true);
 // Schemes
 const { Post, Inbox, PostHistory, PublicPost } = require('../scheme/post.js');
 const { Like, Comment, CommentHistory, LikeHistory } = require('../scheme/interactions.js');
-const { Request } = require('../scheme/relations.js');
+const { Request, Follower } = require('../scheme/relations.js');
 const { Author } = require('../scheme/author.js');
 const axios = require('axios');
 
@@ -315,7 +315,8 @@ async function createPost(token, authorId, postId, newPost) {
         commentCount: 0,
         published: published,
         visibility: visibility,
-        unlisted: unlisted
+        unlisted: unlisted,
+        author: ''
     };
 
     postHistory.posts.push(post);
@@ -353,7 +354,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     //TODO make this faster
     //if not unlisted send to all followers 
-    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
+    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false) && (newPost.postTo === '' || newPost.postTo === null || newPost.postTo === undefined)){
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
             /*
@@ -419,6 +420,47 @@ async function createPost(token, authorId, postId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
+
+    if (newPost.postTo !== '' || newPost.postTo !== null || newPost.postTo !== undefined) {
+        let objectHost = newPost.postTo.id.split('/authors/')
+        let config = {
+            host: objectHost[0],
+            url: newPost.postTo.id,
+            method: "POST",
+            headers:{
+                "Authorization": auth,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                "type": "post",
+                "title": post.title,
+                "id": post.author.id + '/posts/' + postId,
+                "source": post.source,
+                "origin": post.origin,
+                "description": post.description,
+                "contentType": post.contentType,
+                "content": post.content,
+                "author": post.author, 
+                "categories": post.categories,
+                "count": 0,
+                "comments": post.author.id + '/posts/' + postId + '/comments',
+                "commentSrc": {
+                    "type": 'comments',
+                    "page": 1, 
+                    "size": 5,
+                    "post": post.author.id + '/posts/' + postId,
+                    "id": post.author.id + '/posts/' + postId + '/comments',
+                    "comments": []
+                },
+                "published": post.published,
+                "visibility": post.visibility,
+                "unlisted": post.unlisted
+            }
+        }
+        await axios.request(config)
+        .then((res) => { })
+        .catch((err) => { })
+    }
     return await getPost(postId, authorId, author);
 }
 
@@ -444,7 +486,6 @@ async function postInboxPost(post, recieverAuthorId){
     const description = post.description;
     const contentType = post.contentType;
     const content = post.content;
-    const categories = post.categories;
     const published = post.published;
     const visibility = post.visibility;
     if( !type || !title || !id || !source || !origin || !description || !contentType || !content || 

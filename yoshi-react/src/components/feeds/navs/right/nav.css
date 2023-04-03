@@ -63,13 +63,13 @@ Foundation; All Rights Reserved
     right: 0;
     bottom: 0;
 }
-.welcome-button{
+.rightnav-button{
     color: white;
     margin: 0em 1em;
     background-color: #735DFA;
     border: #735DFA;
     border-radius: 0.5em;
-    padding: .3em 1.5em;
+    padding: .3em 1em;
     text-decoration: none;
     display: inline-block;
 }

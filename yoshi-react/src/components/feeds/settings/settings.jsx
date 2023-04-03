@@ -147,7 +147,7 @@ function Settings() {
                 <div className='pubColM'>
                     <div className='settingColM'>
                         <div className='profile-heading'>
-                        { newAuthor.image === "" ? <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/> : <img className='ad-pubUserImg' alt='ad-pubUser' src={newAuthor.image} width={40}/> }
+                        { newAuthor.image === "" || newAuthor.image === null ? <img className='ad-pubUserImg' alt='ad-pubUser' src='/images/public/icon_profile.png' width={40}/> : <img className='ad-pubUserImg' alt='ad-pubUser' src={newAuthor.image} width={40}/> }
                         </div>
                         <Card.Body>
                             <Form className='account-details-form'>

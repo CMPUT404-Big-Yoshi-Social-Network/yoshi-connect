@@ -51,10 +51,19 @@ function Posts({url, userInfo}) {
          * Returns: N/A
          */
         if (url) {
-            let config = {
+            let config = ''; 
+            let personalUrl = '';
+            let otherUrl = '';
+            if (url === 'personal') {
+                personalUrl = '/authors/' + userInfo.authorId + '/posts/personal'
+            } else if (url.split('/')[0] === 'other') {
+                otherUrl = '/authors/' + userInfo.authorId + '/posts/' + url
+            }
+
+            config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: page,
@@ -62,7 +71,7 @@ function Posts({url, userInfo}) {
                 }
             }
 
-            axios.get(url, config)
+            axios.get(url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url, config)
             .then((response) => {
                 setPosts(response.data.items);
             })
@@ -70,7 +79,7 @@ function Posts({url, userInfo}) {
                 if (err.response.status === 404) {
                     setPosts([]);
                 } else if (err.response.status === 401) {
-                    navigate('/unauthorized');
+                    setPosts([]);
                 } else if (err.response.status === 500) {
                     setPosts([]);
                 }
@@ -80,7 +89,7 @@ function Posts({url, userInfo}) {
             config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -88,7 +97,7 @@ function Posts({url, userInfo}) {
                 }
             }
 
-            axios.get(url, config)
+            axios.get(url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url, config)
             .then((response) => { 
                 if (response.data[0]) { setSeeMore(true); }
             })
@@ -98,12 +107,12 @@ function Posts({url, userInfo}) {
                 } else if (err.response.status === 404) {
                     setSeeMore(true);
                 } else if (err.response.status === 401) {
-                    navigate('/unauthorized');
+                    setPosts([]);
                 }
             });
             
         } 
-    }, [url, navigate, page, size]);
+    }, [url, navigate, page, size, userInfo]);
 
     const getMore = () => {
         /**
@@ -186,7 +195,7 @@ function Posts({url, userInfo}) {
         <div>
             { posts.length === 0 ? 
                 <div>
-                    <h4>No posts to show.</h4>
+                    <h4 className="post-none"> No posts to show.</h4>
                 </div> : 
                 <div> 
                     <Pagination>
@@ -195,7 +204,7 @@ function Posts({url, userInfo}) {
                         ))}  
                         { seeMore ? null :
                             <div>
-                                <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
+                                <p className='post-seemore' disabled={seeMore} onClick={getMore}>See More</p>
                             </div>
                         }
                     </Pagination>  

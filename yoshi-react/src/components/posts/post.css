@@ -23,6 +23,7 @@ Foundation; All Rights Reserved
     background-color:  #24292F;
     margin: 1em 10em;
     padding: 1em;
+    padding-left: 2em;
     border-radius: 1.5em;
 }
 .post-buttons{
@@ -55,4 +56,14 @@ Foundation; All Rights Reserved
     text-decoration: none;
     text-align: center;
     right: 1em;
+}
+.post-none{
+    text-align: center;
+}
+.post-host{
+    color: #A7E7F8;
+    border: .1em dashed #d2f326;
+    border-radius: 1em;
+    padding: .2em;
+    text-align: center;
 }

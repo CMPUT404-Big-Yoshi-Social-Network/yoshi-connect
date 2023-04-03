@@ -219,7 +219,7 @@ function Messages() {
 
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={viewer.viewerId}/>
             <div className='pubRow'>
                 <div className='pubColL'>
                     <LeftNavBar authorId={viewer.viewerId} messengers={messengers} currentMessenger={currentMessenger} setCurrentMessenger={setCurrentMessenger}/>
@@ -228,7 +228,7 @@ function Messages() {
                     <div style={{paddingLeft: '1em'}}>
                         { posts.length === 0 ? 
                             <div>
-                                <h4>No posts to show.</h4>
+                                <h4 className="post-none">No posts to show.</h4>
                             </div> : 
                             <div> 
                                 <Pagination>
@@ -237,7 +237,7 @@ function Messages() {
                                     ))}  
                                     { seeMore ? null :
                                         <div>
-                                            <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
+                                            <p className="post-seemore" disabled={seeMore} onClick={getMore}>See More</p>
                                         </div>
                                     }
                                 </Pagination>  

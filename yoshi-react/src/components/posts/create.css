@@ -119,3 +119,26 @@ body {
     width: 50vw;
     height: 50vh;
   }
+  .category-input {
+    text-decoration: none;
+    background: #090D0E;
+    color: white;
+    border: #4A5460 0.1em solid;
+    border-radius: .5em;
+    padding: .5em;
+  }
+  .category-list{
+    display: inline-block;
+    border: 0.1em solid #090D0E;
+    border-radius: .2em;
+    padding: .2em;
+    margin-right: .3em;
+  }
+  .category-close{
+    margin-left: .3em;
+    padding: -.1em;
+    color: #F36464;
+    border-radius: 2em;
+    display: inline-block;
+    cursor: pointer;
+  }

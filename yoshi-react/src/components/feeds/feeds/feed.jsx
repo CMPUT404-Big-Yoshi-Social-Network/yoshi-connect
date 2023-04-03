@@ -189,7 +189,7 @@ export default function Feed() {
 
     return (
         <div>
-        <TopNav/>
+        <TopNav authorId={viewer.viewerId}/>
         <div className='feedRow'>
             <div className='feedColL'>
                 <LeftNavBar/>

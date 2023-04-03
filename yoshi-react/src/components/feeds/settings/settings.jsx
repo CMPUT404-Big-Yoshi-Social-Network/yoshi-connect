@@ -139,7 +139,7 @@ function Settings() {
     }
     return (
         <div className='settings'>
-            <TopNav/>
+            <TopNav authorId={viewer}/>
             <div className='pubRow'>
                 <div className='pubColL'>
                     <LeftNavBar authorId={viewer}/>

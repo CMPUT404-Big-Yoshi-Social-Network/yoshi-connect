@@ -20,10 +20,10 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { getUserActivity } from "gh-recent-activity";
+// import { getUserActivity } from "gh-recent-activity";
 
 // Child Component
 import TopNav from '../navs/top/nav.jsx';
@@ -49,6 +49,9 @@ function GitHub() {
         activities: [],
         pfp: ""
     }) 
+    // const [value, setValue] = useState()
+    const whenToUpdate = useRef(true)
+
     useEffect(() => {
         /**
          * Description: Before render, checks the author's account details
@@ -66,38 +69,42 @@ function GitHub() {
             axios
             .get('/userinfo', config)
             .then((response) => {
-                setData({...data, veiwer: response.data.authorId})
+                setData(d => ({...d, viewer: response.data.authorId}))
                 if (response.data.github !== "") {
-                    getUserActivity(response.data.github.split("/")[3]).then((res) => {
-                      if (res) {setData({...data, pfp: res[0].user.img, githubUsername: res[0].user.name})}  
-                      for (let i = 0; i < res.length; i++) {
-                          data.activities.push(res[i])
+                  axios.get("https://api.github.com/users/" + response.data.github.split("/")[3] + "/events")
+                  .then((res) => {
+                      for (let i = 0; i < res.data.length; i++) {
+                          data.activities.push(res.data[i])
                       }
-                    })
+                      setData(d => ({...d, githubUsername: res.data[0].actor.login, pfp: res.data[0].actor.avatar_url}))
+                  })
+                  .catch((e) => { console.log("Debug: Failed to get activities")})
                 }
             })
             .catch(err => { 
                 if (err.response.status === 404) { 
-                    setData({...data, veiwer: "", githubUsername: ""})
+                    setData(d => ({...d, viewer: "", githubUsername: ""}))
                 } else if (err.response.status === 401) {
                     navigate('/unauthorized')
                 }   
             });
         }
         getAuthor();
-    }, [navigate, data])
+    }, [navigate, whenToUpdate, data.activities])
 
     return (
         <div>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.min.css"></link>
-            <TopNav/>
+            <TopNav authorId={data.viewer}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={data.viewer}/>
+                    {/* <LeftNavBar authorId={data.viewer}/> */}
+                    <LeftNavBar/>
                 </div>
                 <div className='pubColM'>
-                    {data.activities === [] ? null : <img className="pfp" src={data.pfp} alt=""/>}
-                    <img src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" style={{margins: "10em", padding: "1em" }}/>
+                    {data.activities === [] ? "Loading" : <img className="github-pfp" src={data.pfp} alt="" width={150}/>}
+                    {data.activities === [] ? null :<h1 className="github-username">{data.githubUsername}</h1>}
+                    {data.activities === [] ? null :<img className='github-chart' src={"https://ghchart.rshah.org/" + data.githubUsername} alt="" width={800}/>}
                     {Object.keys(data.activities).map((activity, idx) => (
                         <Activity key={idx} activity={data.activities[activity]}/>
                     ))}

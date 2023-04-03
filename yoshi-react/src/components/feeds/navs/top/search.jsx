@@ -40,7 +40,7 @@ function SearchCard(props) {
      * Returns: N/A
      */
     const username = props.username !== undefined ? props.username : props.displayName
-    const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
+    const host = props.host
     const [requestButton, setRequestButton] = useState('Add');
     
     console.log('Debug: <TLDR what the function is doing>')
@@ -148,12 +148,14 @@ function SearchCard(props) {
                         object: props
                     }
                 }
-                axios
-                .post(url, config, {
-                    "X-Requested-With": "XMLHttpRequest"
-                })
-                .then((response) => { })
-                .catch(err => { });
+                if (viewer.displayName !== undefined) {
+                    axios
+                    .post(url, config, {
+                        "X-Requested-With": "XMLHttpRequest"
+                    })
+                    .then((response) => { })
+                    .catch(err => { });
+                }
             }
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
@@ -227,14 +229,14 @@ function SearchCard(props) {
     return (
         <div>
             { !props && username === undefined ? null : 
-                <div>
-                    {username}
-                    <br></br>
-                    {host}
-                    <Button onClick={seePosts} type="submit">View Profile</Button>
+                <div className="search-card">
+                    <h4>{host.split("/")[2] === "localhost:3000" ? host.split("/")[2] : host.split("/")[2].split(".")[0] === "www" ? host.split("/")[2].split(".")[1] + "." + host.split("/")[2].split(".")[2]: host.split("/")[2].split(".")[0] }</h4>
+                    <p className="search-username">{username}</p>
+                    <Button className="search-button" onClick={seePosts} type="submit">View Profile</Button>
                     { id === viewerId ? null : 
-                        <Button onClick={sendRequest} type="submit">{requestButton}</Button>
+                        <Button className="search-button" onClick={sendRequest} type="submit">{requestButton}</Button>
                     }
+                    <hr/>
                 </div>
             }
         </div>

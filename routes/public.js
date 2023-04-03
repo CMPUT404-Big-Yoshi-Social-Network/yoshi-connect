@@ -59,7 +59,7 @@ async function getPublicLocalPosts(page, size) {
             $sort: { "published": -1 }
         },
         {
-            $limit: size
+            $limit: size ? size : 5
         },
     ]
 

@@ -30,7 +30,7 @@ import RightNavBar from '../feeds/rightNav.jsx';
 // Styling
 import './password.css';
 
-function PasswordChange() {
+function PasswordChange({authorId}) {
     /**
      * Description: Represents the change password page in settings
      * Functions: N/A
@@ -39,10 +39,10 @@ function PasswordChange() {
     console.log('Debug: <TLDR what the function is doing>')
     return (
         <div>
-            <TopNav/>
+            <TopNav authorId={authorId}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    <LeftNavBar authorId={viewer.viewerId}/>
+                    <LeftNavBar authorId={authorId}/>
                 </div>
                 <div className='pubColM'>
                     IN CONSTRUCTION

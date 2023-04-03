@@ -353,101 +353,52 @@ router.get('/:authorId/postTo/:username', async (req, res) => {
 	const authorId = req.params.authorId
 	let author = await Author.findOne({username: username}).clone();
 	if (!author) { 
-		if (author === undefined) {
-            // Must be a private foreign (only to followers / followings)
-            let followers = await Follower.findOne({authorId: authorId});
-			let followings = await Following.findOne({authorId: authorId});
-			let foreignAuthor = '';
-			for (let i = 0; i < followers.length; i++) {
-				if (followers[i].displayName === username) {
-					foreignAuthor = followers[i]
+		// Must be a private foreign (only to followers / followings)
+		let followers = await Follower.findOne({authorId: authorId});
+		let followings = await Following.findOne({authorId: authorId});
+		let foreignAuthor = '';
+		for (let i = 0; i < followers.followers.length; i++) {
+			if (followers.followers[i].displayName === username) {
+				foreignAuthor = followers.followers[i]
+			}
+		}
+		if (foreignAuthor === '') {
+			for (let i = 0; i < followings.followings.length; i++) {
+				if (followings.followings[i].displayName === username) {
+					foreignAuthor = followings.followings[i]
 				}
 			}
-			if (foreignAuthor === '') {
-				for (let i = 0; i < followings.length; i++) {
-					if (followings[i].displayName === username) {
-						foreignAuthor = followings[i]
-					}
+		}
+		if (foreignAuthor === '') {
+			return res.sendStatus(400);
+		} else {
+			let objectHost = foreignAuthor.id.split('/authors/')
+			const outgoings = await OutgoingCredentials.find().clone();
+			let auth = ''
+			for (let i = 0; i < outgoings.length; i++) {
+				if (outgoings[i].url === objectHost[0]) {       
+					auth = outgoings[i].auth;
 				}
 			}
-			if (foreignAuthor === '') {
-				return res.sendStatus(400);
-			} else {
-				let objectHost = foreignAuthor.id.split('/authors/')
-				let config = {
-					host: objectHost[0],
-					url: foreignAuthor.id,
-					method: "GET",
-					headers:{
-						"Authorization": auth,
-						'Content-Type': 'application/json'
-					}
+			let config = {
+				host: objectHost[0],
+				url: foreignAuthor.id,
+				method: "GET",
+				headers:{
+					"Authorization": auth,
+					'Content-Type': 'application/json'
 				}
-				await axios.request(config)
-				.then((res) => { 
-					author = res.data;
-				})
-				.catch((err) => { })
 			}
-        }
+			await axios.request(config)
+			.then((res) => { 
+				author = res.data;
+			})
+			.catch((err) => { })
+		}
 	}  
 	return res.json(author);
 })
 
-/**
- * @openapi
- * /search/:username:
- *  post:
- *    summary: Searches for a list of names locally and remotely that match the searched username
- *    tags:
- *      - author
- *    parameters:
- *      - in: path
- *        name: username
- *        schema:
- *          type: string
- *        description: username of an Author
- *    responses:
- *      200:
- *        description: OK, successfully found a list of Authors matching username
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                type:
- *                  type: string
- *                  description: JSON type 
- *                  example: authors
- *                items: 
- *                  type: array
- *                  items: 
- *                    type: object
- *                  description: array of Authors fetch from database that are from local and remote servers (matching username)
- *                  example: 
- *                    - type: author
- *                      id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                      authorId: 29c546d45f564a27871838825e3dbecb
- *                      host: https://yoshi-connect.herokuapp.com/
- *                      displayName: kc
- *                      url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                      github: https://github.com/kezzayuno
- *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
- *                      about: i am a code monkey
- *                      pronouns: she/her
- *                    - type: author
- *                      id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                      authorId: 3ec2a2a0685445509a3ea1dd3093639f
- *                      host: https://yoshi-connect.herokuapp.com/
- *                      displayName: kc
- *                      url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                      github: https://github.com/Holy-Hero
- *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
- *                      about: i love hatsune miku
- *                      pronouns: he/him
- *      404:
- *        description: Not Found, Author was not found
- */
 router.get('/search/:username', async (req, res) => {
 	const username = req.params.username;
 	const localAuthor = await Author.findOne({username: username}); 

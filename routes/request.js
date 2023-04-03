@@ -169,7 +169,7 @@ async function senderAdded(authorId, foreignId, req, res) {
     }).clone()
 
     if (success) {
-        await deleteRequest(res, actor, object, foreignId, authorId, 'accept', isLocal);
+        await deleteRequest(res, actor, object, authorId, foreignId, 'accept', isLocal);
     } else {
         return res.sendStatus(500);
     }
@@ -335,7 +335,7 @@ async function deleteRequest(res, actor, object, authorId, foreignId, status, is
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
 
     let summary = '';
-    let idx = inbox.requests.map(obj => obj.actor.id.split('/authors/')[(obj.actor.id.split('/authors/')).length - 1]).indexOf(authorId);
+    let idx = inbox.requests.map(obj => (obj.actor.id).split('/authors/')[((obj.actor.id).split('/authors/')).length - 1]).indexOf(authorId);
     let request = inbox.requests[idx]
     inbox.requests.splice(idx, 1);
     inbox.save();

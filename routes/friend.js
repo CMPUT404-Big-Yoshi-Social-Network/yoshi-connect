@@ -120,6 +120,21 @@ async function getFriends(id){
     }
 }
 
+async function addFollowing(token, authorId, foreignId, body, req, res){
+    /**
+    Description: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
+    Associated Endpoint: /authors/:authorId/followers/:foreignAuthorId
+    Request Type: POST
+    Request Body: { authorId: 29c546d45f564a27871838825e3dbecb }
+    Return: 404 Status (Not Found) -- Unable to find a request object from the foreignAuthorId to the authorId
+    */
+    const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
+    let idx = inbox.requests.map(obj => obj.actor.id.split('/authors/')[(obj.actor.id.split('/authors/')).length - 1]).indexOf(authorId);
+    if (idx <= -1) { return 404; } 
+
+    await senderAdded(authorId, foreignId, req, res);
+}
+
 async function addFollower(token, authorId, foreignId, body, req, res){
     /**
     Description: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
@@ -129,7 +144,7 @@ async function addFollower(token, authorId, foreignId, body, req, res){
     Return: 404 Status (Not Found) -- Unable to find a request object from the foreignAuthorId to the authorId
     */
     const inbox = await Inbox.findOne({authorId: foreignId}, '_id requests');
-    let idx = inbox.requests.map(obj => obj.actorId).indexOf(authorId);
+    let idx = inbox.requests.map(obj => obj.actor.id.split('/authors/')[(obj.actor.id.split('/authors/')).length - 1]).indexOf(authorId);
     if (idx <= -1) { return 404; } 
 
     await senderAdded(authorId, foreignId, req, res);
@@ -349,5 +364,6 @@ module.exports={
     getFriends,
     addFollower,
     isFriend,
-    deleteFollower
+    deleteFollower,
+    addFollowing
 }

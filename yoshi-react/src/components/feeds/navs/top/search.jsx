@@ -115,31 +115,33 @@ function SearchCard(props) {
             setRequestButton('Sent');
             let config = '';
             let url = '';
-            if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
-                url = '/authors/' + id + '/inbox'
-                config = {
-                    actor: {
-                        id: host + 'authors/' + viewerId,
-                        status: 'local'
-                    },
-                    type: 'follow'
+            if (id !== undefined) {
+                if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
+                    url = '/authors/' + id + '/inbox'
+                    config = {
+                        actor: {
+                            id: host + 'authors/' + viewerId,
+                            status: 'local'
+                        },
+                        type: 'follow'
+                    }
+                } else {
+                    url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
+                    config = {
+                        summary: viewer.displayName + " wants to follow " + username,
+                        actor: viewer,
+                        actorId: viewerId,
+                        objectId: id,
+                        object: props
+                    }
                 }
-            } else {
-                url = '/nodes/outgoing/authors/' + id + '/inbox/follow'
-                config = {
-                    summary: viewer.displayName + " wants to follow " + username,
-                    actor: viewer,
-                    actorId: viewerId,
-                    objectId: id,
-                    object: props
-                }
+                axios
+                .post(url, config, {
+                    "X-Requested-With": "XMLHttpRequest"
+                })
+                .then((response) => { })
+                .catch(err => { });
             }
-            axios
-            .post(url, config, {
-                headers: {"X-Requested-With": "XMLHttpRequest"}
-            })
-            .then((response) => { })
-            .catch(err => { });
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
             axios

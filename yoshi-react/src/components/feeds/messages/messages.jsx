@@ -228,7 +228,7 @@ function Messages() {
                     <div style={{paddingLeft: '1em'}}>
                         { posts.length === 0 ? 
                             <div>
-                                <h4>No posts to show.</h4>
+                                <h4 className="post-none">No posts to show.</h4>
                             </div> : 
                             <div> 
                                 <Pagination>

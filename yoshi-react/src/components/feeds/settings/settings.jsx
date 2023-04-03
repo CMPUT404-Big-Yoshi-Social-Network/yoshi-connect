@@ -175,7 +175,7 @@ function Settings() {
                                         type="password" className='account-details-box'/>
                                 </Form.Group>
                                 <Form.Group className="account-details-a">
-                                    <p>GitHub Username</p>
+                                    <p>GitHub Link</p>
                                     <Form.Control
                                         name="github"
                                         onChange={(e) => {setNewAuthor({...newAuthor, newGithub: e.target.value})}}

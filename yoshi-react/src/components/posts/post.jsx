@@ -54,6 +54,7 @@ function Post({viewerId, post, author}) {
     const [image, setImage] = useState("");
     // const [items, setItems] = useState(undefined);
     const navigate = useNavigate();
+    console.log(post)
     
     useEffect(() => {
         /**
@@ -63,18 +64,22 @@ function Post({viewerId, post, author}) {
          */
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
-            axios
-            .get( post.id + "/image")
-            .then((res) => {
-                if (res.data.status === 200) {
-                    setImage(res.data.src)
-                } else {
-                    setImage('')
-                }
-            })
+            if (post.contentType.split("/")[0] === "image") {
+                setImage("data:" + post.contentType + "," + post.content)
+            } else {
+                axios
+                .get( post.id + "/image")
+                .then((res) => {
+                    if (res.data.status === 200) {
+                        setImage(res.data.src)
+                    } else {
+                        setImage('')
+                    }
+                })
+            }
         }
         getImage();
-    }, [post.id])
+    }, [post.id, post.contentType, post.content])
 
     useEffect(() => { 
         /**

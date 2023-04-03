@@ -239,7 +239,7 @@ router.post('/', async (req, res) => {
 			// remote
 			actor = req.body.actor;
 		}
-		[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type);
+		[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type); 
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);

@@ -222,7 +222,6 @@ async function getInbox(token, authorId, page, size){
             post.author._id = post.author.id;
             post.commentCount = post.count
         }
-        console.log(posts[i])
         posts[i] = {
             "type": "post",
             "title": post.title,

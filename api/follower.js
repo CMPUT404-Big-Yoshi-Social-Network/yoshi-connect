@@ -202,6 +202,9 @@ router.get('/:foreignAuthorId', async (req, res) => {
   if (followers == 404) { 
     // Must be a foreign author; need to get author 
     const followerProfile = await Author.findOne({_id: foreignId}); 
+    if (!followerProfile) {
+      return res.json(null)
+    }
     return res.json({
       "type": "author",
       "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,

@@ -32,11 +32,11 @@ function MessagesNav({authorId, messengers, currentMessenger, setCurrentMessenge
     }
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
-            <h3>Messeges</h3>
+            <h3>Messages</h3>
             { messengers === undefined || messengers.length === 0 ? null :
                 <div>
                     {Object.keys(messengers).map((messenger, idx) => (
-                        <Button key={idx} onClick={() => selectedMessenger(messengers[messenger])}><Messenger key={idx} authorId={authorId} messenger={messengers[messenger]} currentMessenger={currentMessenger}/></Button>
+                        <Button className="search-button" key={idx} onClick={() => selectedMessenger(messengers[messenger])}><Messenger className="search-button" key={idx} authorId={authorId} messenger={messengers[messenger]} currentMessenger={currentMessenger}/></Button>
                     ))}
                 </div>
             }

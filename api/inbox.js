@@ -34,7 +34,7 @@ const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
-const { IncomingCredentials } = require('../scheme/server');
+const { IncomingCredentials, OutgoingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
 const { Author } = require('../scheme/author');
 
@@ -302,7 +302,7 @@ router.post('/', async (req, res) => {
 		}
 	}
 
-	if (req.body.postTo === '' && req.body.postTo === null && req.body.postTo === undefined) {
+	if (req.body.postTo === '' || req.body.postTo === null || req.body.postTo === undefined) {
 		return res.json(response);
 	}
 })

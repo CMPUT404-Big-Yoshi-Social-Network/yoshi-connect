@@ -170,33 +170,6 @@ function Post({viewerId, post, author}) {
         }
     }
 
-    const removeLike = () => {
-        /**
-         * Description: Deletes a like from a post through a DELETE request 
-         * Request: DELETE    
-         * Returns: N/A
-         */
-        console.log('Debug: <TLDR what the function is doing>')
-        axios.delete(post.id + '/likes')
-        .then((response) => {
-            setNumLikes(response.data.numLikes);
-            setLike(false);
-        })
-        .catch((err) => {
-            if(err.response){
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                } else if (err.response.status === 400) {
-                    navigate('/badrequest')
-                } else if (err.response.status === 404) {
-                    navigate('/notfound')
-                } else if (err.response.status === 500) {
-                    navigate('/servererror')
-                }
-            }
-        });
-    }
-
     const makeComment = () => {
         /**
          * Description: Sends a Comment through a POST request
@@ -244,7 +217,7 @@ function Post({viewerId, post, author}) {
 
                     <p>{published}</p>
                     <br></br>
-                    { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons' onClick={removeLike}>Unlike</button></span>} 
+                    { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons'>Liked</button></span>} 
                     <br></br>
                     {numComments}
                     { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
@@ -265,11 +238,18 @@ function Post({viewerId, post, author}) {
                     <div>
                     <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
                 </div>
-                {
-                        post.authorId !== viewerId ? null : <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup>
+                    {
+                        post.author?.authorId !== undefined || author.authorId !== undefined ? 
+                        post.author?.authorId !== viewerId  || author.authorId !== viewerId ? 
+                        null : 
+                        <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> :
+                        null
                     }    
                     {
-                        post.authorId !== viewerId ? null : <button className='post-buttons' onClick={deletePost}>Delete</button>
+                        post.author?.authorId !== undefined || author.authorId !== undefined ? 
+                        post.author?.authorId !== viewerId || author.authorId !== viewerId ? null : 
+                        <button className='post-buttons' onClick={deletePost}>Delete</button> :
+                        null
                     }    
                 </div>}
         </div>

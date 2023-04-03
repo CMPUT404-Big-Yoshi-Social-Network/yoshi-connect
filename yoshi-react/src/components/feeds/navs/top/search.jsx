@@ -40,7 +40,7 @@ function SearchCard(props) {
      * Returns: N/A
      */
     const username = props.username !== undefined ? props.username : props.displayName
-    const host = props.host === "" ? 'https://sociallydistributed.herokuapp.com' : props.host
+    const host = props.host
     const [requestButton, setRequestButton] = useState('Add');
     
     console.log('Debug: <TLDR what the function is doing>')
@@ -148,12 +148,14 @@ function SearchCard(props) {
                         object: props
                     }
                 }
-                axios
-                .post(url, config, {
-                    "X-Requested-With": "XMLHttpRequest"
-                })
-                .then((response) => { })
-                .catch(err => { });
+                if (viewer.displayName !== undefined) {
+                    axios
+                    .post(url, config, {
+                        "X-Requested-With": "XMLHttpRequest"
+                    })
+                    .then((response) => { })
+                    .catch(err => { });
+                }
             }
         } else if (requestButton === "Sent") {
             setRequestButton('Add')

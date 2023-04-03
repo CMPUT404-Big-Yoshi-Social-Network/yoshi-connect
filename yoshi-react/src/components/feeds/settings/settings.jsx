@@ -131,7 +131,7 @@ function Settings() {
             } else if (err.response.status === 400) {
                 navigate('/badrequest');
             } else if (err.response.status === 500) {
-                console.log('500 PAGE')
+                navigate('/servererror')
             } else if (err.response.status === 401) {
                 navigate('/unauthorized')
             }

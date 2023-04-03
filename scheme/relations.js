@@ -58,7 +58,6 @@ const requestScheme = new Schema({
     _id: String,
     goal: String,
     actor: {
-        type: String,
         id: String,
         host: String,
         displayName: String,
@@ -67,7 +66,6 @@ const requestScheme = new Schema({
         profileImage: String
     }, 
     object: {
-        type: String,
         id: String,
         host: String,
         displayName: String,

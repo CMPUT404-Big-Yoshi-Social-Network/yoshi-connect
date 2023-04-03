@@ -165,7 +165,6 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
  *        description: OK, successfully posts to the Inbox
  */
 router.post('/', async (req, res) => {
-
 	let authorized = false;
 	if(req.headers.authorization){
 		const authHeader = req.headers.authorization;
@@ -180,12 +179,12 @@ router.post('/', async (req, res) => {
 		if(!token){
 			return res.sendStatus(401);
 		}
-		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like" || req.body.type == "follow"){
+		if(req.body.type == "comment" || req.body.type == "post" || req.body.type == "like"){
 			authorId = req.body.author.id.split("/");
 			authorId = authorId[authorId.length - 1];
 		}
 		else if(req.body.type == "follow"){
-			authorId = req.body.author.id.split("/");
+			authorId = req.body.actor.id.split("/");
 			authorId = authorId[authorId.length - 1];
 		}
 		else{
@@ -264,7 +263,9 @@ router.post('/', async (req, res) => {
 			// remote
 			actor = req.body.actor;
 		}
-		[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type); 
+		if (req.params.authorId !== undefined && req.params.authorId !== null) {
+			[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type);
+		} 
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);

@@ -359,13 +359,12 @@ async function postInboxComment(newComment, recieverAuthorId){
 async function postInboxRequest(actor, obj, receiverAuthorId, type) {
     let object = '';
     let resObj = '';
-    if (obj !== undefined || obj !== null) {
+    if (obj !== undefined && obj !== null) {
         object = obj
-        resObj = '';
+        resObj = object;
     } else {
         object = await Author.findOne({_id: receiverAuthorId});
         resObj = {
-            type: 'author',
             id: process.env.DOMAIN_NAME + "authors/" + object._id,
             host: process.env.DOMAIN_NAME,
             displayName: object.username,
@@ -383,12 +382,11 @@ async function postInboxRequest(actor, obj, receiverAuthorId, type) {
     let summary = ''
     let request = ''
     if (type !== 'accept') {
-        summary = actor.displayName + ' wants to follow ' + object.username;
+        summary = actor.displayName + ' wants to follow ' + resObj.displayName;
         request = {
             _id: uuid,
             goal: type,
             actor: {
-                type: 'author',
                 id: actor.id,
                 host: actor.host,
                 displayName: actor.displayName,
@@ -404,7 +402,6 @@ async function postInboxRequest(actor, obj, receiverAuthorId, type) {
             _id: uuid,
             goal: type,
             actor: {
-                type: 'author',
                 id: actor.id,
                 host: actor.host,
                 displayName: actor.displayName,

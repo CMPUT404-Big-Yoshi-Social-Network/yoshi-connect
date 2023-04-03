@@ -208,8 +208,22 @@ async function sendRequest(authorId, foreignId, res) {
     const request = {
         _id: uuid,
         goal: type,
-        actor: actor, 
-        object: object
+        actor: {
+            id: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: actor.username,
+            url: process.env.DOMAIN_NAME + "authors/" + actor._id,
+            github: actor.github,
+            profileImage: actor.profileImage 
+        }, 
+        object: {
+            id: process.env.DOMAIN_NAME + "authors/" + object._id,
+            host: process.env.DOMAIN_NAME,
+            displayName: object.username,
+            url: process.env.DOMAIN_NAME + "authors/" + object._id,
+            github: object.github,
+            profileImage: object.profileImage 
+        }
     }
 
     const inbox = await Inbox.findOne({authorId: foreignId});

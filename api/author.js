@@ -493,11 +493,7 @@ router.get('/search/:username', async (req, res) => {
 						}
 					}
 				})
-				.catch( err => { 
-					console.log(config);
-					console.log(err.response.status)
-					error = true;
-				});
+				.catch( err => { error = true; });
 				if(outgoing.url === "https://sociallydistributed.herokuapp.com"){
 					break;
 				}

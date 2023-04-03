@@ -238,7 +238,6 @@ async function postInboxLike(like, authorId){
     authorId = authorId[authorId.length - 1];
 
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
-    console.log(inbox)
     let author = like.author;
     // if(!validateAuthorObject(author)){
     //     return [{}, 400];

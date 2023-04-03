@@ -263,7 +263,7 @@ function CreatePost() {
                             setData({...data, content: e.target.value})
                         }}/>
                         <div style={{color:"white", textAlign:"right"}}>
-                            0/150 (doesn't actually count)
+                            <p></p>
                         </div>
                         
                         <div className={"postMenuInput"}>

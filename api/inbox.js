@@ -210,34 +210,35 @@ router.post('/', async (req, res) => {
 		return res.sendStatus(401);
 	}
 
-	let idURL = req.params.authorId.split("/");
-	let host = process.env.DOMAIN_NAME.split("/")
-	host = host[2];
-	if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[2] == host && idURL[3] == "authors"){
-		req.params.authorId = idURL[4];
-	}
-	else if((idURL[0] == "http:" || idURL[0] == "https:") && idURL.find(element => element === "authors")){
-		//Check if the host name is in mongo
-		//If not then 401
-		//Else send a post request to that server with the associated request
-		let outgoings = await OutgoingCredentials.find().clone();
-		for(let i = 0; i < outgoings.length; i++){
-			let outgoing = outgoings[i];
-			let url = outgoing.url.split("/");
-			url = url[2];
-			if(url != idURL[2]){
-				continue;
-			}
-
-			let [response, status] = await sendToForeignInbox(req.params.authorId, outgoing.auth, req.body);
-			if(status > 200 && status < 300){
-				return res.json(response);
-			}
-			return res.sendStatus(status);
+	if (req.body.type.toLowerCase() == 'like') {
+		let idURL = req.params.authorId.split("/");
+		let host = process.env.DOMAIN_NAME.split("/")
+		host = host[2];
+		if((idURL[0] == "http:" || idURL[0] == "https:") && idURL[2] == host && idURL[3] == "authors"){
+			req.params.authorId = idURL[4];
 		}
-		return res.sendStatus(400);
-	}
+		else if((idURL[0] == "http:" || idURL[0] == "https:") && idURL.find(element => element === "authors")){
+			//Check if the host name is in mongo
+			//If not then 401
+			//Else send a post request to that server with the associated request
+			let outgoings = await OutgoingCredentials.find().clone();
+			for(let i = 0; i < outgoings.length; i++){
+				let outgoing = outgoings[i];
+				let url = outgoing.url.split("/");
+				url = url[2];
+				if(url != idURL[2]){
+					continue;
+				}
 	
+				let [response, status] = await sendToForeignInbox(req.params.authorId, outgoing.auth, req.body);
+				if(status > 200 && status < 300){
+					return res.json(response);
+				}
+				return res.sendStatus(status);
+			}
+			return res.sendStatus(400);
+		}
+	}
 
 	//NEED to fix req.body.author.id to the id of the inbox haver
 	const type = req.body.type.toLowerCase();

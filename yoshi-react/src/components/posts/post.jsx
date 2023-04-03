@@ -55,7 +55,6 @@ function Post({viewerId, post, author}) {
     const [image, setImage] = useState("");
     // const [items, setItems] = useState(undefined);
     const navigate = useNavigate();
-    console.log(post)
     
     useEffect(() => {
         /**

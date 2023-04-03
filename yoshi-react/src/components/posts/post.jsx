@@ -36,10 +36,10 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
-    let postId = post.id ? post.id.split('/') : undefined;
-    postId = postId ? postId[postId.length - 1] : undefined;
-    let authorId = post.author ? post.author.id.split('/') : undefined;
-    authorId = authorId ? authorId[authorId.length - 1] : undefined;
+    // let postId = post.id ? post.id.split('/') : undefined;
+    // postId = postId ? postId[postId.length - 1] : undefined;
+    // let authorId = post.author ? post.author.id.split('/') : undefined;
+    // authorId = authorId ? authorId[authorId.length - 1] : undefined;
     let published = post.published.substring(0,10);
     
 

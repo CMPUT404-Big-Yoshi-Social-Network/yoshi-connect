@@ -57,10 +57,24 @@ const followingScheme = new Schema({
 const requestScheme = new Schema({
     _id: String,
     goal: String,
-    actor: String,
-    actorId: String,
-    objectId: String,
-    object: String},
+    actor: {
+        type: String,
+        id: String,
+        host: String,
+        displayName: String,
+        url: String,
+        github: String,
+        profileImage: String
+    }, 
+    object: {
+        type: String,
+        id: String,
+        host: String,
+        displayName: String,
+        url: String,
+        github: String,
+        profileImage: String
+    }},
     {versionKey: false
 });
 

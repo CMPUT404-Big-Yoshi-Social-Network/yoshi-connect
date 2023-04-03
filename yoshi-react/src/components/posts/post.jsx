@@ -43,6 +43,7 @@ function Post({viewerId, post, author}) {
         undefined : 
         undefined;
     let published = post.published.substring(0,10);
+    let contentType = post.contentType ? post.contentType : ""
     
 
     const [numLikes, setNumLikes] = useState(post.likeCount);
@@ -64,8 +65,8 @@ function Post({viewerId, post, author}) {
          */
         console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
-            if (post.contentType.split("/")[0] === "image") {
-                setImage("data:" + post.contentType + "," + post.content)
+            if (contentType.split("/")[0] === "image") {
+                setImage("data:" + contentType + "," + post.content)
             } else {
                 axios
                 .get( post.id + "/image")
@@ -79,7 +80,7 @@ function Post({viewerId, post, author}) {
             }
         }
         getImage();
-    }, [post.id, post.contentType, post.content])
+    }, [post.id, contentType, post.content])
 
     useEffect(() => { 
         /**

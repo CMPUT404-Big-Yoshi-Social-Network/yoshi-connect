@@ -237,7 +237,7 @@ function Messages() {
                                     ))}  
                                     { seeMore ? null :
                                         <div>
-                                            <Pagination.Item disabled={seeMore} onClick={getMore}>See More</Pagination.Item>
+                                            <p className="post-seemore" disabled={seeMore} onClick={getMore}>See More</p>
                                         </div>
                                     }
                                 </Pagination>  

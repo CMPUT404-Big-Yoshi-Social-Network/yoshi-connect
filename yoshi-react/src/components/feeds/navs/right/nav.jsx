@@ -53,6 +53,7 @@ function RightNavBar() {
             .get('/userinfo/')
             .then((response) => {
                 setProfile({username: response.data.displayName, pic: response.data.profileImage})
+                setLogged(true);
             })
             .catch(err => { if (err.response.status === 404) { 
                 setProfile({username: ""})
@@ -62,48 +63,9 @@ function RightNavBar() {
         getId();
     }, [navigate])
 
-    useEffect(() => {
-        /**
-         * Description: Calls checkExpiry() to check if the token is expired before render 
-         * Returns: N/A
-         */
-        const checkExpiry = () => {
-            /**
-             * Description: Sends a GET request checking if the author has an expired token (if so, they will be logged out and 
-             *              redirected to the Welcome component) 
-             * Request: GET
-             * Returns: N/A
-             */
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/feed',
-            }
-    
-            axios
-            .get('/server/feed', config)
-            .then((response) => {
-                // if (response.data.status === "Expired") {
-                //     console.log("Debug: Your token is expired.")
-                //     navigate('/');
-                // } else {
-                //     console.log('Debug: Your token is not expired.')
-                // }
-                console.log("RESPONSE:", response)
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    console.log("Debug: Not authorized.");
-                    navigate('/unauthorized'); 
-                }
-            });
-        }
-        checkExpiry();
-    }, [navigate]) 
-
     return (
         <Navbar className="right-column">
-            { logged ? <Container>
+            { logged === true? <Container>
                 <Nav>
                     <div className='rn-div'>
                     {/* TODO: Needs to fetch username  */}

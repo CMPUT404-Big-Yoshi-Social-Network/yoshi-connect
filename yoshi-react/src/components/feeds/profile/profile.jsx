@@ -138,7 +138,6 @@ function Profile() {
                     numPosts = response.data.numPosts
                     numFollowing = response.data.numFollowing
                     numFollowers = response.data.numFollowers
-                    console.log("Everything", response.data)
                     setPersonal(prevPersonal => ({...prevPersonal, person}))
                     setPersonal(prevViewer => ({...prevViewer, viewer}))
                     setPersonal(prevViewed => ({...prevViewed, viewed}))
@@ -388,7 +387,10 @@ function Profile() {
                     <hr/>
                     <br/>
                     {
-                        personal.person === null ? state.isRemote === true ? <Posts url={state.url ? state.url : otherUrl.otherUrl} userInfo={userInfo}/> : null : personal.person === true ? <Posts type={'personal'}/> : <Posts type={otherUrl}/>
+                        personal.person === true ? <Posts url={'personal'} userInfo={userInfo}/> : 
+                        state.isRemote === true ? <Posts url={state.url ? state.url : otherUrl} userInfo={userInfo}/> :
+                        personal.person === false ? <Posts url={otherUrl} userInfo={userInfo}/> : null
+
                     }
                 </div>
                 <div className='profColR'>

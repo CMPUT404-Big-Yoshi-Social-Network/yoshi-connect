@@ -51,10 +51,16 @@ function Posts({url, userInfo}) {
          * Returns: N/A
          */
         if (url) {
-            let config = {
+            let config = ''; 
+            let personalUrl = '';
+            if (url === 'personal') {
+                personalUrl = '/authors/' + userInfo.authorId + '/posts/personal'
+            } 
+
+            config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: url === 'personal' ? personalUrl : url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: page,
@@ -62,7 +68,7 @@ function Posts({url, userInfo}) {
                 }
             }
 
-            axios.get(url, config)
+            axios.get(url === 'personal' ? personalUrl : url, config)
             .then((response) => {
                 setPosts(response.data.items);
             })
@@ -80,7 +86,7 @@ function Posts({url, userInfo}) {
             config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url,
+                url: url === 'personal' ? personalUrl : url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -88,7 +94,7 @@ function Posts({url, userInfo}) {
                 }
             }
 
-            axios.get(url, config)
+            axios.get(url === 'personal' ? personalUrl : url, config)
             .then((response) => { 
                 if (response.data[0]) { setSeeMore(true); }
             })
@@ -103,7 +109,7 @@ function Posts({url, userInfo}) {
             });
             
         } 
-    }, [url, navigate, page, size]);
+    }, [url, navigate, page, size, userInfo]);
 
     const getMore = () => {
         /**

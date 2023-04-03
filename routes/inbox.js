@@ -421,9 +421,8 @@ async function createPost(token, authorId, postId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-
-    if (newPost.postTo !== '' || newPost.postTo !== null || newPost.postTo !== undefined) {
-        let objectHost = newPost.postTo.id.split('/authors/')
+    if (newPost.postTo !== '' && newPost.postTo !== null && newPost.postTo !== undefined) {
+        let objectHost = newPost.postTo._id ? newPost.postTo._id : newPost.postTo.id.split('/authors/')
         const outgoings = await OutgoingCredentials.find().clone();
         let auth = ''
         for (let i = 0; i < outgoings.length; i++) {

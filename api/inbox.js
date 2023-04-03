@@ -180,8 +180,12 @@ router.post('/', async (req, res) => {
 			return res.sendStatus(401);
 		}
 		if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
-			authorId = req.body.author.id.split("/");
-			authorId = authorId[authorId.length - 1];
+			if (req.body.authorId) {
+				authorId = req.body.authorId
+			} else {
+				authorId = req.body.author.id.split("/");
+				authorId = authorId[authorId.length - 1];
+			}
 		}
 		else if(req.body.type.toLowerCase() == "follow"){
 			authorId = req.body.actor.id.split("/");
@@ -283,7 +287,7 @@ router.post('/', async (req, res) => {
 	}
 
 	if(type === "post"){
-		//[response, status] = await postInboxPost(req.body, req.params.authorId);
+		[response, status] = await postInboxPost(req.body, req.params.authorId);
 	}
 	else if(type === "follow"){
 	}

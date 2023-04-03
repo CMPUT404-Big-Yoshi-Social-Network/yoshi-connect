@@ -36,22 +36,12 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author}) {
-    /**
-     * Description: Represents a Post 
-     * Functions: 
-     *     - useEffect(): 
-     *             - Fetches the image associated with a specific post
-     *             - Fetches the likes associated with a specific post
-     *     - deletePost(): Deletes a Post
-     *     - addLike(): Sends a like object to the Author's inbox
-     *     - removeLike(): Deletes a like from a post
-     *     - makeComment(): Sends a Comment
-     * Returns: N/A
-     */
-
-    let postId = post.id ? post.id.split('/') : undefined;
-    postId = postId ? postId[postId.length - 1] : undefined;
-    let authorId = post.author ? post.author.id.split('/') : undefined;
+    let postId = post.id ? (post.id.split('/'))[(post.id.split('/')).length - 1] : post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : undefined;
+    let authorId = post.author ? 
+        post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
+        post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
+        undefined : 
+        undefined;
     authorId = authorId ? authorId[authorId.length - 1] : undefined;
     let published = post.published.substring(0,10);
     

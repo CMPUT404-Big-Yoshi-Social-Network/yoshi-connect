@@ -206,29 +206,12 @@ function Post({viewerId, post, author}) {
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
                     { image === "" ? null : <a href={"/authors/" + authorId + "/posts/" + postId + "/image"} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
-                    <p>{published}</p>
-                    <br></br>
-                    { !like ? <span>{numLikes}<button className='post-buttons' onClick={addLike}>Like</button></span> : <span>{numLikes}<button className='post-buttons'>Liked</button></span>} 
-                    <br></br>
-                    {numComments}
+                    <p className="post-published">{published}</p>
+                    <p className="post-num-lc">{numLikes}</p>
+                    { !like ? <button className='post-buttons' onClick={addLike}>Like</button> : <button className='post-buttons'>Liked</button>} 
+                    <p className="post-num-lc">{numComments}</p>
                     { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
-
-                    {showComment && 
-                        <div>
-                            <h3>Comments</h3>
-
-                            <form >
-                                <input type="text" id="newComment" name="newComment" onChange={(e) => {
-                                    setComment({...comment, newComment: e.target.value})
-                                }}/>
-                                <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
-                            </form>
-                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author} liked={post}> </Comments>
-                        </div>}
-                        <br></br>
-                    <div>
                     <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
-                </div>
                     {
                         post.author?.authorId !== undefined || author.authorId !== undefined ? 
                         post.author?.authorId !== viewerId  || author.authorId !== viewerId ? 
@@ -242,6 +225,22 @@ function Post({viewerId, post, author}) {
                         <button className='post-buttons' onClick={deletePost}>Delete</button> :
                         null
                     }    
+
+                    {showComment && 
+                        <div>
+                            <h3>Comments</h3>
+
+                            <form >
+                                <input type="text" id="newComment" name="newComment" onChange={(e) => {
+                                    setComment({...comment, newComment: e.target.value})
+                                }}/>
+                                <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
+                            </form>
+                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author} liked={post}> </Comments>
+                        </div>}
+                    <div>
+                </div>
+                    
                 </div>}
         </div>
     )

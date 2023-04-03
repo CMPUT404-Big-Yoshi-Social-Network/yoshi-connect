@@ -27,7 +27,8 @@ Foundation; All Rights Reserved
     border-radius: 1.5em;
 }
 .post-buttons{
-    margin: .1em;
+    margin: 0em .5em;
+    margin-right: 2em;
     color: white;
     padding: .5em;
     background-color: #735DFA;
@@ -66,4 +67,12 @@ Foundation; All Rights Reserved
     border-radius: 1em;
     padding: .2em;
     text-align: center;
+}
+.post-num-lc{
+    display: inline-block;
+}
+.post-published{
+    position: absolute;
+    margin-top: 2em;
+    margin-left: 45em;
 }

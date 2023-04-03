@@ -368,7 +368,7 @@ function Profile() {
                     <LeftNavBar authorId={personal.viewerId}/>
                 </div>
                 <div className='profColM'>
-                    { (profileInfo.profileImage === '') ? <img className='profile-image' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='profile-image' src={profileInfo.profileImage} alt='prof-userimg' width={130}/>}
+                    { (profileInfo.profileImage === '' || profileInfo.profileImage === null) ? <img className='profile-image' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='profile-image' src={profileInfo.profileImage} alt='prof-userimg' width={130}/>}
                     <h1 className='profile-username'>{username}</h1>
                     <p className='profile-pronouns' >{profileInfo.pronouns}</p>
                     { (state.isRemote || personal.person) ? null : 

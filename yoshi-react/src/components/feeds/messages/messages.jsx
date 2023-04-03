@@ -108,7 +108,7 @@ function Messages() {
                             } 
                         }
                     }
-                    if (messengers.length !== 0 && currentMessenger === undefined) {
+                    if (messengers.length !== 0 && currentMessenger === '') {
                         curr = messengers[0].url
                     } else {
                         curr = currentMessenger

@@ -49,10 +49,9 @@ function Comment({viewerId, comment, author, url}) {
             type: "like",
             summary: "DisplayName likes your comment",
             author: author,
-            object: comment.id
+            object: commentId
         }
         
-
         axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body)
         .then((response) => {
 
@@ -81,8 +80,6 @@ function Comment({viewerId, comment, author, url}) {
                         return
                     }
                 }
-                setLiked(false);
-                return
             })
             .catch((err) => {
                 console.log(err);

@@ -157,10 +157,11 @@ function CreatePost() {
         } else {
             body.type = 'post'
             await axios
-            .get('/authors/postTo/' + body.postTo)
+            .get('/authors/' + data.authorId + '/postTo/' + body.postTo)
             .then((response) => {
-                body.postTo = response.data._id;
-                axios.post('/authors/' + response.data._id + '/inbox', body)
+                body.postTo = response.data;
+                let postToId = response.data._id || (response.data.id.split('/authors/'))[(response.data.id.split('/authors/')).length - 1];
+                axios.post('/authors/' + postToId + '/inbox', body)
                 .then((response) => { 
                     if (response.status === 200) {
                         link.postId = response.data.id.split('/')[6];

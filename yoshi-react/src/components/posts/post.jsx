@@ -147,7 +147,7 @@ function Post({viewerId, post, author}) {
             }
             let id = post.author.id.split("/");
 			id = id[id.length - 1];
-            axios.post('/authors/' + encodeURIComponent(post.author.id) + '/inbox', body, {
+            axios.post('/authors/' + id + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
         })
         .then((response) => {
@@ -155,17 +155,7 @@ function Post({viewerId, post, author}) {
             setNumLikes(numLikes + 1);
         })
         .catch((err) => {
-            if(err.response){
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                } else if (err.response.status === 400) {
-                    navigate('/badrequest')
-                } else if (err.response.status === 404) {
-                    navigate('/notfound')
-                } else if (err.response.status === 500) {
-                    navigate('/servererror')
-                }
-            }});
+            if(err.response){ }});
         }
     }
 
@@ -209,7 +199,7 @@ function Post({viewerId, post, author}) {
         <div className="post">
             {!post.unlisted &&
                 <div>
-                    {<h4>{post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0] }</h4>}
+                    {<h3 className='post-host'>{post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0] }</h3>}
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }

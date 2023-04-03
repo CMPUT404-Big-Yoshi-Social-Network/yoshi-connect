@@ -63,7 +63,7 @@ function SettingsNav() {
         .then((response) => { navigate("/"); })
         .catch(err => {
             if (err.response.status === 500) {
-                console.log('500 PAGE');
+                navigate('/servererror');
             } else if (err.response.status === 401) {
                 navigate('/unauthorized')
             }
@@ -77,9 +77,9 @@ function SettingsNav() {
                     <div>
                         <Nav.Link className='setting' href="/settings">Account Details</Nav.Link>
                     </div>
-                    <div>
+                    {/* <div>
                         <Nav.Link className='setting' href="/password">Change Password</Nav.Link>
-                    </div>
+                    </div> */}
                     <div>
                         <Nav.Link className='setting' href="/github">GitHub</Nav.Link>
                     </div>

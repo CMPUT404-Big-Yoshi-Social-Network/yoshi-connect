@@ -36,7 +36,7 @@ function Welcome() {
         <div className='welcome'>
             <Image fluid src='/images/yoshi_connect_logo2.png' alt='Logo' width={100} />
             <Container className='welcome-hello'>
-                Welcome to Yoshi Connect.
+                Please Log In or Sign Up to Continue.
             </Container>
             <div>
                 <Button className='welcome-button' href='/signup' data-testid="signup">Sign Up</Button>

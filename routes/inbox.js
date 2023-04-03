@@ -447,7 +447,7 @@ async function postInboxPost(post, recieverAuthorId){
     const categories = post.categories;
     const published = post.published;
     const visibility = post.visibility;
-    if( !type || !title || !id || !source || !origin || !description || !contentType || !content || !categories || 
+    if( !type || !title || !id || !source || !origin || !description || !contentType || !content || 
         !published || !visibility)
     {
         return [{}, 400];

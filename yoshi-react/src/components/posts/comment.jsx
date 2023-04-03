@@ -45,6 +45,7 @@ function Comment({viewerId, comment, author, url}) {
          * Request: POST
          * Returns: N/A
          */
+        setLiked(!liked)
         let body = {
             type: "like",
             summary: "DisplayName likes your comment",
@@ -54,7 +55,7 @@ function Comment({viewerId, comment, author, url}) {
         
         axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body)
         .then((response) => {
-            setLiked(!liked)
+            
         })
         .catch((err) => { 
             

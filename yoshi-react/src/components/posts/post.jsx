@@ -42,7 +42,6 @@ function Post({viewerId, post, author}) {
         post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
         undefined : 
         undefined;
-    authorId = authorId ? authorId[authorId.length - 1] : undefined;
     let published = post.published.substring(0,10);
     
 
@@ -207,6 +206,7 @@ function Post({viewerId, post, author}) {
             contentType: "text/plaintext",
         };
 
+        console.log('/authors/' + authorId + '/posts/' + postId + '/comments')
         axios.post('/authors/' + authorId + '/posts/' + postId + '/comments', body)
         .then((response) => {
             setNumComments(numComments + 1);

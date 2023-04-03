@@ -43,7 +43,7 @@ function RemotePosts(props) {
                     ))}
                 </Pagination> :
                 <div>
-                    <h4>No posts to show.</h4>
+                    <h4 className="post-none">No posts to show.</h4>
                 </div>
             }
         </div>

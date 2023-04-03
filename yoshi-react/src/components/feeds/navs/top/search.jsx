@@ -203,16 +203,6 @@ function SearchCard(props) {
             navigate('/users/' + username);
         } else {
             let id = props.id.substring(props.id.lastIndexOf("/") + 1, props.id.length);
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/nodes/outgoing/authors/' + id + '/posts',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                params: {
-                    page: 1,
-                    size: 5
-                }
-            }
             navigate('/users/' + username, { state: { url: '/nodes/outgoing/authors/' + id + '/posts', isRemote: true } })
         }
     }

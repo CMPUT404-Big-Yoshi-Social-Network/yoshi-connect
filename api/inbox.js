@@ -185,7 +185,8 @@ router.post('/', async (req, res) => {
 			authorId = authorId[authorId.length - 1];
 		}
 		else if(req.body.type == "follow"){
-			authorId = req.body.actor.id;
+			authorId = req.body.actor.id.split("/");
+			authorId = authorId[authorId.length - 1];
 		}
 		else{
 			return res.sendStatus(400);
@@ -263,7 +264,7 @@ router.post('/', async (req, res) => {
 			// remote
 			actor = req.body.actor;
 		}
-		[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type); 
+		[response, status] = await postInboxRequest(actor, req.params.authorId);
 	}
 	else if(type === "like"){
 		[response, status] = await postInboxLike(req.body, req.params.authorId);

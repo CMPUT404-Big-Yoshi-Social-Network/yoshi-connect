@@ -32,7 +32,7 @@ function MessagesNav({authorId, messengers, currentMessenger, setCurrentMessenge
     }
     return (
         <div style={{fontFamily: 'Signika', paddingLeft:'1em'}}>
-            <h3>Messeges</h3>
+            <h3>Messages</h3>
             { messengers === undefined || messengers.length === 0 ? null :
                 <div>
                     {Object.keys(messengers).map((messenger, idx) => (

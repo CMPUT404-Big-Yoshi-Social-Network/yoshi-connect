@@ -388,8 +388,8 @@ function Profile() {
                     <br/>
                     {
                         personal.person === true ? <Posts url={'personal'} userInfo={userInfo}/> : 
-                        state.isRemote === true ? <Posts url={state.url ? state.url : otherUrl} userInfo={userInfo}/> :
-                        personal.person === false ? <Posts url={otherUrl} userInfo={userInfo}/> : null
+                        state.isRemote === true ? <Posts url={state.url ? state.url : otherUrl.otherUrl} userInfo={userInfo}/> :
+                        personal.person === false ? <Posts url={otherUrl.otherUrl} userInfo={userInfo}/> : null
 
                     }
                 </div>

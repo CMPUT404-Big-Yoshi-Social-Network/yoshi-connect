@@ -53,14 +53,17 @@ function Posts({url, userInfo}) {
         if (url) {
             let config = ''; 
             let personalUrl = '';
+            let otherUrl = '';
             if (url === 'personal') {
                 personalUrl = '/authors/' + userInfo.authorId + '/posts/personal'
-            } 
+            } else if (url.split('/')[0] === 'other') {
+                otherUrl = '/authors/' + userInfo.authorId + '/posts/' + url
+            }
 
             config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url === 'personal' ? personalUrl : url,
+                url: url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: page,
@@ -68,7 +71,7 @@ function Posts({url, userInfo}) {
                 }
             }
 
-            axios.get(url === 'personal' ? personalUrl : url, config)
+            axios.get(url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url, config)
             .then((response) => {
                 setPosts(response.data.items);
             })
@@ -86,7 +89,7 @@ function Posts({url, userInfo}) {
             config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: url === 'personal' ? personalUrl : url,
+                url: url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: updated,
@@ -94,7 +97,7 @@ function Posts({url, userInfo}) {
                 }
             }
 
-            axios.get(url === 'personal' ? personalUrl : url, config)
+            axios.get(url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url, config)
             .then((response) => { 
                 if (response.data[0]) { setSeeMore(true); }
             })

@@ -251,47 +251,81 @@ async function createComment(token, authorId, postId, newComment) {
     }
 
     let comments = await CommentHistory.findOne({postId: postId}); 
-    author._id = author.id;
-    comments.comments.push({
-        _id: id,
-        author: author,
-        likeCount: 0,
-        comment: comment,
-        contentType: contentType,
-        published: published,
-    });
-    await comments.save();
+    if (!comments) {
+        // Must be a remote post
+        let id = newComment.author._id ? newComment.author._id : newComment.author.id
+        let obj = (id.split('/authors/'))[(id.split('/authors/')).length - 1]
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].url === obj) {       
+                auth = outgoings[i].auth;
+            }
+        }
+        var config = {
+            host: obj,
+            url: id + '/inbox',
+            method: 'POST',
+            headers: {
+                'Authorization': auth,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                type: 'comment',
+                author: newComment.author,
+                likeCount: 0,
+                comment: comment,
+                contentType: contentType,
+                published: published,
+            }
+        };
+
+        await axios.request(config)
+        .then( res => { })
+        .catch( error => { })
+    } else {
+        author._id = author.id;
+        comments.comments.push({
+            _id: id,
+            author: author,
+            likeCount: 0,
+            comment: comment,
+            contentType: contentType,
+            published: published,
+        });
+        await comments.save();
+        
+        let like = new LikeHistory({
+            type: "comment",
+            Id: id,
+            likes: []
+        });
     
-    let like = new LikeHistory({
-        type: "comment",
-        Id: id,
-        likes: []
-    });
-
-    await like.save();
-
-    inboxComment = {
-        _id: id,
-        author: author,
-        comment: comment,
-        contentType: contentType,
-        published: published,
-        object: postId,
-    };
-
-    const inbox = await Inbox.findOne({authorId: authorId});
-    inbox.comments.push({
-        _id: id,
-        author: author,
-        comment: comment,
-        contentType: contentType,
-        published: published,
-        object: postId,
-    });
-    await inbox.save();
-    delete author._id;
-
-    return [inboxComment, 200];
+        await like.save();
+    
+        inboxComment = {
+            _id: id,
+            author: author,
+            comment: comment,
+            contentType: contentType,
+            published: published,
+            object: postId,
+        };
+    
+        const inbox = await Inbox.findOne({authorId: authorId});
+        inbox.comments.push({
+            _id: id,
+            author: author,
+            comment: comment,
+            contentType: contentType,
+            published: published,
+            object: postId,
+        });
+        await inbox.save();
+        delete author._id;
+    
+        return [inboxComment, 200];
+    }
 }
 
 module.exports = {

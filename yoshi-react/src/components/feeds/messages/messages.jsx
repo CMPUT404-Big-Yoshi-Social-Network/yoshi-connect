@@ -65,6 +65,7 @@ function Messages() {
             axios
             .get('/userinfo')
             .then((response) => {
+                setAuthor(response.data);
                 let viewerId = response.data.authorId;
                 setViewer({ viewerId: viewerId })
             })

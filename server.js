@@ -34,7 +34,7 @@ const express = require('express');
 const app = express();
 let cors = require('cors');
 let corsOptions = {
-  origin: ["http://www.distribution.social", 'https://yoshi-connect.herokuapp.com/', 'https://yoshi-connect.herokuapp.com', "https://www.distribution.social", "http://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com", "http://localhost:8000/", "http://127.0.0.1:8000", "http://0.0.0.0:8000/", "http://localhost:3000", "http://localhost:3000/"],
+  origin: ["https://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com/", "http://sociallydistributed.herokuapp.com", "http://sociallydistributed.herokuapp.com/", "http://www.distribution.social", 'https://yoshi-connect.herokuapp.com/', 'https://yoshi-connect.herokuapp.com', "https://www.distribution.social", "http://sociallydistributed.herokuapp.com", "https://sociallydistributed.herokuapp.com", "http://localhost:8000/", "http://127.0.0.1:8000", "http://0.0.0.0:8000/", "http://localhost:3000", "http://localhost:3000/"],
   credentials: true
 };
 const PORT = process.env.PORT || 8080;

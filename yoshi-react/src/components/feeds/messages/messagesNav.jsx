@@ -21,7 +21,6 @@ Foundation; All Rights Reserved
 
 // Functionality 
 import React from "react";
-import { Button } from 'react-bootstrap';
 
 // Child Component 
 import Messenger from './messenger.jsx';

@@ -35,7 +35,7 @@ import './post.css';
 // User Interface
 import Popup from 'reactjs-popup';
 
-function Post({viewerId, post, author}) {
+function Post({viewerId, post, author, realAuthor}) {
     let postId = post.id ? (post.id.split('/'))[(post.id.split('/')).length - 1] : post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : undefined;
     let authorId = post.author ? 
         post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
@@ -44,8 +44,7 @@ function Post({viewerId, post, author}) {
         undefined;
         let h = post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0];
     if (authorId === undefined) {
-        authorId = author.id.split("/");
-        authorId = authorId[2];
+        authorId = author;
     }
     let published = post.published.substring(0,10);
     let contentType = post.contentType ? post.contentType : ""
@@ -173,7 +172,7 @@ function Post({viewerId, post, author}) {
         console.log('Debug: <TLDR what the function is doing>')
         let body = {
             type: "comment",
-            author: author,
+            author: realAuthor,
             comment: comment.newComment,
             contentType: "text/plaintext",
             object: post.id
@@ -207,7 +206,7 @@ function Post({viewerId, post, author}) {
                     {<h3 className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</h3>}
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
-                    { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
+                    { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
                     { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
                     <p className="post-published">{published}</p>

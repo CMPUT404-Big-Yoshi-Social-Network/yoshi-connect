@@ -203,7 +203,7 @@ function Post({viewerId, post, author, realAuthor}) {
         <div className="post">
             {!post.unlisted &&
                 <div>
-                    {<h3 className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</h3>}
+                    {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }

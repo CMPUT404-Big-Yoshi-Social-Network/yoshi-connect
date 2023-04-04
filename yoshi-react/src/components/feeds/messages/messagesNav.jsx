@@ -36,7 +36,7 @@ function MessagesNav({authorId, messengers, currentMessenger, setCurrentMessenge
             { messengers === undefined || messengers.length === 0 ? null :
                 <div>
                     {Object.keys(messengers).map((messenger, idx) => (
-                        <Button style={{margin:'.5em'}} key={idx} onClick={() => selectedMessenger(messengers[messenger])}><Messenger className="search-button" key={idx} authorId={authorId} messenger={messengers[messenger]} currentMessenger={currentMessenger}/></Button>
+                        <p style={{margin:'.5em', cursor:'pointer'}} key={idx} onClick={() => selectedMessenger(messengers[messenger])}><Messenger className="search-button" key={idx} authorId={authorId} messenger={messengers[messenger]} currentMessenger={currentMessenger}/></Button>
                     ))}
                 </div>
             }

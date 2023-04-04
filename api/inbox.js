@@ -138,7 +138,7 @@ router.post('/', async (req, res) => {
 			else if(req.body.authorId) {
 				authorId = req.body.authorId
 			}
-			else if(req.body.author.id){
+			else if(req.body.author && req.body.author.authorId){
 				authorId = req.body.author.authorId;
 			}
 		}
@@ -157,7 +157,7 @@ router.post('/', async (req, res) => {
 
 
 	//TODO fix this once and for all
-	if(!authorized && req.headers["x-requested-with"] != "XMLHttpRequest"){
+	if(!authorized && (req.headers["x-requested-with"] != "XMLHttpRequest" || req.headers["X-Requested-With"] != "XMLHttpRequest")){
 		res.set("WWW-Authenticate", "Basic realm=\"ServerToServer\", charset=\"ascii\"");
 		return res.sendStatus(401);
 	}

@@ -64,10 +64,11 @@ Foundation; All Rights Reserved
 }
 .post-host{
     color: #A7E7F8;
-    border: .1em dashed #d2f326;
-    border-radius: 1em;
-    padding: .2em;
-    text-align: center;
+    /* border: .1em dashed #d2f326; */
+    /* border-radius: 1em; */
+    /* padding: .2em; */
+    text-align: right;
+    margin-bottom: -3em;
 }
 .post-num-lc{
     display: inline-block;
@@ -78,5 +79,5 @@ Foundation; All Rights Reserved
     margin-left: 45em;
 } */
 .post-content{
-    overflow: hidden;
+    overflow-wrap: break-word;
 }

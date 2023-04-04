@@ -259,7 +259,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Content</p></label>
                         <textarea className={"postMenuInput"} id={"description"} name={"description"} rows={"8"}
-                                    wrap="physical" maxLength={"150"} onChange={(e) => {
+                                    wrap="physical" maxLength={"1000"} onChange={(e) => {
                             setData({...data, content: e.target.value})
                         }}/>
                         <div style={{color:"white", textAlign:"right"}}>

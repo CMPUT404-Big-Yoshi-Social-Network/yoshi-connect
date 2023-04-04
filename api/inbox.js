@@ -182,7 +182,11 @@ router.post('/', async (req, res) => {
 		if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
 			if (req.body.author) {
 				authorId = req.body.author
-			} else {
+			} 
+			else if(req.body.authorId) {
+				authorId = req.body.authorId
+			}
+			else {
 				authorId = req.body.author.id.split("/");
 				authorId = authorId[authorId.length - 1];
 			}

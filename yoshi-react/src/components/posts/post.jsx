@@ -42,6 +42,7 @@ function Post({viewerId, post, author}) {
         post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
         undefined : 
         undefined;
+        let h = post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0];
     if (authorId === undefined) {
         authorId = author;
     }
@@ -198,12 +199,11 @@ function Post({viewerId, post, author}) {
             }
         });
     }
-
     return (
         <div className="post">
             {!post.unlisted &&
                 <div>
-                    {<h3 className='post-host'>{post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0] }</h3>}
+                    {<h3 className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</h3>}
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }

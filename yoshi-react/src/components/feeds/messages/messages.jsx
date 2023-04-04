@@ -88,7 +88,7 @@ function Messages() {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: 1,
-                    size: size
+                    size: 20
                 }
             }
             let messengers = []

@@ -233,7 +233,7 @@ function Messages() {
                             <div> 
                                 <Pagination>
                                     {Object.keys(posts).map((post, idx) => (
-                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]} author={viewer.viewerId}/>
+                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]} author={viewer}/>
                                     ))}  
                                     { seeMore ? null :
                                         <div>

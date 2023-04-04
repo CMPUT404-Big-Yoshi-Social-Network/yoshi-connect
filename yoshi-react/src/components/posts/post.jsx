@@ -44,7 +44,8 @@ function Post({viewerId, post, author}) {
         undefined;
         let h = post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0];
     if (authorId === undefined) {
-        authorId = author;
+        authorId = author.id.split("/");
+        authorId = authorId[2];
     }
     let published = post.published.substring(0,10);
     let contentType = post.contentType ? post.contentType : ""

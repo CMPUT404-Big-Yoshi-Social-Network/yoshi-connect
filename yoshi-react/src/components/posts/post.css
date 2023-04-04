@@ -78,5 +78,5 @@ Foundation; All Rights Reserved
     margin-left: 45em;
 } */
 .post-content{
-    overflow: hidden;
+    overflow-wrap: break-word;
 }

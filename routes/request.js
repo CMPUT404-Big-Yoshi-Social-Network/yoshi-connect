@@ -28,7 +28,7 @@ const crypto = require('crypto');
 
 // Schemas
 const { Author } = require('../scheme/author.js');
-const { Request, Follower, Following } = require('../scheme/relations.js');
+const { Follower, Following } = require('../scheme/relations.js');
 const { Inbox } = require('../scheme/post.js');
 const { OutgoingCredentials } = require('../scheme/server.js');
 const axios = require('axios');

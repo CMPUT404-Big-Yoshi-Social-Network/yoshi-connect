@@ -23,7 +23,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Inbox } = require('../scheme/post.js');
+const { PostHistory, Inbox } = require('../scheme/post.js');
 const { CommentHistory, LikeHistory } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
 const {Follower } = require('../scheme/relations.js');
@@ -32,7 +32,7 @@ const {Follower } = require('../scheme/relations.js');
 const crypto = require('crypto');
 
 // Additional Functions
-const { authLogin, checkExpiry } = require('./auth.js');
+const { authLogin } = require('./auth.js');
 
 
 async function getComments(postId, authorId, page, size) {

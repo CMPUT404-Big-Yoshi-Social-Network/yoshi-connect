@@ -24,7 +24,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { Follower, Following, Request } = require('../scheme/relations.js');
+const { Follower, Following } = require('../scheme/relations.js');
 const { PostHistory, Inbox } = require('../scheme/post.js');
 
 // Additional Functions
@@ -34,7 +34,6 @@ const { senderAdded } = require('./request.js');
 const crypto = require('crypto');
 
 // Additional Functions
-const {authLogin} = require('./auth.js');
 const { OutgoingCredentials } = require('../scheme/server.js');
 const axios = require('axios');
 

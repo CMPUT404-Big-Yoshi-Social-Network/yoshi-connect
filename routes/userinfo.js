@@ -20,7 +20,6 @@ Foundation; All Rights Reserved
 */
 
 const { Login } = require('../scheme/author.js');
-const { checkExpiry } = require('./auth.js');
 const { getAuthor } = require('./author.js')
 
 async function getUserInfo(token){

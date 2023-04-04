@@ -23,8 +23,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemas
-const { PostHistory, PublicPost, Post, Image, Inbox } = require('../scheme/post.js');
-const { LikeHistory, CommentHistory, LikedHistory} = require('../scheme/interactions.js');
+const { PostHistory, PublicPost, Image, Inbox } = require('../scheme/post.js');
+const { LikeHistory, CommentHistory } = require('../scheme/interactions.js');
 const { Author, Login } = require('../scheme/author.js');
 const { Follower, Following } = require('../scheme/relations.js');
 const { OutgoingCredentials } = require('../scheme/server');

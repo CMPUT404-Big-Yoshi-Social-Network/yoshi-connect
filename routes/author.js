@@ -25,10 +25,6 @@ const crypto_js = require('crypto-js');
 // UUID
 const crypto = require('crypto');
 
-// UUID Identification Generator
-const UIDGenerator = require('uid-generator')
-const uidgen = new UIDGenerator();
-
 // Database
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
@@ -41,7 +37,7 @@ const { PostHistory, Inbox } = require('../scheme/post.js');
 
 // Additional Functions
 const { checkUsername, checkExpiry } = require('./auth.js');
-const { Liked, LikedHistory } = require('../scheme/interactions.js');
+const { LikedHistory } = require('../scheme/interactions.js');
 
 async function registerAuthor(req, res){
     /**

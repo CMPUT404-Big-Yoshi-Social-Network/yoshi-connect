@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', true);
 
 // Schemes
-const { Post, Inbox, PostHistory, PublicPost } = require('../scheme/post.js');
-const { Like, Comment, CommentHistory, LikeHistory } = require('../scheme/interactions.js');
-const { Request, Follower } = require('../scheme/relations.js');
+const { Inbox, PostHistory, PublicPost } = require('../scheme/post.js');
+const { CommentHistory, LikeHistory } = require('../scheme/interactions.js');
+const { Follower } = require('../scheme/relations.js');
 const { Author } = require('../scheme/author.js');
 const axios = require('axios');
 
@@ -14,7 +14,6 @@ const crypto = require('crypto');
 
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
-const { createComment } = require('./comment.js');
 const { validateAuthorObject, getAuthor } = require('./author.js');
 
 // Additional Functions

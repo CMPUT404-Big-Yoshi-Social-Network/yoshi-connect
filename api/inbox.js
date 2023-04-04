@@ -37,6 +37,7 @@ const express = require('express');
 const { IncomingCredentials, OutgoingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
 const { Author } = require('../scheme/author');
+const { getAuthor } = require('../routes/author');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -140,6 +141,12 @@ router.post('/', async (req, res) => {
 			}
 			else if(req.body.author && req.body.author.authorId){
 				authorId = req.body.author.authorId;
+			}
+			else if(req.cookies.token) {
+				let login = await Login.findOne({token: req.cookies.token});
+				if(login){
+					authorId = login.authorId;
+				}
 			}
 		}
 		else if(req.body.type.toLowerCase() == "follow"){

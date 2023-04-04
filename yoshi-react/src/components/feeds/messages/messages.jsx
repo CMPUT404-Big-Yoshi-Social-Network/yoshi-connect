@@ -44,6 +44,7 @@ function Messages() {
      */
     console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewer] = useState({ viewerId: '' });
+    const [author, setAuthor] = useState([]);
     const [messengers, setMessengers] = useState([]);
     const [currentMessenger, setCurrentMessenger] = useState('');
     const navigate = useNavigate();
@@ -88,7 +89,7 @@ function Messages() {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 params: {
                     page: 1,
-                    size: size
+                    size: 20
                 }
             }
             let messengers = []
@@ -233,7 +234,7 @@ function Messages() {
                             <div> 
                                 <Pagination>
                                     {Object.keys(posts).map((post, idx) => (
-                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]} author={viewer}/>
+                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]} author={viewer.viewerId} realAuthor={author}/>
                                     ))}  
                                     { seeMore ? null :
                                         <div>

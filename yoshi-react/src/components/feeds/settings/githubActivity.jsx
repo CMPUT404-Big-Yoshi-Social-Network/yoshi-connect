@@ -81,24 +81,27 @@ function Activity({activity}) {
      */
 
     return (
-        <div className='github-feed'>
-            {activity.payload.ref === undefined ? 
-            <p className='github-p'> 
-                <span>{activity.actor.login} made a PR for {activity.payload.pull_request.head.ref} to {activity.payload.pull_request.base.ref} for {activity.repo.name} </span>
-                <span>at {activity.created_at.split("T")[1].slice(0, 8)} on {activity.created_at.split("T")[0]} </span>
-            </p>    
-            :   
-            <p className='github-p'> 
-                <span>{activity.actor.login} </span>
-                <span>{activity.type.split("Event")[0].toLowerCase()} </span>
-                <span>{activity.type.split("Event")[0] === "Create" ? "branch " + activity.payload.ref : "to branch " + activity.payload.ref.split("/")[2]} </span>
-                <span>{activity.type.split("Event")[0] === "Create" ? "for" : "from"} {activity.repo.name} </span>
-                <span>at {activity.created_at.split("T")[1].slice(0, 8)} on {activity.created_at.split("T")[0]} </span>
-            </p> 
-            }       
-
-            {/* <hr className='github-hr'/> */}
-        </div>
+      <div className='github-feed'>
+      {activity.payload.ref === undefined ? activity.payload.pull_request === undefined ? 
+      <p className='github-p'> 
+        <span>{activity.actor.login} made a issue request for {activity.repo.name} </span>
+        <span>at {activity.created_at.split("T")[1].slice(0, 8)} on {activity.created_at.split("T")[0]} </span>
+      </p>
+      : 
+      <p className='github-p'> 
+          <span>{activity.actor.login} made a PR for {activity.payload.pull_request.head.ref} to {activity.payload.pull_request.base.ref} for {activity.repo.name} </span>
+          <span>at {activity.created_at.split("T")[1].slice(0, 8)} on {activity.created_at.split("T")[0]} </span>
+      </p>
+      :
+      <p className='github-p'> 
+          <span>{activity.actor.login} </span>
+          <span>{activity.type.split("Event")[0].toLowerCase()} </span>
+          <span>{activity.type.split("Event")[0] === "Create" ? "branch " + activity.payload.ref : "to branch " + activity.payload.ref.split("/")[2]} </span>
+          <span>{activity.type.split("Event")[0] === "Create" ? "for" : "from"} {activity.repo.name} </span>
+          <span>at {activity.created_at.split("T")[1].slice(0, 8)} on {activity.created_at.split("T")[0]} </span>
+      </p> 
+      }
+  </div>
     )
 }
 

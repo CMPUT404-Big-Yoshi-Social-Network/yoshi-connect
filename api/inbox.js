@@ -79,28 +79,6 @@ router.get('/', async (req, res) => {
 	return res.json(posts);
 })
 
-// TBA 200
-/**
- * @openapi
- * /authors/:authorId/inbox/requests:
- *  get:
- *    summary: Fetches an Author's inbox requests
- *    tags:
- *      - inbox 
- *    parameters:
- *      - in: path
- *        name: authorId
- *        schema:
- *          type: string
- *        description: id of an Author
- *    responses:
- *      400:
- *        description: Bad Request, no requests to get
- *      401:
- *        description: Unauthorized, token is not authorized or does not exist in cookies
- *      200: 
- *        description: OK, successfully fetches requests from Inbox
- */
 router.get('/requests', async (req, res) => {
 	if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401); }
   
@@ -108,33 +86,6 @@ router.get('/requests', async (req, res) => {
 	await getRequests(authorId, res);
 })
 
-// TBA 200
-/**
- * @openapi
- * /authors/:authorId/inbox/requests/:foreignAuthorId:
- *  delete:
- *    summary: Fetches an Author's inbox requests
- *    tags:
- *      - inbox 
- *    parameters:
- *      - in: path
- *        name: authorId
- *        schema:
- *          type: string
- *        description: id of an Author
- *      - in: path
- *        name: foreignAuthorId
- *        schema:
- *          type: string
- *        description: id of an foreign Author
- *    responses:
- *      400:
- *        description: Bad Request, no requests to get
- *      500: 
- *        description: Internal Server Error, could not find Actor or Object
- *      200: 
- *        description: OK, successfully deletes the request from Inbox
- */
 router.delete('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
@@ -308,31 +259,6 @@ router.post('/', async (req, res) => {
 	}
 })
 
-// TBA 200
-/**
- * @openapi
- * /authors/:authorId/inbox/requests/:foreignAuthorId:
- *  get:
- *    summary: creates a request and saves it into the inbox
- *    tags:
- *      - inbox 
- *    parameters:
- *      - in: path
- *        name: authorId
- *        schema:
- *          type: string
- *        description: id of an Author
- *      - in: path
- *        name: foreignAuthorId
- *        schema:
- *          type: string
- *        description: id of an foreign Author
- *    responses:
- *      404:
- *        description: Not Found, follow request was not found 
- *      200: 
- *        description: OK, successfully finds the follow request
- */
 router.get('/requests/:foreignAuthorId', async (req, res) => {
 	const authorId = req.params.authorId;
 	const foreignId = req.params.foreignAuthorId;
@@ -360,7 +286,7 @@ router.get('/requests/:foreignAuthorId', async (req, res) => {
  * @openapi
  * /authors/:authorId/inbox:
  *  delete:
- *    summary: creates a request and saves it into the inbox
+ *    summary: deletes inbox
  *    tags:
  *      - inbox 
  *    parameters:

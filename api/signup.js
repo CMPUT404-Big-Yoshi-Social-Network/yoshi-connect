@@ -36,46 +36,6 @@ const express = require('express');
 // Router
 const router = express.Router({mergeParams: true});
 
-/**
- * @openapi
- * components:
- *   schemas:
- *     RegisterAuthor:
- *       type: object
- *       properties: 
- *         username: 
- *           type: string
- *           description: username of Author
- *         email:
- *           type: string
- *           description: email of Author
- *         password:
- *           type: string
- *           description: password of Author
- * /signup:
- *  post:
- *    summary: Registers an Author in YoshiConnect by sending the document to be enabled or disabled by an Admin Author
- *    tags:
- *      - signup
- *    requestBody: 
- *    content: 
- *        application/x-wwwm-form-urlencoded:
- *          schema:
- *              - $ref: '#/components/schemas/RegisterAuthor'
- *          example: 
- *             RegisterAuthor:
- *               value:
- *                 username: kc
- *                 email: ayuno@ualberta.ca
- *                 password: 123
- *    responses:
- *      400:
- *        description: Bad Request, Username is already taken, no 'username', 'email', or 'password' was given, or invalid email
- *      500:
- *        description: Internal Server Error, Unable to save object in database
- *      200:
- *        description: OK, Author regristration was successful, authour added to the database
- */
 router.post('/', async (req, res) => { await registerAuthor(req, res); })
 
 module.exports = router;

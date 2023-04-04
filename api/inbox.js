@@ -131,15 +131,15 @@ router.post('/', async (req, res) => {
 			return res.sendStatus(401);
 		}
 		if(req.body.type.toLowerCase() == "comment" || req.body.type.toLowerCase() == "post" || req.body.type.toLowerCase() == "like"){
-			if (req.body.author) {
-				authorId = req.body.author
+			if (req.body.author && req.body.author.id) {
+				authorId = req.body.author.id.split("/");
+				authorId = authorId[authorId.length - 1];
 			} 
 			else if(req.body.authorId) {
 				authorId = req.body.authorId
 			}
-			else {
-				authorId = req.body.author.id.split("/");
-				authorId = authorId[authorId.length - 1];
+			else if(req.body.author.id){
+				authorId = req.body.author.authorId;
 			}
 		}
 		else if(req.body.type.toLowerCase() == "follow"){

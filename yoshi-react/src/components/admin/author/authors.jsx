@@ -35,7 +35,6 @@ function Authors() {
      *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [authors, setAuthors] = useState([]);
     const [page, setPage] = useState(1);
     const size = 5;
@@ -50,7 +49,6 @@ function Authors() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -124,7 +122,6 @@ function Authors() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!next) {
             let updated = page + 1;
             setPage(updated);
@@ -196,7 +193,6 @@ function Authors() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!prev && prev !== 1) {
             let updated = page - 1;
             setPage(updated);

@@ -37,7 +37,6 @@ function Posts({url, userInfo}) {
      *     - getMore(): Fetches more paginated posts 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [posts, setPosts] = useState([]);
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
@@ -120,7 +119,6 @@ function Posts({url, userInfo}) {
          * Request: GET    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {
             let updated = page + 1;
             setPage(updated);

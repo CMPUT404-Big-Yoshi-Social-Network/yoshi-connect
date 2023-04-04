@@ -48,7 +48,6 @@ function Profile() {
      *     - LogOut(): Logs the author out  
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     let {state} = useLocation();
     const { username } = useParams();
     if (state === null) {
@@ -81,14 +80,12 @@ function Profile() {
          * Description: Fetches the current author's id and the public and following (who the author follows) posts  
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         const getId = () => {
             /**
              * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
-            console.log('Debug: <TLDR what the function is doing>')
             axios
             .get('/userinfo/')
             .then((response) => {
@@ -109,7 +106,6 @@ function Profile() {
          * Request: GET
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let person = '';
         let viewer = '';
         let viewed = '';
@@ -127,7 +123,6 @@ function Profile() {
                  * Request: GET
                  * Returns: N/A
                  */
-                console.log('Debug: <TLDR what the function is doing>')
                 axios
                 .get('/profile/' + username)
                 .then((response) => {
@@ -216,7 +211,6 @@ function Profile() {
          * Request: POST
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!personal.person && personal.viewerId != null && personal.viewedId != null && !state.isRemote) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
             let config = {
@@ -246,7 +240,6 @@ function Profile() {
          * Returns: N/A
          * REFACTOR: CHECK 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!exists.current && !personal.person && personal.viewerId != null && personal.viewedId != null && !state.isRemote) {
             console.log('See if they are followers or friends.');
             let config = {
@@ -279,7 +272,6 @@ function Profile() {
          * Request: PUT    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (requestButton === "Add") {
             setRequestButton('Sent');
             let config = {

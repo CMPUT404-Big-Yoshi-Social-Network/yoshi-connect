@@ -43,7 +43,6 @@ function SearchCard(props) {
     const host = props.host
     const [requestButton, setRequestButton] = useState('Add');
     
-    console.log('Debug: <TLDR what the function is doing>')
     const [viewerId, setViewerId] = useState('')
     const [viewer, setViewer] = useState({})
     const navigate = useNavigate();
@@ -55,14 +54,12 @@ function SearchCard(props) {
          * Description: Fetches the current author's id and the public and following (who the author follows) posts  
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         const getId = () => {
             /**
              * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
-            console.log('Debug: <TLDR what the function is doing>')
             axios
             .get('/userinfo/')
             .then((response) => {
@@ -85,7 +82,6 @@ function SearchCard(props) {
          * Description: Fetches the current author's id and the public and following (who the author follows) posts  
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
             let config = {
                 isLocal: (host === 'https://yoshi-connect.herokuapp.com/') || (host === 'https://yoshi-connect.herokuapp.com') || host === ('http://localhost:3000/')

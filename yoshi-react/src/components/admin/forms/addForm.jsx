@@ -32,7 +32,6 @@ function AddAuthor() {
      *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const url = '/admin/dashboard';
     const [data, setData] = useState({ username: '', password: '', email: '' })
     const navigate = useNavigate();
@@ -43,7 +42,6 @@ function AddAuthor() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         e.preventDefault();
         let body = {
             status: 'Add',

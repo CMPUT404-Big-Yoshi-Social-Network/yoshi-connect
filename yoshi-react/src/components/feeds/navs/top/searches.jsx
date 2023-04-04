@@ -34,7 +34,6 @@ function SearchOutcomes({url}) {
      *     - useEffect(): Fetches the form of the search 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [findings, setFindings] = useState(false);
     const [authors, setAuthors] = useState([]);
 
@@ -44,7 +43,6 @@ function SearchOutcomes({url}) {
          * Request: GET    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         setFindings(true);
 
         let config = {

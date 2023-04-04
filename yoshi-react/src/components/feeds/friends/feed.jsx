@@ -41,7 +41,6 @@ function FriendFeed() {
      *     - useEffect(): Fetchs the user info associated with the Author 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [userInfo, setUserInfo] = useState({})
 
     useEffect(() => {
@@ -50,7 +49,6 @@ function FriendFeed() {
          * Request: GET    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         const getId = () => {
             axios
             .get('/userinfo/')

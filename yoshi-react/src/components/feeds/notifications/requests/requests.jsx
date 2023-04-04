@@ -36,7 +36,6 @@ function Requests(props) {
      *     - getMore(): Fetches more requests 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [requests, setRequests] = useState([]);
     const navigate = useNavigate();
     const [seeMore, setSeeMore] = useState(false);
@@ -50,7 +49,6 @@ function Requests(props) {
          * Request: GET    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -110,7 +108,6 @@ function Requests(props) {
          * Request: GET    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {
             let updated = page + 1;
             setPage(updated);

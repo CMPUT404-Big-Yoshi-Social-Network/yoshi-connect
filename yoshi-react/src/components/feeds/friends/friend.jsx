@@ -28,7 +28,6 @@ function Friend(props) {
      * Functions: N/A
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div id='friend'>
             { props.displayName || props.displayname }

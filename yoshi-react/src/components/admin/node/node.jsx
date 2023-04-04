@@ -35,7 +35,6 @@ function Node({node, url}) {
      *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
 
     const deleteNode = (url) => {
@@ -44,7 +43,6 @@ function Node({node, url}) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
@@ -72,7 +70,6 @@ function Node({node, url}) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = node
         axios
         .put(url + '/' + node._id, config)

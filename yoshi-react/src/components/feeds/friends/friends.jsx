@@ -33,7 +33,6 @@ function Friends(props) {
      *     - useEffect(): Fetches the Author's friend list
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
@@ -42,7 +41,6 @@ function Friends(props) {
          * Request: GET    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (props.authorId) {
             axios
             .get('/authors/' + props.authorId + '/friends')

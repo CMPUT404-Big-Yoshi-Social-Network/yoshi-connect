@@ -28,7 +28,6 @@ function Follow(props) {
      * Functions: N/A
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div id='follow'>
             { props.displayName || props.displayname }

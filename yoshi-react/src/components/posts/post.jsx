@@ -66,7 +66,6 @@ function Post({viewerId, post, author, realAuthor}) {
          * Request: GET    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>') 
         const getImage = () => {
             if (contentType.split("/")[0] === "image") {
                 setImage("data:" + contentType + "," + post.content)
@@ -118,7 +117,6 @@ function Post({viewerId, post, author, realAuthor}) {
          * Request: DELETE   
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         axios.delete(post.id)
         .then((response) => { })
         .catch((err) => {
@@ -169,7 +167,6 @@ function Post({viewerId, post, author, realAuthor}) {
          * Request: POST    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let body = {
             type: "comment",
             author: realAuthor,

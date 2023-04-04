@@ -51,7 +51,6 @@ function PublicFeed() {
      *          - Calls getPosts() to get the posts of the current author's following list and also public posts 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewerId] = useState('')
     const [userInfo, setUserInfo] = useState({});
 
@@ -60,14 +59,12 @@ function PublicFeed() {
          * Description: Fetches the current author's id and the public and following (who the author follows) posts  
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         const getId = () => {
             /**
              * Description: Sends a POST request to get the current author's id 
              * Request: POST
              * Returns: N/A
              */
-            console.log('Debug: <TLDR what the function is doing>')
             axios
             .get('/userinfo/')
             .then((response) => {

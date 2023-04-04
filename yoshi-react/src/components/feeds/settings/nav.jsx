@@ -37,7 +37,6 @@ function SettingsNav() {
      *     - LogOut(): Logs the user out
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
     
     const LogOut = () => {
@@ -46,7 +45,6 @@ function SettingsNav() {
          * Request: POST
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'post',
             maxBodyLength: Infinity,

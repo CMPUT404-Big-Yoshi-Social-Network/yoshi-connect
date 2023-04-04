@@ -29,7 +29,6 @@ function Messenger(props) {
      *     - useEffect(): Fetches the message from the messenger
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div id='messenger'>
             {props.messenger?.displayName !== undefined ? props.messenger.displayName : null }

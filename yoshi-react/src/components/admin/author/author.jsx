@@ -38,7 +38,6 @@ function Author(props) {
      *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const url = '/admin/dashboard';
     const navigate = useNavigate();
 
@@ -48,7 +47,6 @@ function Author(props) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'delete',
             maxBodyLength: Infinity,
@@ -76,7 +74,6 @@ function Author(props) {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = props
         axios
         .put(url, config)

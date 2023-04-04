@@ -34,7 +34,6 @@ function Following(props) {
      *     - useEffect(): Fetches all followings for current author before render
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [followings, setFollowings] = useState([]);
     const navigate = useNavigate();
 
@@ -44,7 +43,6 @@ function Following(props) {
          * Request: POST 
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (props.authorId) {
             axios
             .get('/authors/' + props.authorId + '/followings')

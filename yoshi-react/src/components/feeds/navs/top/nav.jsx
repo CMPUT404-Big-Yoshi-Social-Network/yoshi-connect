@@ -37,7 +37,6 @@ function TopNav(props) {
      * Functions: N/A
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [newAuthor, setNewAuthor] = useState({newSearch: ''})
 
     return (

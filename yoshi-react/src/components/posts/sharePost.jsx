@@ -81,7 +81,6 @@ function SharePost({viewerId, post}) {
          * Request: POST    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let body = {
             title: post.title,
             description: post.description,

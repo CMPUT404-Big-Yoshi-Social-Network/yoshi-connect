@@ -35,7 +35,6 @@ function InNodes() {
      *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const size = 5;
     const navigate = useNavigate();
 
@@ -51,7 +50,6 @@ function InNodes() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -122,7 +120,6 @@ function InNodes() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!inNext) {
             let updated = inPage + 1;
             setInPage(updated);
@@ -194,7 +191,6 @@ function InNodes() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!inPrev && inPage !== 1) {
             let updated = inPage - 1;
             setInPage(updated);

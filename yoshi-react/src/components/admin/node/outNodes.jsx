@@ -35,7 +35,6 @@ function OutNodes() {
      *     - function(): (ex. Sends a DELETE request to delete a comment on a specific post) 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const size = 5;
     const navigate = useNavigate();
     const outUrl = '/nodes/outgoing';
@@ -50,7 +49,6 @@ function OutNodes() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         let config = {
             method: 'get',
             maxBodyLength: Infinity,
@@ -123,7 +121,6 @@ function OutNodes() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!outNext) {
             let updated = outPage + 1;
             setOutPage(updated);
@@ -195,7 +192,6 @@ function OutNodes() {
          * Request: (if axios is used)    
          * Returns: 
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!outPrev && outPage !== 1) {
             let updated = outPage - 1;
             setOutPage(updated);

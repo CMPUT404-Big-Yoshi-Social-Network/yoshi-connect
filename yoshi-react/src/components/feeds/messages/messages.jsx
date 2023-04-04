@@ -42,7 +42,6 @@ function Messages() {
      *     - getMore(): Fetches more messages from the Author's account 
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [viewer, setViewer] = useState({ viewerId: '' });
     const [author, setAuthor] = useState([]);
     const [messengers, setMessengers] = useState([]);
@@ -60,7 +59,6 @@ function Messages() {
          * Request: GET
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         const getAuthor = () => {
             axios
             .get('/userinfo')
@@ -81,7 +79,6 @@ function Messages() {
          * Request: GET
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         const getPrivatePosts = async () => {
             let config = {
                 method: 'get',
@@ -160,7 +157,6 @@ function Messages() {
          * Request: GET    
          * Returns: N/A
          */
-        console.log('Debug: <TLDR what the function is doing>')
         if (!seeMore) {
             let updated = page + 1;
             setPage(updated);

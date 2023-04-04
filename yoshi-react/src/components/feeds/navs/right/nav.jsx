@@ -41,7 +41,6 @@ function RightNavBar() {
      *         - useEffect(): Fetches the Author's profile info
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const [profile, setProfile] = useState({
         username: "", 
         pic: ""

@@ -31,7 +31,6 @@ function Notifications(props) {
      * Functions: N/A
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     return (
         <div className="notif-card">
             <h3>Notifications</h3>

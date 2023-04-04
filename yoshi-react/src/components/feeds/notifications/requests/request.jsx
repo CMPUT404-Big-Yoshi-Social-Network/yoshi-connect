@@ -33,7 +33,6 @@ function Request(props) {
      *     - rejectRequest(): Deletes a request from the Author's inbox
      * Returns: N/A
      */
-    console.log('Debug: <TLDR what the function is doing>')
     const navigate = useNavigate();
 
     const addRequest = () => {

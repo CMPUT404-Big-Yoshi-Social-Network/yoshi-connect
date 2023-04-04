@@ -37,6 +37,7 @@ const express = require('express');
 const { IncomingCredentials, OutgoingCredentials } = require('../scheme/server');
 const { authLogin } = require('../routes/auth');
 const { Author } = require('../scheme/author');
+const { Login } = require('../scheme/author');
 const { getAuthor } = require('../routes/author');
 
 // Router
@@ -138,6 +139,7 @@ router.post('/', async (req, res) => {
 			} 
 			else if(req.body.authorId) {
 				authorId = req.body.authorId
+				req.body.author = getAuthor(authorId);
 			}
 			else if(req.body.author && req.body.author.authorId){
 				authorId = req.body.author.authorId;
@@ -146,6 +148,7 @@ router.post('/', async (req, res) => {
 				let login = await Login.findOne({token: req.cookies.token});
 				if(login){
 					authorId = login.authorId;
+					req.body.author = getAuthor(authorId);
 				}
 			}
 		}

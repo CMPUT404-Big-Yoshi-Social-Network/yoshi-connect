@@ -148,7 +148,7 @@ router.post('/', async (req, res) => {
 				let login = await Login.findOne({token: req.cookies.token});
 				if(login){
 					authorId = login.authorId;
-					req.body.author = await getAuthor(authorId);
+					req.body.author = (await getAuthor(authorId))[0];
 				}
 			}
 		}

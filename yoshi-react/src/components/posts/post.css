@@ -24,6 +24,7 @@ Foundation; All Rights Reserved
     margin: 1em 10em;
     padding: 1em;
     padding-left: 2em;
+    padding-right: 2em;
     border-radius: 1.5em;
 }
 .post-buttons{
@@ -67,7 +68,6 @@ Foundation; All Rights Reserved
     border-radius: 1em;
     padding: .2em;
     text-align: center;
-    margin-left: -.5em;
 }
 .post-num-lc{
     display: inline-block;

@@ -27,6 +27,7 @@ Foundation; All Rights Reserved
          url('../../../../fonts/UniNeue-Trial-Regular.woff') format('woff'),
          url('../../../../fonts/UniNeue-Trial-Regular.ttf') format('truetype');
 }
+
 .topNav{
     background-image: radial-gradient(circle, #050125, #090D0E);
     font-family: 'Uni Neue', sans-serif;
@@ -34,6 +35,7 @@ Foundation; All Rights Reserved
     width: 100%;
     height: 7%;
     z-index: 1;
+    padding-bottom: 0.5em;
 }
 
 .topLogo {
@@ -41,15 +43,23 @@ Foundation; All Rights Reserved
     top: 0;
     left: 0;
 }
+
+.title {
+    display: inline-block;
+    font-size: 1.8em
+}
+
 .topNavBrand h1 {
     display: inline-block;
     color: #735DFA;
     text-decoration: none;
     font-family: 'Uni Neue', sans-serif;
 }
+
 .topNavSearch{
     display: inline-block;
 }
+
 .topSearch{
     /* position: absolute; */
     margin-left: 5em;
@@ -59,7 +69,7 @@ Foundation; All Rights Reserved
     color: white;
     border: #4A5460 0.1em solid;
     border-radius: .5em;
-    padding: .5em;
+    padding: .7em;;
     
 }
 .search-button{
@@ -69,7 +79,7 @@ Foundation; All Rights Reserved
     background-color: #735DFA;
     border: #735DFA;
     border-radius: 0.50em;
-    padding: .4em 1.5em;
+    padding: .4em 1.7em;
     text-decoration: none;
     cursor: pointer;
 }
@@ -111,9 +121,11 @@ Foundation; All Rights Reserved
     text-decoration: none;
     cursor: pointer;
 }
+
 .search-username{
     display: inline-block;
 }
+
 .topNavNotif{
     position: absolute;
     right: 20em;

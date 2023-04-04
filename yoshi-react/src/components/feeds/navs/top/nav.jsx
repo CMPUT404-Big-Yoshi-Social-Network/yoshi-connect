@@ -42,22 +42,28 @@ function TopNav(props) {
 
     return (
         <Navbar className='topNav'>
-            <Navbar.Brand className='topNavBrand' href='/feed'>
-                <img className='topLogo' src='/images/yoshi_connect_logo2.png' width={40} height={40} alt='logo'/>
-                <h1>Yoshi Connect</h1>
+            <Navbar.Brand className='topNavBrand'>
+                <img className='topLogo' src='/images/yoshi_connect_logo2.png' width={35} height={35} alt='logo'/>
+                <h1 className='title'>Yoshi Connect</h1>
             </Navbar.Brand>
-            <Nav className='topNavSearch'>
-                <Form.Control type="search" placeholder="Search" className="topSearch" onChange={(e) => {setNewAuthor({...newAuthor, newSearch: e.target.value})}}/>
-                        <Popup trigger={<button className="search-button">Search</button>} position="right center">
-                            <SearchOutcomes url={'/authors/search/' + newAuthor.newSearch}/>     
-                        </Popup> 
+            { props.authorId ? 
+                <Nav className='topNavSearch'>
+                    <Form.Control type="search" placeholder="Search" className="topSearch" onChange={(e) => {setNewAuthor({...newAuthor, newSearch: e.target.value})}}/>
+                            <Popup trigger={<button className="search-button">Search</button>} position="right center">
+                                <SearchOutcomes url={'/authors/search/' + newAuthor.newSearch}/>     
+                            </Popup> 
+                </Nav> :
+                null
+            }
+            { props.authorId ? 
+                <Nav className='topNavNotif'>
+                    <Popup  className='notifPopup' trigger={<img className='notifBell' src='/images/public/icon_notif_bell.png' alt='Notifications' width={30}/>}>
+                        <Notifications authorId={props.authorId}/>
+                    </Popup>
+                </Nav> : 
+                null
 
-            </Nav>
-            <Nav className='topNavNotif'>
-                <Popup  className='notifPopup' trigger={<img className='notifBell' src='/images/public/icon_notif_bell.png' alt='Notifications' width={30}/>}>
-                    <Notifications authorId={props.authorId}/>
-                </Popup>
-            </Nav>
+            }
         </Navbar>
     )
 }

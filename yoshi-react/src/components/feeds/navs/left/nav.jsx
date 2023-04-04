@@ -47,12 +47,18 @@ function LeftNavBar(props) {
         url1 = '/users/' + username
     }
     return (
-        <div className='left-column'>
-            { url === '/feed' || url === url1 ? <Following authorId={props.authorId}/> :
-                url === '/friends' ? <Friends authorId={props.authorId}/> : 
-                url === '/settings' ? <SettingsNav/> : 
-                url === '/messages' ? <MessagesNav authorId={props.authorId} messengers={props.messengers} currentMessenger={props.currentMessenger} setCurrentMessenger={props.setCurrentMessenger}/> : null
-            }
+        <div>
+        { url === '/' ? 
+            null :
+            <div className='left-column'>
+                { url === '/feed' || url === url1 ? <Following authorId={props.authorId}/> :
+                    url === '/friends' ? <Friends authorId={props.authorId}/> : 
+                    url === '/settings' ? <SettingsNav/> : 
+                    url === '/messages' ? <MessagesNav authorId={props.authorId} messengers={props.messengers} currentMessenger={props.currentMessenger} setCurrentMessenger={props.setCurrentMessenger}/> : null
+                }
+            </div>
+        }
+
         </div>
     )
 }

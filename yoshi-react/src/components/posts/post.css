@@ -67,6 +67,7 @@ Foundation; All Rights Reserved
     border-radius: 1em;
     padding: .2em;
     text-align: center;
+    margin-left: -.5em;
 }
 .post-num-lc{
     display: inline-block;

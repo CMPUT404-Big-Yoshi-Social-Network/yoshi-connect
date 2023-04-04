@@ -206,7 +206,7 @@ function Post({viewerId, post, author, realAuthor}) {
                     {<h3 className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</h3>}
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
-                    { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
+                    { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
                     { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
                     <p className="post-published">{published}</p>

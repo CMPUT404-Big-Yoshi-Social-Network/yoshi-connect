@@ -36,6 +36,7 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author, realAuthor}) {
+    console.log(post)
     let postId = post.id ? 
         post.id.includes('/') ? (post.id.split('/'))[(post.id.split('/')).length - 1] : 
         post.id :
@@ -240,7 +241,7 @@ function Post({viewerId, post, author, realAuthor}) {
                                 }}/>
                                 <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
                             </form>
-                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author} liked={post}> </Comments>
+                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author} liked={post} commentsSrc={post.commentsSrc}> </Comments>
                         </div>}
                     <div>
                 </div>

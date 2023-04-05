@@ -45,17 +45,20 @@ function Comments(params) {
          * Request: GET
          * Returns: N/A
          */
-        console.log(params.url)
-        axios.get(params.url)
-        .then((response) => {
-            if(response.data.comments){
-                setComments(response.data.comments);
-            }
-         })
-        .catch((err) => {
-            setComments([]);
-         });
-    }, [params.url]);
+        if (params.commentsSrc === undefined) {
+            axios.get(params.url)
+            .then((response) => {
+                if(response.data.comments){
+                    setComments(response.data.comments);
+                }
+             })
+            .catch((err) => {
+                setComments([]);
+             });
+        } else {
+            setComments(params.commentsSrc.comments)
+        }
+    }, [params.url, params.commentsSrc]);
     return (
         <div>
             { comments.length === 0 ? 

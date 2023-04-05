@@ -188,7 +188,7 @@ function Posts({url, userInfo}) {
         });
         
     }
-
+    
     return (
         <div>
             { posts.length === 0 ? 

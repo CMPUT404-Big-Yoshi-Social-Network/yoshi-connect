@@ -36,13 +36,17 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author, realAuthor}) {
-    let postId = post.id ? (post.id.split('/'))[(post.id.split('/')).length - 1] : post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : undefined;
+    let postId = post.id ? 
+        post.id.includes('/') ? (post.id.split('/'))[(post.id.split('/')).length - 1] : 
+        post.id :
+        post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : 
+        undefined;
     let authorId = post.author ? 
         post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
         post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
         undefined : 
         undefined;
-        let h = post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0];
+    let h = post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0];
     if (authorId === undefined) {
         authorId = author;
     }

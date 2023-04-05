@@ -111,67 +111,69 @@ async function getPublicPostsXServer(page, size){
         let endpoint = "";
         var config = '';
         const auth = outgoing.auth;
-        if(host == "http://www.distribution.social"){
-            endpoint = "/api/posts/public"
-            var config = {
-                url: host + endpoint,
-                method: 'GET',
-                host: host,
-                headers:{
-                    'Content-Type': 'application/json',
-                    'Authorization': auth,
-                    'Accept': 'application/json'
+        if (outgoings[i].allowed) {
+            if(host == "http://www.distribution.social"){
+                endpoint = "/api/posts/public"
+                var config = {
+                    url: host + endpoint,
+                    method: 'GET',
+                    host: host,
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Authorization': auth,
+                        'Accept': 'application/json'
+                    }
                 }
             }
-        }
-        else if(host == "https://sociallydistributed.herokuapp.com"){
-            endpoint = "/posts/public"
-            var config = {
-                url: host + endpoint,
-                method: 'GET',
-                host: host,
-                headers:{
-                    'Content-Type': 'application/json',
-                    'Authorization': auth,
-                    'Accept': 'application/json'
-                },
-                params: {
-                    page: page,
-                    size: size,
+            else if(host == "https://sociallydistributed.herokuapp.com"){
+                endpoint = "/posts/public"
+                var config = {
+                    url: host + endpoint,
+                    method: 'GET',
+                    host: host,
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Authorization': auth,
+                        'Accept': 'application/json'
+                    },
+                    params: {
+                        page: page,
+                        size: size,
+                    }
                 }
             }
-        }
-        else if(host == "https://bigger-yoshi.herokuapp.com/api"){
-            endpoint = "/authors/posts";
-            var config = {
-                url: host + endpoint,
-                method: 'GET',
-                host: host,
-                headers:{
-                    'Content-Type': 'application/json',
-                    'Authorization': auth,
-                    'Accept': 'application/json'
-                },
-                params: {
-                    page: page,
-                    size: size,
+            else if(host == "https://bigger-yoshi.herokuapp.com/api"){
+                endpoint = "/authors/posts";
+                var config = {
+                    url: host + endpoint,
+                    method: 'GET',
+                    host: host,
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Authorization': auth,
+                        'Accept': 'application/json'
+                    },
+                    params: {
+                        page: page,
+                        size: size,
+                    }
                 }
             }
+    
+            promiseQueue.push(
+                axios.request(config)
+                .then((res) => {
+                    if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
+                        response.items = response.items.concat(res.data.items);
+                    }
+                    else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
+                        response.items = response.items.concat(res.data);
+                    }
+                })
+                .catch((err) => {
+                })
+            )
         }
-
-        promiseQueue.push(
-            axios.request(config)
-            .then((res) => {
-                if(res.data.items != undefined && Array.isArray(res.data.items) && res.data.items.length != 0){
-                    response.items = response.items.concat(res.data.items);
-                }
-                else if(res.data != undefined && Array.isArray(res.data) && res.data.length != 0){
-                    response.items = response.items.concat(res.data);
-                }
-            })
-            .catch((err) => {
-            })
-        )
     }
 
     for(let i = 0; i < promiseQueue.length; i++){

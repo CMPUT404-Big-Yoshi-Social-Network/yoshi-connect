@@ -69,7 +69,9 @@ function Comment({viewerId, comment, author, url, liked}) {
             axios.get(url + "/" + commentId + '/likes')
             .then((response) => {
                 let likes = response.data.likes;
-                setNumLikes(likes.length);
+                if (likes.length !== undefined) {
+                    setNumLikes(likes.length);
+                }
                 for(let i = 0; i < likes.length; i++){
                     let like = likes[i];
                     let likeAuthorId = like.author.url.split("/");

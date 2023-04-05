@@ -641,7 +641,7 @@ async function postInboxComment(newComment, recieverAuthorId){
 
     let like = new LikeHistory({
         type: "comment",
-        Id: id,
+        Id: commentId,
         likes: []
     });
     

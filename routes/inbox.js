@@ -654,6 +654,7 @@ async function postInboxComment(newComment, recieverAuthorId){
     let comment = {
         _id: commentId,
         author: author,
+        likeCount: 0,
         comment: commentContent,
         contentType: contentType,
         published: published,

@@ -639,6 +639,14 @@ async function postInboxComment(newComment, recieverAuthorId){
     post.commentCount++;
     await postHistory.save();
 
+    let like = new LikeHistory({
+        type: "comment",
+        Id: id,
+        likes: []
+    });
+    
+    await like.save();
+    
     if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
         let publicPost = await PublicPost.findOne({_id: postId});
         if(publicPost){

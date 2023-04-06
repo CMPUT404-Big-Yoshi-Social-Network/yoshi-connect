@@ -36,6 +36,7 @@ const crypto = require('crypto');
 const { authLogin } = require('./auth.js');
 const { getAuthor } = require('./author.js');
 const { sendToForeignInbox } = require('./inbox.js');
+const axios = require('axios');
 
 async function uploadImage(url, image) {
     /**
@@ -181,7 +182,7 @@ async function createPost(token, authorId, postId, newPost) {
             500 Status (Internal Server Error) -- Unable to confrim post in database
             200 Status (OK) -- Returns Authour's post
     */
-    if(! (await authLogin(token, authorId))){ return [[], 401]; }
+    if (!(await authLogin(token, authorId))) { return [[], 401]; }
 
     let authorPromise = getAuthor(authorId);
 
@@ -189,21 +190,17 @@ async function createPost(token, authorId, postId, newPost) {
     const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
-    const categories = [''];
+    const categories = newPost.categories;
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
 
-    if(!title || !description || !contentType || !content || !categories || (visibility != "PUBLIC" && visibility != "FRIENDS") || (unlisted != 'true' && unlisted != 'false' && unlisted != true && unlisted != false)){
-        return [[], 400];
-    }
+    if (!title || !description || !contentType || !content) { return [[], 400]; }
 
     let postHistory = await PostHistory.findOne({authorId: authorId});
-    if (!postHistory) {
-        return [[], 404];
-    }
+    if (!postHistory) { return [[], 404]; }
 
-    if(postId != undefined){
+    if (postId != undefined) {
         let oldPost = postHistory.posts.id(postId);
         if (oldPost) return [[], 400];
     }
@@ -264,20 +261,11 @@ async function createPost(token, authorId, postId, newPost) {
         await publicPost.save();
     }
 
-    //TODO make this faster
-    //if not unlisted send to all followers 
-    if((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)){
+    if ((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)) {
         const followers = await Follower.findOne({authorId: authorId}).clone();
         for(let i = 0; i < followers.followers.length; i++){
-            /*
-            post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
-            const follower = followers.followers[i].authorId;
-            const inbox = await Inbox.findOne({authorId: follower}, "_id authorId posts").clone();
-            inbox.posts.push(post);
-            await inbox.save();
-            */
             post.type = "post";
-            post.id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
+            post.id = post.origin;
             post.author = {
                 type: "author",
                 id: author.id,
@@ -289,46 +277,36 @@ async function createPost(token, authorId, postId, newPost) {
             };
             delete post._id;
 
-            //Send the post to other followers 
             const follower = followers.followers[i];
-            const hosts = await getHostNames();
-            //TODO NEEDS TESTING
+            const outgoings = await OutgoingCredentials.find().clone();
             if (follower.id !== undefined) {
-                let followerHost = follower.id.split("/");
-                followerHost = followerHost[2];
-                for(let i = 0; i < hosts.length; i++){
+                let followerId = (follower.id.split("/authors/"))[(follower.id.split("/authors/")).length - 1];
+                let followerHost = (follower.id.split("/authors/"))[0];
+                for (let i = 0; i < outgoings.length; i++) {
                     let inbox = null;
-                    if(i == 0 && followerHost == hosts[i].host){
-                        post._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + post._id;
-                        post.author._id = post.author.id;
-                        const followerId = followers.followers[i].authorId;
+                    if (followerHost == outgoings[i].url) {
                         inbox = await Inbox.findOne({"authorId": followerId}).clone();
                         if (inbox) {
                             inbox.posts.push(post);
                             inbox.num_posts++;
                             await inbox.save();
-                            delete post.author._id;
                         }
                     }
-                    if(followerHost == followerHost[i] && (inbox === null || inbox === undefined)){
-                        let host = followerHost[i];
+                    if (followerHost == outgoings[i].url && (inbox === null || inbox === undefined)) {
                         let config = {
+                            host: outgoings[i].url,
                             url: follower.id + "/inbox",
-                            method: "post",
+                            method: "POST",
                             headers:{
-                                "Authorization": host.auth,
-                                'Content-Type': 'application/x-www-form-urlencoded'
+                                "Authorization": outgoings[i].auth,
+                                'Content-Type': 'application/json'
                             },
                             data: post
                         }
     
                         axios.request(config)
-                        .then((request) => {
-                            console.log(request.data);
-                        })
-                        .catch((error) => {
-                            console.log(error)
-                        })
+                        .then((response) => { })
+                        .catch((error) => { })
                     }
                 }
             }

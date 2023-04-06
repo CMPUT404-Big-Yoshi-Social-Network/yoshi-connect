@@ -212,6 +212,9 @@ function CreatePost() {
                             setData({...data, contentType: e.target.value})}}>
                             <option value={"text/plain"}>Plain Text</option>
                             <option value={"text/markdown"}>Markdown</option>
+                            <option value={"application/base64"}>Base64</option>
+                            <option value={"image/png;base64"}>PNG</option>
+                            <option value={"image/jpeg;base64"}>JPEG</option>
                         </select>
                         <label className='postLabel'><p style={{color:"white"}}>Visibility:</p></label>
                         <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} onChange={(e) => {
@@ -241,10 +244,15 @@ function CreatePost() {
                             </div> 
                         ))}
 
-                        <label><p style={{color:"white"}}>Message To:</p></label>
-                        <input className={"postMenuInput"} type="text" onChange={(e) => {
-                            setData({...data, postTo: e.target.value})
-                        }}></input>
+                        { data.visibility === 'PRIVATE' ? 
+                            <div>
+                                <label><p style={{color:"white"}}>Message To:</p></label>
+                                <input className={"postMenuInput"} type="text" onChange={(e) => {
+                                    setData({...data, postTo: e.target.value})
+                                }}></input>
+                            </div> :
+                            null
+                        }
 
                         <label><p style={{color:"white"}}>Title</p></label>
                         <input className={"postMenuInput"} type="text" onChange={(e) => {

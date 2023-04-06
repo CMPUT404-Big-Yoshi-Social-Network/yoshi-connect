@@ -584,7 +584,7 @@ router.post('/', async (req, res) => {
 
   if (!req.cookies.token) { return res.sendStatus(401); }
 
-  const [post, status] = await createPost(req.cookies.token, authorId, undefined, req.body);
+  const [post, status] = await createPost(req.cookies.token, authorId, undefined, req.body); 
 
   if (status == 200) {
     return res.json(post);

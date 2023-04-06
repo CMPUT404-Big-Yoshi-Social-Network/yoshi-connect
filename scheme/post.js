@@ -21,8 +21,7 @@ Foundation; All Rights Reserved
 
 // Database
 const mongoose = require("mongoose");
-const { authorScheme, basicAuthorScheme } = require("./author");
-const { likeAuthorScheme} = require("./interactions");
+const { basicAuthorScheme } = require("./author");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 

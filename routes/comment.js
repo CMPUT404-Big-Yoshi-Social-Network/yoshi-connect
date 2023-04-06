@@ -26,7 +26,6 @@ mongoose.set('strictQuery', true);
 const { PostHistory, Inbox } = require('../scheme/post.js');
 const { CommentHistory, LikeHistory } = require('../scheme/interactions.js');
 const { Author } = require('../scheme/author.js');
-const {Follower } = require('../scheme/relations.js');
 
 // UUID
 const crypto = require('crypto');

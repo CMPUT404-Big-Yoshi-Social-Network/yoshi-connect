@@ -35,7 +35,6 @@ const crypto = require('crypto');
 // Additional Functions
 const { authLogin } = require('./auth.js');
 const { getAuthor } = require('./author.js');
-const { sendToForeignInbox } = require('./inbox.js');
 const axios = require('axios');
 
 async function uploadImage(url, image) {

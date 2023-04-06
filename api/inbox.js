@@ -21,7 +21,7 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, postInboxRequest, sendToForeignInbox} = require('../routes/inbox')
-const { sendRequest, deleteRequest, getRequests, getRequest } = require('../routes/request');
+const { deleteRequest, getRequests, getRequest } = require('../routes/request');
 const { checkExpiry } = require('../routes/auth');
 
 // OpenAPI

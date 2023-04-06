@@ -265,7 +265,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     if (visibility == 'PUBLIC' && (unlisted == "false" || unlisted == false)) {
         post.author = {
-            _id: author.id,
+            id: author.id,
             host: author.host,
             displayName: author.displayName,
             url: author.url,

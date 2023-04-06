@@ -75,6 +75,9 @@ function Posts({url, userInfo}) {
                 if (url !== '/posts/public' && url !== 'personal' && url.split('/')[0] !== 'other') {
                     const friendPosts = (response.data.items).filter(post => post.visibility === 'FRIENDS');
                     setPosts(friendPosts);
+                } else if (url === 'personal' || url.split('/')[0] === 'other') {
+                    const profilePosts = (response.data.items).filter(post => post.visibility === 'PUBLIC');
+                    setPosts(profilePosts);
                 } else {
                     setPosts(response.data.items);
                 }

@@ -156,7 +156,6 @@ async function getPost(postId, auth, author){
         "contentType": post.contentType,
         "content": post.content,
         "author": author,
-        "shared": post.shared,
         "categories": post.categories,
         "count": post.commentCount,
         "likeCount": post.likeCount,
@@ -845,8 +844,7 @@ async function updatePost(token, authorId, postId, newPost) {
             likeCount: post.likeCount,
             commentCount: post.commentCount,
             published: post.published,
-            visibility: visibility,
-            shared: post.shared, 
+            visibility: visibility, 
             unlisted: unlisted
         };
         await (new PublicPost(publicPost)).save(); 
@@ -1090,18 +1088,6 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
-
-    if (post.whoShared != []) {
-            const whoShared = post.whoShared; 
-            const outgoings = await OutgoingCredentials.find().clone();
-            for (let i = 0; i < whoShared.length; i++) {
-                const node = outgoings.find(item => item.url === whoShared[i].host)
-                if (node === undefined) {
-                    await createTombstone(authorId, postId);
-                }
-            }
-        }
-
 
     const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
     const comments = CommentHistory.findOneAndDelete({postId: postId});

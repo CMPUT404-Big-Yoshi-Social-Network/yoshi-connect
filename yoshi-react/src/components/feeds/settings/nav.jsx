@@ -73,9 +73,11 @@ function SettingsNav() {
                 <h1><Navbar.Brand>Settings</Navbar.Brand></h1>
                 <Nav>
                     <div>
+                    <img className='rn-pubMsgImg' alt='rn-pubMsgImg' src='/images/public/icon_account.png' width={25}/>
                         <Nav.Link className='setting' href="/settings">Account Details</Nav.Link>
                     </div>
                     <div>
+                    <img className='rn-pubMsgImg' alt='rn-pubMsgImg' src='/images/public/icon_logout.png' width={25}/>
                         <Nav.Link className='setting' onClick={() => LogOut()}>Log Out</Nav.Link>
                     </div>
                 </Nav>

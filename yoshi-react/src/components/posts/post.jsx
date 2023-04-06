@@ -195,6 +195,8 @@ function Post({viewerId, post, author, realAuthor}) {
             {(!post.unlisted || (post.id === window.location.href)) &&
                 <div className="post">
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
+                    { (post.author.profileImage === '' || post.author.profileImage === null) ? <img className='post-userimg' src='/images/public/icon_profile.png'  alt='prof-userimg' width={20}/> : <img className='post-userimg' src={post.author.profileImage} alt='prof-userimg' width={20}/>}
+                    <p className="post-user">{post.author.displayName}</p>
                     { post.source !== post.origin ? <h4 style={{marginTop:'-1em'}}>Shared Post</h4> : null}
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }

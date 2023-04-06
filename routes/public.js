@@ -101,7 +101,7 @@ async function getPublicLocalPosts(page, size) {
         }
         publicPosts[i] = post;
     }
-    console.log(publicPosts)
+
     response = {
         page: page,
         size: size,

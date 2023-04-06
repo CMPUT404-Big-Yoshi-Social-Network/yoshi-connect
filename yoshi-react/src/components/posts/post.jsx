@@ -221,19 +221,28 @@ function Post({viewerId, post, author, realAuthor}) {
                         <button className='post-buttons' onClick={deletePost}>Delete</button> :
                         null
                     }    
-
-                 {showComment && 
-                     <div>
-                         <h3>Comments</h3>
-
-                         <form >
+                 { post.visibility === 'FRIENDS' ? 
+                        <form >
                              <input type="text" id="newComment" name="newComment" onChange={(e) => {
                                  setComment({...comment, newComment: e.target.value})
                              }}/>
                              <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
-                         </form>
-                        <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + id + '/posts/' + postId + '/comments'} author={author} liked={post} commentsSrc={post.commentsSrc}> </Comments>
-                     </div>}
+                         </form> :
+                    <div>
+                        {showComment && 
+                            <div>
+                                <h3>Comments</h3>
+
+                                <form >
+                                    <input type="text" id="newComment" name="newComment" onChange={(e) => {
+                                        setComment({...comment, newComment: e.target.value})
+                                    }}/>
+                                    <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
+                                </form>
+                            <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + id + '/posts/' + postId + '/comments'} author={author} liked={post} commentsSrc={post.commentsSrc}> </Comments>
+                        </div>}
+                    </div>
+                 } 
                  <div>
              </div>
         </div>}

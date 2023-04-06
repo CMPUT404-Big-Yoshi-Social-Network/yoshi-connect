@@ -82,7 +82,7 @@ function SinglePost() {
                     <LeftNavBar authorId={viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    { post === null ?
+                    { post === null && post.visibility === 'PUBLIC' ?
                         null :
                         <Post viewerId={viewerId} post={post} author={viewerId} realAuthor={post?.author}/> 
                     }

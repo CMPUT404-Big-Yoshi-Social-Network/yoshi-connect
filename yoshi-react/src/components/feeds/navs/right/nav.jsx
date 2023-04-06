@@ -45,7 +45,6 @@ function RightNavBar() {
         username: "", 
         pic: ""
     });
-    const [logged, setLogged] = useState(false);
     const navigate = useNavigate();
     
     useEffect(() => {
@@ -60,7 +59,6 @@ function RightNavBar() {
             .then((response) => {
                 if (response.data !== null) {
                     setProfile({username: response.data.displayName, pic: response.data.profileImage})
-                    setLogged(true);
                 }
             })
             .catch(err => { if (err.response.status === 404) { 
@@ -73,7 +71,7 @@ function RightNavBar() {
 
     return (
         <Navbar className="right-column">
-            { logged === true? <Container>
+            { window.location.pathname !== '/' ? <Container>
                 <Nav>
                     <div className='rn-div'>
                     {/* TODO: Needs to fetch username  */}

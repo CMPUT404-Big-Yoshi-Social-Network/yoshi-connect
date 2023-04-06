@@ -263,50 +263,51 @@ async function createPost(token, authorId, postId, newPost) {
 
     if ((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)) {
         const followers = await Follower.findOne({authorId: authorId}).clone();
-        for(let i = 0; i < followers.followers.length; i++){
-            post.type = "post";
-            post.id = post.origin;
-            post.author = {
-                type: "author",
-                id: author.id,
-                host: author.host,
-                displayName: author.displayName,
-                url: author.url,
-                github: author.github,
-                profileImage: author.profileImage,
-            };
-            delete post._id;
-
+        post.type = "post";
+        post.id = post.origin;
+        post.author = {
+            type: "author",
+            id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+        };
+        delete post._id;
+        const outgoings = await OutgoingCredentials.find().clone();
+        for (let i = 0; i < followers.followers.length; i++) {
             const follower = followers.followers[i];
-            const outgoings = await OutgoingCredentials.find().clone();
             if (follower.id !== undefined) {
                 let followerId = (follower.id.split("/authors/"))[(follower.id.split("/authors/")).length - 1];
                 let followerHost = (follower.id.split("/authors/"))[0];
-                for (let i = 0; i < outgoings.length; i++) {
-                    let inbox = null;
-                    if (followerHost == outgoings[i].url) {
-                        inbox = await Inbox.findOne({"authorId": followerId}).clone();
-                        if (inbox) {
-                            inbox.posts.push(post);
-                            inbox.num_posts++;
-                            await inbox.save();
-                        }
+                let inbox = null;
+                if (followerHost + '/' === process.env.DOMAIN_NAME) {
+                    inbox = await Inbox.findOne({"authorId": followerId}).clone();
+                    if (inbox) {
+                        inbox.posts.push(post);
+                        inbox.num_posts++;
+                        await inbox.save();
                     }
-                    if (followerHost == outgoings[i].url && (inbox === null || inbox === undefined)) {
-                        let config = {
-                            host: outgoings[i].url,
-                            url: follower.id + "/inbox",
-                            method: "POST",
-                            headers:{
-                                "Authorization": outgoings[i].auth,
-                                'Content-Type': 'application/json'
-                            },
-                            data: post
+                }
+                else if (inbox === null || inbox === undefined) {
+                    for (let i = 0; i < outgoings.length; i++) {
+                        if (followerHost == outgoings[i].url && outgoings[i].allowed) {
+                            let config = {
+                                host: outgoings[i].url,
+                                url: follower.id + "/inbox",
+                                method: "POST",
+                                headers:{
+                                    "Authorization": outgoings[i].auth,
+                                    'Content-Type': 'application/json'
+                                },
+                                data: post
+                            }
+        
+                            axios.request(config)
+                            .then((response) => { })
+                            .catch((error) => { })
                         }
-    
-                        axios.request(config)
-                        .then((response) => { })
-                        .catch((error) => { })
                     }
                 }
             }

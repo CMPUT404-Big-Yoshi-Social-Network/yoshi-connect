@@ -579,7 +579,7 @@ router.get('/', async (req, res) => {
  *      200:
  *        description: Ok -- Returns JSON the newly created post object
  */
-router.post('/', async (req, res) => {
+router.put('/', async (req, res) => {
   const authorId = req.params.authorId;
 
   if (!req.cookies.token) { return res.sendStatus(401); }

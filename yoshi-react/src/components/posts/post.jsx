@@ -151,9 +151,10 @@ function Post({viewerId, post, author, realAuthor}) {
                 type: "like",
                 summary: author.displayName + " likes your post",
                 author: author,
-                object: post.id
+                object: post.id || ('/authors/' + viewerId + '/posts/' + post._id)
             }
-            axios.post('/authors/' + authorId + '/inbox', body, {
+            let id = typeof authorId === 'object' ? viewerId : authorId;
+            axios.post('/authors/' + id + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
             })
             .then((response) => {

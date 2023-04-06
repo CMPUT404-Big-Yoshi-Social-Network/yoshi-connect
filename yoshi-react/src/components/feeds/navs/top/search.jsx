@@ -114,7 +114,7 @@ function SearchCard(props) {
                 if (err.response.status === 500) { console.log('500 PAGE') }
             });
         }
-    }, [id, viewerId, host]);
+    }, [id, viewerId, host, requestButton]);
 
     const sendRequest = () => {
         /**

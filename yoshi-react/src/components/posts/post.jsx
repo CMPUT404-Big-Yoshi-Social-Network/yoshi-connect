@@ -52,25 +52,27 @@ function Post({viewerId, post, author, realAuthor}) {
     }
     let published = post.published.substring(0,10);
     let contentType = post.contentType ? post.contentType : ""
+    let id = realAuthor ? realAuthor : typeof authorId === 'object' ? viewerId : authorId
+    if (typeof id === 'object') {
+        id = id.authorId;
+    }
     
-
     const [numLikes, setNumLikes] = useState(post.likeCount);
-    const [numComments, setNumComments] = useState(post.count);
+    const [numComments, setNumComments] = useState(post.count !== undefined ? post.count : post.commentCount);
     const [commentCreated, setCommentCreated] = useState(0);
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
     const [image, setImage] = useState("");
-    // const [items, setItems] = useState(undefined);
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         /**
          * Description: Fetches the image associated with a specific post through a GET request
          * Request: GET    
          * Returns: N/A
          */
-       const getImage = () => {
+        const getImage = () => {
             if (contentType.split("/")[0] === "image") {
                 if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
                     setImage("data:" + contentType + "," + post.content)
@@ -79,7 +81,7 @@ function Post({viewerId, post, author, realAuthor}) {
                 }
             } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.source.split('/authors/')[0].split("/")[2] === "localhost:3000") {
                 axios
-                .get( post.id + "/image")
+                .get((post.id) || ('/authors/' + id + '/posts/' + post._id) + "/image")
                 .then((res) => {
                     if (res.data.status === 200) {
                         setImage(res.data.src)
@@ -90,7 +92,7 @@ function Post({viewerId, post, author, realAuthor}) {
             }
         }
         getImage();
-    }, [post.id, contentType, post.content, post.source])
+    }, [contentType, id, post._id, post.content, post.id, post.source])
 
     useEffect(() => { 
         /**
@@ -99,14 +101,13 @@ function Post({viewerId, post, author, realAuthor}) {
          * Returns: N/A
          */ 
         const getLikes = () => {
-            axios.get(post.id + '/likes')
+            axios.get((post.id) || ('/authors/' + id + '/posts/' + post._id) + '/likes')
             .then((response) => { 
                 setNumLikes(response.data.items.length);
-                // setItems(response.data.items);
                 let itemsCopy = response.data.items;
                 for(let i = 0; i < itemsCopy.length; i++){
                     let like = itemsCopy[i];
-                    let likeAuthorId = like.author.id.split("/");
+                    let likeAuthorId = like.author.url.split("/");
                     likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
                     if(likeAuthorId === viewerId){
                         setLike(true);
@@ -116,7 +117,7 @@ function Post({viewerId, post, author, realAuthor}) {
             .catch((err) => { });
         }
         getLikes();
-    }, [post.id, viewerId]);
+    }, [id, post._id, post.id, viewerId]);
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
@@ -153,22 +154,19 @@ function Post({viewerId, post, author, realAuthor}) {
                 type: "like",
                 summary: author.displayName + " likes your post",
                 author: author,
-                object: post.id
+                object: post.id || ('/authors/' + id + '/posts/' + post._id)
             }
-            let id = post.author.id.split("/");
-			id = id[id.length - 1];
             axios.post('/authors/' + id + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
-        })
-        .then((response) => {
-            setLike(true);
-            setNumLikes(numLikes + 1);
-        })
-        .catch((err) => {
-            if(err.response){ }});
+            })
+            .then((response) => {
+                setLike(true);
+                setNumLikes(numLikes + 1);
+            })
+            .catch((err) => {
+                if(err.response){ }});
         }
     }
-
     const makeComment = () => {
         /**
          * Description: Sends a Comment through a POST request
@@ -177,36 +175,24 @@ function Post({viewerId, post, author, realAuthor}) {
          */
         let body = {
             type: "comment",
-            author: realAuthor,
+            author: author,
             comment: comment.newComment,
             contentType: "text/plaintext",
-            object: post.id
+            object: post.id || ('/authors/' + id + '/posts/' + post._id)
         };
-
-        axios.post('/authors/' + encodeURIComponent(post.author.id) + '/inbox', body, {
+        axios.post('/authors/' + encodeURIComponent(id) + '/inbox', body, {
             "X-Requested-With": "XMLHttpRequest"
         })
         .then((response) => {
             setNumComments(numComments + 1);
             setCommentCreated(commentCreated + 1);
         })
-        .catch((err) => { 
-            if(err.response){
-                if (err.response.status === 401) {
-                    navigate('/unauthorized');
-                } else if (err.response.status === 400) {
-                    navigate('/badrequest');
-                } else if (err.response.status === 404) {
-                    navigate('/notfound');
-                } else if (err.response.status === 500) {
-                    navigate('/servererror')
-                }
-            }
-        });
+        .catch((err) => { });
     }
+
     return (
         <div>
-            {!post.unlisted &&
+            {(!post.unlisted || (post.id === window.location.href)) &&
                 <div className="post">
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
                     { post.source !== post.origin ? <h4 style={{marginTop:'-1em'}}>Shared Post</h4> : null}
@@ -232,19 +218,28 @@ function Post({viewerId, post, author, realAuthor}) {
                         <button className='post-buttons' onClick={deletePost}>Delete</button> :
                         null
                     }    
-
-                 {showComment && 
-                     <div>
-                         <h3>Comments</h3>
-
-                         <form >
+                 { post.visibility === 'FRIENDS' && author.authorId !== viewerId ? 
+                        <form >
                              <input type="text" id="newComment" name="newComment" onChange={(e) => {
                                  setComment({...comment, newComment: e.target.value})
                              }}/>
                              <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
-                         </form>
-                        <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author} liked={post} commentsSrc={post.commentsSrc}> </Comments>
-                     </div>}
+                         </form> :
+                    <div>
+                        {showComment && 
+                            <div>
+                                <h3>Comments</h3>
+
+                                <form >
+                                    <input type="text" id="newComment" name="newComment" onChange={(e) => {
+                                        setComment({...comment, newComment: e.target.value})
+                                    }}/>
+                                    <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
+                                </form>
+                            <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + id + '/posts/' + postId + '/comments'} author={author} liked={post} commentsSrc={post.commentsSrc}> </Comments>
+                        </div>}
+                    </div>
+                 } 
                  <div>
              </div>
         </div>}

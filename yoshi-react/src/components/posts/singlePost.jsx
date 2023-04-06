@@ -22,7 +22,6 @@ Foundation; All Rights Reserved
 // Functionality
 import React from "react";
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import Post from './post.jsx';
@@ -39,9 +38,8 @@ function SinglePost() {
      *          - Fetches the Post through a GET request
      * Returns: N/A
      */
-    const [post, setPost] = useState([]);
+    const [post, setPost] = useState(null);
     const [viewerId, setViewerId] = useState("");
-    const navigate = useNavigate();
 
     useEffect(() => {
         /**
@@ -64,34 +62,17 @@ function SinglePost() {
             });
         }
         getId();
-    }, []);
 
-    useEffect(() => {
-        /**
-         * Description: Fetches the Post through a GET request
-         * Request: GET    
-         * Returns: N/A
-         */
-        let url = window.location.href.split("/");
-        let authorId = url[url.length - 3];
-        let postId = url[url.length - 1];
+        let url = window.location.href.split('/authors')[1];
 
         axios
-        .get('/authors/' + authorId + '/posts/' + postId)
+        .get('/authors' + url)
         .then((response) => {
-            setPost(response.data);
+            let post = response.data;
+            setPost(prevPost => post);
         })
-        .catch(err => {
-            if (err.response.status === 404) {
-                navigate('/notfound');
-            } else if (err.response.status === 401) {
-                navigate('/unauthorized');
-            } else if (err.response.status === 500) {
-                navigate('/servererror/');
-            }
-        });
-    }, [navigate, setPost]);
-
+        .catch(err => { });
+    }, []);
     return (
         <div>
             <div>
@@ -101,7 +82,10 @@ function SinglePost() {
                     <LeftNavBar authorId={viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    <Post viewerId={viewerId} post={post}/>  
+                    { post === null && post.visibility === 'PUBLIC' ?
+                        null :
+                        <Post viewerId={viewerId} post={post} author={viewerId} realAuthor={post?.author}/> 
+                    }
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

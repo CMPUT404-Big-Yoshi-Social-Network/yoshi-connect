@@ -92,7 +92,6 @@ async function getPost(postId, auth, author){
         "contentType": post.contentType,
         "content": post.content,
         "author": author,
-        "shared": post.shared,
         "categories": post.categories,
         "count": post.commentCount,
         "likeCount": post.likeCount,
@@ -537,7 +536,6 @@ async function postInboxLike(like, authorId){
             github: author.github, 
             profileImage: author.profileImage
         };
-    
         if(await addLiked(author._id, like.object)){
             return [like, 403];
         }

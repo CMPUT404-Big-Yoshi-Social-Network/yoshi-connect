@@ -69,7 +69,7 @@ Foundation; All Rights Reserved
     color: white;
     border: #4A5460 0.1em solid;
     border-radius: .5em;
-    padding: .7em;;
+    padding: .7em;
     
 }
 .search-button{
@@ -87,7 +87,7 @@ Foundation; All Rights Reserved
 .search-card {
     position: fixed;
     padding: 1em;
-    width: 20.1%;
+    width: 35.1%;
     height: auto;
     background-color: #090D0E;
     border: #24292F 0.1em solid;

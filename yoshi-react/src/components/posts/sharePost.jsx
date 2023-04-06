@@ -34,9 +34,16 @@ function SharePost({viewerId, post}) {
      *     - share(): Shares the Post 
      * Returns: N/A
      */
-    console.log(post)
-    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : undefined;
-    let authorId = post.author ? post.author.authorId : undefined;
+    let postId = post.id ? 
+        post.id.includes('/') ? (post.id.split('/'))[(post.id.split('/')).length - 1] : 
+        post.id :
+        post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : 
+        undefined;
+    let authorId = post.author ? 
+        post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
+        post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
+        undefined : 
+        undefined;
 
     const numLikes = post.likeCount;
     const numComments = post.commentCount;
@@ -147,18 +154,23 @@ function SharePost({viewerId, post}) {
                 </div> :
                 null
             }
-            <span>Unlisted</span>
-            <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
-                        let bool;
-                        if(e.target.value === "True") bool = true;
-                        else if(e.target.value === "False") bool = false;
-                        setData({...data, unlisted: bool})
-                    }} >
-                        <option value="False">False</option>
-                        <option value="True">True</option>
-            </select>
-            <br/>
-            
+            { data.visibility === 'PUBLIC' ?
+                <div>
+                    <span>Unlisted</span>
+                    <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
+                                let bool;
+                                if(e.target.value === "True") bool = true;
+                                else if(e.target.value === "False") bool = false;
+                                setData({...data, unlisted: bool})
+                            }} >
+                                <option value="False">False</option>
+                                <option value="True">True</option>
+                    </select>
+                    <br/>
+                </div> :
+                null
+ 
+            }
             <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} value={data.visibility || 'Public '} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
                             <option value={"PUBLIC"}>Public</option>

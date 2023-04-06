@@ -238,6 +238,7 @@ async function updateAuthor(token, author){
     if (author.password != undefined) { authorProfile.password = crypto_js.SHA256(author.password); }
     if (author.admin != undefined) { authorProfile.admin = author.admin; }
     if (author.profileImage != undefined) { authorProfile.profileImage = author.profileImage; }
+    if (author.username != undefined) { authorProfile.username = author.username; }
 
     await authorProfile.save();
 

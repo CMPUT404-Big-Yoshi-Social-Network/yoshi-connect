@@ -42,7 +42,6 @@ function CreatePost() {
      *     - togglePostMenu(): Toggles the Post Menu
      * Returns: N/A
      */
-    console.log('Debug: Creating post form')
 
     const [categories, setCategories] = useState([])
 
@@ -98,7 +97,6 @@ function CreatePost() {
          * Request: GET
          * Returns: N/A
          */
-        console.log("Debug: Getting the Author's info")
 
         const getId = () => {
             axios
@@ -154,7 +152,7 @@ function CreatePost() {
                 link.postId = response.data.id.split('/')[6];
             }
         })
-        .catch((e) =>{ console.log(e); })
+        .catch((e) =>{ })
 
         if (item.image !== "") {
             axios.put('/authors/' + data.authorId + '/posts/' + link.postId + "/image", {
@@ -163,7 +161,7 @@ function CreatePost() {
                 url: '/authors/' + data.authorId + '/posts/' + link.postId + "/image",
                 headers: { 'Content-Type': 'multipart/form-data' },
                 image: item.image
-            }).then((res) => {}).catch((e) => { console.log(e); })  
+            }).then((res) => {}).catch((e) => { })  
         }
         setItem({ ...item, image: "" })
     }
@@ -205,16 +203,21 @@ function CreatePost() {
                             <option value={"FRIENDS"}>Friends</option>
                             <option value={"PRIVATE"}>Private</option>
                         </select>
-                        <label className='postLabel'><p style={{color:"white"}}>Unlisted:</p></label>
-                        <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{
-                            let bool;
-                            if(e.target.value === "True") bool = true;
-                            else if(e.target.value === "False") bool = false;
-                            setData({...data, unlisted: bool})
-                        }} >
-                            <option value="False">False</option>
-                            <option value="True">True</option>
-                        </select>
+                        { data.visibility === 'PUBLIC' ? 
+                            <div>
+                                <label className='postLabel'><p style={{color:"white"}}>Unlisted:</p></label>
+                                <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{
+                                    let bool;
+                                    if(e.target.value === "True") bool = true;
+                                    else if(e.target.value === "False") bool = false;
+                                    setData({...data, unlisted: bool})
+                                }} >
+                                    <option value="False">False</option>
+                                    <option value="True">True</option>
+                                </select>
+                            </div> :
+                            null
+                        }
 
                         <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' className='category-input'></input>
 
@@ -249,7 +252,7 @@ function CreatePost() {
 
                         <label><p style={{color:"white"}}>Content</p></label>
                         <textarea className={"postMenuInput"} id={"description"} name={"description"} rows={"8"}
-                                    wrap="physical" maxLength={"1000"} onChange={(e) => {
+                                    wrap="physical" maxLength={"500000"} onChange={(e) => {
                             setData({...data, content: e.target.value})
                         }}/>
                         <div style={{color:"white", textAlign:"right"}}>

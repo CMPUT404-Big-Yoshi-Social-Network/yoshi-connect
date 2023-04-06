@@ -43,7 +43,6 @@ function Messages() {
      * Returns: N/A
      */
     const [viewer, setViewer] = useState({ viewerId: '' });
-    const [author, setAuthor] = useState([]);
     const [messengers, setMessengers] = useState([]);
     const [currentMessenger, setCurrentMessenger] = useState('');
     const navigate = useNavigate();
@@ -63,7 +62,6 @@ function Messages() {
             axios
             .get('/userinfo')
             .then((response) => {
-                setAuthor(response.data);
                 let viewerId = response.data.authorId;
                 setViewer({ viewerId: viewerId })
             })
@@ -231,7 +229,7 @@ function Messages() {
                             <div> 
                                 <Pagination>
                                     {Object.keys(posts).map((post, idx) => (
-                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]} author={viewer.viewerId} realAuthor={author}/>
+                                        <Post key={idx} viewerId={viewer.viewerId} post={posts[post]} author={viewer.viewerId} realAuthor={post.author}/>
                                     ))}  
                                     { seeMore ? null :
                                         <div>

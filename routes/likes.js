@@ -124,11 +124,10 @@ async function addLike(like, authorId, postId){
         await commentHistory.save();
     }
     else if(objectType == "posts"){
-        //Add a like to a post document
         likes = await LikeHistory.findOne({type: "post", Id: Id}).clone();
         let postHistory = await PostHistory.findOne({authorId: authorId});
         let post = postHistory.posts.id(Id);
-        post.like_count++;
+        post.likeCount++;
         await postHistory.save();
 
         if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
@@ -159,14 +158,12 @@ async function addLiked(authorId, objectId){
     */
     //Add this object to the list of posts that the author has liked
     //extract author uuid from authorID
-    let authorUUID = authorId.split("/")
+    let authorUUID = authorId.split("/authors/")
     authorUUID = authorUUID[authorUUID.length - 1]; 
     const liked = await LikedHistory.findOne({authorId: authorUUID});
-    if(!liked){
-        return;
-    }
+    if (!liked) { return true; }
     if(liked.liked.id(objectId)){
-        return 503;
+        return true;
     }
     let object = objectId.split("/");
     let type = object[object.length - 2];
@@ -174,58 +171,7 @@ async function addLiked(authorId, objectId){
     liked.liked.push({type: (type == "posts") ? "post" : "comment", _id: objectId});
     liked.numObjects++;
     await liked.save();
-    return;
-}
-
-//TODO Refactor this to work
-async function deleteLike(req, res){
-    /**
-    Description: Deletes like from post / comment
-    Associated Endpoint: N/A
-    Request Type: DELETE
-    Request Body: N/A
-    Return: 200 Status (OK) -- Successfully deleted the like from a post / comment
-    */
-    let success = false;
-    let numLikes = 0;
-    let publicPost = await PublicPost.find();
-    await PostHistory.findOne({authorId: req.body.authorId}, async function(err, history){
-        if (history) {
-            let post_idx = history.posts.map(obj => obj._id).indexOf(req.body.postId);
-            if (post_idx > -1) { 
-                let like_idx = history.posts[post_idx].likes.map(obj => obj._id).indexOf(req.body.likeId);
-                history.posts[post_idx].likes.splice(like_idx, 1);
-                await history.save();
-                success = true;
-
-                for (let i = 0; i < publicPost[0].posts.length; i++) {
-                    if (publicPost[0].posts[i].post._id === req.body.data.postId) {
-                        let like_idx = publicPost[0].posts[i].likes.map(obj => obj._id).indexOf(req.body.likeId);
-                        publicPost[0].posts[i].likes.splice(like_idx, 1);
-                        numLikes = publicPost[0].posts[i].likes.length;
-                        await publicPost[0].save();
-                    }
-                }
-            }
-        }
-    }).clone()
- 
-    return res.json({
-        status: success,
-        numLikes: numLikes
-    })
-}
-
-//TODO Delete the liked
-async function deleteLiked(objectId){
-    /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
-    */
-    
+    return false;
 }
 
 async function fetchCommentLikes(authorId, postId, commentId) {

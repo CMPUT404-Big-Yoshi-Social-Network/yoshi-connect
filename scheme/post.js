@@ -21,8 +21,7 @@ Foundation; All Rights Reserved
 
 // Database
 const mongoose = require("mongoose");
-const { authorScheme, basicAuthorScheme } = require("./author");
-const { likeAuthorScheme} = require("./interactions");
+const { basicAuthorScheme } = require("./author");
 const { Schema } = mongoose;
 const database = mongoose.connection;
 
@@ -39,12 +38,6 @@ const postScheme = new Schema({
     commentCount: Number,
     published: String,
     visibility: String,
-    shared: Boolean,
-    whoShared: [{
-        authorId: String,
-        host: String,
-        postId: String
-    }],
     unlisted: Boolean,},
     {versionKey: false
 });
@@ -78,7 +71,6 @@ const publicScheme = new Schema({
     commentCount: Number,
     published: String,
     visibility: String,
-    shared: Boolean,
     unlisted: Boolean,},
     {versionKey: false
 })
@@ -98,8 +90,9 @@ const inboxCommentScheme = new Schema({
     object: String
 })
 
-inboxPostScheme = new Schema({
+const inboxPostScheme = new Schema({
         _id: String,
+        id: String,
         origin: String,
         source: String,
         title: String,

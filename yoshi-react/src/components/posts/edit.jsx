@@ -125,6 +125,7 @@ function EditPost({viewerId, post}) {
             image: data.image,
             postTo: data.postTo,
             postId: data.postId,
+            id: post.id
         }
         
         let postId = (post.id.split('/posts/'))[(post.id.split('/posts/')).length - 1]
@@ -152,7 +153,7 @@ function EditPost({viewerId, post}) {
 
         
     }
-    console.log(post)
+
     return (
         post.author.authorId !== viewerId ? null :
             <div className='editBackground'>
@@ -205,16 +206,22 @@ function EditPost({viewerId, post}) {
                     </div> :
                     null
                 }
-                <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
-                            let bool;
-                            if(e.target.value === "True") bool = true;
-                            else if(e.target.value === "False") bool = false;
-                            setData({...data, unlisted: bool})
-                        }} >
-                            <option value="False">False</option>
-                            <option value="True">True</option>
-                </select>
-                <br/>
+                { data.visibility === 'PUBLIC' ? 
+                    <div>
+                        <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
+                                let bool;
+                                if(e.target.value === "True") bool = true;
+                                else if(e.target.value === "False") bool = false;
+                                setData({...data, unlisted: bool})
+                            }} >
+                                <option value="False">False</option>
+                                <option value="True">True</option>
+                        </select>
+                        <br/>        
+                    </div> :
+                    null
+
+                }
                 <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} value={data.visibility || 'Public '} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
                             <option value={"PUBLIC"}>Public</option>

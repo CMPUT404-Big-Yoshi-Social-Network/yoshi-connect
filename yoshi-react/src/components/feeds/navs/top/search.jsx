@@ -114,7 +114,7 @@ function SearchCard(props) {
                 if (err.response.status === 500) { console.log('500 PAGE') }
             });
         }
-    }, [id, viewerId, host]);
+    }, [id, viewerId, host, requestButton]);
 
     const sendRequest = () => {
         /**
@@ -162,52 +162,15 @@ function SearchCard(props) {
             .then((response) => { })
             .catch(err => { });
         } else if (requestButton === 'Unfriend' || requestButton === "Unfollow") {
-            let completed = false;
             axios
             .delete('/authors/' + viewerId + '/followings/' + id)
-            .then((response) => {
-                if (response.data.status === 204) {
-                    completed = true;
-                } else {
-                    completed = false;
-                }
-            })
+            .then((response) => { })
             .catch(err => { });
             axios
             .delete('/authors/' + id + '/followers/' + viewerId)
-            .then((response) => {
-                if (response.data.status === 204) {
-                    completed = true;
-                } else {
-                    completed = false;
-                }
-            })
+            .then((response) => { })
             .catch(err => { });
-            if (requestButton === 'Unfriend') {
-                axios
-                .delete('/authors/' + id + '/followings/' + viewerId)
-                .then((response) => {
-                    if (response.data.status === 204) {
-                        completed = true;
-                    } else {
-                        completed = false;
-                    }
-                })
-                .catch(err => { });
-                axios
-                .delete('/authors/' + viewerId + '/followers/' + id)
-                .then((response) => {
-                    if (response.data.status === 204) {
-                        completed = true;
-                    } else {
-                        completed = false;
-                    }
-                })
-                .catch(err => { });
-            }
-            if (completed) {
-                setRequestButton('Add');
-            }
+            setRequestButton('Add');
         } 
     }
 
@@ -227,7 +190,7 @@ function SearchCard(props) {
     return (
         <div>
             { !props && username === undefined ? null : 
-                <div className="search-card">
+                <div>
                     <h4>{host.split("/")[2] === "localhost:3000" ? host.split("/")[2] : host.split("/")[2].split(".")[0] === "www" ? host.split("/")[2].split(".")[1] + "." + host.split("/")[2].split(".")[2]: host.split("/")[2].split(".")[0] }</h4>
                     <p className="search-username">{username}</p>
                     <Button className="search-button" onClick={seePosts} type="submit">View Profile</Button>

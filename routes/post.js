@@ -35,7 +35,6 @@ const crypto = require('crypto');
 // Additional Functions
 const { authLogin } = require('./auth.js');
 const { getAuthor } = require('./author.js');
-const { sendToForeignInbox } = require('./inbox.js');
 const axios = require('axios');
 
 async function uploadImage(url, image) {
@@ -157,7 +156,6 @@ async function getPost(postId, auth, author){
         "contentType": post.contentType,
         "content": post.content,
         "author": author,
-        "shared": post.shared,
         "categories": post.categories,
         "count": post.commentCount,
         "likeCount": post.likeCount,
@@ -212,6 +210,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     let post = {
         _id: postId,
+        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
         title: title,
         source: source,
         origin: origin,
@@ -262,16 +261,6 @@ async function createPost(token, authorId, postId, newPost) {
 
         const followers = await Follower.findOne({authorId: authorId}).clone();
         post.type = "post";
-        post.id = post.origin;
-        post.author = {
-            type: "author",
-            id: author.id,
-            host: author.host,
-            displayName: author.displayName,
-            url: author.url,
-            github: author.github,
-            profileImage: author.profileImage,
-        };
         delete post._id;
         const outgoings = await OutgoingCredentials.find().clone();
         for (let i = 0; i < followers.followers.length; i++) {
@@ -316,7 +305,6 @@ async function createPost(token, authorId, postId, newPost) {
         const followings = await Following.findOne({authorId: authorId}).clone();
         const friends = followers.followers.filter(follower => followings.followings.some(following => follower.id === following.id));
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -416,7 +404,6 @@ async function createPost(token, authorId, postId, newPost) {
         }  
 
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -458,33 +445,10 @@ async function createPost(token, authorId, postId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-    return await getPost(postId, authorId, author);
+    return await getPost(postId, token, author);
 }
 
-async function getHostNames(){
-    /**
-    Description: Gets the host names
-    Associated Endpoint: N/A
-    Request Type: GET
-    Request Body: N/A
-    Return: N/A
-    */
-    let hosts = [];
-
-    let currHost = process.env.DOMAIN_NAME.split("/");
-    hosts.push({host: currHost[2]});
-
-    let outs = await OutgoingCredentials.find().clone();
-    for(let i = 0; i < outs.length; i++){
-        let out = outs[i];
-        let foreignHost = out.url.split("/");
-        hosts.push({...out, host: foreignHost[2]});
-    }
-
-    return hosts;
-}
-
-async function sharePost(authorId, newPost) {
+async function sharePost(authorId, token, newPost) {
     /**
     Description: Sends a POST request to share post assciated with a specific Author
     Associated Endpoint: N/A
@@ -515,6 +479,7 @@ async function sharePost(authorId, newPost) {
 
     let post = {
         _id: sharedPostId,
+        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId,
         title: title,
         source: source,
         origin: origin,
@@ -565,7 +530,6 @@ async function sharePost(authorId, newPost) {
 
         const followers = await Follower.findOne({authorId: authorId}).clone();
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -619,7 +583,6 @@ async function sharePost(authorId, newPost) {
         const followings = await Following.findOne({authorId: authorId}).clone();
         const friends = followers.followers.filter(follower => followings.followings.some(following => follower.id === following.id));
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -719,7 +682,6 @@ async function sharePost(authorId, newPost) {
         }  
 
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -761,7 +723,7 @@ async function sharePost(authorId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-    return await getPost(sharedPostId, authorId, author);
+    return await getPost(sharedPostId, token, author);
 }
 
 async function updatePost(token, authorId, postId, newPost) {
@@ -818,7 +780,7 @@ async function updatePost(token, authorId, postId, newPost) {
 
             const followers = await Follower.findOne({authorId: authorId}).clone();
             post.type = "post";
-            post.id = post.origin;
+            post.id = newPost.id;
             post.author = {
                 type: "author",
                 id: author.id,
@@ -882,15 +844,14 @@ async function updatePost(token, authorId, postId, newPost) {
             likeCount: post.likeCount,
             commentCount: post.commentCount,
             published: post.published,
-            visibility: visibility,
-            shared: post.shared, 
+            visibility: visibility, 
             unlisted: unlisted
         };
         await (new PublicPost(publicPost)).save(); 
 
         const followers = await Follower.findOne({authorId: authorId}).clone();
         post.type = "post";
-        post.id = post.origin;
+        post.id = newPost.id;
         post.author = {
             type: "author",
             id: author.id,
@@ -945,7 +906,7 @@ async function updatePost(token, authorId, postId, newPost) {
         const followings = await Following.findOne({authorId: authorId}).clone();
         const friends = followers.followers.filter(follower => followings.followings.some(following => follower.id === following.id));
         post.type = "post";
-        post.id = post.origin;
+        post.id = newPost.id;
         post.author = {
             type: "author",
             id: author.id,
@@ -1045,7 +1006,7 @@ async function updatePost(token, authorId, postId, newPost) {
         }  
 
         post.type = "post";
-        post.id = post.origin;
+        post.id = newPost.id;
         post.author = {
             type: "author",
             id: author.id,
@@ -1127,18 +1088,6 @@ async function deletePost(token, authorId, postId) {
 
     post.remove();
     postHistory.num_posts = postHistory.num_posts - 1;
-
-    if (post.whoShared != []) {
-            const whoShared = post.whoShared; 
-            const outgoings = await OutgoingCredentials.find().clone();
-            for (let i = 0; i < whoShared.length; i++) {
-                const node = outgoings.find(item => item.url === whoShared[i].host)
-                if (node === undefined) {
-                    await createTombstone(authorId, postId);
-                }
-            }
-        }
-
 
     const likes = LikeHistory.findOneAndDelete({Id: postId, type: "Post"});
     const comments = CommentHistory.findOneAndDelete({postId: postId});

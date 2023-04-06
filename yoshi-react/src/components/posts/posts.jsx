@@ -72,7 +72,15 @@ function Posts({url, userInfo}) {
 
             axios.get(url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url, config)
             .then((response) => {
-                setPosts(response.data.items);
+                if (url !== '/posts/public' && url !== 'personal' && url.split('/')[0] !== 'other') {
+                    const friendPosts = (response.data.items).filter(post => post.visibility === 'FRIENDS');
+                    setPosts(friendPosts);
+                } else if (url.split('/')[0] === 'other') {
+                    const profilePosts = (response.data.items).filter(post => post.visibility === 'PUBLIC');
+                    setPosts(profilePosts);
+                } else {
+                    setPosts(response.data.items);
+                }
             })
             .catch(err => {
                 if (err.response.status === 404) {
@@ -188,7 +196,6 @@ function Posts({url, userInfo}) {
         });
         
     }
-    
     return (
         <div>
             { posts.length === 0 ? 
@@ -198,7 +205,7 @@ function Posts({url, userInfo}) {
                 <div> 
                     <Pagination>
                         {Object.keys(posts).map((post, idx) => (
-                            <Post key={idx} viewerId={userInfo.authorId} post={posts[post]} author={userInfo}/>
+                            <Post key={idx} viewerId={userInfo.authorId} post={posts[post]} author={userInfo} realAuthor={url.split('other/')[1] || post.author}/>
                         ))}  
                         { seeMore ? null :
                             <div>

@@ -21,8 +21,6 @@ Foundation; All Rights Reserved
 
 // Routing Functions 
 const { getComments, createComment, getComment } = require('../routes/comment');
-const { apiFetchCommentLikes } = require('../routes/post');
-const { getAuthor } = require('../routes/author');
 const { getLikes } = require('../routes/likes');
 
 // OpenAPI

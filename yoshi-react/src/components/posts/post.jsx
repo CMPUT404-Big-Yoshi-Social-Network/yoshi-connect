@@ -36,7 +36,6 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author, realAuthor}) {
-    console.log(post)
     let postId = post.id ? 
         post.id.includes('/') ? (post.id.split('/'))[(post.id.split('/')).length - 1] : 
         post.id :
@@ -71,9 +70,13 @@ function Post({viewerId, post, author, realAuthor}) {
          * Request: GET    
          * Returns: N/A
          */
-        const getImage = () => {
+       const getImage = () => {
             if (contentType.split("/")[0] === "image") {
-                setImage("data:" + contentType + "," + post.content)
+                if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
+                    setImage("data:" + contentType + "," + post.content)
+                } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
+                    setImage(post.content)
+                }
             } else {
                 axios
                 .get( post.id + "/image")
@@ -87,7 +90,7 @@ function Post({viewerId, post, author, realAuthor}) {
             }
         }
         getImage();
-    }, [post.id, contentType, post.content])
+    }, [post.id, contentType, post.content, post.source])
 
     useEffect(() => { 
         /**

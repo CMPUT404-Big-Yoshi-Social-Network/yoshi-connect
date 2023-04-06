@@ -42,7 +42,6 @@ function CreatePost() {
      *     - togglePostMenu(): Toggles the Post Menu
      * Returns: N/A
      */
-    console.log('Debug: Creating post form')
 
     const [categories, setCategories] = useState([])
 
@@ -98,7 +97,6 @@ function CreatePost() {
          * Request: GET
          * Returns: N/A
          */
-        console.log("Debug: Getting the Author's info")
 
         const getId = () => {
             axios

@@ -189,9 +189,13 @@ function Post({viewerId, post, author, realAuthor}) {
         })
         .catch((err) => { });
     }
+
+    console.log((window.location.href.split('/authors')[1]))
+    console.log(post.id)
+    console.log(((id + '/posts/' + post._id) || post.id))
     return (
         <div>
-            {!post.unlisted &&
+            {(!post.unlisted || (post.id === window.location.href)) &&
                 <div className="post">
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
                     { post.source !== post.origin ? <h4>Shared Post</h4> : null}

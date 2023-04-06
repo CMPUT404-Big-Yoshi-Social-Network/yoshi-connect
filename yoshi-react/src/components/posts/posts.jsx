@@ -193,7 +193,6 @@ function Posts({url, userInfo}) {
         });
         
     }
-    
     return (
         <div>
             { posts.length === 0 ? 
@@ -203,7 +202,7 @@ function Posts({url, userInfo}) {
                 <div> 
                     <Pagination>
                         {Object.keys(posts).map((post, idx) => (
-                            <Post key={idx} viewerId={userInfo.authorId} post={posts[post]} author={userInfo}/>
+                            <Post key={idx} viewerId={userInfo.authorId} post={posts[post]} author={userInfo} realAuthor={url.split('other/')[1] || post.author}/>
                         ))}  
                         { seeMore ? null :
                             <div>

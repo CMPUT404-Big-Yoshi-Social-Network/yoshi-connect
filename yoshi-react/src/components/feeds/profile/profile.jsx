@@ -74,7 +74,6 @@ function Profile() {
     const [userInfo, setUserInfo] = useState({})
     const navigate = useNavigate();
     let exists = useRef(null);
-
     useEffect(() => {
         /**
          * Description: Fetches the current author's id and the public and following (who the author follows) posts  

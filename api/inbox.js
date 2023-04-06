@@ -250,12 +250,7 @@ router.post('/', async (req, res) => {
 		return res.sendStatus(status);
 	}
 
-	if(type === "post"){
-		[response, status] = await postInboxPost(req.body, req.params.authorId);
-	}
-	else if(type === "follow"){
-	}
-	else if(type === "comment"){
+	if(type === "comment"){
 		response = {
 			type: "comment",
 			author: response.author,

@@ -241,7 +241,7 @@ async function createPost(token, authorId, postId, newPost) {
         side: 5,
         post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
         id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
-        comments: [ ]
+        comments: []
     }
 
     postHistory.posts.push(post);
@@ -325,7 +325,6 @@ async function createPost(token, authorId, postId, newPost) {
                                 },
                                 data: toSend
                             }
-        
                             axios.request(config)
                             .then((response) => { })
                             .catch((error) => { })

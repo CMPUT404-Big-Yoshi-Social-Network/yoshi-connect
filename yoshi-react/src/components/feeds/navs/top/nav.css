@@ -56,6 +56,18 @@ Foundation; All Rights Reserved
     font-family: 'Uni Neue', sans-serif;
 }
 
+.search-card {
+    position: fixed;
+    left: 18.3em;
+    top: 4em;
+    padding: 1em;
+    width: 20.3%;
+    height: auto;
+    background-color: #090D0E;
+    border: #24292F 0.1em solid;
+    border-radius: .5em;
+}
+
 .topNavSearch{
     display: inline-block;
 }
@@ -73,7 +85,6 @@ Foundation; All Rights Reserved
     
 }
 .search-button{
-    /* position: absolute; */
     color: white;
     margin: 0em 1em;
     background-color: #735DFA;
@@ -82,18 +93,6 @@ Foundation; All Rights Reserved
     padding: .4em 1.7em;
     text-decoration: none;
     cursor: pointer;
-}
-
-.search-card {
-    position: fixed;
-    padding: 1em;
-    width: 20.1%;
-    height: auto;
-    background-color: #090D0E;
-    border: #24292F 0.1em solid;
-    border-radius: .5em;
-    left: 18.3em;
-    top: 4em;
 }
 
 .search-prev{

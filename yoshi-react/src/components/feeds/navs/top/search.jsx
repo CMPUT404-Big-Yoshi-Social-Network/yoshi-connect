@@ -40,7 +40,7 @@ function SearchCard(props) {
      * Returns: N/A
      */
     const username = props.username !== undefined ? props.username : props.displayName
-    const host = props.host
+    let h = props.host.split('/authors/')[0].split("/")[2] === "localhost:3000" ? props.host.split('/authors/')[0].split("/")[2] : props.host.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? props.host.split('/authors/')[0].split("/")[2].split(".")[1] + "." + props.host.split('/authors/')[0].split("/")[2].split(".")[2]: props.host.split('/authors/')[0].split("/")[2].split(".")[0];
     const [requestButton, setRequestButton] = useState('Add');
     
     const [viewerId, setViewerId] = useState('')
@@ -84,7 +84,7 @@ function SearchCard(props) {
          */
         if (viewerId !== null && viewerId !== undefined && viewerId !== '') {
             let config = {
-                isLocal: (host === 'https://yoshi-connect.herokuapp.com/') || (host === 'https://yoshi-connect.herokuapp.com') || host === ('http://localhost:3000/')
+                isLocal: (h === 'https://yoshi-connect.herokuapp.com/') || (h === 'https://yoshi-connect.herokuapp.com') || h === ('http://localhost:3000/')
             }
             axios
             .post('/authors/' + viewerId + '/friends/' + id, config)
@@ -94,7 +94,7 @@ function SearchCard(props) {
                 } else if (response.data.status === 'Follows') {
                     setRequestButton('Unfollow');
                 } else if (response.data.status === 'Strangers') {
-                    if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') { 
+                    if (h === 'https://yoshi-connect.herokuapp.com/' || h === 'http://localhost:3000/') { 
                         axios
                         .get('/authors/' + viewerId + '/inbox/requests/' + id)
                         .then((response) => { 
@@ -114,7 +114,7 @@ function SearchCard(props) {
                 if (err.response.status === 500) { console.log('500 PAGE') }
             });
         }
-    }, [id, viewerId, host]);
+    }, [id, viewerId, h]);
 
     const sendRequest = () => {
         /**
@@ -127,11 +127,11 @@ function SearchCard(props) {
             let config = '';
             let url = '';
             if (id !== undefined) {
-                if (host === 'https://yoshi-connect.herokuapp.com/' || host === 'http://localhost:3000/') {
+                if (h === 'https://yoshi-connect.herokuapp.com/' || h === 'http://localhost:3000/') {
                     url = '/authors/' + id + '/inbox'
                     config = {
                         actor: {
-                            id: host + 'authors/' + viewerId,
+                            id: h + 'authors/' + viewerId,
                             status: 'local'
                         },
                         type: 'follow'
@@ -226,17 +226,13 @@ function SearchCard(props) {
 
     return (
         <div>
-            { !props && username === undefined ? null : 
-                <div className="search-card">
-                    <h4>{host.split("/")[2] === "localhost:3000" ? host.split("/")[2] : host.split("/")[2].split(".")[0] === "www" ? host.split("/")[2].split(".")[1] + "." + host.split("/")[2].split(".")[2]: host.split("/")[2].split(".")[0] }</h4>
-                    <p className="search-username">{username}</p>
-                    <Button className="search-button" onClick={seePosts} type="submit">View Profile</Button>
-                    { id === viewerId ? null : 
-                        <Button className="search-button" onClick={sendRequest} type="submit">{requestButton}</Button>
-                    }
-                    <hr/>
-                </div>
+            <h4>{h === "localhost:3000" ? 'yoshi-connect' : h}</h4>
+            <p className="search-username">{username}</p>
+            <Button className="search-button" onClick={seePosts} type="submit">View Profile</Button>
+            { id === viewerId ? null : 
+                <Button className="search-button" onClick={sendRequest} type="submit">{requestButton}</Button>
             }
+            <hr/>
         </div>
     )
 }

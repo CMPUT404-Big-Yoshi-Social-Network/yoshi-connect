@@ -495,11 +495,6 @@ async function postInboxPost(post, recieverAuthorId){
     const content = post.content;
     const published = post.published;
     const visibility = post.visibility;
-    if( !type || !title || !id || !source || !origin || !description || !contentType || !content || 
-        !published || !visibility)
-    {
-        return [{}, 400];
-    }
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
     if (inbox) {

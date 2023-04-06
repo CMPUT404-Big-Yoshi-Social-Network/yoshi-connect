@@ -81,3 +81,10 @@ Foundation; All Rights Reserved
 .post-content{
     overflow-wrap: break-word;
 }
+
+.post-images{
+    cursor: pointer;
+    /* margin: 0em .5em; */
+    margin-left: .5em;
+    margin-right: 3em;
+}

@@ -217,10 +217,10 @@ function Post({viewerId, post, author, realAuthor}) {
 
                     <p className="post-published">{published}</p>
                     <p className="post-num-lc">{numLikes}</p>
-                    { !like ? <button className='post-buttons' onClick={addLike}>Like</button> : <button className='post-buttons'>Liked</button>} 
+                    { !like ? <img className='post-images' alt='like' onClick={addLike} src='/images/public/icon_like.png' width={20}/> : <img className='post-images' alt='liked' src='/images/public/icon_liked.png' width={20}/>} 
                     <p className="post-num-lc">{numComments}</p>
-                    { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
-                    <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
+                    { showComment ? <img className='post-images' alt='close-comments' onClick={toggleComments} src='/images/public/icon_commented.png' width={20}/> : <img className='post-images' alt='open-comments' onClick={toggleComments} src='/images/public/icon_comment.png' width={20}/> }
+                    <Popup trigger={<img className='post-images' alt='share' src='/images/public/icon_share.png' width={20}/>}><SharePost viewerId={viewerId} post={post}/></Popup>
                     {
                         post.author?.authorId !== undefined && post.author?.authorId === viewerId ? 
                         <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> :

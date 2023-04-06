@@ -399,7 +399,12 @@ router.post('/:postId', async (req, res) => {
 
   if (!req.cookies.token) { res.sendStatus(401); }
 
-  const [post, status] = await updatePost(req.cookies.token, authorId, postId, req.body);
+  let [post, status] = [{}, ''];
+  if (req.body.status !== undefined && req.body.status === 'share') {
+    [post, status] = await sharePost(authorId, req.body);
+  } else {
+    [post, status] = await updatePost(req.cookies.token, authorId, postId, req.body);
+  }
   
   if (status == 200) {
     return res.json(post);

@@ -206,33 +206,32 @@ function Post({viewerId, post, author, realAuthor}) {
     }
     return (
         <div>
-            {!post.unlisted && 
-             <div className="post">
-                 {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
-                 { post.title === "" ? null : <h1>{post.title}</h1> }
-                 { post.description === "" ? null : <h3>{ post.description }</h3> }
-                 { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
-                 { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
+            {!post.unlisted &&
+                <div className="post">
+                    {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
+                    { post.source !== post.origin ? <h4>Shared Post</h4> : null}
+                    { post.title === "" ? null : <h1>{post.title}</h1> }
+                    { post.description === "" ? null : <h3>{ post.description }</h3> }
+                    { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
+                    { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
 
-                 <p className="post-published">{published}</p>
-                 <p className="post-num-lc">{numLikes}</p>
-                 { !like ? <button className='post-buttons' onClick={addLike}>Like</button> : <button className='post-buttons'>Liked</button>} 
-                 <p className="post-num-lc">{numComments}</p>
-                 { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
-                 <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
-                 {
-                     post.author?.authorId !== undefined || author.authorId !== undefined ? 
-                     post.author?.authorId !== viewerId  || author.authorId !== viewerId ? 
-                     null : 
-                     <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> :
-                     null
-                 }    
-                 {
-                     post.author?.authorId !== undefined || author.authorId !== undefined ? 
-                     post.author?.authorId !== viewerId || author.authorId !== viewerId ? null : 
-                     <button className='post-buttons' onClick={deletePost}>Delete</button> :
-                     null
-                 }    
+                    <p className="post-published">{published}</p>
+                    <p className="post-num-lc">{numLikes}</p>
+                    { !like ? <button className='post-buttons' onClick={addLike}>Like</button> : <button className='post-buttons'>Liked</button>} 
+                    <p className="post-num-lc">{numComments}</p>
+                    { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
+                    <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
+                    {
+                        post.author?.authorId !== undefined && post.author?.authorId === viewerId ? 
+                        <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> :
+                        null
+                    }    
+                    {
+                        post.author?.authorId !== undefined || author.authorId !== undefined ? 
+                        post.author?.authorId !== viewerId || author.authorId !== viewerId ? null : 
+                        <button className='post-buttons' onClick={deletePost}>Delete</button> :
+                        null
+                    }    
 
                  {showComment && 
                      <div>

@@ -34,6 +34,7 @@ function SharePost({viewerId, post}) {
      *     - share(): Shares the Post 
      * Returns: N/A
      */
+    console.log(post)
     let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : undefined;
     let authorId = post.author ? post.author.authorId : undefined;
 
@@ -97,12 +98,13 @@ function SharePost({viewerId, post}) {
             origin: post.origin,
             id: post.id,
             author: post.author,
-            authorId: authorId
+            authorId: authorId,
+            status: 'share'
         }
 
         let link = { postId: "" }
         
-        await axios.post('/authors/' + viewerId + '/posts/' + postId + '/share', body)
+        await axios.post('/authors/' + viewerId + '/posts/' + postId, body)
         .then((response) => { 
             if (response.status === 200) {
                 link.postId = response.data.id.split('/')[6];

@@ -75,12 +75,6 @@ function SettingsNav() {
                     <div>
                         <Nav.Link className='setting' href="/settings">Account Details</Nav.Link>
                     </div>
-                    {/* <div>
-                        <Nav.Link className='setting' href="/password">Change Password</Nav.Link>
-                    </div> */}
-                    <div>
-                        <Nav.Link className='setting' href="/github">GitHub</Nav.Link>
-                    </div>
                     <div>
                         <Nav.Link className='setting' onClick={() => LogOut()}>Log Out</Nav.Link>
                     </div>

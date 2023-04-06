@@ -55,7 +55,7 @@ import Errors from './components/user-error/errors.jsx';
 import ApiDocs from "./components/apiDocs/apiDocs.jsx";
 
 // GitHub
-import GitHub from "./components/feeds/settings/github.jsx"
+import GitHub from "./components/feeds/github/github.jsx"
 
 // Welcome
 import Welcome from './components/welcome/welcome.jsx';

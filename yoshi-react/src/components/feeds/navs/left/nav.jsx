@@ -47,7 +47,7 @@ function LeftNavBar(props) {
     }
     return (
         <div>
-        { url === '/' ? 
+        { url === '/' || url === '/github' ? 
             null :
             <div className='left-column'>
                 { url === '/feed' || url === url1 ? <Following authorId={props.authorId}/> :

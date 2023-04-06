@@ -93,6 +93,9 @@ function RightNavBar() {
                         <Nav.Link className='rn-msgs' href="/messages">Messages</Nav.Link>
                     </div>
                     <div className='rn-div'>
+                        <Nav.Link href="/github">Github</Nav.Link>
+                    </div>
+                    <div className='rn-div'>
                         <img className='rn-pubPostImg' alt='rn-pubPostImg' src='/images/public/icon_create_post.png' width={25}/>
                         <CreatePost className='rn-post'/>
                     </div>

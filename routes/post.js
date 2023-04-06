@@ -280,7 +280,7 @@ async function createPost(token, authorId, postId, newPost) {
                 let followerId = (follower.id.split("/authors/"))[(follower.id.split("/authors/")).length - 1];
                 let followerHost = (follower.id.split("/authors/"))[0];
                 let inbox = null;
-                if (followerHost + '/' === process.env.DOMAIN_NAME) {
+                if (followerHost + '/' === process.env.DOMAIN_NAME || followerHost === 'https://yoshi-connect.herokuapp.com') {
                     inbox = await Inbox.findOne({"authorId": followerId}).clone();
                     if (inbox) {
                         inbox.posts.push(post);
@@ -334,7 +334,7 @@ async function createPost(token, authorId, postId, newPost) {
                 let friendId = (friend.id.split("/authors/"))[(friend.id.split("/authors/")).length - 1];
                 let friendHost = (friend.id.split("/authors/"))[0];
                 let inbox = null;
-                if (friendHost + '/' === process.env.DOMAIN_NAME) {
+                if (friendHost + '/' === process.env.DOMAIN_NAME || friendHost === 'https://yoshi-connect.herokuapp.com') {
                     inbox = await Inbox.findOne({"authorId": friendId}).clone();
                     if (inbox) {
                         inbox.posts.push(post);
@@ -728,7 +728,7 @@ async function updatePost(token, authorId, postId, newPost) {
                     let followerId = (follower.id.split("/authors/"))[(follower.id.split("/authors/")).length - 1];
                     let followerHost = (follower.id.split("/authors/"))[0];
                     let inbox = null;
-                    if (followerHost + '/' === process.env.DOMAIN_NAME) {
+                    if (followerHost + '/' === process.env.DOMAIN_NAME || followerHost === 'https://yoshi-connect.herokuapp.com') {
                         inbox = await Inbox.findOne({"authorId": followerId}).clone();
                         if (inbox) {
                             inbox.posts.push(post);
@@ -800,7 +800,7 @@ async function updatePost(token, authorId, postId, newPost) {
                 let followerId = (follower.id.split("/authors/"))[(follower.id.split("/authors/")).length - 1];
                 let followerHost = (follower.id.split("/authors/"))[0];
                 let inbox = null;
-                if (followerHost + '/' === process.env.DOMAIN_NAME) {
+                if (followerHost + '/' === process.env.DOMAIN_NAME || followerHost === 'https://yoshi-connect.herokuapp.com') {
                     inbox = await Inbox.findOne({"authorId": followerId}).clone();
                     if (inbox) {
                         inbox.posts.push(post);
@@ -855,7 +855,7 @@ async function updatePost(token, authorId, postId, newPost) {
                 let friendId = (friend.id.split("/authors/"))[(friend.id.split("/authors/")).length - 1];
                 let friendHost = (friend.id.split("/authors/"))[0];
                 let inbox = null;
-                if (friendHost + '/' === process.env.DOMAIN_NAME) {
+                if (friendHost + '/' === process.env.DOMAIN_NAME || friendHost === 'https://yoshi-connect.herokuapp.com') {
                     inbox = await Inbox.findOne({"authorId": friendId}).clone();
                     if (inbox) {
                         inbox.posts.push(post);

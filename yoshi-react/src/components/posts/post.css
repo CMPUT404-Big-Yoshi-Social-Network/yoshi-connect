@@ -88,3 +88,12 @@ Foundation; All Rights Reserved
     margin-left: .5em;
     margin-right: 3em;
 }
+.share-post{
+    background-color: #090D0E;
+    margin: 1em 10em;
+    padding: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    border: .2em solid #24292F;
+    border-radius: 1em;
+}

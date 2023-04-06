@@ -162,52 +162,15 @@ function SearchCard(props) {
             .then((response) => { })
             .catch(err => { });
         } else if (requestButton === 'Unfriend' || requestButton === "Unfollow") {
-            let completed = false;
             axios
             .delete('/authors/' + viewerId + '/followings/' + id)
-            .then((response) => {
-                if (response.data.status === 204) {
-                    completed = true;
-                } else {
-                    completed = false;
-                }
-            })
+            .then((response) => { })
             .catch(err => { });
             axios
             .delete('/authors/' + id + '/followers/' + viewerId)
-            .then((response) => {
-                if (response.data.status === 204) {
-                    completed = true;
-                } else {
-                    completed = false;
-                }
-            })
+            .then((response) => { })
             .catch(err => { });
-            if (requestButton === 'Unfriend') {
-                axios
-                .delete('/authors/' + id + '/followings/' + viewerId)
-                .then((response) => {
-                    if (response.data.status === 204) {
-                        completed = true;
-                    } else {
-                        completed = false;
-                    }
-                })
-                .catch(err => { });
-                axios
-                .delete('/authors/' + viewerId + '/followers/' + id)
-                .then((response) => {
-                    if (response.data.status === 204) {
-                        completed = true;
-                    } else {
-                        completed = false;
-                    }
-                })
-                .catch(err => { });
-            }
-            if (completed) {
-                setRequestButton('Add');
-            }
+            setRequestButton('Add');
         } 
     }
 

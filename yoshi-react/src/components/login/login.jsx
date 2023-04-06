@@ -74,6 +74,8 @@ export default function Login() {
           navigate('/servererror');
         } else if (err.response.status === 404) {
           setError(true);
+        } else if (err.response.status === 401) {
+          setError(true);
         }
       });
     }

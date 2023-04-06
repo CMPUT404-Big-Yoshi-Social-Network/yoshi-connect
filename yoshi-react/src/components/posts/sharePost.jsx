@@ -154,18 +154,23 @@ function SharePost({viewerId, post}) {
                 </div> :
                 null
             }
-            <span>Unlisted</span>
-            <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
-                        let bool;
-                        if(e.target.value === "True") bool = true;
-                        else if(e.target.value === "False") bool = false;
-                        setData({...data, unlisted: bool})
-                    }} >
-                        <option value="False">False</option>
-                        <option value="True">True</option>
-            </select>
-            <br/>
-            
+            { data.visibility === 'PUBLIC' ?
+                <div>
+                    <span>Unlisted</span>
+                    <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
+                                let bool;
+                                if(e.target.value === "True") bool = true;
+                                else if(e.target.value === "False") bool = false;
+                                setData({...data, unlisted: bool})
+                            }} >
+                                <option value="False">False</option>
+                                <option value="True">True</option>
+                    </select>
+                    <br/>
+                </div> :
+                null
+ 
+            }
             <select className={"postMenuDropDown"} id={"visibility"} name={"visibility"} value={data.visibility || 'Public '} onChange={(e) => {
                             setData({...data, visibility: e.target.value})}}>
                             <option value={"PUBLIC"}>Public</option>

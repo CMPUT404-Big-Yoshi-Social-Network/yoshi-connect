@@ -203,16 +203,21 @@ function CreatePost() {
                             <option value={"FRIENDS"}>Friends</option>
                             <option value={"PRIVATE"}>Private</option>
                         </select>
-                        <label className='postLabel'><p style={{color:"white"}}>Unlisted:</p></label>
-                        <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{
-                            let bool;
-                            if(e.target.value === "True") bool = true;
-                            else if(e.target.value === "False") bool = false;
-                            setData({...data, unlisted: bool})
-                        }} >
-                            <option value="False">False</option>
-                            <option value="True">True</option>
-                        </select>
+                        { data.visibility === 'PUBLIC' ? 
+                            <div>
+                                <label className='postLabel'><p style={{color:"white"}}>Unlisted:</p></label>
+                                <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{
+                                    let bool;
+                                    if(e.target.value === "True") bool = true;
+                                    else if(e.target.value === "False") bool = false;
+                                    setData({...data, unlisted: bool})
+                                }} >
+                                    <option value="False">False</option>
+                                    <option value="True">True</option>
+                                </select>
+                            </div> :
+                            null
+                        }
 
                         <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' className='category-input'></input>
 

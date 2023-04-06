@@ -77,7 +77,7 @@ function Post({viewerId, post, author, realAuthor}) {
                 } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
                     setImage(post.content)
                 }
-            } else {
+            } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.source.split('/authors/')[0].split("/")[2] === "localhost:3000") {
                 axios
                 .get( post.id + "/image")
                 .then((res) => {

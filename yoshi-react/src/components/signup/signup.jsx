@@ -38,6 +38,9 @@ export default function Signup() {
   const navigate = useNavigate();
   const [data, setData] = useState({ username: '', email: '', password: '' })
   const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState({
+    errorMsg: null
+  })
   const url = '/signup';
 
 
@@ -58,6 +61,7 @@ export default function Signup() {
     .catch(err => {
       if (err.response.status === 400) {
         setError(true);
+        setErrorMsg(400);
       } else if (err.response.status === 500) {
         navigate('/servererror');
       }
@@ -71,6 +75,7 @@ export default function Signup() {
           Yoshi Connect
       </Container>
       <Card className="signup-card">
+        {error&&errorMsg === 400? <p className='login-error'>Something went wrong</p>:""}
         <Card.Header>
             <h3>Sign Up</h3>
         </Card.Header>

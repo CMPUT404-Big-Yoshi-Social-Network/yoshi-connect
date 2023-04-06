@@ -146,6 +146,7 @@ async function getPost(postId, auth, author){
         if(!follower) return [{}, 401];
     }
 
+    const commentHistory = await CommentHistory.findOne({postId: postId});
     post = {
         "type": "post",
         "title" : post.title,
@@ -160,7 +161,14 @@ async function getPost(postId, auth, author){
         "count": post.commentCount,
         "likeCount": post.likeCount,
         "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
-        "commentSrc": post.commentSrc,
+        "commentsSrc": {
+            type: "comments",
+            page: 1,
+            side: 5,
+            post: process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
+            id: process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId + '/comments/',
+            comments: commentHistory.comments
+        },
         "published": post.published,
         "visibility": post.visibility,
         "unlisted": post.unlisted
@@ -227,6 +235,15 @@ async function createPost(token, authorId, postId, newPost) {
         author: ''
     };
 
+    let commentsSrc = {
+        type: "comments",
+        page: 1,
+        side: 5,
+        post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+        comments: [ ]
+    }
+
     postHistory.posts.push(post);
     postHistory.num_posts = postHistory.num_posts + 1;
 
@@ -278,6 +295,24 @@ async function createPost(token, authorId, postId, newPost) {
                     }
                 }
                 else if (inbox === null || inbox === undefined) {
+                    let toSend = {
+                        "type": "post",
+                        "title" : post.title,
+                        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
+                        "source": post.source,
+                        "origin": post.origin,
+                        "description": post.description,
+                        "contentType": post.contentType,
+                        "content": post.content,
+                        "author": post.author,
+                        "categories": post.categories,
+                        "count": post.commentCount,
+                        "likeCount": post.likeCount,
+                        "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
+                        "commentsSrc": commentsSrc,
+                        "published": post.published,
+                        "visibility": post.visibility,
+                    }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
                             let config = {
@@ -288,7 +323,7 @@ async function createPost(token, authorId, postId, newPost) {
                                     "Authorization": outgoings[i].auth,
                                     'Content-Type': 'application/json'
                                 },
-                                data: post
+                                data: toSend
                             }
         
                             axios.request(config)
@@ -331,6 +366,24 @@ async function createPost(token, authorId, postId, newPost) {
                     }
                 }
                 else if (inbox === null || inbox === undefined) {
+                    let toSend = {
+                        "type": "post",
+                        "title" : post.title,
+                        "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
+                        "source": post.source,
+                        "origin": post.origin,
+                        "description": post.description,
+                        "contentType": post.contentType,
+                        "content": post.content,
+                        "author": post.author,
+                        "categories": post.categories,
+                        "count": post.commentCount,
+                        "likeCount": post.likeCount,
+                        "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
+                        "commentsSrc": commentsSrc,
+                        "published": post.published,
+                        "visibility": post.visibility,
+                    }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
                             let config = {
@@ -341,7 +394,7 @@ async function createPost(token, authorId, postId, newPost) {
                                     "Authorization": outgoings[i].auth,
                                     'Content-Type': 'application/json'
                                 },
-                                data: post
+                                data: toSend
                             }
         
                             axios.request(config)
@@ -362,7 +415,7 @@ async function createPost(token, authorId, postId, newPost) {
         let local = true;
         let allowed = true;
         let auth = ''
-        if (!author) { 
+        if (!authorTo) { 
             // Must be a private foreign (only to followers / followings)
             local = false;
             let foreignAuthor = '';
@@ -375,7 +428,7 @@ async function createPost(token, authorId, postId, newPost) {
                 }
             }
             if (foreignAuthor === '') {
-                return res.sendStatus(400);
+                return [[], 400];
             } else {
                 let objectHost = foreignAuthor.id.split('/authors/')
                 for (let i = 0; i < outgoings.length; i++) {
@@ -423,6 +476,25 @@ async function createPost(token, authorId, postId, newPost) {
                 await inbox.save();
             }
         } else {
+            let toSend = {
+                "type": "post",
+                "title" : post.title,
+                "id": process.env.DOMAIN_NAME + "authors/" + author.authorId + "/posts/" + postId,
+                "source": post.source,
+                "origin": post.origin,
+                "description": post.description,
+                "contentType": post.contentType,
+                "content": post.content,
+                "author": post.author,
+                "categories": post.categories,
+                "count": post.commentCount,
+                "likeCount": post.likeCount,
+                "comments": process.env.DOMAIN_NAME + "authors/" + author.authorId + '/posts/' + post._id + '/comments/',
+                "commentsSrc": commentsSrc,
+                "published": post.published,
+                "visibility": post.visibility,
+                "unlisted": post.unlisted
+            }
             if (allowed) {
                 let config = {
                     host: authorTo.host,
@@ -432,12 +504,12 @@ async function createPost(token, authorId, postId, newPost) {
                         "Authorization": auth,
                         'Content-Type': 'application/json'
                     },
-                    data: post
+                    data: toSend
                 }
 
                 axios.request(config)
                 .then((response) => { })
-                .catch((error) => { })
+                .catch((error) => { console.log(error) })
             }
         }
     }
@@ -556,6 +628,31 @@ async function sharePost(authorId, token, newPost) {
                     }
                 }
                 else if (inbox === null || inbox === undefined) {
+                    let toSend = {
+                        "type": "post",
+                        "title" : post.title,
+                        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId,
+                        "source": post.source,
+                        "origin": post.origin,
+                        "description": post.description,
+                        "contentType": post.contentType,
+                        "content": post.content,
+                        "author": post.author,
+                        "categories": post.categories,
+                        "count": post.commentCount,
+                        "likeCount": post.likeCount,
+                        "comments": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId + '/comments/',
+                        "commentsSrc": {
+                            type: "comments",
+                            page: 1,
+                            side: 5,
+                            post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId,
+                            id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId + '/comments/',
+                            comments: comments.comments
+                        },
+                        "published": post.published,
+                        "visibility": post.visibility,
+                    }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
                             let config = {
@@ -566,7 +663,7 @@ async function sharePost(authorId, token, newPost) {
                                     "Authorization": outgoings[i].auth,
                                     'Content-Type': 'application/json'
                                 },
-                                data: post
+                                data: toSend
                             }
         
                             axios.request(config)
@@ -609,6 +706,31 @@ async function sharePost(authorId, token, newPost) {
                     }
                 }
                 else if (inbox === null || inbox === undefined) {
+                    let toSend = {
+                        "type": "post",
+                        "title" : post.title,
+                        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId,
+                        "source": post.source,
+                        "origin": post.origin,
+                        "description": post.description,
+                        "contentType": post.contentType,
+                        "content": post.content,
+                        "author": post.author,
+                        "categories": post.categories,
+                        "count": post.commentCount,
+                        "likeCount": post.likeCount,
+                        "comments": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId + '/comments/',
+                        "commentsSrc": {
+                            type: "comments",
+                            page: 1,
+                            side: 5,
+                            post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId,
+                            id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId + '/comments/',
+                            comments: comments.comments
+                        },
+                        "published": post.published,
+                        "visibility": post.visibility,
+                    }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
                             let config = {
@@ -619,7 +741,7 @@ async function sharePost(authorId, token, newPost) {
                                     "Authorization": outgoings[i].auth,
                                     'Content-Type': 'application/json'
                                 },
-                                data: post
+                                data: toSend
                             }
         
                             axios.request(config)
@@ -702,6 +824,31 @@ async function sharePost(authorId, token, newPost) {
             }
         } else {
             if (allowed) {
+                let toSend = {
+                    "type": "post",
+                    "title" : post.title,
+                    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId,
+                    "source": post.source,
+                    "origin": post.origin,
+                    "description": post.description,
+                    "contentType": post.contentType,
+                    "content": post.content,
+                    "author": post.author,
+                    "categories": post.categories,
+                    "count": post.commentCount,
+                    "likeCount": post.likeCount,
+                    "comments": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId + '/comments/',
+                    "commentsSrc": {
+                        type: "comments",
+                        page: 1,
+                        side: 5,
+                        post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId,
+                        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId + '/comments/',
+                        comments: comments.comments
+                    },
+                    "published": post.published,
+                    "visibility": post.visibility,
+                }
                 let config = {
                     host: authorTo.host,
                     url: authorTo.id + "/inbox",
@@ -710,7 +857,7 @@ async function sharePost(authorId, token, newPost) {
                         "Authorization": auth,
                         'Content-Type': 'application/json'
                     },
-                    data: post
+                    data: toSend
                 }
 
                 axios.request(config)
@@ -750,6 +897,8 @@ async function updatePost(token, authorId, postId, newPost) {
     const categories = newPost.categories;
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
+
+    let commentHistory = await CommentHistory.findOne({postId: postId});
 
     if (!title || !description || !contentType || !content) { return [{}, 400]; }
 
@@ -807,6 +956,31 @@ async function updatePost(token, authorId, postId, newPost) {
                         }
                     }
                     else if (inbox === null || inbox === undefined) {
+                        let toSend = {
+                            "type": "post",
+                            "title" : post.title,
+                            "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+                            "source": post.source,
+                            "origin": post.origin,
+                            "description": post.description,
+                            "contentType": post.contentType,
+                            "content": post.content,
+                            "author": post.author,
+                            "categories": post.categories,
+                            "count": post.commentCount,
+                            "likeCount": post.likeCount,
+                            "comments": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+                            "commentsSrc": {
+                                type: "comments",
+                                page: 1,
+                                side: 5,
+                                post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+                                id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+                                comments: commentHistory.comments
+                            },
+                            "published": post.published,
+                            "visibility": post.visibility,
+                        }
                         for (let i = 0; i < outgoings.length; i++) {
                             if (followerHost == outgoings[i].url && outgoings[i].allowed) {
                                 let config = {
@@ -817,7 +991,7 @@ async function updatePost(token, authorId, postId, newPost) {
                                         "Authorization": outgoings[i].auth,
                                         'Content-Type': 'application/json'
                                     },
-                                    data: post
+                                    data: toSend
                                 }
             
                                 axios.request(config)
@@ -878,6 +1052,31 @@ async function updatePost(token, authorId, postId, newPost) {
                     }
                 }
                 else if (inbox === null || inbox === undefined) {
+                    let toSend = {
+                        "type": "post",
+                        "title" : post.title,
+                        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+                        "source": post.source,
+                        "origin": post.origin,
+                        "description": post.description,
+                        "contentType": post.contentType,
+                        "content": post.content,
+                        "author": post.author,
+                        "categories": post.categories,
+                        "count": post.commentCount,
+                        "likeCount": post.likeCount,
+                        "comments": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+                        "commentsSrc": {
+                            type: "comments",
+                            page: 1,
+                            side: 5,
+                            post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+                            id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+                            comments: commentHistory.comments
+                        },
+                        "published": post.published,
+                        "visibility": post.visibility,
+                    }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
                             let config = {
@@ -888,7 +1087,7 @@ async function updatePost(token, authorId, postId, newPost) {
                                     "Authorization": outgoings[i].auth,
                                     'Content-Type': 'application/json'
                                 },
-                                data: post
+                                data: toSend
                             }
         
                             axios.request(config)
@@ -933,6 +1132,31 @@ async function updatePost(token, authorId, postId, newPost) {
                     }
                 }
                 else if (inbox === null || inbox === undefined) {
+                    let toSend = {
+                        "type": "post",
+                        "title" : post.title,
+                        "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+                        "source": post.source,
+                        "origin": post.origin,
+                        "description": post.description,
+                        "contentType": post.contentType,
+                        "content": post.content,
+                        "author": post.author,
+                        "categories": post.categories,
+                        "count": post.commentCount,
+                        "likeCount": post.likeCount,
+                        "comments": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+                        "commentsSrc": {
+                            type: "comments",
+                            page: 1,
+                            side: 5,
+                            post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+                            id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+                            comments: commentHistory.comments
+                        },
+                        "published": post.published,
+                        "visibility": post.visibility,
+                    }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
                             let config = {
@@ -943,7 +1167,7 @@ async function updatePost(token, authorId, postId, newPost) {
                                     "Authorization": outgoings[i].auth,
                                     'Content-Type': 'application/json'
                                 },
-                                data: post
+                                data: toSend
                             }
         
                             axios.request(config)
@@ -1027,6 +1251,31 @@ async function updatePost(token, authorId, postId, newPost) {
             }
         } else {
             if (allowed) {
+                let toSend = {
+                    "type": "post",
+                    "title" : post.title,
+                    "id": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+                    "source": post.source,
+                    "origin": post.origin,
+                    "description": post.description,
+                    "contentType": post.contentType,
+                    "content": post.content,
+                    "author": post.author,
+                    "categories": post.categories,
+                    "count": post.commentCount,
+                    "likeCount": post.likeCount,
+                    "comments": process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+                    "commentsSrc": {
+                        type: "comments",
+                        page: 1,
+                        side: 5,
+                        post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
+                        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
+                        comments: commentHistory.comments
+                    },
+                    "published": post.published,
+                    "visibility": post.visibility,
+                }
                 let config = {
                     host: authorTo.host,
                     url: authorTo.id + "/inbox",
@@ -1035,7 +1284,7 @@ async function updatePost(token, authorId, postId, newPost) {
                         "Authorization": auth,
                         'Content-Type': 'application/json'
                     },
-                    data: post
+                    data: toSend
                 }
 
                 axios.request(config)

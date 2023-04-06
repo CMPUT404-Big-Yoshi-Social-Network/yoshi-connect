@@ -46,33 +46,9 @@ router.get('/', async (req, res) => {
 
   if (friends == 404) { return res.sendStatus(404); }
 
-  sanitizedObjects = [];
-  for(let i = 0; i < friends.length; i++){
-    const friendId = friends[i];
-
-    const friendProfile = await Author.findOne({_id: friendId}); 
-    if (!friendProfile) 
-      continue
-
-      sanitizedObject = {
-      "type": "author",
-      "id" : process.env.DOMAIN_NAME + "authors/" + friendProfile._id,
-      "host": process.env.DOMAIN_NAME,
-      "displayname": friendProfile.username,
-      "url":  process.env.DOMAIN_NAME + "authors/" + friendProfile._id,
-      "github": "",
-      "profileImage": "",
-      "email": friendProfile.email,
-      "about": friendProfile.about,
-      "pronouns": friendProfile.pronouns
-    }
-
-    sanitizedObjects.push(sanitizedObject);
-  }
-
   return res.json({
     type: "friends",
-    items: sanitizedObjects
+    items: friends
   });
 })
 

@@ -79,46 +79,34 @@ async function getFriends(id){
             $unwind: '$followings'
         },
         {
-            $project: {
-                "followings.authorId": 1
-            }
-        },
-        {
             $group: {
                 _id: null,
-                follows: { $addToSet: "$followings.authorId"}
+                follows: { $addToSet: "$followings"}
             }
         },
     ]);
 
-    let followings = [];
-    if(following.length > 0){ followings = following[0].follows; }
-    const friends = await Following.aggregate([
+    const followers = await Follower.aggregate([
         {
-            $match: {
-                $expr: {
-                    $in : ["$authorId", followings]
-                }
-            },
+            $match: {'authorId': id} 
         },
         {
-            $unwind: "$followings"
-        },
-        {
-            $match: {'followings.authorId': id} 
+            $unwind: '$followers'
         },
         {
             $group: {
                 _id: null,
-                friends: {$push: "$authorId"}
+                followers: { $addToSet: "$followers"}
             }
-        }
+        },
     ]);
 
-    if (friends[0] == undefined) {
+    const friends = following[0].follows.filter(follow => followers[0].followers.some(follower => follow.id === follower.id));
+
+    if (friends === undefined) {
         return []
     } else {
-        return friends[0].friends
+        return friends
     }
 }
 

@@ -30,6 +30,7 @@ const crypto = require('crypto');
 const { PublicPost } = require('../scheme/post.js');
 const { OutgoingCredentials } = require('../scheme/server');
 const axios = require('axios');
+const { CommentHistory } = require('../scheme/interactions.js');
 
 async function getPublicLocalPosts(page, size) {
     /**
@@ -79,19 +80,28 @@ async function getPublicLocalPosts(page, size) {
     for(let i = 0; i < publicPosts.length; i++){
         let post = publicPosts[i];
         if (post.author != undefined) {
+            let commentHistory = await CommentHistory.findOne({postId: post._id});
             post.author.authorId = post.author._id != undefined ? post.author._id.split("/") : post.author.authorId;
             post.author.authorId = post.author._id != undefined ? post.author.authorId[post.author.authorId.length - 1] : post.author.authorId;
             post.author.id = post.author._id;
             post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
             post.comments = post.id + "/comments";
             post.count = post.commentCount;
+            post.commentsSrc = {
+                type: "comments",
+                page: 1,
+                side: 5,
+                post: process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id,
+                id: process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id + '/comments/',
+                comments: commentHistory.comments
+            }
             delete post.commentCount;
             delete post._id;
             delete post.author._id;
         }
         publicPosts[i] = post;
     }
-
+    console.log(publicPosts)
     response = {
         page: page,
         size: size,

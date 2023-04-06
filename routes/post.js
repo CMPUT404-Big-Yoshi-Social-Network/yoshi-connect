@@ -544,8 +544,6 @@ async function sharePost(authorId, token, newPost) {
     const source = process.env.DOMAIN_NAME + 'authors/' + authorId + '/posts/' + sharedPostId;
     const origin = newPost.origin;
 
-    if (!title || !description || !contentType || !content) { return [[], 400]; }
-
     let postHistory = await PostHistory.findOne({authorId: authorId});
     if (!postHistory) { return [[], 404]; }
 

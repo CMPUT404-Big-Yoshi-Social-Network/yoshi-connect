@@ -537,7 +537,6 @@ async function postInboxLike(like, authorId){
             github: author.github, 
             profileImage: author.profileImage
         };
-    
         if(await addLiked(author._id, like.object)){
             return [like, 403];
         }

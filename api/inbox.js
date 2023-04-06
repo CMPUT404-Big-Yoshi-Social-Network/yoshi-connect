@@ -188,17 +188,19 @@ router.post('/', async (req, res) => {
 		let outgoings = await OutgoingCredentials.find().clone();
 		for(let i = 0; i < outgoings.length; i++){
 			let outgoing = outgoings[i];
-			let url = outgoing.url.split("/");
-			url = url[2];
-			if(url != idURL[2]){
-				continue;
+			if (outgoing.allowed) {
+				let url = outgoing.url.split("/");
+				url = url[2];
+				if(url != idURL[2]){
+					continue;
+				}
+	
+				let [response, status] = await sendToForeignInbox(req.params.authorId, outgoing.auth, req.body);
+				if(status > 200 && status < 300){
+					return res.json(response);
+				}
+				return res.sendStatus(status);
 			}
-
-			let [response, status] = await sendToForeignInbox(req.params.authorId, outgoing.auth, req.body);
-			if(status > 200 && status < 300){
-				return res.json(response);
-			}
-			return res.sendStatus(status);
 		}
 		return res.sendStatus(400);
 	}

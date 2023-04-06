@@ -105,7 +105,7 @@ function Post({viewerId, post, author, realAuthor}) {
                 let itemsCopy = response.data.items;
                 for(let i = 0; i < itemsCopy.length; i++){
                     let like = itemsCopy[i];
-                    let likeAuthorId = like.author.id.split("/");
+                    let likeAuthorId = like.author.url.split("/");
                     likeAuthorId = likeAuthorId[likeAuthorId.length - 1];
                     if(likeAuthorId === viewerId){
                         setLike(true);
@@ -154,17 +154,15 @@ function Post({viewerId, post, author, realAuthor}) {
                 author: author,
                 object: post.id
             }
-            let id = post.author.id.split("/");
-			id = id[id.length - 1];
-            axios.post('/authors/' + id + '/inbox', body, {
+            axios.post('/authors/' + authorId + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
-        })
-        .then((response) => {
-            setLike(true);
-            setNumLikes(numLikes + 1);
-        })
-        .catch((err) => {
-            if(err.response){ }});
+            })
+            .then((response) => {
+                setLike(true);
+                setNumLikes(numLikes + 1);
+            })
+            .catch((err) => {
+                if(err.response){ }});
         }
     }
 

@@ -221,9 +221,7 @@ function Post({viewerId, post, author, realAuthor}) {
                     { showComment ? <button className='post-buttons' onClick={toggleComments}>Close Comments</button> : <button className='post-buttons' onClick={toggleComments}>Open Comments</button> }
                     <Popup trigger={<button className='post-buttons' >Share</button>}><SharePost viewerId={viewerId} post={post}/></Popup>
                     {
-                        post.author?.authorId !== undefined || author.authorId !== undefined ? 
-                        post.author?.authorId !== viewerId  || author.authorId !== viewerId ? 
-                        null : 
+                        post.author?.authorId !== undefined && post.author?.authorId === viewerId ? 
                         <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> :
                         null
                     }    

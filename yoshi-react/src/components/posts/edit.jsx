@@ -78,10 +78,10 @@ function EditPost({viewerId, post}) {
          * Request: GET    
          * Returns: N/A
          */
-        console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
+            let postId = (post.id.split('/posts/'))[(post.id.split('/posts/')).length - 1]
             axios
-            .get("/authors/" + post.authorId + "/posts/" + post._id + "/image")
+            .get("/authors/" + post.author.authorId + "/posts/" + postId + "/image")
             .then((res) => {
                 if (res.data.status === 200) {
                     setItem({ ...item, image: res.data.src, exist: true})
@@ -89,7 +89,7 @@ function EditPost({viewerId, post}) {
             })
         }
         getImage();
-    }, [post, item])
+    }, [post.author.authorId, post.id, item])
 
     
     const [data, setData] = useState({
@@ -127,23 +127,24 @@ function EditPost({viewerId, post}) {
             postId: data.postId,
         }
         
-        axios.post('/authors/' + post.authorId + '/posts/' + post._id, body)
+        let postId = (post.id.split('/posts/'))[(post.id.split('/posts/')).length - 1]
+        axios.post('/authors/' + post.author.authorId + '/posts/' + postId, body)
         .then((response) => { })
         .catch((e) =>{ })
 
         if (item.exist) {
-            axios.post('/authors/' + post.authorId + '/posts/' + post._id + "/image", {
+            axios.post('/authors/' + post.author.authorId + '/posts/' + postId + "/image", {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/authors/' + post.authorId + '/posts/' + post._id + "/image",
+                url: '/authors/' + post.author.authorId + '/posts/' + postId + "/image",
                 headers: { 'Content-Type': 'multipart/form-data' },
                 image: item.image
             }).then((res) => {}).catch((e) => {console.log(e);})
         } else {
-            axios.put('/authors/' + post.authorId + '/posts/' + post._id + "/image", {
+            axios.put('/authors/' + post.author.authorId + '/posts/' + postId + "/image", {
                 method: 'post',
                 maxBodyLength: Infinity,
-                url: '/authors/' + post.authorId + '/posts/' + post._id + "/image",
+                url: '/authors/' + post.author.authorId + '/posts/' + postId + "/image",
                 headers: { 'Content-Type': 'multipart/form-data' },
                 image: item.image
             }).then((res) => {}).catch((e) => {console.log(e);})
@@ -151,9 +152,9 @@ function EditPost({viewerId, post}) {
 
         
     }
-
+    console.log(post)
     return (
-        post.author?.authorId !== viewerId ? null :
+        post.author.authorId !== viewerId ? null :
             <div className='editBackground'>
             <form>
                 <label>
@@ -198,10 +199,9 @@ function EditPost({viewerId, post}) {
                 { data.visibility === 'PRIVATE' ? 
                     <div>
                         <label><p style={{color:"white"}}>Message To:</p></label>
-                            <input className={"postMenuInput"} type="text" value={data.specifics || ''} onChange={(e) => {
-                                setData({...data, postTo: e.target.value})
-                            }}></input>
-                        <br/>
+                        <input className={"postMenuInput"} type="text" onChange={(e) => {
+                            setData({...data, postTo: e.target.value})
+                        }}></input>
                     </div> :
                     null
                 }
@@ -240,11 +240,11 @@ function EditPost({viewerId, post}) {
                 <div>
                     { categories.map((category, idx) => (
                         <div key={idx}>
-                            <span class='category'>{category}</span>
-                            <span class='close' onClick={() => removeCategory(idx)}>x</span>
+                            <span className='category'>{category}</span>
+                            <span className='close' onClick={() => removeCategory(idx)}>x</span>
                         </div> 
                     ))}
-                    <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' class='category-input'></input>
+                    <input onKeyDown={saveCategory} type='text' placeholder='Enter a category' className='category-input'></input>
                 </div>
 
                 <button className='post-buttons' type="submit" onClick={modifyPost}>Edit Post</button>

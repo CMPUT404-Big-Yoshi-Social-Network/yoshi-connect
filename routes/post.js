@@ -697,8 +697,7 @@ async function updatePost(token, authorId, postId, newPost) {
     let publicPost = await PublicPost.findOne({_id: postId}).clone();
     if (publicPost) {
         if (newPost.unlisted || newPost.visibility === 'FRIENDS' || newPost.visibility === 'PRIVATE') {
-            PublicPost.findOneAndDelete({_id: postId}).clone();
-            await PublicPost.save();
+            await PublicPost.findOneAndDelete({_id: postId}).clone();
         } else {
             publicPost.title = title;
             publicPost.description = description;

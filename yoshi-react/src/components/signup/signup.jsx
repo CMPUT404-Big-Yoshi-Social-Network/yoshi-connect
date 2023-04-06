@@ -57,7 +57,10 @@ export default function Signup() {
 
     axios
     .post(url, data)
-    .then((response) => { alert('Now you must be approved by an admin.') })
+    .then((response) => { 
+      alert('Now you must be approved by an admin.') 
+      navigate('/login');
+    })
     .catch(err => {
       if (err.response.status === 400) {
         setError(true);

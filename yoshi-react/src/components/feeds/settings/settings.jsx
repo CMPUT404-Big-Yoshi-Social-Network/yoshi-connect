@@ -95,7 +95,6 @@ function Settings() {
     }, [navigate])
     
     const modify = (e) => {
-        console.log(newAuthor)
         /**
          * Description: Updates the author's account details
          * Request: PUT

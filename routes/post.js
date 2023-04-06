@@ -449,30 +449,7 @@ async function createPost(token, authorId, postId, newPost) {
     return await getPost(postId, token, author);
 }
 
-async function getHostNames(){
-    /**
-    Description: Gets the host names
-    Associated Endpoint: N/A
-    Request Type: GET
-    Request Body: N/A
-    Return: N/A
-    */
-    let hosts = [];
-
-    let currHost = process.env.DOMAIN_NAME.split("/");
-    hosts.push({host: currHost[2]});
-
-    let outs = await OutgoingCredentials.find().clone();
-    for(let i = 0; i < outs.length; i++){
-        let out = outs[i];
-        let foreignHost = out.url.split("/");
-        hosts.push({...out, host: foreignHost[2]});
-    }
-
-    return hosts;
-}
-
-async function sharePost(authorId, newPost) {
+async function sharePost(authorId, token, newPost) {
     /**
     Description: Sends a POST request to share post assciated with a specific Author
     Associated Endpoint: N/A
@@ -747,7 +724,7 @@ async function sharePost(authorId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-    return await getPost(sharedPostId, authorId, author);
+    return await getPost(sharedPostId, token, author);
 }
 
 async function updatePost(token, authorId, postId, newPost) {

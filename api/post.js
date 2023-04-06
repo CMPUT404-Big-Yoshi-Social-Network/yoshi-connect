@@ -401,7 +401,7 @@ router.post('/:postId', async (req, res) => {
 
   let [post, status] = [{}, ''];
   if (req.body.status !== undefined && req.body.status === 'share') {
-    [post, status] = await sharePost(authorId, req.body);
+    [post, status] = await sharePost(authorId, req.cookies.token, req.body);
   } else {
     [post, status] = await updatePost(req.cookies.token, authorId, postId, req.body);
   }

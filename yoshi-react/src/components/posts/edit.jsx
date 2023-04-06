@@ -153,7 +153,7 @@ function EditPost({viewerId, post}) {
 
         
     }
-    console.log(post)
+
     return (
         post.author.authorId !== viewerId ? null :
             <div className='editBackground'>

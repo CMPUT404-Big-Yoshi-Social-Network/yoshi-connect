@@ -61,7 +61,6 @@ function Post({viewerId, post, author, realAuthor}) {
     const [showComment, setShowComment] = useState(false);
     const [like, setLike] = useState(false);
     const [image, setImage] = useState("");
-    // const [items, setItems] = useState(undefined);
     const navigate = useNavigate();
     
     useEffect(() => {

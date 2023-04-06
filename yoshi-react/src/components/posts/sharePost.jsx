@@ -34,9 +34,16 @@ function SharePost({viewerId, post}) {
      *     - share(): Shares the Post 
      * Returns: N/A
      */
-    console.log(post)
-    let postId = post.id ? post.id.split('/')[(post.id.split('/')).length - 1] : undefined;
-    let authorId = post.author ? post.author.authorId : undefined;
+    let postId = post.id ? 
+        post.id.includes('/') ? (post.id.split('/'))[(post.id.split('/')).length - 1] : 
+        post.id :
+        post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : 
+        undefined;
+    let authorId = post.author ? 
+        post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
+        post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
+        undefined : 
+        undefined;
 
     const numLikes = post.likeCount;
     const numComments = post.commentCount;

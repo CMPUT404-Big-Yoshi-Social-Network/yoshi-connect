@@ -161,11 +161,9 @@ async function addLiked(authorId, objectId){
     let authorUUID = authorId.split("/authors/")
     authorUUID = authorUUID[authorUUID.length - 1]; 
     const liked = await LikedHistory.findOne({authorId: authorUUID});
-    if(!liked){
-        return false;
-    }
+    if (!liked) { return true; }
     if(liked.liked.id(objectId)){
-        return false;
+        return true;
     }
     let object = objectId.split("/");
     let type = object[object.length - 2];
@@ -173,7 +171,7 @@ async function addLiked(authorId, objectId){
     liked.liked.push({type: (type == "posts") ? "post" : "comment", _id: objectId});
     liked.numObjects++;
     await liked.save();
-    return true;
+    return false;
 }
 
 async function fetchCommentLikes(authorId, postId, commentId) {

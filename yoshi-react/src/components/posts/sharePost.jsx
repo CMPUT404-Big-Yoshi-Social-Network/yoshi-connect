@@ -138,11 +138,15 @@ function SharePost({viewerId, post}) {
             {<span>{numComments}<p>Comments</p></span>} 
             <br></br> 
 
-            <label><p style={{color:"white"}}>Message To:</p></label>
-                    <input className={"postMenuInput"} type="text" value={data.specifics || ''} onChange={(e) => {
+            { data.visibility === 'PRIVATE' ? 
+                <div>
+                    <label><p style={{color:"white"}}>Message To:</p></label>
+                    <input className={"postMenuInput"} type="text" onChange={(e) => {
                         setData({...data, postTo: e.target.value})
                     }}></input>
-            <br/>
+                </div> :
+                null
+            }
             <span>Unlisted</span>
             <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
                         let bool;

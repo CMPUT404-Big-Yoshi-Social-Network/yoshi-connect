@@ -75,7 +75,7 @@ function SearchOutcomes({url}) {
     }, [setFindings, authors, url])
 
     return (
-        <div>
+        <div className='search-card'>
             { findings ? 
                 <div>
                     {Object.keys(authors).map((author, idx) => (

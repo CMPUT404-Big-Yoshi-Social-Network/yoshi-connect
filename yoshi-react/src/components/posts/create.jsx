@@ -154,7 +154,7 @@ function CreatePost() {
                 link.postId = response.data.id.split('/')[6];
             }
         })
-        .catch((e) =>{ console.log(e); })
+        .catch((e) =>{ })
 
         if (item.image !== "") {
             axios.put('/authors/' + data.authorId + '/posts/' + link.postId + "/image", {
@@ -163,7 +163,7 @@ function CreatePost() {
                 url: '/authors/' + data.authorId + '/posts/' + link.postId + "/image",
                 headers: { 'Content-Type': 'multipart/form-data' },
                 image: item.image
-            }).then((res) => {}).catch((e) => { console.log(e); })  
+            }).then((res) => {}).catch((e) => { })  
         }
         setItem({ ...item, image: "" })
     }

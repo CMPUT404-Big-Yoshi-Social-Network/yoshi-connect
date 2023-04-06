@@ -125,6 +125,7 @@ function EditPost({viewerId, post}) {
             image: data.image,
             postTo: data.postTo,
             postId: data.postId,
+            id: post.id
         }
         
         let postId = (post.id.split('/posts/'))[(post.id.split('/posts/')).length - 1]

@@ -72,7 +72,12 @@ function Posts({url, userInfo}) {
 
             axios.get(url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url, config)
             .then((response) => {
-                setPosts(response.data.items);
+                if (url !== '/posts/public' && url !== 'personal' && url.split('/')[0] !== 'other') {
+                    const friendPosts = (response.data.items).filter(post => post.visibility === 'FRIENDS');
+                    setPosts(friendPosts);
+                } else {
+                    setPosts(response.data.items);
+                }
             })
             .catch(err => {
                 if (err.response.status === 404) {

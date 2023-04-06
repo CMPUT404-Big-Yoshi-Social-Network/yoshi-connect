@@ -36,6 +36,7 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author, realAuthor}) {
+    console.log(post)
     let postId = post.id ? 
         post.id.includes('/') ? (post.id.split('/'))[(post.id.split('/')).length - 1] : 
         post.id :

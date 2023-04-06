@@ -212,6 +212,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     let post = {
         _id: postId,
+        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
         title: title,
         source: source,
         origin: origin,
@@ -262,16 +263,6 @@ async function createPost(token, authorId, postId, newPost) {
 
         const followers = await Follower.findOne({authorId: authorId}).clone();
         post.type = "post";
-        post.id = post.origin;
-        post.author = {
-            type: "author",
-            id: author.id,
-            host: author.host,
-            displayName: author.displayName,
-            url: author.url,
-            github: author.github,
-            profileImage: author.profileImage,
-        };
         delete post._id;
         const outgoings = await OutgoingCredentials.find().clone();
         for (let i = 0; i < followers.followers.length; i++) {
@@ -316,7 +307,6 @@ async function createPost(token, authorId, postId, newPost) {
         const followings = await Following.findOne({authorId: authorId}).clone();
         const friends = followers.followers.filter(follower => followings.followings.some(following => follower.id === following.id));
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -416,7 +406,6 @@ async function createPost(token, authorId, postId, newPost) {
         }  
 
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -458,7 +447,7 @@ async function createPost(token, authorId, postId, newPost) {
     await likes;
     await comments;
     await savePostPromise;
-    return await getPost(postId, authorId, author);
+    return await getPost(postId, token, author);
 }
 
 async function getHostNames(){
@@ -515,6 +504,7 @@ async function sharePost(authorId, newPost) {
 
     let post = {
         _id: sharedPostId,
+        id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + sharedPostId,
         title: title,
         source: source,
         origin: origin,
@@ -565,7 +555,6 @@ async function sharePost(authorId, newPost) {
 
         const followers = await Follower.findOne({authorId: authorId}).clone();
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -619,7 +608,6 @@ async function sharePost(authorId, newPost) {
         const followings = await Following.findOne({authorId: authorId}).clone();
         const friends = followers.followers.filter(follower => followings.followings.some(following => follower.id === following.id));
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -719,7 +707,6 @@ async function sharePost(authorId, newPost) {
         }  
 
         post.type = "post";
-        post.id = post.origin;
         post.author = {
             type: "author",
             id: author.id,
@@ -818,7 +805,7 @@ async function updatePost(token, authorId, postId, newPost) {
 
             const followers = await Follower.findOne({authorId: authorId}).clone();
             post.type = "post";
-            post.id = post.origin;
+            post.id = newPost.id;
             post.author = {
                 type: "author",
                 id: author.id,
@@ -890,7 +877,7 @@ async function updatePost(token, authorId, postId, newPost) {
 
         const followers = await Follower.findOne({authorId: authorId}).clone();
         post.type = "post";
-        post.id = post.origin;
+        post.id = newPost.id;
         post.author = {
             type: "author",
             id: author.id,
@@ -945,7 +932,7 @@ async function updatePost(token, authorId, postId, newPost) {
         const followings = await Following.findOne({authorId: authorId}).clone();
         const friends = followers.followers.filter(follower => followings.followings.some(following => follower.id === following.id));
         post.type = "post";
-        post.id = post.origin;
+        post.id = newPost.id;
         post.author = {
             type: "author",
             id: author.id,
@@ -1045,7 +1032,7 @@ async function updatePost(token, authorId, postId, newPost) {
         }  
 
         post.type = "post";
-        post.id = post.origin;
+        post.id = newPost.id;
         post.author = {
             type: "author",
             id: author.id,

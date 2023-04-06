@@ -98,8 +98,9 @@ const inboxCommentScheme = new Schema({
     object: String
 })
 
-inboxPostScheme = new Schema({
+const inboxPostScheme = new Schema({
         _id: String,
+        id: String,
         origin: String,
         source: String,
         title: String,

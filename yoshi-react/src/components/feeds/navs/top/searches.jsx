@@ -73,16 +73,16 @@ function SearchOutcomes({url}) {
             }
         });
     }, [setFindings, authors, url])
-
+    console.log(authors)
     return (
-        <div>
+        <div className='search-card'>
             { findings ? 
                 <div>
                     {Object.keys(authors).map((author, idx) => (
                         <SearchCard key={idx} {...authors[author]}/>
                     ))}
                 </div> :
-                null
+                <p>No users found.</p>
             }   
         </div>     
     )

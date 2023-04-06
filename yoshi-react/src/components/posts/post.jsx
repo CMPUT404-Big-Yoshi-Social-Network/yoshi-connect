@@ -217,8 +217,8 @@ function Post({viewerId, post, author, realAuthor}) {
                     }    
                     {
                         post.author?.authorId !== undefined || author.authorId !== undefined ? 
-                        post.author?.authorId !== viewerId || author.authorId !== viewerId ? null : 
-                        <button className='post-buttons' onClick={deletePost}>Delete</button> :
+                        post.author?.authorId !== viewerId || author.authorId !== viewerId ? null :
+                        <img className='post-images' alt='delete' onClick={deletePost} src='/images/public/icon_bin.png' width={20}/> :
                         null
                     }    
                  { post.visibility === 'FRIENDS' && author.authorId !== viewerId ? 

@@ -205,9 +205,9 @@ function Post({viewerId, post, author, realAuthor}) {
         });
     }
     return (
-        <div className="post">
+        <div>
             {!post.unlisted &&
-                <div>
+                <div className="post">
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
                     { post.source !== post.origin ? <h4>Shared Post</h4> : null}
                     { post.title === "" ? null : <h1>{post.title}</h1> }
@@ -233,23 +233,23 @@ function Post({viewerId, post, author, realAuthor}) {
                         null
                     }    
 
-                    {showComment && 
-                        <div>
-                            <h3>Comments</h3>
+                 {showComment && 
+                     <div>
+                         <h3>Comments</h3>
 
-                            <form >
-                                <input type="text" id="newComment" name="newComment" onChange={(e) => {
-                                    setComment({...comment, newComment: e.target.value})
-                                }}/>
-                                <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
-                            </form>
-                           <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author} liked={post} commentsSrc={post.commentsSrc}> </Comments>
-                        </div>}
-                    <div>
-                </div>
-                    
-                </div>}
-        </div>
+                         <form >
+                             <input type="text" id="newComment" name="newComment" onChange={(e) => {
+                                 setComment({...comment, newComment: e.target.value})
+                             }}/>
+                             <button className='post-buttons' type='button' onClick={makeComment}>Add Comment</button>
+                         </form>
+                        <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + authorId + '/posts/' + postId + '/comments'} author={author} liked={post} commentsSrc={post.commentsSrc}> </Comments>
+                     </div>}
+                 <div>
+             </div>
+        </div>}
+    </div>
+       
     )
 }
 

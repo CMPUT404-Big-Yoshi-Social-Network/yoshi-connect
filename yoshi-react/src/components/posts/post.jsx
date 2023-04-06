@@ -78,7 +78,7 @@ function Post({viewerId, post, author, realAuthor}) {
                 }
             } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.source.split('/authors/')[0].split("/")[2] === "localhost:3000") {
                 axios
-                .get( post.id + "/image")
+                .get((post.id) || ('/authors/' + viewerId + '/posts/' + post._id) + "/image")
                 .then((res) => {
                     if (res.data.status === 200) {
                         setImage(res.data.src)
@@ -89,7 +89,7 @@ function Post({viewerId, post, author, realAuthor}) {
             }
         }
         getImage();
-    }, [post.id, contentType, post.content, post.source])
+    }, [post.id, contentType, viewerId, post._id, post.content, post.source])
 
     useEffect(() => { 
         /**
@@ -98,10 +98,9 @@ function Post({viewerId, post, author, realAuthor}) {
          * Returns: N/A
          */ 
         const getLikes = () => {
-            axios.get(post.id + '/likes')
+            axios.get((post.id) || ('/authors/' + viewerId + '/posts/' + post._id) + '/likes')
             .then((response) => { 
                 setNumLikes(response.data.items.length);
-                // setItems(response.data.items);
                 let itemsCopy = response.data.items;
                 for(let i = 0; i < itemsCopy.length; i++){
                     let like = itemsCopy[i];
@@ -115,7 +114,7 @@ function Post({viewerId, post, author, realAuthor}) {
             .catch((err) => { });
         }
         getLikes();
-    }, [post.id, viewerId]);
+    }, [post.id, viewerId, post._id]);
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {

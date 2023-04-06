@@ -213,16 +213,8 @@ function Profile() {
          */
         if (!personal.person && personal.viewerId != null && personal.viewedId != null && !state.isRemote) { 
             console.log('Debug: Checking if the viewer has already sent a friend request.')
-            let config = {
-                method: 'get',
-                maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
             axios
-            .get('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
+            .get('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId)
             .then((response) => { 
                 exists.current = true; 
                 setRequestButton('Sent');

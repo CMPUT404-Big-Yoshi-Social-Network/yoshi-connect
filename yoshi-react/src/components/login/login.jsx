@@ -86,7 +86,7 @@ export default function Login() {
             Yoshi Connect
         </Container>
         <Card className="login-card">
-          {error? <p className='login-error'>Username or password is incorrect</p>:""}
+          {error? <p className='login-error'>Something went wrong</p>:""}
           <Card.Header>
               <h3>Log In</h3>
           </Card.Header>

@@ -54,7 +54,7 @@ function FriendFeed() {
             .get('/userinfo/')
             .then((response) => {
                 if (response.data !== null) {
-                    setUserInfo(response.data);
+                    setUserInfo(prevInfo => response.data);
                 }
             })
             .catch(err => {  
@@ -72,7 +72,10 @@ function FriendFeed() {
                     <LeftNavBar authorId={userInfo.authorId}/>
                 </div>
                 <div className='pubColM'>
-                    <Posts url={"/authors/" + userInfo.authorId + "/inbox"} userInfo={userInfo}/>  
+                    { userInfo.authorId !== undefined ? 
+                        <Posts url={"/authors/" + userInfo.authorId + "/inbox"} userInfo={userInfo}/> :
+                        null
+                    }
                 </div>
                 <div className='pubColR'>
                     <RightNavBar/>

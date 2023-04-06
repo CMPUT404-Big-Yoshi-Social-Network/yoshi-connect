@@ -190,9 +190,6 @@ function Post({viewerId, post, author, realAuthor}) {
         .catch((err) => { });
     }
 
-    console.log((window.location.href.split('/authors')[1]))
-    console.log(post.id)
-    console.log(((id + '/posts/' + post._id) || post.id))
     return (
         <div>
             {(!post.unlisted || (post.id === window.location.href)) &&
@@ -221,7 +218,7 @@ function Post({viewerId, post, author, realAuthor}) {
                         <button className='post-buttons' onClick={deletePost}>Delete</button> :
                         null
                     }    
-                 { post.visibility === 'FRIENDS' ? 
+                 { post.visibility === 'FRIENDS' && author.authorId !== viewerId ? 
                         <form >
                              <input type="text" id="newComment" name="newComment" onChange={(e) => {
                                  setComment({...comment, newComment: e.target.value})

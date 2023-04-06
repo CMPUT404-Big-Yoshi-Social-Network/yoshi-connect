@@ -168,6 +168,7 @@ function Post({viewerId, post, author, realAuthor}) {
                 if(err.response){ }});
         }
     }
+
     const makeComment = () => {
         /**
          * Description: Sends a Comment through a POST request
@@ -190,7 +191,7 @@ function Post({viewerId, post, author, realAuthor}) {
         })
         .catch((err) => { });
     }
-
+    
     return (
         <div>
             {(!post.unlisted || (post.id === window.location.href)) &&

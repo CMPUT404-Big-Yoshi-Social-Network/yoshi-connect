@@ -142,37 +142,19 @@ function CreatePost() {
             categories: categories,
             postTo: data.postTo,
             image: data.image,
-            type: '',
+            type: 'post',
             authorId: data.authorId
         }
 
         let link = { postId: "" }
         
-        if (data.postTo === '') {
-            await axios.put('/authors/' + data.authorId + '/posts/', body)
-            .then((response) => { 
-                if (response.status === 200) {
-                    link.postId = response.data.id.split('/')[6];
-                }
-            })
-            .catch((e) =>{ console.log(e); })
-        } else {
-            body.type = 'post'
-            axios
-            .get('/authors/' + data.authorId + '/postTo/' + body.postTo)
-            .then((response) => {
-                body.postTo = response.data;
-                let postToId = response.data._id || (response.data.id.split('/authors/'))[(response.data.id.split('/authors/')).length - 1];
-                axios.post('/authors/' + postToId + '/inbox', body)
-                .then((response) => { 
-                    if (response.status === 200) {
-                        link.postId = response.data.id.split('/')[6];
-                    }
-                })
-                .catch((e) =>{ console.log(e); })
-            })
-            .catch(err => { });
-        }
+        await axios.put('/authors/' + data.authorId + '/posts/', body)
+        .then((response) => { 
+            if (response.status === 200) {
+                link.postId = response.data.id.split('/')[6];
+            }
+        })
+        .catch((e) =>{ console.log(e); })
 
         if (item.image !== "") {
             axios.put('/authors/' + data.authorId + '/posts/' + link.postId + "/image", {

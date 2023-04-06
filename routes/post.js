@@ -247,7 +247,7 @@ async function createPost(token, authorId, postId, newPost) {
     let [author, status] = await authorPromise;
     if (status != 200) return [{}, 500];
 
-    if (visibility == 'PUBLIC') {
+    if (visibility == 'PUBLIC' && (unlisted == "false" || unlisted == false)) {
         post.author = {
             _id: author.id,
             host: author.host,
@@ -259,9 +259,7 @@ async function createPost(token, authorId, postId, newPost) {
         }
         const publicPost = new PublicPost(post);
         await publicPost.save();
-    }
 
-    if ((visibility !== 'PRIVATE') && (unlisted == "false" || unlisted == false)) {
         const followers = await Follower.findOne({authorId: authorId}).clone();
         post.type = "post";
         post.id = post.origin;
@@ -310,6 +308,149 @@ async function createPost(token, authorId, postId, newPost) {
                         }
                     }
                 }
+            }
+        }
+    }
+    else if ((visibility === 'FRIENDS') && (unlisted == "false" || unlisted == false)) {
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        const followings = await Following.findOne({authorId: authorId}).clone();
+        const friends = followers.followers.filter(follower => followings.followings.some(following => follower.id === following.id));
+        post.type = "post";
+        post.id = post.origin;
+        post.author = {
+            type: "author",
+            id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+        };
+        delete post._id;
+        const outgoings = await OutgoingCredentials.find().clone();
+        for (let i = 0; i < friends.length; i++) {
+            const friend = friends[i];
+            if (friend.id !== undefined) {
+                let friendId = (friend.id.split("/authors/"))[(friend.id.split("/authors/")).length - 1];
+                let friendHost = (friend.id.split("/authors/"))[0];
+                let inbox = null;
+                if (friendHost + '/' === process.env.DOMAIN_NAME) {
+                    inbox = await Inbox.findOne({"authorId": friendId}).clone();
+                    if (inbox) {
+                        inbox.posts.push(post);
+                        inbox.num_posts++;
+                        await inbox.save();
+                    }
+                }
+                else if (inbox === null || inbox === undefined) {
+                    for (let i = 0; i < outgoings.length; i++) {
+                        if (friendHost == outgoings[i].url && outgoings[i].allowed) {
+                            let config = {
+                                host: outgoings[i].url,
+                                url: friend.id + "/inbox",
+                                method: "POST",
+                                headers:{
+                                    "Authorization": outgoings[i].auth,
+                                    'Content-Type': 'application/json'
+                                },
+                                data: post
+                            }
+        
+                            axios.request(config)
+                            .then((response) => { })
+                            .catch((error) => { })
+                        }
+                    }
+                }
+            }
+        }
+    } else if ((visibility === 'PRIVATE') && (unlisted == "false" || unlisted == false)) {
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        const followings = await Following.findOne({authorId: authorId}).clone();
+        const outgoings = await OutgoingCredentials.find().clone();
+
+        const username = newPost.postTo;
+        let authorTo = await Author.findOne({username: username}).clone();
+        let local = true;
+        let allowed = true;
+        let auth = ''
+        if (!author) { 
+            // Must be a private foreign (only to followers / followings)
+            local = false;
+            let foreignAuthor = '';
+            for (let i = 0; i < followers.followers.length; i++) {
+                if (followers.followers[i].displayName === username) { foreignAuthor = followers.followers[i] }
+            }
+            if (foreignAuthor === '') {
+                for (let i = 0; i < followings.followings.length; i++) {
+                    if (followings.followings[i].displayName === username) { foreignAuthor = followings.followings[i] }
+                }
+            }
+            if (foreignAuthor === '') {
+                return res.sendStatus(400);
+            } else {
+                let objectHost = foreignAuthor.id.split('/authors/')
+                for (let i = 0; i < outgoings.length; i++) {
+                    if (outgoings[i].url === objectHost[0]) { 
+                        auth = outgoings[i].auth; 
+                        allowed = outgoings[i].allowed;
+                        break;
+                    }
+                }
+
+                if (allowed) {
+                    let config = {
+                        host: objectHost[0],
+                        url: foreignAuthor.id,
+                        method: "GET",
+                        headers:{
+                            "Authorization": auth,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                    await axios.request(config)
+                    .then((res) => { authorTo = res.data; })
+                    .catch((err) => { })
+                }
+            }
+        }  
+
+        post.type = "post";
+        post.id = post.origin;
+        post.author = {
+            type: "author",
+            id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+        };
+        delete post._id;
+
+        if (local) {
+            let inbox = await Inbox.findOne({"authorId": authorTo._id}).clone();
+            if (inbox) {
+                inbox.posts.push(post);
+                inbox.num_posts++;
+                await inbox.save();
+            }
+        } else {
+            if (allowed) {
+                let config = {
+                    host: authorTo.host,
+                    url: authorTo.id + "/inbox",
+                    method: "POST",
+                    headers:{
+                        "Authorization": auth,
+                        'Content-Type': 'application/json'
+                    },
+                    data: post
+                }
+
+                axios.request(config)
+                .then((response) => { })
+                .catch((error) => { })
             }
         }
     }
@@ -526,6 +667,11 @@ async function updatePost(token, authorId, postId, newPost) {
             200 Status (OK) -- Returns a JSON of the updated post object
     */
     if (!(await authLogin(token, authorId))) { return [{}, 401]; }
+
+    let authorPromise = getAuthor(authorId);
+    let [author, status] = await authorPromise;
+    if (status != 200) return [{}, 500];
+
     const title = newPost.title;
     const description = newPost.description;
     const contentType = newPost.contentType;
@@ -534,28 +680,87 @@ async function updatePost(token, authorId, postId, newPost) {
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
 
-    if(!title || !description || !contentType || !content || !categories || (unlisted != 'true' && unlisted != 'false')){
-        return [{}, 400];
-    }
+    if (!title || !description || !contentType || !content) { return [{}, 400]; }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
-
     if (!postHistory) { return [{}, 500]; }
-
     let post = postHistory.posts.id(postId);
-    if((unlisted == 'false' || unlisted == false) && visibility == "PUBLIC" && !post.unlisted && post.visibility == "PUBLIC") {
-        let publicPosts = await PublicPost.findOne({_id: postId}).clone();
-        if(!publicPosts) return [{}, 500];
-        publicPosts.title = title;
-        publicPosts.description = description;
-        publicPosts.contentType = contentType;
-        publicPosts.content = content;
-        publicPosts.visibility = visibility;
-        publicPosts.unlisted = unlisted;
-        publicPosts.categories = categories;
-        await publicPosts.save();
+    post.title = title;
+    post.description = description;
+    post.contentType = contentType;
+    post.content = content;
+    post.visibility = visibility;
+    post.unlisted = unlisted;
+    post.categories = categories;
+    await postHistory.save();
+
+    let publicPost = await PublicPost.findOne({_id: postId}).clone();
+    if (publicPost) {
+        if (newPost.unlisted || newPost.visibility === 'FRIENDS' || newPost.visibility === 'PRIVATE') {
+            PublicPost.findOneAndDelete({_id: postId}).clone();
+            await PublicPost.save();
+        } else {
+            publicPost.title = title;
+            publicPost.description = description;
+            publicPost.contentType = contentType;
+            publicPost.content = content;
+            publicPost.visibility = visibility;
+            publicPost.categories = categories;
+            await publicPost.save();
+
+            const followers = await Follower.findOne({authorId: authorId}).clone();
+            post.type = "post";
+            post.id = post.origin;
+            post.author = {
+                type: "author",
+                id: author.id,
+                host: author.host,
+                displayName: author.displayName,
+                url: author.url,
+                github: author.github,
+                profileImage: author.profileImage,
+            };
+            delete post._id;
+            const outgoings = await OutgoingCredentials.find().clone();
+            for (let i = 0; i < followers.followers.length; i++) {
+                const follower = followers.followers[i];
+                if (follower.id !== undefined) {
+                    let followerId = (follower.id.split("/authors/"))[(follower.id.split("/authors/")).length - 1];
+                    let followerHost = (follower.id.split("/authors/"))[0];
+                    let inbox = null;
+                    if (followerHost + '/' === process.env.DOMAIN_NAME) {
+                        inbox = await Inbox.findOne({"authorId": followerId}).clone();
+                        if (inbox) {
+                            inbox.posts.push(post);
+                            inbox.num_posts++;
+                            await inbox.save();
+                        }
+                    }
+                    else if (inbox === null || inbox === undefined) {
+                        for (let i = 0; i < outgoings.length; i++) {
+                            if (followerHost == outgoings[i].url && outgoings[i].allowed) {
+                                let config = {
+                                    host: outgoings[i].url,
+                                    url: follower.id + "/inbox",
+                                    method: "POST",
+                                    headers:{
+                                        "Authorization": outgoings[i].auth,
+                                        'Content-Type': 'application/json'
+                                    },
+                                    data: post
+                                }
+            
+                                axios.request(config)
+                                .then((response) => { })
+                                .catch((error) => { })
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-    else if((unlisted == 'false' || unlisted == false) && visibility == "PUBLIC") {
+    else if (!publicPost && (unlisted == 'false' || unlisted == false) && visibility == "PUBLIC") {
         let publicPost = {
             _id: postId,
             title: title,
@@ -573,23 +778,205 @@ async function updatePost(token, authorId, postId, newPost) {
             shared: post.shared, 
             unlisted: unlisted
         };
-        await (new PublicPost(publicPost)).save();
-    }
-    else if((unlisted == "true" || unlisted == true) || visibility == "FRIENDS"){
-        await PublicPost.findOneAndDelete({_id: postId}).clone();
+        await (new PublicPost(publicPost)).save(); 
+
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        post.type = "post";
+        post.id = post.origin;
+        post.author = {
+            type: "author",
+            id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+        };
+        delete post._id;
+        const outgoings = await OutgoingCredentials.find().clone();
+        for (let i = 0; i < followers.followers.length; i++) {
+            const follower = followers.followers[i];
+            if (follower.id !== undefined) {
+                let followerId = (follower.id.split("/authors/"))[(follower.id.split("/authors/")).length - 1];
+                let followerHost = (follower.id.split("/authors/"))[0];
+                let inbox = null;
+                if (followerHost + '/' === process.env.DOMAIN_NAME) {
+                    inbox = await Inbox.findOne({"authorId": followerId}).clone();
+                    if (inbox) {
+                        inbox.posts.push(post);
+                        inbox.num_posts++;
+                        await inbox.save();
+                    }
+                }
+                else if (inbox === null || inbox === undefined) {
+                    for (let i = 0; i < outgoings.length; i++) {
+                        if (followerHost == outgoings[i].url && outgoings[i].allowed) {
+                            let config = {
+                                host: outgoings[i].url,
+                                url: follower.id + "/inbox",
+                                method: "POST",
+                                headers:{
+                                    "Authorization": outgoings[i].auth,
+                                    'Content-Type': 'application/json'
+                                },
+                                data: post
+                            }
+        
+                            axios.request(config)
+                            .then((response) => { })
+                            .catch((error) => { })
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    post.title = title;
-    post.description = description;
-    post.contentType = contentType;
-    post.content = content;
-    post.visibility = visibility;
-    post.unlisted = unlisted;
-    post.categories = categories;
-    await postHistory.save()
+    if (newPost.visibility === 'FRIENDS' && (unlisted == 'false' || unlisted == false)) {
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        const followings = await Following.findOne({authorId: authorId}).clone();
+        const friends = followers.followers.filter(follower => followings.followings.some(following => follower.id === following.id));
+        post.type = "post";
+        post.id = post.origin;
+        post.author = {
+            type: "author",
+            id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+        };
+        delete post._id;
+        const outgoings = await OutgoingCredentials.find().clone();
+        for (let i = 0; i < friends.length; i++) {
+            const friend = friends[i];
+            if (friend.id !== undefined) {
+                let friendId = (friend.id.split("/authors/"))[(friend.id.split("/authors/")).length - 1];
+                let friendHost = (friend.id.split("/authors/"))[0];
+                let inbox = null;
+                if (friendHost + '/' === process.env.DOMAIN_NAME) {
+                    inbox = await Inbox.findOne({"authorId": friendId}).clone();
+                    if (inbox) {
+                        inbox.posts.push(post);
+                        inbox.num_posts++;
+                        await inbox.save();
+                    }
+                }
+                else if (inbox === null || inbox === undefined) {
+                    for (let i = 0; i < outgoings.length; i++) {
+                        if (friendHost == outgoings[i].url && outgoings[i].allowed) {
+                            let config = {
+                                host: outgoings[i].url,
+                                url: friend.id + "/inbox",
+                                method: "POST",
+                                headers:{
+                                    "Authorization": outgoings[i].auth,
+                                    'Content-Type': 'application/json'
+                                },
+                                data: post
+                            }
+        
+                            axios.request(config)
+                            .then((response) => { })
+                            .catch((error) => { })
+                        }
+                    }
+                }
+            }
+        }
+    } else if (newPost.visibility === 'PRIVATE' && (unlisted == 'false' || unlisted == false)) {
+        const followers = await Follower.findOne({authorId: authorId}).clone();
+        const followings = await Following.findOne({authorId: authorId}).clone();
+        const outgoings = await OutgoingCredentials.find().clone();
 
-    let author = await getAuthor(authorId);
-    return await getPost(postId, token, author[0]);
+        const username = newPost.postTo;
+        let authorTo = await Author.findOne({username: username}).clone();
+        let local = true;
+        let allowed = true;
+        let auth = ''
+        if (!authorTo) { 
+            // Must be a private foreign (only to followers / followings)
+            local = false;
+            let foreignAuthor = '';
+            for (let i = 0; i < followers.followers.length; i++) {
+                if (followers.followers[i].displayName === username) { foreignAuthor = followers.followers[i] }
+            }
+            if (foreignAuthor === '') {
+                for (let i = 0; i < followings.followings.length; i++) {
+                    if (followings.followings[i].displayName === username) { foreignAuthor = followings.followings[i] }
+                }
+            }
+            if (foreignAuthor === '') {
+                return res.sendStatus(400);
+            } else {
+                let objectHost = foreignAuthor.id.split('/authors/')
+                for (let i = 0; i < outgoings.length; i++) {
+                    if (outgoings[i].url === objectHost[0]) { 
+                        auth = outgoings[i].auth; 
+                        allowed = outgoings[i].allowed;
+                        break;
+                    }
+                }
+
+                if (allowed) {
+                    let config = {
+                        host: objectHost[0],
+                        url: foreignAuthor.id,
+                        method: "GET",
+                        headers:{
+                            "Authorization": auth,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                    await axios.request(config)
+                    .then((res) => { authorTo = res.data; })
+                    .catch((err) => { })
+                }
+            }
+        }  
+
+        post.type = "post";
+        post.id = post.origin;
+        post.author = {
+            type: "author",
+            id: author.id,
+            host: author.host,
+            displayName: author.displayName,
+            url: author.url,
+            github: author.github,
+            profileImage: author.profileImage,
+        };
+        delete post._id;
+
+        if (local) {
+            let inbox = await Inbox.findOne({"authorId": authorTo._id}).clone();
+            if (inbox) {
+                inbox.posts.push(post);
+                inbox.num_posts++;
+                await inbox.save();
+            }
+        } else {
+            if (allowed) {
+                let config = {
+                    host: authorTo.host,
+                    url: authorTo.id + "/inbox",
+                    method: "POST",
+                    headers:{
+                        "Authorization": auth,
+                        'Content-Type': 'application/json'
+                    },
+                    data: post
+                }
+
+                axios.request(config)
+                .then((response) => { })
+                .catch((error) => { })
+            }
+        }
+    }
+
+    return await getPost(postId, token, author);
 }
 
 async function createTombstone(authorId, postId) {

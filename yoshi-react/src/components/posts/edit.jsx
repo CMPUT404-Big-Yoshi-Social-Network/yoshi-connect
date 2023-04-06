@@ -100,7 +100,7 @@ function EditPost({viewerId, post}) {
         content: post.content,
         unlisted: post.unlisted,
         image: post.image,
-        specifics: post.specifics,
+        postTo: '',
         postId: post._id
     })
     
@@ -121,9 +121,9 @@ function EditPost({viewerId, post}) {
             visibility: data.visibility,
             content: data.content,
             unlisted: data.unlisted,
-            specifics: data.specifics,
             categories: categories,
             image: data.image,
+            postTo: data.postTo,
             postId: data.postId,
         }
         
@@ -199,7 +199,7 @@ function EditPost({viewerId, post}) {
                     <div>
                         <label><p style={{color:"white"}}>Message To:</p></label>
                             <input className={"postMenuInput"} type="text" value={data.specifics || ''} onChange={(e) => {
-                                setData({...data, specifics: [e.target.value]})
+                                setData({...data, postTo: e.target.value})
                             }}></input>
                         <br/>
                     </div> :

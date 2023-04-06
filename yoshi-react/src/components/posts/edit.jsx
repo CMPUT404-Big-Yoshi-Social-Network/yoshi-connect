@@ -129,7 +129,7 @@ function EditPost({viewerId, post}) {
         
         axios.post('/authors/' + post.authorId + '/posts/' + post._id, body)
         .then((response) => { })
-        .catch((e) =>{ console.log(e); })
+        .catch((e) =>{ })
 
         if (item.exist) {
             axios.post('/authors/' + post.authorId + '/posts/' + post._id + "/image", {
@@ -178,8 +178,11 @@ function EditPost({viewerId, post}) {
                 <br/>
                 <select className={"postMenuDropDown"} id={"contentType"} name={"contentType"} value={data.contentType || "plaintext"} onChange={(e) => {
                             setData({...data, contentType: e.target.value})}}>
-                            <option value={"plaintext"}>PLAIN TEXT</option>
-                            <option value={"markdown"}>MARKDOWN</option>
+                            <option value={"text/plain"}>Plain Text</option>
+                            <option value={"text/markdown"}>Markdown</option>
+                            <option value={"application/base64"}>Base64</option>
+                            <option value={"image/png;base64"}>PNG</option>
+                            <option value={"image/jpeg;base64"}>JPEG</option>
                 </select>
                 <br/>
                 <label>
@@ -192,11 +195,16 @@ function EditPost({viewerId, post}) {
                     }}/>
                 </label>
                 <br/>
-                <label><p style={{color:"white"}}>Message To:</p></label>
-                        <input className={"postMenuInput"} type="text" value={data.specifics || ''} onChange={(e) => {
-                            setData({...data, specifics: [e.target.value]})
-                        }}></input>
-                <br/>
+                { data.visibility === 'PRIVATE' ? 
+                    <div>
+                        <label><p style={{color:"white"}}>Message To:</p></label>
+                            <input className={"postMenuInput"} type="text" value={data.specifics || ''} onChange={(e) => {
+                                setData({...data, specifics: [e.target.value]})
+                            }}></input>
+                        <br/>
+                    </div> :
+                    null
+                }
                 <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} value={data.unlisted || 'False'} onChange={(e) =>{
                             let bool;
                             if(e.target.value === "True") bool = true;

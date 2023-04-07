@@ -567,17 +567,17 @@ async function postInboxLike(like, authorId){
             .then( res => { })
             .catch( error => { 
             })
+        } else {
+            const inboxLike = {
+                author: author,
+                object: like.object,
+                summary: like.summary
+            } 
+            
+            inbox.likes.push(inboxLike);
+    
+            inbox.save();
         }
-    
-        const inboxLike = {
-            author: author,
-            object: like.object,
-            summary: like.summary
-        }
-    
-        inbox.likes.push(inboxLike);
-    
-        inbox.save();
     } else {
         const outgoings = await OutgoingCredentials.find().clone();
         let auth = ''

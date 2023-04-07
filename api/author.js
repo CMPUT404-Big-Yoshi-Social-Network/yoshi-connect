@@ -354,57 +354,6 @@ router.post('/:authorId', async (req, res) => {
 	if (status == 404 || status == 401) { return res.sendStatus(status); }
 })
 
-router.get('/:authorId/postTo/:username', async (req, res) => {
-	const username = req.params.username;
-	const authorId = req.params.authorId
-	let author = await Author.findOne({username: username}).clone();
-	if (!author) { 
-		// Must be a private foreign (only to followers / followings)
-		let followers = await Follower.findOne({authorId: authorId});
-		let followings = await Following.findOne({authorId: authorId});
-		let foreignAuthor = '';
-		for (let i = 0; i < followers.followers.length; i++) {
-			if (followers.followers[i].displayName === username) {
-				foreignAuthor = followers.followers[i]
-			}
-		}
-		if (foreignAuthor === '') {
-			for (let i = 0; i < followings.followings.length; i++) {
-				if (followings.followings[i].displayName === username) {
-					foreignAuthor = followings.followings[i]
-				}
-			}
-		}
-		if (foreignAuthor === '') {
-			return res.sendStatus(400);
-		} else {
-			let objectHost = foreignAuthor.id.split('/authors/')
-			const outgoings = await OutgoingCredentials.find().clone();
-			let auth = ''
-			for (let i = 0; i < outgoings.length; i++) {
-				if (outgoings[i].url === objectHost[0]) {       
-					auth = outgoings[i].auth;
-				}
-			}
-			let config = {
-				host: objectHost[0],
-				url: foreignAuthor.id,
-				method: "GET",
-				headers:{
-					"Authorization": auth,
-					'Content-Type': 'application/json'
-				}
-			}
-			await axios.request(config)
-			.then((res) => { 
-				author = res.data;
-			})
-			.catch((err) => { })
-		}
-	}  
-	return res.json(author);
-})
-
 router.get('/search/:username', async (req, res) => {
 	const username = req.params.username;
 	const localAuthor = await Author.findOne({username: username}); 

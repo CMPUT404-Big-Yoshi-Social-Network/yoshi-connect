@@ -61,7 +61,7 @@ function Comments(params) {
     }, [params.url, params.commentsSrc]);
     return (
         <div>
-            { comments.length === 0 ? 
+            { comments !== undefined && comments.length === 0 ? 
                 <div>
                     <h4>No comments to show.</h4>
                 </div> : 

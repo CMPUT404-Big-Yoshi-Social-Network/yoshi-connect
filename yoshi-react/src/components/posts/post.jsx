@@ -126,6 +126,7 @@ function Post({viewerId, post, author, realAuthor}) {
         }
         getLikes();
     }, [id, post._id, post.id, viewerId]);
+    
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {

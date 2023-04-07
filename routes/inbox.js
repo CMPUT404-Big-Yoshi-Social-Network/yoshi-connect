@@ -493,7 +493,6 @@ async function postInboxPost(post, recieverAuthorId, res){
         try {
             inbox.posts.push(post);
             await inbox.save();
-            delete post._id;
         }
         catch (e) {
             return [{
@@ -506,6 +505,7 @@ async function postInboxPost(post, recieverAuthorId, res){
         const publicPost = new PublicPost(post);
         await publicPost.save();
     }
+    delete post._id;
     return [post, 200]
 }
 

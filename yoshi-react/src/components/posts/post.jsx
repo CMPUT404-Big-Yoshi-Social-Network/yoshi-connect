@@ -214,7 +214,6 @@ function Post({viewerId, post, author, realAuthor}) {
                         <div>
                             <br></br>
                             <h4 style={{marginTop:'-1em'}}>Shared Post</h4>
-                            <br></br>
                         </div> : 
                         null
                     }

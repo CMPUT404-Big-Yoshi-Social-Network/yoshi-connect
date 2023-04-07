@@ -36,7 +36,6 @@ import './post.css';
 import Popup from 'reactjs-popup';
 
 function Post({viewerId, post, author, realAuthor}) {
-    console.log(post)
     let postId = post.id ? 
         post.id.includes('/') ? (post.id.split('/'))[(post.id.split('/')).length - 1] : 
         post.id :
@@ -112,7 +111,7 @@ function Post({viewerId, post, author, realAuthor}) {
          * Returns: N/A
          */ 
         const getLikes = () => {
-            axios.get((post.id) || ('/authors/' + id + '/posts/' + post._id) + '/likes')
+            axios.get(((post.id) || ('/authors/' + id + '/posts/' + post._id)) + '/likes')
             .then((response) => { 
                 setNumLikes(response.data.items.length);
                 let itemsCopy = response.data.items;
@@ -171,8 +170,10 @@ function Post({viewerId, post, author, realAuthor}) {
                 "X-Requested-With": "XMLHttpRequest"
             })
             .then((response) => {
+                if (response.data.status !== 'Liked') {
+                    setNumLikes(numLikes + 1);
+                }
                 setLike(true);
-                setNumLikes(numLikes + 1);
             })
             .catch((err) => {
                 if(err.response){ }});

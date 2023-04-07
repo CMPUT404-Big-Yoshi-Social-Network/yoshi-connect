@@ -535,7 +535,7 @@ async function postInboxLike(like, authorId){
             profileImage: author.profileImage
         };
         if(await addLiked(author._id, like.object)){
-            return [like, 403];
+            return [{...like, status: 'Liked'}, 200];
         }
         await addLike(like, authorId); 
     

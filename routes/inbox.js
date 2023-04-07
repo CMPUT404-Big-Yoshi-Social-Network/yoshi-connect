@@ -523,7 +523,7 @@ async function postInboxLike(like, authorId){
     objectHost = like.object.split("authors/");
     objectHost = objectHost[0];
     let host = process.env.DOMAIN_NAME;
-    if (host === objectHost) {
+    if (host === objectHost || 'https://yoshi-connect.herokuapp.com/') {
         const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
         let author = like.author;
         author = {
@@ -549,8 +549,6 @@ async function postInboxLike(like, authorId){
     
         inbox.save();
     } else {
-        let obj = (like.object.split('/authors/'))[(like.object.split('/authors/')).length - 1]
-        obj = obj.split('/posts/')
         const outgoings = await OutgoingCredentials.find().clone();
         let auth = ''
         let host = ''
@@ -575,7 +573,7 @@ async function postInboxLike(like, authorId){
         .catch( error => { 
         })
     }
-
+    console.log('ahh')
     return [like, 200];
 }
 

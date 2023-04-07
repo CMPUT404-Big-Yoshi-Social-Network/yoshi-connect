@@ -74,23 +74,24 @@ function SharePost({viewerId, post}) {
         console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
             if (contentType.split("/")[0] === "image") {
-                if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
+                if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
                     setItem(i => ({ ...i, image: "data:" + contentType + "," + post.content, exist: true}))
-                } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
+                } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
                     setItem(i => ({ ...i, image: post.content, exist: true}))
+                } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000") {
+                    axios
+                    .get("/author" + post.origin.split("author")[1] + "/image")
+                    .then((res) => {
+                        if (res.data.status === 200) {
+                            setItem(i => ({ ...i, image: res.data.src, exist: true}))
+                        }
+                    })
+                    .catch((e) => { console.log(e); })
                 }
-            } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.source.split('/authors/')[0].split("/")[2] === "localhost:3000") {
-                axios
-                .get("/authors/" + authorId + "/posts/" + postId + "/image")
-                .then((res) => {
-                    if (res.data.status === 200) {
-                        setItem(i => ({ ...i, image: res.data.src, exist: true}))
-                    }
-                })
             }
         }
         getImage();
-    }, [postId, authorId, post.content, post.source, contentType])
+    }, [postId, authorId, post.content, post.origin, contentType])
 
     const share = async () => {
         /**

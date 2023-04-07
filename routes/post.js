@@ -385,9 +385,6 @@ async function createPost(token, authorId, postId, newPost) {
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
-                            if (outgoings[i].url === 'https://sociallydistributed.herokuapp.com') {
-                                toSend.unlisted = true;
-                            }
                             let config = {
                                 host: outgoings[i].url,
                                 url: friend.id + "/inbox",
@@ -499,9 +496,6 @@ async function createPost(token, authorId, postId, newPost) {
                 "unlisted": post.unlisted
             }
             if (allowed) {
-                if (host === 'https://sociallydistributed.herokuapp.com') {
-                    toSend.unlisted = true;
-                }
                 let config = {
                     host: authorTo.host,
                     url: authorTo.id + "/inbox",
@@ -737,9 +731,6 @@ async function sharePost(authorId, token, newPost) {
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
-                            if (friendHost === 'https://sociallydistributed.herokuapp.com') {
-                                toSend.unlisted = true;
-                            }
                             let config = {
                                 host: outgoings[i].url,
                                 url: friend.id + "/inbox",
@@ -855,9 +846,6 @@ async function sharePost(authorId, token, newPost) {
                     },
                     "published": post.published,
                     "visibility": post.visibility,
-                }
-                if (authorTo.host === 'https://sociallydistributed.herokuapp.com') {
-                    toSend.unlisted = true;
                 }
                 let config = {
                     host: authorTo.host,
@@ -1169,9 +1157,6 @@ async function updatePost(token, authorId, postId, newPost) {
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
-                            if (friendHost === 'https://sociallydistributed.herokuapp.com') {
-                                toSend.unlisted = true;
-                            }
                             let config = {
                                 host: outgoings[i].url,
                                 url: friend.id + "/inbox",
@@ -1288,9 +1273,6 @@ async function updatePost(token, authorId, postId, newPost) {
                     },
                     "published": post.published,
                     "visibility": post.visibility,
-                }
-                if (authorTo.host === 'https://sociallydistributed.herokuapp.com') {
-                    toSend.unlisted = true;
                 }
                 let config = {
                     host: authorTo.host,

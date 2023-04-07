@@ -485,23 +485,21 @@ async function postInboxPost(post, recieverAuthorId){
         let [newPost, status] = await createPost(null, post.authorId, post.id, {...post});
         post = newPost;
     }
-    const type = post.type;
-    const title = post.title;
     const id = post.id;
-    const source = post.source;
-    const origin = post.origin;
-    const description = post.description;
-    const contentType = post.contentType;
-    const content = post.content;
-    const published = post.published;
-    const visibility = post.visibility;
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
     if (inbox) {
         post._id = id
-        inbox.posts.push(post);
-        await inbox.save();
-        delete post._id;
+        try {
+            inbox.posts.push(post);
+            await inbox.save();
+            delete post._id;
+        }
+        catch (e) {
+            res.json({
+                message: "I could not insert this post into the inbox because it is formatted incorrectly."
+            })
+        }
     }
     return [post, 200]
 }

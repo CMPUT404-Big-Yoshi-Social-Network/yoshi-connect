@@ -206,7 +206,6 @@ async function getInbox(token, authorId, page, size){
             return response.data
         })
         .catch((err) => {
-            console.log(err);
         }))
     }
     for(let i = 0; i < posts.length; i++){
@@ -409,7 +408,6 @@ async function createPost(token, authorId, postId, newPost) {
                         console.log(request.data);
                     })
                     .catch((error) => {
-                        console.log(error)
                     })
                 }
             }
@@ -465,7 +463,6 @@ async function createPost(token, authorId, postId, newPost) {
         await axios.request(config)
         .then((res) => { })
         .catch((err) => { 
-            console.log(err)
         })
     }
     return await getPost(postId, authorId, author);
@@ -815,7 +812,6 @@ async function sendToForeignInbox(url, auth, data){
         status = 200;
     })
     .catch((err) => {
-        console.log(err)
         status = 400;
      })
 

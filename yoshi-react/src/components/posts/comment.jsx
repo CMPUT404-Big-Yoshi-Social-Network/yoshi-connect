@@ -83,7 +83,6 @@ function Comment({viewerId, comment, author, url, liked}) {
                 }
             })
             .catch((err) => {
-                console.log(err);
             });
         }
         getLikes();

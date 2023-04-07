@@ -399,7 +399,7 @@ async function createPost(token, authorId, postId, newPost) {
                             }
                             axios.request(config)
                             .then((response) => { })
-                            .catch((error) => { console.log(error)})
+                            .catch((error) => { })
                         }
                     }
                 }
@@ -511,7 +511,7 @@ async function createPost(token, authorId, postId, newPost) {
 
                 axios.request(config)
                 .then((response) => { })
-                .catch((error) => { console.log(error) })
+                .catch((error) => { })
             }
         }
     }

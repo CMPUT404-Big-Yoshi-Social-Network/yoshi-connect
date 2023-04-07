@@ -256,6 +256,7 @@ router.get('/:foreignAuthorId', async (req, res) => {
       return res.json(foreign)
     }
   }
+  return res.json({ status: "This author has no followers." });
 })
 
 /**

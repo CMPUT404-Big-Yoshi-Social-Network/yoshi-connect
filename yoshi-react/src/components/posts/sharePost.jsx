@@ -47,9 +47,7 @@ function SharePost({viewerId, post}) {
         undefined : 
         undefined;
     let contentType = post.contentType ? post.contentType : ""
-
-    const numLikes = post.likeCount;
-    const numComments = post.commentCount;
+    let published = post.published.substring(0,10);
 
     const [data, setData] = useState({
         visibility: post.visibility,
@@ -149,12 +147,7 @@ function SharePost({viewerId, post}) {
             { post.contentType === "text/plain" ? <p>{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
             <img className={"image"} src={item.image} alt=""/>
 
-            <p>{post.published}</p>
-            <br></br>
-            {<span>{numLikes}<p>Like</p></span>} 
-            <br></br>
-            {<span>{numComments}<p>Comments</p></span>} 
-            <br></br> 
+            <p>{published}</p>
 
             { data.visibility === 'PRIVATE' ? 
                 <div>

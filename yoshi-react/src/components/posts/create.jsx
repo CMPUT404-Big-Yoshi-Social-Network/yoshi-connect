@@ -23,6 +23,7 @@ Foundation; All Rights Reserved
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import FileBase64 from 'react-file-base64';
+import { useNavigate } from 'react-router-dom';
 
 // User Interface
 import { Nav } from 'react-bootstrap';
@@ -43,7 +44,8 @@ function CreatePost() {
      * Returns: N/A
      */
 
-    const [categories, setCategories] = useState([])
+    const [categories, setCategories] = useState([]);
+    const navigate = useNavigate();
 
     function saveCategory(e) {
         /**
@@ -164,6 +166,7 @@ function CreatePost() {
             }).then((res) => {}).catch((e) => { })  
         }
         setItem({ ...item, image: "" })
+        navigate(window.location.pathname);
     }
 
     const togglePostMenu = () => { 

@@ -354,36 +354,16 @@ router.get('/:commentId', async (req, res) => {
  *                  description: JSON type 
  *                  example: comment
  *                author:
- *                    type: object
- *                    description: Author Object
- *                    type: 
- *                      type: string
- *                      description: JSON type
- *                      example: author
- *                    id: 
- *                      type: string
- *                      description: Author id
- *                      example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                    url: 
- *                      type: string
- *                      description: URL of Author
- *                      example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                    host: 
- *                      type: string
- *                      description: host associated with Author
- *                      example: https://yoshi-connect.herokuapp.com/
- *                    displayName: 
- *                      type: string
- *                      description: username of Author
- *                      example: allan
- *                    github: 
- *                      type: string
- *                      description: associated GitHub of Author
- *                      example: https://github.com/Holy-Hero
- *                    profileImage: 
- *                      type: string
- *                      description: profile picture of Author
- *                      example: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
+ *                  type: object
+ *                  description: Author Object
+ *                  example:
+ *                    type: author
+ *                    id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                    url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                    host: https://yoshi-connect.herokuapp.com/
+ *                    displayName: allan
+ *                    github: https://github.com/Holy-Hero
+ *                    profileImage: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
  *                comment: 
  *                  type: string
  *                  description: comment made by the Author
@@ -498,7 +478,7 @@ router.post('/', async (req, res) => {
  *                          host: https://yoshi-connect.herokuapp.com/
  *                          displayName: kc
  *                          github: https://github.com/kezzayuno
- *                          profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                          profileImage: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
  *                      object: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4
  *                    - "@context": https://www.w3.org/ns/activitystreams
  *                      summary: allan likes your post
@@ -510,7 +490,7 @@ router.post('/', async (req, res) => {
  *                          host: https://yoshi-connect.herokuapp.com/
  *                          displayName: allan
  *                          github: https://github.com/kezzayuno
- *                          profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                          profileImage: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
  *                      object: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/f08d2d6579d5452ab282512d8cdd10d4
  */
 router.get('/:commentId/likes', async (req, res) => {

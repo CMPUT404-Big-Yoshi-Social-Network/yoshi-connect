@@ -69,13 +69,13 @@ function SearchOutcomes({url}) {
 
     return (
         <div className='search-card'>
-            { findings ? 
+            { findings && authors.length !== 0 ? 
                 <div>
                     {Object.keys(authors).map((author, idx) => (
                         <SearchCard key={idx} {...authors[author]}/>
                     ))}
                 </div> :
-                null
+                <p>No authors found.</p>
             }   
         </div>     
     )

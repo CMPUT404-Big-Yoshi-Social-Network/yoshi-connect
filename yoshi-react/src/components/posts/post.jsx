@@ -258,12 +258,11 @@ function Post({viewerId, post, author, realAuthor}) {
                  } 
                     {
                         authorId !== viewerId || window.location.pathname === '/' ? null : 
+                        <div>
                         <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> 
-                    }    
-                    {
-                        authorId !== viewerId || window.location.pathname === '/' ? null : 
                         <img className='post-images' alt='delete' onClick={deletePost} src='/images/public/icon_bin.png' width={20}/> 
-                    }    
+                        </div>
+                    }     
                  <div>
              </div>
         </div>}

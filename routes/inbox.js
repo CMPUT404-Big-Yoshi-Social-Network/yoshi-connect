@@ -490,6 +490,9 @@ async function postInboxPost(post, recieverAuthorId, res){
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
     if (inbox) {
         post._id = id
+        if (typeof post.author === 'Array' || typeof post.author === 'array') {
+            post = JSON.parse(post);
+        }
         try {
             inbox.posts.push(post);
             await inbox.save();

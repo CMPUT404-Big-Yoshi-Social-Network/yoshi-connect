@@ -126,6 +126,9 @@ async function addLike(like, authorId, postId){
     else if(objectType == "posts"){
         likes = await LikeHistory.findOne({type: "post", Id: Id}).clone();
         let postHistory = await PostHistory.findOne({authorId: authorId});
+        if (postHistory === null) {
+            return 'Remote';
+        }
         let post = postHistory.posts.id(Id);
         post.likeCount + 1;
         await postHistory.save();

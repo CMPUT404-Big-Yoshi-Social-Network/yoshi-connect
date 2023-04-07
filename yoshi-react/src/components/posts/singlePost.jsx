@@ -62,10 +62,12 @@ function SinglePost() {
         }
         getId();
 
-        let url = window.location.href.split('/authors')[1];
+        let url = window.location.pathname;
+
+        console.log(url)
 
         axios
-        .get('/authors' + url)
+        .get(url)
         .then((response) => {
             let post = response.data;
             setPost(prevPost => post);
@@ -81,9 +83,9 @@ function SinglePost() {
                     <LeftNavBar authorId={viewerId}/>
                 </div>
                 <div className='pubColM'>
-                    { post === null && post.visibility === 'PUBLIC' ?
-                        null :
-                        <Post viewerId={viewerId} post={post} author={viewerId} realAuthor={post?.author}/> 
+                    { (post !== null && post.visibility === 'PUBLIC') ?
+                        <Post viewerId={viewerId} post={post} author={viewerId} realAuthor={post?.author}/> :
+                        null
                     }
                 </div>
                 <div className='pubColR'>

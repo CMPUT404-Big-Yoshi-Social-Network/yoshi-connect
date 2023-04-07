@@ -45,7 +45,7 @@ function TopNav(props) {
                 <img className='topLogo' src='/images/yoshi_connect_logo2.png' width={35} height={35} alt='logo'/>
                 <h1 className='title'>Yoshi Connect</h1>
             </Navbar.Brand>
-            { props.authorId ? 
+            { props.authorId && window.location.pathname !== '/' ? 
                 <Nav className='topNavSearch'>
                     <Form.Control type="search" placeholder="Search" className="topSearch" onChange={(e) => {setNewAuthor({...newAuthor, newSearch: e.target.value})}}/>
                             <Popup trigger={<button className="search-button">Search</button>} position="right center">
@@ -54,7 +54,7 @@ function TopNav(props) {
                 </Nav> :
                 null
             }
-            { props.authorId ? 
+            { props.authorId && window.location.pathname !== '/' ? 
                 <Nav className='topNavNotif'>
                     <Popup  className='notifPopup' trigger={<img className='notifBell' src='/images/public/icon_notif_bell.png' alt='Notifications' width={30}/>}>
                         <Notifications authorId={props.authorId}/>

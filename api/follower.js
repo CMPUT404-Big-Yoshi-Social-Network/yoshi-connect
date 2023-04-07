@@ -34,6 +34,8 @@ const openapiSpecification = swaggerJsdoc(options);
 
 // Router Setup
 const express = require('express'); 
+const { OutgoingCredentials } = require('../scheme/server');
+const axios = require('axios');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -196,48 +198,62 @@ router.get('/', async (req, res) => {
 router.get('/:foreignAuthorId', async (req, res) => {
   const authorId = req.params.authorId;
   const foreignId = req.params.foreignAuthorId;
+  let foreign = '';
 
   const followers = await getFollowers(authorId);
 
-  if (followers == 404) { 
-    // Must be a foreign author; need to get author 
-    const followerProfile = await Author.findOne({_id: foreignId}); 
-    if (!followerProfile) {
-      return res.json(null)
-    }
-    return res.json({
+  if (!followers) {
+    return res.json({ status: "This author has no followers." });
+  }
+
+  const followerProfile = await Author.findOne({_id: foreignId}); 
+  if (followerProfile) {
+    foreign = {
       "type": "author",
       "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
       "host": process.env.DOMAIN_NAME,
-      "displayname": followerProfile.username,
+      "displayName": followerProfile.username,
       "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
       "github": "",
       "profileImage": "",
       "about": followerProfile.about,
       "pronouns": followerProfile.pronouns
-    });
-
+    };
   } else {
-    for (let i = 0; i < followers.length; i++) {
-      const follower = followers[i];
-      if (follower.authorId == foreignId) {
-  
-        const followerProfile = await Author.findOne({_id: follower.authorId}); 
-        if (!followerProfile)
-          continue
-  
-        return res.json({
-          "type": "author",
-          "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
-          "host": process.env.DOMAIN_NAME,
-          "displayname": followerProfile.username,
-          "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
-          "github": "",
-          "profileImage": "",
-          "about": followerProfile.about,
-          "pronouns": followerProfile.pronouns
-        });
-      }
+    // Must be remote 
+    const outgoings = await OutgoingCredentials.find().clone();
+    for (let i = 0; i < outgoings.length; i++) {
+        if (outgoings[i].allowed) {    
+            let config = {
+                host: outgoings[i].url,
+                url: outgoings[i].url + '/authors/' + foreignId,
+                method: "GET",
+                headers:{
+                    "Authorization": outgoings[i].auth,
+                    'Content-Type': 'application/json'
+                }
+            }
+            await axios.request(config)
+            .then((res) => { 
+                foreign = {
+                  "type": "author",
+                  "id" : res.data.id,
+                  "host": res.data.host,
+                  "displayName": res.data.displayName,
+                  "url":  res.data.url,
+                  "github": res.data.github,
+                  "profileImage": res.data.profileImage
+                };
+            })
+            .catch((err) => { console.log('Author does not belong in server.') })       
+        }
+    }
+  }
+
+  for (let i = 0; i < followers.length; i++) {
+    const follower = followers[i];
+    if (follower.authorId == foreignId) {
+      return res.json(foreign)
     }
   }
 })

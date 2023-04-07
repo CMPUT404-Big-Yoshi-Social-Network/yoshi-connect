@@ -46,8 +46,11 @@ async function getFollowers(id){
     Return: 404 Status (Not Found) -- Follower associated with Author was not found
     */
     const followers = await Follower.findOne({authorId: id});
-    if (!followers) { return 404; }
-    return followers.followers;
+    if (!followers) { 
+        return [];
+    } else {
+        return followers.followers;
+    }
 }
 
 async function getFollowings(id){

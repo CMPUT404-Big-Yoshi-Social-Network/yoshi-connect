@@ -83,14 +83,13 @@ router.get('/', async (req, res) => {
 
 router.get('/notifications', async (req, res) => {
 	const notifications = await getNotifications(req.params.authorId); 
-	console.log(notifications)
 	let likeSummaries = []
-	for (let i = 0; i < notifications.likes; i++) {
+	for (let i = 0; i < (notifications.likes.length > 5 ? 5 : notifications.likes.length); i++) {
 		likeSummaries.push(notifications.likes[i].summary)
 	}
 	let commentSummaries = []
-	for (let i = 0; i < notifications.comments; i++) {
-		commentSummaries.push(notifications.comments[i].summary)
+	for (let i = 0; i < (notifications.comments.length > 5 ? 5 : notifications.comments.length); i++) {
+		commentSummaries.push(notifications.comments[i].author.displayName + ' made a comment on your post!')
 	}
 	return res.json({
 		likes: likeSummaries,

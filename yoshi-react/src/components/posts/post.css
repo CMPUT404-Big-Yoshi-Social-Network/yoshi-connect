@@ -71,8 +71,8 @@ Foundation; All Rights Reserved
 .post-user{
     color: #D2F364;
     text-align: left;
-    margin-top: -1.5em;
-    margin-left: 1.5em;
+    margin-top: -1.8em;
+    margin-left: 2.5em;
 }
 .post-num-lc{
     display: inline-block;
@@ -84,11 +84,11 @@ Foundation; All Rights Reserved
 
 .post-userimg {
     border-radius: 50%;
+    width: 2em;
 }
 
 .post-images{
     cursor: pointer;
-    /* margin: 0em .5em; */
     margin-left: .5em;
     margin-right: 3em;
 }

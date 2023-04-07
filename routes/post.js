@@ -312,6 +312,7 @@ async function createPost(token, authorId, postId, newPost) {
                         "commentsSrc": commentsSrc,
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
@@ -382,6 +383,7 @@ async function createPost(token, authorId, postId, newPost) {
                         "commentsSrc": commentsSrc,
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
@@ -650,6 +652,7 @@ async function sharePost(authorId, token, newPost) {
                         },
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
@@ -728,6 +731,7 @@ async function sharePost(authorId, token, newPost) {
                         },
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
@@ -846,6 +850,7 @@ async function sharePost(authorId, token, newPost) {
                     },
                     "published": post.published,
                     "visibility": post.visibility,
+                    "unlisted": post.unlisted
                 }
                 let config = {
                     host: authorTo.host,
@@ -978,6 +983,7 @@ async function updatePost(token, authorId, postId, newPost) {
                             },
                             "published": post.published,
                             "visibility": post.visibility,
+                            "unlisted": post.unlisted
                         }
                         for (let i = 0; i < outgoings.length; i++) {
                             if (followerHost == outgoings[i].url && outgoings[i].allowed) {
@@ -1074,6 +1080,7 @@ async function updatePost(token, authorId, postId, newPost) {
                         },
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
@@ -1154,6 +1161,7 @@ async function updatePost(token, authorId, postId, newPost) {
                         },
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
@@ -1273,6 +1281,7 @@ async function updatePost(token, authorId, postId, newPost) {
                     },
                     "published": post.published,
                     "visibility": post.visibility,
+                    "unlisted": post.unlisted
                 }
                 let config = {
                     host: authorTo.host,

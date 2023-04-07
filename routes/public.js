@@ -93,7 +93,7 @@ async function getPublicLocalPosts(page, size) {
                 side: 5,
                 post: process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id,
                 id: process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id + '/comments/',
-                comments: commentHistory.comments
+                comments: commentHistory.comments !== null ? commentHistory.comments : []
             }
             delete post.commentCount;
             delete post._id;

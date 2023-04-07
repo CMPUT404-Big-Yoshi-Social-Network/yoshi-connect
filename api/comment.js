@@ -152,7 +152,7 @@ router.get('/', async (req, res) => {
         if (outgoings[i].allowed) {     
             var config = {
                 host: outgoings[i].url,
-                url: outgoings[i].url + '/authors/' + authorId + '/' + type + 's/' + postId + '/comments',
+                url: outgoings[i].url + '/authors/' + authorId + '/posts/' + postId + '/comments',
                 method: 'GET',
                 headers: {
                     'Authorization': outgoings[i].auth,

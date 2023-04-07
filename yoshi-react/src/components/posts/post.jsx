@@ -197,7 +197,7 @@ function Post({viewerId, post, author, realAuthor}) {
             {(!post.unlisted || (post.id === window.location.href)) &&
                 <div className="post">
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
-                    <p className='post-vis'>{post.visibility}</p>
+                    <p className='post-vis'>{post.visibility}{post.unlisted ? ": Unlisted" : null}</p>
                     { (post?.author?.profileImage === undefined || post?.author?.profileImage === '' || post?.author?.profileImage === null) ? <img className='post-userimg' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='post-userimg' src={post.author.profileImage} alt='prof-userimg'/>}
                     <p className="post-user">{(post?.author?.displayName === undefined || post?.author?.displayName === '' || post?.author?.displayName === null) ? null : post.author.displayName }</p>
                     <p className="post-published">{published}</p>

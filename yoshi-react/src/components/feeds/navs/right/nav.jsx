@@ -43,7 +43,8 @@ function RightNavBar() {
      */
     const [profile, setProfile] = useState({
         username: "", 
-        pic: ""
+        pic: "",
+        github: ""
     });
     const navigate = useNavigate();
     
@@ -58,7 +59,7 @@ function RightNavBar() {
             .get('/userinfo/')
             .then((response) => {
                 if (response.data !== null) {
-                    setProfile({username: response.data.displayName, pic: response.data.profileImage})
+                    setProfile({username: response.data.displayName, pic: response.data.profileImage, github: response.data.github})
                 }
             })
             .catch(err => { if (err.response.status === 404) { 
@@ -68,6 +69,14 @@ function RightNavBar() {
         }
         getId();
     }, [navigate])
+
+    const addGitHub = () => { 
+        /**
+         * Description: Toggles the Post Menu by changing the isOpen useState
+         * Returns: N/A
+         */
+        alert('Add your GitHub in the Settings!')
+    }
 
     return (
         <Navbar className="right-column">
@@ -90,10 +99,16 @@ function RightNavBar() {
                         <img className='rn-pubMsgImg' alt='rn-pubMsgImg' src='/images/public/icon_messages.png' width={25}/>
                         <Nav.Link className='rn-msgs' href="/messages">Messages</Nav.Link>
                     </div>
-                    <div className='rn-div'>
-                        <img className='rn-pubMsgImg' alt='rn-pubMsgImg' src='/images/public/icon_github.png' width={25}/>
-                        <Nav.Link className='rn-msgs' href="/github">Github</Nav.Link>
-                    </div>
+                    { profile.github !== "" && profile.github !== undefined && profile.github !== null ? 
+                        <div className='rn-div'>
+                            <img className='rn-pubMsgImg' alt='rn-pubMsgImg' src='/images/public/icon_github.png' width={25}/>
+                            <Nav.Link className='rn-msgs' href="/github">Github</Nav.Link>
+                        </div> :
+                        <div className='rn-div'>
+                            <img className='rn-pubMsgImg' alt='rn-pubMsgImg' src='/images/public/icon_github.png' width={25}/>
+                            <Nav.Link className='rn-msgs' onClick={addGitHub}>Github</Nav.Link>
+                        </div>
+                    }
                     <div className='rn-div'>
                         <img className='rn-pubPostImg' alt='rn-pubPostImg' src='/images/public/icon_create_post.png' width={25}/>
                         <CreatePost className='rn-post'/>

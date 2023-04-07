@@ -562,7 +562,7 @@ async function postInboxLike(like, authorId){
         }
         var config = {
             host: host,
-            url: host + '/authors/' + obj[obj.length - 1] + '/inbox',
+            url: host + '/authors/' + authorId + '/inbox',
             method: 'POST',
             headers: {
                 'Authorization': auth,
@@ -570,11 +570,10 @@ async function postInboxLike(like, authorId){
             },
             data: like
         };
-        console.log(config)
-
         await axios.request(config)
         .then( res => { })
-        .catch( error => { })
+        .catch( error => { 
+        })
     }
 
     return [like, 200];

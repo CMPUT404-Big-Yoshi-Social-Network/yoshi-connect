@@ -656,7 +656,6 @@ async function postInboxComment(newComment, recieverAuthorId){
     }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
-    console.log(authorId)
     if(!postHistory){ 
         // Must be remote
         let obj = (newComment.object.split('/authors/'))[(newComment.object.split('/authors/')).length - 1]

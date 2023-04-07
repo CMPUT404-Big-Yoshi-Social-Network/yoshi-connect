@@ -39,7 +39,6 @@ function Comment({viewerId, comment, author, url, liked}) {
     const commentId = comment.id ? (comment.id.split("/"))[(comment.id.split("/")).length - 1] : comment._id
     const authorId = comment.author.id ? (comment.author.id.split("/"))[(comment.author.id.split("/")).length - 1] : 
         comment.author._id ? (comment.author._id.split("/"))[(comment.author._id.split("/")).length - 1] : undefined
-    console.log(comment)
     const addLike = () => {
         if(author && authorId !== undefined){
             let body = {

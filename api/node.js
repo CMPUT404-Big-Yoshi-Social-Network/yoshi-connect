@@ -252,7 +252,7 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
 			let outgoing = outgoings[i];
 			let config;
 			while(!error) {
-				if(outgoing.url === "http://www.distribution.social"){
+				if(outgoing.url === "http://www.distribution.social/api"){
 					config = {
 						host: outgoings[i].url,
 						url: outgoings[i].url + '/authors/' + authorId + '/posts',

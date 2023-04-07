@@ -222,17 +222,6 @@ function Post({viewerId, post, author, realAuthor}) {
                     <p className="post-num-lc">{numComments}</p>
                     { showComment ? <img className='post-images' alt='close-comments' onClick={toggleComments} src='/images/public/icon_commented.png' width={20}/> : <img className='post-images' alt='open-comments' onClick={toggleComments} src='/images/public/icon_comment.png' width={20}/> }
                     <Popup trigger={<img className='post-images' alt='share' src='/images/public/icon_share.png' width={20}/>}><SharePost viewerId={viewerId} post={post}/></Popup>
-                    {
-                        post.author?.authorId !== undefined && post.author?.authorId === viewerId ? 
-                        <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> :
-                        null
-                    }    
-                    {
-                        post.author?.authorId !== undefined || author.authorId !== undefined ? 
-                        post.author?.authorId !== viewerId || author.authorId !== viewerId ? null :
-                        <img className='post-images' alt='delete' onClick={deletePost} src='/images/public/icon_bin.png' width={20}/> :
-                        null
-                    }    
                  { post.visibility === 'FRIENDS' && author.authorId !== viewerId ? 
                         <form >
                              <input type="text" id="newComment" name="newComment" onChange={(e) => {
@@ -255,6 +244,14 @@ function Post({viewerId, post, author, realAuthor}) {
                         </div>}
                     </div>
                  } 
+                    {
+                        authorId !== viewerId ? null : 
+                        <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> 
+                    }    
+                    {
+                        authorId !== viewerId ? null : 
+                        <img className='post-images' alt='delete' onClick={deletePost} src='/images/public/icon_bin.png' width={20}/> 
+                    }    
                  <div>
              </div>
         </div>}

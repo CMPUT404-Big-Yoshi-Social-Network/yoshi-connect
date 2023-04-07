@@ -497,6 +497,10 @@ async function postInboxPost(post, recieverAuthorId, res){
         try {
             inbox.posts.push(post);
             await inbox.save();
+            if (post.visibility === 'PUBLIC' && post.id !== undefined) {
+                const publicPost = new PublicPost(post);
+                await publicPost.save();
+            }
         }
         catch (e) {
             return [{
@@ -504,10 +508,6 @@ async function postInboxPost(post, recieverAuthorId, res){
                 invalidPost: {...post}
             }, 200]
         }
-    }
-    if (post.visibility === 'PUBLIC' && post.id !== undefined) {
-        const publicPost = new PublicPost(post);
-        await publicPost.save();
     }
     delete post._id;
     return [post, 200]

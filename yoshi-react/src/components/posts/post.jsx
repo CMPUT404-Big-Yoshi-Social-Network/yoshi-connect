@@ -52,8 +52,7 @@ function Post({viewerId, post, author, realAuthor}) {
     }
     let published = post.published.substring(0,10);
     let contentType = post.contentType ? post.contentType : ""
-    console.log(author)
-    let id = realAuthor ? realAuthor : typeof authorId === 'object' ? viewerId : authorId
+    let id = realAuthor ? realAuthor : typeof authorId === 'object' ? viewerId : authorId ? authorId.authorId !== undefined ? authorId.authorId : authorId : authorId
     if (typeof id === 'object') {
         id = id.authorId;
     }

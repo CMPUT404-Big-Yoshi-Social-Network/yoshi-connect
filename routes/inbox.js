@@ -604,9 +604,6 @@ async function postInboxComment(newComment, recieverAuthorId){
     }
     const type = newComment.type;
     const author = newComment.author;
-    if(!validateAuthorObject(author)){
-        return [{}, 500];
-    }
     author._id = author.id
     const commentContent = newComment.comment;
     const contentType = newComment.contentType;
@@ -633,51 +630,55 @@ async function postInboxComment(newComment, recieverAuthorId){
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
     const post = postHistory.posts.id(postId);
-    if(!post){ return [{}, 404]; }
-    post.commentCount++;
-    await postHistory.save();
-
-    let like = new LikeHistory({
-        type: "comment",
-        Id: commentId,
-        likes: []
-    });
+    if(!post){ 
+        // Must be remote
+        console.log(newComment);
+     } else {
+        post.commentCount++;
+        await postHistory.save();
     
-    await like.save();
-    
-    if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
-        let publicPost = await PublicPost.findOne({_id: postId});
-        if(publicPost){
-            publicPost.commentCount = post.commentCount;
-            await publicPost.save();
+        let like = new LikeHistory({
+            type: "comment",
+            Id: commentId,
+            likes: []
+        });
+        
+        await like.save();
+        
+        if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
+            let publicPost = await PublicPost.findOne({_id: postId});
+            if(publicPost){
+                publicPost.commentCount = post.commentCount;
+                await publicPost.save();
+            }
         }
-    }
+        
+        const commentHistory = await CommentHistory.findOne({postId: postId});
+        if(!commentHistory){ return [{}, 500]; }
+        if(commentHistory.comments.id(commentId)){ return [{}, 400]; }
     
-    const commentHistory = await CommentHistory.findOne({postId: postId});
-    if(!commentHistory){ return [{}, 500]; }
-    if(commentHistory.comments.id(commentId)){ return [{}, 400]; }
-
-    let comment = {
-        _id: commentId,
-        author: author,
-        likeCount: 0,
-        comment: commentContent,
-        contentType: contentType,
-        published: published,
-    }
-
-    commentHistory.comments.push(comment);
-    await commentHistory.save();
-
-    comment._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId;
-    comment.object = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
-
-    const inbox = await Inbox.findOne({authorId: recieverAuthorId});
-
-    inbox.comments.push(comment);
-    await inbox.save();
-
-    delete comment.author._id;
+        let comment = {
+            _id: commentId,
+            author: author,
+            likeCount: 0,
+            comment: commentContent,
+            contentType: contentType,
+            published: published,
+        }
+    
+        commentHistory.comments.push(comment);
+        await commentHistory.save();
+    
+        comment._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId;
+        comment.object = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
+    
+        const inbox = await Inbox.findOne({authorId: recieverAuthorId});
+    
+        inbox.comments.push(comment);
+        await inbox.save();
+    
+        delete comment.author._id;
+     }
 
     return [comment, 200];
 }

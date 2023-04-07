@@ -197,7 +197,13 @@ router.get('/:authorId', async (req, res) => {
 
 	if (status == 404 || status == 500) { return res.sendStatus(status); }
 
-	return res.json(author);
+	if (!author) {
+		return res.json({
+			message: "We are unable to fetch that author."
+		})
+	} else {
+		return res.json(author);
+	}
 })
 
 /**

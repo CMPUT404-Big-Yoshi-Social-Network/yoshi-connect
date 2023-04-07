@@ -64,6 +64,13 @@ Foundation; All Rights Reserved
 }
 .post-host{
     color: #A7E7F8;
+    font-weight: 200;
+    text-align: right;
+    margin-bottom: -1em;
+}
+
+.post-vis {
+    color: #A7E7F8;
     text-align: right;
     margin-bottom: -1em;
 }

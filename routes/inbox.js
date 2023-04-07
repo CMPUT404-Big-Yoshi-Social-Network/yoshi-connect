@@ -629,11 +629,37 @@ async function postInboxComment(newComment, recieverAuthorId){
     }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
-    const post = postHistory.posts.id(postId);
-    if(!post){ 
+    if(!postHistory){ 
         // Must be remote
-        console.log(newComment);
+        let obj = (newComment.object.split('/authors/'))[(newComment.object.split('/authors/')).length - 1]
+        obj = obj.split('/posts/')
+        let objectHost = newComment.object.split('/authors/')[0]
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        let host = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].url === objectHost) {       
+                auth = outgoings[i].auth;
+                host = outgoings[i].url;
+            }
+        }
+        var config = {
+            host: host,
+            url: host + '/authors/' + obj[0] + '/inbox',
+            method: 'POST',
+            headers: {
+                'Authorization': auth,
+                'Content-Type': 'application/json'
+            },
+            data: newComment
+        };
+        await axios.request(config)
+        .then( res => { })
+        .catch( error => { 
+        })
+        return [newComment, 200];
      } else {
+        const post = postHistory.posts.id(postId);
         post.commentCount++;
         await postHistory.save();
     
@@ -678,9 +704,9 @@ async function postInboxComment(newComment, recieverAuthorId){
         await inbox.save();
     
         delete comment.author._id;
-     }
 
-    return [comment, 200];
+        return [comment, 200];
+     }
 }
 
 async function postInboxRequest(actor, obj, receiverAuthorId, type) {

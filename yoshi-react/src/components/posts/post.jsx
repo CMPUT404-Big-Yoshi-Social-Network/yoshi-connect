@@ -56,8 +56,9 @@ function Post({viewerId, post, author, realAuthor}) {
     if (typeof id === 'object') {
         id = id.authorId;
     }
+    console.log(post)
     const [numLikes, setNumLikes] = useState(post.likeCount || 0);
-    const [numComments, setNumComments] = useState(post.count !== undefined ? post.count : post.commentCount);
+    const [numComments, setNumComments] = useState(post.count !== undefined ? post.count : post.commentCount !== undefined ? post.commentCount : post.commentsSrc ? post.commentsSrc.comments.length : 0);
     const [commentCreated, setCommentCreated] = useState(0);
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);

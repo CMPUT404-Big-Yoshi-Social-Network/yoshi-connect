@@ -210,7 +210,13 @@ function Post({viewerId, post, author, realAuthor}) {
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
                     { (post?.author?.profileImage === undefined || post?.author?.profileImage === '' || post?.author?.profileImage === null) ? <img className='post-userimg' src='/images/public/icon_profile.png'  alt='prof-userimg' width={20}/> : <img className='post-userimg' src={post.author.profileImage} alt='prof-userimg' width={20}/>}
                     <p className="post-user">{(post?.author?.displayName === undefined || post?.author?.displayName === '' || post?.author?.displayName === null) ? null : post.author.displayName }</p>
-                    { post.source !== post.origin ? <h4 style={{marginTop:'-1em'}}>Shared Post</h4> : null}
+                    { post.source !== post.origin ? 
+                        <div>
+                            <h4 style={{marginTop:'-1em'}}>Shared Post</h4>
+                            <br></br>
+                        </div> : 
+                        null
+                    }
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }

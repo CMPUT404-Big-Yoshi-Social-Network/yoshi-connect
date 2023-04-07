@@ -36,6 +36,11 @@ Foundation; All Rights Reserved
     padding: 1em;
     text-align: center;
 }
+
+.ad-pubUserImg{
+    border-radius: 50%;
+}
+
 .account-details-box{
     color: white;
     background-color: #4A5460;

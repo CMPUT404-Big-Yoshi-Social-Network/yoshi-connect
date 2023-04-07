@@ -63,6 +63,11 @@ Foundation; All Rights Reserved
     right: 0;
     bottom: 0;
 }
+
+.rn-pubUserImg {
+    border-radius: 50%;
+}
+
 .rightnav-button{
     color: white;
     margin: 0em 1em;

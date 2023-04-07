@@ -47,6 +47,7 @@ function Post({viewerId, post, author, realAuthor}) {
         undefined : 
         undefined;
     let h = post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0];
+    let o = post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.origin.split('/authors/')[0].split("/")[2] : post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.origin.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.origin.split('/authors/')[0].split("/")[2].split(".")[2]: post.origin.split('/authors/')[0].split("/")[2].split(".")[0];
     if (authorId === undefined) {
         authorId = author;
     }
@@ -201,10 +202,11 @@ function Post({viewerId, post, author, realAuthor}) {
                     <p className='post-vis'>{post.visibility}</p>
                     { (post?.author?.profileImage === undefined || post?.author?.profileImage === '' || post?.author?.profileImage === null) ? <img className='post-userimg' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='post-userimg' src={post.author.profileImage} alt='prof-userimg'/>}
                     <p className="post-user">{(post?.author?.displayName === undefined || post?.author?.displayName === '' || post?.author?.displayName === null) ? null : post.author.displayName }</p>
+                    <p className="post-published">{published}</p>
                     { post.source !== post.origin ? 
                         <div>
                             <br></br>
-                            <h4 style={{marginTop:'-1em'}}>Shared Post</h4>
+                            <h4 style={{marginTop:'-1em'}}>Shared Post from {o}</h4>
                         </div> : 
                         null
                     }
@@ -213,8 +215,6 @@ function Post({viewerId, post, author, realAuthor}) {
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
                     { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
-
-                    <p className="post-published">{published}</p>
                     <p className="post-num-lc">{numLikes}</p>
                     { window.location.pathname === '/' ? <img className='post-images' alt='like' src='/images/public/icon_like.png' width={20}/> : !like ? <img className='post-images' alt='like' onClick={addLike} src='/images/public/icon_like.png' width={20}/> : <img className='post-images' alt='liked' src='/images/public/icon_liked.png' width={20}/>} 
                     <p className="post-num-lc">{numComments}</p>

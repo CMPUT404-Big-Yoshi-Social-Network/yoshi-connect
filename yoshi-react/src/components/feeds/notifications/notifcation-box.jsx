@@ -64,14 +64,24 @@ function Notifications(props) {
             <div><Requests authorId={props.authorId}/></div>
             <hr/>
             <h4>Likes</h4>
-            {Object.keys(likes).map((like, idx) => (
-                <p key={idx}>{like}</p>
-            ))}
+            { likes.length !== 0 ?
+                <div>
+                    {Object.keys(likes).map((like, idx) => (
+                        <p key={idx}>{like}</p>
+                    ))}
+                </div> :
+                <p>No likes.</p>
+            }
             <hr/>
             <h4>Comments</h4>
-            {Object.keys(comments).map((comment, idx) => (
-                <p key={idx}>{comment}</p>
-            ))}
+            { comments.length !== 0 ?
+                <div>
+                    {Object.keys(comments).map((comment, idx) => (
+                        <p key={idx}>{comment}</p>
+                    ))}
+                </div> :
+                <p>No comments.</p>
+            }
             <hr/>
             <h5 onClick={clearInbox} type="submit">clear</h5>
         </div>

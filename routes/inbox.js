@@ -573,7 +573,7 @@ async function postInboxLike(like, authorId){
                 object: like.object,
                 summary: like.summary
             } 
-            
+
             inbox.likes.push(inboxLike);
     
             inbox.save();
@@ -656,6 +656,7 @@ async function postInboxComment(newComment, recieverAuthorId){
     }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
+    console.log(authorId)
     if(!postHistory){ 
         // Must be remote
         let obj = (newComment.object.split('/authors/'))[(newComment.object.split('/authors/')).length - 1]
@@ -685,7 +686,7 @@ async function postInboxComment(newComment, recieverAuthorId){
         .catch( error => { 
         })
         return [newComment, 200];
-     } else {
+    } else {
         const post = postHistory.posts.id(postId);
         post.commentCount++;
         await postHistory.save();
@@ -733,7 +734,7 @@ async function postInboxComment(newComment, recieverAuthorId){
         delete comment.author._id;
 
         return [comment, 200];
-     }
+    }
 }
 
 async function postInboxRequest(actor, obj, receiverAuthorId, type) {

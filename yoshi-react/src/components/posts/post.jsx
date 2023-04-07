@@ -191,7 +191,7 @@ function Post({viewerId, post, author, realAuthor}) {
         })
         .catch((err) => { });
     }
-    
+
     return (
         <div>
             {(!post.unlisted || (post.id === window.location.href)) &&

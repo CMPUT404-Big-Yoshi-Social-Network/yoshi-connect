@@ -79,7 +79,7 @@ async function getPublicLocalPosts(page, size) {
 
     for(let i = 0; i < publicPosts.length; i++){
         let post = publicPosts[i];
-        if (post.author != undefined) {
+        if (post.author.host === 'https://yoshi-connect.herokuapp.com/') { 
             let commentHistory = await CommentHistory.findOne({postId: post._id});
             post.author.authorId = post.author._id != undefined ? post.author._id.split("/") : post.author.authorId;
             post.author.authorId = post.author._id != undefined ? post.author.authorId[post.author.authorId.length - 1] : post.author.authorId;

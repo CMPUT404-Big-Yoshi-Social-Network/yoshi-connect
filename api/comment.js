@@ -35,6 +35,7 @@ const openapiSpecification = swaggerJsdoc(options);
 const express = require('express'); 
 const { PostHistory } = require('../scheme/post');
 const { OutgoingCredentials } = require('../scheme/server');
+const axios = require('axios');
 
 // Router
 const router = express.Router({mergeParams: true});

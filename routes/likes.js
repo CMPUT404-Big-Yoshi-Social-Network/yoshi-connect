@@ -105,14 +105,13 @@ async function addLike(like, authorId, postId){
     if(!type || !summary || !object){
         return [{}, 400];
     }
-    if(type != "like"){
+    if(type.toLowerCase() != "like"){
         return [{}, 400];
     }
 
     object = object.split("/");
     let objectType = object[object.length - 2];
     let Id = object[object.length - 1];
-    console.log('THIS IS THE OBJECT: ', object)
 
     let likes;
     if(objectType == "comments"){

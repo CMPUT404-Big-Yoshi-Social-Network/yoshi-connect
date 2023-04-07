@@ -97,7 +97,7 @@ async function addLike(like, authorId, postId){
     Return: 400 Status (Bad Request) -- Invalid type given
             200 Status (OK) -- Successfully added a like to post /comment
     */
-    const type = like.type;
+    const type = like.type.toLowerCase();
     const summary = like.summary;
     let object = like.object;
     const author = like.author;
@@ -105,7 +105,7 @@ async function addLike(like, authorId, postId){
     if(!type || !summary || !object){
         return [{}, 400];
     }
-    if(type.toLowerCase() != "like"){
+    if(type != "like"){
         return [{}, 400];
     }
 

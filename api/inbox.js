@@ -206,63 +206,70 @@ router.post('/', async (req, res) => {
 	}
 
 	//NEED to fix req.body.author.id to the id of the inbox haver
-	const type = req.body.type.toLowerCase();
-	let response, status;
-	if(type === "post"){
-		//For other servers to send their authors posts to us
-		[response, status] = await postInboxPost(req.body, req.params.authorId, res);
-	}
-	else if(type === "follow"){
-		//For local/remote authors to server 
-		let actor = null;
-		if (req.body.actor.status !== undefined) {
-			let actorId = req.body.actor.id;
-			actorId = actorId.split("/");
-			actorId = actorId[actorId.length - 1];
-			const actorDoc = await Author.findOne({_id: actorId});
-			actor = {
-				id: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
-				host: process.env.DOMAIN_NAME,
-				displayName: actorDoc.username,
-				url: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
-				github: actorDoc.github,
-				profileImage: actorDoc.profileImage
+	if (req.body.type === undefined) {
+		return res.json({
+			message: "You did not specify a type.",
+			invalidPost: req.body
+		})
+	} else {
+		const type = req.body.type.toLowerCase();
+		let response, status;
+		if(type === "post"){
+			//For other servers to send their authors posts to us
+			[response, status] = await postInboxPost(req.body, req.params.authorId, res);
+		}
+		else if(type === "follow"){
+			//For local/remote authors to server 
+			let actor = null;
+			if (req.body.actor.status !== undefined) {
+				let actorId = req.body.actor.id;
+				actorId = actorId.split("/");
+				actorId = actorId[actorId.length - 1];
+				const actorDoc = await Author.findOne({_id: actorId});
+				actor = {
+					id: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
+					host: process.env.DOMAIN_NAME,
+					displayName: actorDoc.username,
+					url: process.env.DOMAIN_NAME + "authors/" + actorDoc._id,
+					github: actorDoc.github,
+					profileImage: actorDoc.profileImage
+				}
+			} else {
+				// remote
+				actor = req.body.actor;
 			}
-		} else {
-			// remote
-			actor = req.body.actor;
+			if (req.params.authorId !== undefined && req.params.authorId !== null) {
+				[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type);
+			} 
 		}
-		if (req.params.authorId !== undefined && req.params.authorId !== null) {
-			[response, status] = await postInboxRequest(actor, req.body.object, req.params.authorId, type);
-		} 
-	}
-	else if(type === "like"){
-		[response, status] = await postInboxLike(req.body, req.params.authorId);
-	}
-	else if(type === "comment"){
-		[response, status] = await postInboxComment(req.body, req.params.authorId);
-	}
-	else{
-		res.sendStatus(400);
-	}
-
-	if (status != 200) {
-		return res.sendStatus(status);
-	}
-
-	if(type === "comment"){
-		response = {
-			type: "comment",
-			author: response.author,
-			comment: response.comment,
-			contentType: response.contentType,
-			published: response.published,
-			id: response._id
+		else if(type === "like"){
+			[response, status] = await postInboxLike(req.body, req.params.authorId);
 		}
-	}
-
-	if (req.body.postTo === '' || req.body.postTo === null || req.body.postTo === undefined) {
-		return res.json(response);
+		else if(type === "comment"){
+			[response, status] = await postInboxComment(req.body, req.params.authorId);
+		}
+		else{
+			res.sendStatus(400);
+		}
+	
+		if (status != 200) {
+			return res.sendStatus(status);
+		}
+	
+		if(type === "comment"){
+			response = {
+				type: "comment",
+				author: response.author,
+				comment: response.comment,
+				contentType: response.contentType,
+				published: response.published,
+				id: response._id
+			}
+		}
+	
+		if (req.body.postTo === '' || req.body.postTo === null || req.body.postTo === undefined) {
+			return res.json(response);
+		}
 	}
 })
 

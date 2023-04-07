@@ -62,10 +62,10 @@ function SinglePost() {
         }
         getId();
 
-        let url = window.location.pathname;
+        let url = window.location.pathname.split('/users');
 
         axios
-        .get(url)
+        .get('/authors' + url)
         .then((response) => {
             let post = response.data;
             setPost(prevPost => post);

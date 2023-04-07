@@ -94,7 +94,7 @@ const router = createBrowserRouter([
     element: <Profile/>
   },
   {
-    path: '/authors/:authorId/posts/:postId', 
+    path: '/users/:authorId/posts/:postId', 
     element: <SinglePost/>
   },
   {

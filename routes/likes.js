@@ -57,8 +57,6 @@ async function getLikes(authorId, postId, commentId, type){
     if(!likes){
         // Must be remote
         const outgoings = await OutgoingCredentials.find().clone();
-        let auth = ''
-        let host = ''
         for (let i = 0; i < outgoings.length; i++) {
             if (outgoings[i].allowed) {     
                 var config = {
@@ -66,7 +64,7 @@ async function getLikes(authorId, postId, commentId, type){
                     url: outgoings[i].url + '/authors/' + authorId + '/' + type + 's/' + postId + '/likes',
                     method: 'GET',
                     headers: {
-                        'Authorization': auth,
+                        'Authorization': outgoings[i].auth,
                         'Content-Type': 'application/json'
                     }
                 };
@@ -75,8 +73,12 @@ async function getLikes(authorId, postId, commentId, type){
                     likes = res.data.items
                 })
                 .catch( error => { })
+                if (likes) {
+                    break
+                }
             }
         }
+        return [likes, 200];
     } else {
         likes = likes.likes;
     

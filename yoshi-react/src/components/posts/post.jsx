@@ -206,9 +206,7 @@ function Post({viewerId, post, author, realAuthor}) {
             {(!post.unlisted || (post.id === window.location.href)) &&
                 <div className="post">
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
-			{ (post.author.profileImage === '' || post.author.profileImage === null) ? <img className='post-userimg' src='/images/public/icon_profile.png'  alt='prof-userimg' width={20}/> : <img className='post-userimg' src={post.author.profileImage} alt='prof-userimg' width={20}/>}
-                    <p className="post-user">{post.author.displayName}</p>
-                    { post.source !== post.origin ? <h4 style={{marginTop:'-1em'}}>Shared Post</h4> : null}
+                    { post.source !== post.origin ? <h4>Shared Post</h4> : null}
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
                     { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
@@ -228,7 +226,7 @@ function Post({viewerId, post, author, realAuthor}) {
                     {
                         post.author?.authorId !== undefined || author.authorId !== undefined ? 
                         post.author?.authorId !== viewerId || author.authorId !== viewerId ? null : 
-                        <img className='post-images' alt='delete' onClick={deletePost} src='/images/public/icon_bin.png' width={20}/> :
+                        <button className='post-buttons' onClick={deletePost}>Delete</button> :
                         null
                     }    
                  { post.visibility === 'FRIENDS' && author.authorId !== viewerId ? 

@@ -73,7 +73,7 @@ function Posts({url, userInfo}) {
             axios.get(url === 'personal' ? personalUrl : url.split('/')[0] === 'other' ? otherUrl : url, config)
             .then((response) => {
                 if (url !== '/posts/public' && url !== 'personal' && url.split('/')[0] !== 'other') {
-                    const friendPosts = (response.data.items).filter(post => post.visibility === 'FRIENDS');
+                    const friendPosts = (response.data.items).filter(post => (post.visibility === 'FRIENDS') || (post.visibility === 'PUBLIC'));
                     setPosts(friendPosts);
                 } else if (url.split('/')[0] === 'other') {
                     const profilePosts = (response.data.items).filter(post => post.visibility === 'PUBLIC');

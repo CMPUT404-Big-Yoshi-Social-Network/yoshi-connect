@@ -112,6 +112,7 @@ async function getPublicLocalPosts(page, size) {
 
 async function getPublicPostsXServer(page, size){
     let [response, statusCode] = await getPublicLocalPosts(page, size)
+    console.log(response)
     const outgoings = await OutgoingCredentials.find().clone();
     
     let promiseQueue = [];

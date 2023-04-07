@@ -63,17 +63,17 @@ function Notifications(props) {
             <hr/>
             <div><Requests authorId={props.authorId}/></div>
             <hr/>
-            <h3>Likes</h3>
+            <h4>Likes</h4>
             {Object.keys(likes).map((like, idx) => (
                 <p key={idx}>{like}</p>
             ))}
             <hr/>
-            <h3>Comments</h3>
+            <h4>Comments</h4>
             {Object.keys(comments).map((comment, idx) => (
                 <p key={idx}>{comment}</p>
             ))}
             <hr/>
-            <h4 onClick={clearInbox} type="submit">clear</h4>
+            <h5 onClick={clearInbox} type="submit">clear</h5>
         </div>
     )
 }

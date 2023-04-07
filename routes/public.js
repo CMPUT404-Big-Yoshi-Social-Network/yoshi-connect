@@ -120,10 +120,10 @@ async function getPublicPostsXServer(page, size){
         const host = outgoing.url;
         let endpoint = "";
         var config = '';
-        const auth = outgoing.auth;
+        let auth = outgoing.auth;
         if (outgoings[i].allowed) {
-            if(host == "http://www.distribution.social"){
-                endpoint = "/api/posts/public"
+            if(host == "http://www.distribution.social/api"){
+                endpoint = "/posts/public"
                 var config = {
                     url: host + endpoint,
                     method: 'GET',

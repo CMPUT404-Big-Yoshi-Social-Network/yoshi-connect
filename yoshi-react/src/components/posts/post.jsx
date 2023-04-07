@@ -218,11 +218,20 @@ function Post({viewerId, post, author, realAuthor}) {
 
                     <p className="post-published">{published}</p>
                     <p className="post-num-lc">{numLikes}</p>
-                    { !like ? <img className='post-images' alt='like' onClick={addLike} src='/images/public/icon_like.png' width={20}/> : <img className='post-images' alt='liked' src='/images/public/icon_liked.png' width={20}/>} 
+                    { window.location.pathname === '/' ? <img className='post-images' alt='like' src='/images/public/icon_like.png' width={20}/> : !like ? <img className='post-images' alt='like' onClick={addLike} src='/images/public/icon_like.png' width={20}/> : <img className='post-images' alt='liked' src='/images/public/icon_liked.png' width={20}/>} 
                     <p className="post-num-lc">{numComments}</p>
                     { showComment ? <img className='post-images' alt='close-comments' onClick={toggleComments} src='/images/public/icon_commented.png' width={20}/> : <img className='post-images' alt='open-comments' onClick={toggleComments} src='/images/public/icon_comment.png' width={20}/> }
-                    <Popup trigger={<img className='post-images' alt='share' src='/images/public/icon_share.png' width={20}/>}><SharePost viewerId={viewerId} post={post}/></Popup>
-                 { post.visibility === 'FRIENDS' && author.authorId !== viewerId ? 
+                    { window.location.pathname === '/' ? <img className='post-images' alt='share' src='/images/public/icon_share.png' width={20}/> : <Popup trigger={<img className='post-images' alt='share' src='/images/public/icon_share.png' width={20}/>}><SharePost viewerId={viewerId} post={post}/></Popup> }
+                 { window.location.pathname === '/' ? 
+                    <div>
+                        { showComment && 
+                            <div>
+                                <h3>Comments</h3>
+                                <Comments key={commentCreated} viewerId={viewerId} url={'/authors/' + id + '/posts/' + postId + '/comments'} author={author} liked={post} commentsSrc={post.commentsSrc}> </Comments>
+                            </div>
+                        }
+                    </div>
+                 : post.visibility === 'FRIENDS' && author.authorId !== viewerId ? 
                         <form >
                              <input type="text" id="newComment" name="newComment" onChange={(e) => {
                                  setComment({...comment, newComment: e.target.value})

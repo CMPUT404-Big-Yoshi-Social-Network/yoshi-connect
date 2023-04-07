@@ -56,12 +56,12 @@ function Comments(params) {
                 setComments([]);
              });
         } else {
-            setComments(params.commentsSrc.comments)
+            setComments(params.commentsSrc ? params.commentsSrc.comments ? params.commentsSrc.comments : [] : [])
         }
     }, [params.url, params.commentsSrc]);
     return (
         <div>
-            { comments.length === 0 ? 
+            { (comments ? comments.length === 0 : 0) ? 
                 <div>
                     <h4>No comments to show.</h4>
                 </div> : 

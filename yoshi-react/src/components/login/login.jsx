@@ -41,9 +41,6 @@ export default function Login() {
       password: ''
     })
     const [error, setError] = useState(false);
-    const [errorMsg, setErrorMsg] = useState({
-      errorMsg: null
-    });
     const getUserpass = (e) => {
       /**
        * Description: Sends a POST request to get the author's account for public feed from the database
@@ -73,15 +70,10 @@ export default function Login() {
       .catch(err => {
         if (err.response.status === 400) {
           setError(true);
-          setErrorMsg(400);
         } else if (err.response.status === 500) {
           navigate('/servererror');
         } else if (err.response.status === 404) {
           setError(true);
-          setErrorMsg(404);
-        } else if (err.response.status === 401) {
-          setError(true);
-          setErrorMsg(401);
         }
       });
     }
@@ -92,9 +84,7 @@ export default function Login() {
             Yoshi Connect
         </Container>
         <Card className="login-card">
-    	  {error&&errorMsg === 400? <p className='login-error'>An invalid request was made</p>:""}
-          {error&&errorMsg === 401? <p className='login-error'>Your account has not been authorized yet</p>:""}
-          {error&&errorMsg === 404? <p className='login-error'>Username or Password is incorrect</p>:""}
+          {error? <p className='login-error'>Username or password is incorrect</p>:""}
           <Card.Header>
               <h3>Log In</h3>
           </Card.Header>

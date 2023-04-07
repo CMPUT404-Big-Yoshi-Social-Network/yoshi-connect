@@ -73,12 +73,12 @@ function Post({viewerId, post, author, realAuthor}) {
          */
         const getImage = () => {
             if (contentType.split("/")[0] === "image") {
-                if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
+                if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
                     setImage("data:" + contentType + "," + post.content)
-                } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
+                } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
                     setImage(post.content)
                 }
-            } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.source.split('/authors/')[0].split("/")[2] === "localhost:3000") {
+            } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000") {
                 let link = post.id ? "/author" + post.id.split("author")[1] + "/image" : '/authors/' + id + '/posts/' + post._id + "/image"
                 axios
                 .get(link)
@@ -92,7 +92,7 @@ function Post({viewerId, post, author, realAuthor}) {
             }
         }
         getImage();
-    }, [contentType, id, post._id, post.content, post.id, post.source])
+    }, [contentType, id, post._id, post.content, post.id, post.origin])
 
     useEffect(() => { 
         /**

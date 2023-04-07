@@ -35,7 +35,6 @@ function Comments(params) {
      *     - useEffect: Fetches the the comments related to the url
      * Returns: N/A
      */
-    console.log('Debug: Comments() <TLDR what the function is doing>')
 
     const [comments, setComments] = useState([]);
 

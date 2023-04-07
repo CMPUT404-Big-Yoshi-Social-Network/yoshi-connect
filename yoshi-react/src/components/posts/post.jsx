@@ -178,7 +178,6 @@ function Post({viewerId, post, author, realAuthor}) {
                 if(err.response){ }});
         }
     }
-    console.log(inboxUrl)
     const makeComment = () => {
         /**
          * Description: Sends a Comment through a POST request

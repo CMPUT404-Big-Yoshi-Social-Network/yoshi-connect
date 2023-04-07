@@ -64,8 +64,6 @@ function SinglePost() {
 
         let url = window.location.pathname;
 
-        console.log(url)
-
         axios
         .get(url)
         .then((response) => {

@@ -102,7 +102,14 @@ function Post({viewerId, post, author, realAuthor}) {
          * Returns: N/A
          */ 
         const getLikes = () => {
-            axios.get(((post.id) || ('/authors/' + id + '/posts/' + post._id)) + '/likes')
+            let url = ''
+            if (post.id) {
+                url = post.id.split('/authors/')[1]
+                url = '/authors/' + url
+            } else {
+                url = '/authors/' + id + '/posts/' + post._id.split('/posts/')[1]
+            }
+            axios.get(url + '/likes')
             .then((response) => { 
                 setNumLikes(response.data.items.length);
                 let itemsCopy = response.data.items;

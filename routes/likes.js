@@ -160,7 +160,10 @@ async function addLiked(authorId, objectId){
     //extract author uuid from authorID
     let authorUUID = authorId.split("/authors/")[1]
     const liked = await LikedHistory.findOne({authorId: authorUUID});
-    if (!liked) { return true; }
+    if (!liked) { 
+        // Remote author then who is liking
+        return false; 
+    }
     if(liked.liked.id(objectId)){
         return true;
     }

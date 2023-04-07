@@ -569,7 +569,6 @@ async function postInboxLike(like, authorId){
         .catch( error => { 
         })
     }
-    console.log('ahh')
     return [like, 200];
 }
 

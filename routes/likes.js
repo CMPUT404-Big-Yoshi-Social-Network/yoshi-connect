@@ -112,7 +112,7 @@ async function addLike(like, authorId, postId){
     object = object.split("/");
     let objectType = object[object.length - 2];
     let Id = object[object.length - 1];
-    console.log(objectType)
+    console.log('THIS IS THE OBJECT: ', object)
 
     let likes;
     if(objectType == "comments"){

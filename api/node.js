@@ -560,7 +560,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                 url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox',
                 method: 'POST',
                 headers: {
-                    'Authentication': auth,
+                    'Authorization': auth,
                     'Content-Type': 'application/json'
                 },
                 data: {
@@ -571,7 +571,7 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
             await addFollowing(req.body.actor, req.body.object);
             await axios.request(config)
             .then( res => { })
-            .catch( error => { })
+            .catch( error => { console.log('The inbox is not from this server.') })
         }
     }
 

@@ -264,6 +264,9 @@ router.post('/', async (req, res) => {
 	if (req.body.postTo === '' || req.body.postTo === null || req.body.postTo === undefined) {
 		return res.json(response);
 	}
+	res.json({
+		message: "I was unable to post to this inbox! Something is wrong with what you had sent."
+	})
 })
 
 router.get('/requests/:foreignAuthorId', async (req, res) => {

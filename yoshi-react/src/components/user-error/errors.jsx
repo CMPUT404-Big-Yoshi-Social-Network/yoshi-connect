@@ -14,7 +14,6 @@ export default function Errors() {
      * Returns: N/A
      */
     const path = useLocation().pathname;
-    //console.log(path);
 
     const statusCode = ['400', '401', '403', '404', '500'];
     const statusDesc = ["Your request resulted in an error", 

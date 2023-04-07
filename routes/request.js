@@ -346,7 +346,6 @@ async function deleteRequest(res, actor, object, authorId, foreignId, status, is
                         }
                     };
                 }
-                console.log(config)
             }
         
                 await axios.request(config)

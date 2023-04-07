@@ -59,13 +59,7 @@ function Author(props) {
         axios
         .delete(url, config)
         .then((response) => { })
-        .catch(err => {
-            if (err.response.status === 404) {
-                navigate('/notfound');
-            } else if (err.response.status === 500) {
-                console.log('STATUS 500 PAGE')
-            }
-        });
+        .catch(err => { });
     }
 
     const allowAuthor = () => {
@@ -83,8 +77,6 @@ function Author(props) {
                 navigate('/badrequest');
             } else if (err.response.status === 404) {
                 navigate('/notfound');
-            } else if (err.response.status === 500) {
-                console.log('NEED A 500 STATUS PAGE')
             }
         });
     }

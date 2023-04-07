@@ -280,7 +280,6 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
 
 				await axios.request(config)
 				.then( res => {
-                    console.log(res.data)
                     if(res.data && res.data.items && res.data.items.length != 0 ){
 					    posts = res.data.items
                     }
@@ -560,8 +559,8 @@ router.post('/outgoing/authors/:authorId/inbox/:type', async (req, res) => {
                 host: outgoings[i].url,
                 url: outgoings[i].url + '/authors/' + req.params.authorId + '/inbox',
                 method: 'POST',
-                auth: auth,
                 headers: {
+                    'Authentication': auth,
                     'Content-Type': 'application/json'
                 },
                 data: {

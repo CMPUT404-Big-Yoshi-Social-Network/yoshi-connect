@@ -61,15 +61,21 @@ function Comments(params) {
     }, [params.url, params.commentsSrc]);
     return (
         <div>
-            { comments.length === 0 ? 
+            { comments !== undefined && comments.length === 0 ? 
                 <div>
                     <h4>No comments to show.</h4>
                 </div> : 
                 <div> 
                     <Pagination>
-                        {Object.keys(comments).map((comment, idx) => (
-                            <Comment key={idx} comment={comments[comment]} author={params.author} url={params.url}/>
-                        ))}  
+                        { comments !== undefined ?
+                            <div>
+                                {Object.keys(comments).map((comment, idx) => (
+                                    <Comment key={idx} comment={comments[comment]} author={params.author} url={params.url}/>
+                                ))}  
+                            </div> :
+                            null
+
+                        }
                     </Pagination>  
                 </div>
             }

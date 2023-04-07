@@ -38,7 +38,6 @@ const { Author } = require('../scheme/author');
 const { OutgoingCredentials } = require('../scheme/server');
 
 const axios = require('axios');
-const { Follower, Following } = require('../scheme/relations');
 
 // Router
 const router = express.Router({mergeParams: true});

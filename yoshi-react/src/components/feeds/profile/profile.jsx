@@ -263,87 +263,35 @@ function Profile() {
          * Request: PUT    
          * Returns: N/A
          */
-        if (requestButton === "Add") {
+        if (requestButton === "Add") { 
             setRequestButton('Sent');
+            let url = '/authors/' + personal.viewedId + '/inbox'
             let config = {
-                method: 'put',
-                maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId,
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                actor: {
+                    id: 'https://yoshi-connect.herokuapp.com/authors/' + personal.viewerId,
+                    status: 'local'
+                },
+                type: 'follow'
             }
             axios
-            .put('/authors/' + personal.viewerId + '/inbox/requests/' + personal.viewedId, config)
+            .post(url, config, {
+                "X-Requested-With": "XMLHttpRequest"
+            })
             .then((response) => { })
-            .catch(err => {
-              if (err.response.status === 401) {
-                navigate('/unauthorized')
-              } else if (err.response.status === 400) {
-                navigate('/badrequest');
-              }
-            });
+            .catch(err => { });
         } else if (requestButton === "Sent") {
             setRequestButton('Add')
             axios
-            .delete('/authors/' + personal.viewerId + 'inbox/requests/' + personal.viewedId)
+            .delete('/authors/' + personal.viewedId + '/inbox/requests/' + personal.viewerId)
             .then((response) => { })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                  } else if (err.response.status === 400) {
-                    navigate('/badrequest');
-                  } else if (err.response.status === 500) {
-                    navigate('/servererror');
-                  }
-            });
-        } else if (requestButton === 'Unfriend') {
-            console.log('Debug: We want to unfriend.')
+            .catch(err => { });
+        } else if (requestButton === 'Unfriend' || requestButton === "Unfollow") {
             axios
             .delete('/authors/' + personal.viewerId + '/followings/' + personal.viewedId)
-            .then((response) => {
-                if (response.data.status) {
-                    console.log('Debug: Follow is unfriended.')
-                    setRequestButton('Add');
-                }
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                  } else if (err.response.status === 400) {
-                    navigate('/badrequest');
-                  } else if (err.response.status === 500) {
-                    navigate('/servererror')
-                  }
-            });
-        } else if (requestButton === "Unfollow") {
-            console.log('Debug: We want to unfollow.')
-            let config = {
-                method: 'delete',
-                maxBodyLength: Infinity,
-                url: '/authors/' + personal.viewerId + '/followings/' + personal.viewedId,
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
-            axios
-            .delete('/authors/' + personal.viewerId + '/followings/' + personal.viewedId, config)
-            .then((response) => {
-                if (response.data.status) {
-                    console.log('Debug: Follow is unfollowed.')
-                    setRequestButton('Add');
-                }
-            })
-            .catch(err => {
-                if (err.response.status === 401) {
-                    navigate('/unauthorized')
-                  } else if (err.response.status === 400) {
-                    navigate('/badrequest');
-                  } else if (err.response.status === 500) {
-                    navigate('/servererror')
-                  }
-            });
-        }
+            .then((response) => { })
+            .catch(err => { });
+            setRequestButton('Add')
+        } 
     }
     return (
         <div>

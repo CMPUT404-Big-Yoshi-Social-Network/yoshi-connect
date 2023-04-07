@@ -34,6 +34,8 @@ const openapiSpecification = swaggerJsdoc(options);
 // Router Setup
 const express = require('express'); 
 const { PostHistory } = require('../scheme/post');
+const { OutgoingCredentials } = require('../scheme/server');
+const axios = require('axios');
 
 // Router
 const router = express.Router({mergeParams: true});
@@ -151,7 +153,7 @@ router.get('/', async (req, res) => {
         if (outgoings[i].allowed) {     
             var config = {
                 host: outgoings[i].url,
-                url: outgoings[i].url + '/authors/' + authorId + '/' + type + 's/' + postId + '/comments',
+                url: outgoings[i].url + '/authors/' + authorId + '/posts/' + postId + '/comments',
                 method: 'GET',
                 headers: {
                     'Authorization': outgoings[i].auth,

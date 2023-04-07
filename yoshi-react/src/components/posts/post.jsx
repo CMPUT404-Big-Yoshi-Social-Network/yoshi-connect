@@ -102,7 +102,14 @@ function Post({viewerId, post, author, realAuthor}) {
          * Returns: N/A
          */ 
         const getLikes = () => {
-            axios.get(((post.id) || ('/authors/' + id + '/posts/' + post._id)) + '/likes')
+            let url = ''
+            if (post.id) {
+                url = post.id.split('/authors/')[1]
+                url = '/authors/' + url
+            } else {
+                url = '/authors/' + id + '/posts/' + post._id.split('/posts/')[1]
+            }
+            axios.get(url + '/likes')
             .then((response) => { 
                 setNumLikes(response.data.items.length);
                 let itemsCopy = response.data.items;
@@ -191,13 +198,13 @@ function Post({viewerId, post, author, realAuthor}) {
         })
         .catch((err) => { });
     }
-    
+
     return (
         <div>
-            {(!post.unlisted || (post.id === window.location.href)) &&
+            {(!post.unlisted || (post.id === window.location.href) || window.location.pathname.split('/users/').length === 2) &&
                 <div className="post">
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
-                    <p className='post-vis'>{post.visibility}</p>
+                    <p className='post-vis'>{post.visibility}{post.unlisted ? ": Unlisted" : null}</p>
                     { (post?.author?.profileImage === undefined || post?.author?.profileImage === '' || post?.author?.profileImage === null) ? <img className='post-userimg' src='/images/public/icon_profile.png'  alt='prof-userimg'/> : <img className='post-userimg' src={post.author.profileImage} alt='prof-userimg'/>}
                     <p className="post-user">{(post?.author?.displayName === undefined || post?.author?.displayName === '' || post?.author?.displayName === null) ? null : post.author.displayName }</p>
                     <p className="post-published">{published}</p>
@@ -211,7 +218,7 @@ function Post({viewerId, post, author, realAuthor}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     <hr/>
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
-                    { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
+                    { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content} className={"commonmark"}/> : null }
                     { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
                     <p className="post-num-lc">{numLikes}</p>
                     { window.location.pathname === '/' ? <img className='post-images' alt='like' src='/images/public/icon_like.png' width={20}/> : !like ? <img className='post-images' alt='like' onClick={addLike} src='/images/public/icon_like.png' width={20}/> : <img className='post-images' alt='liked' src='/images/public/icon_liked.png' width={20}/>} 
@@ -251,12 +258,11 @@ function Post({viewerId, post, author, realAuthor}) {
                  } 
                     {
                         authorId !== viewerId || window.location.pathname === '/' ? null : 
+                        <div>
                         <Popup trigger={<button className='post-buttons' >Edit</button>}><EditPost viewerId={viewerId} post={post}/></Popup> 
-                    }    
-                    {
-                        authorId !== viewerId || window.location.pathname === '/' ? null : 
                         <img className='post-images' alt='delete' onClick={deletePost} src='/images/public/icon_bin.png' width={20}/> 
-                    }    
+                        </div>
+                    }     
                  <div>
              </div>
         </div>}

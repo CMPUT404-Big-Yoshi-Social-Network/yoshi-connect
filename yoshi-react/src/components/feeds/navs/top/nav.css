@@ -125,8 +125,9 @@ Foundation; All Rights Reserved
 }
 
 .topNavNotif{
-    margin-top: -2.4em;
-    margin-left: 92em;
+    position: absolute;
+    right: 20em;
+    top: 1em;
     text-decoration: none;
 }
 .topNavNotif:hover{

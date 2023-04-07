@@ -146,7 +146,7 @@ function CreatePost() {
 
         let link = { postId: "" }
         
-        await axios.put('/authors/' + data.authorId + '/posts/', body)
+        await axios.put('/authors/' + data.authorId + '/posts', body)
         .then((response) => { 
             if (response.status === 200) {
                 link.postId = response.data.id.split('/')[6];

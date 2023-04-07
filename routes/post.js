@@ -321,7 +321,7 @@ async function createPost(token, authorId, postId, newPost) {
                                 method: "POST",
                                 headers:{
                                     "Authorization": outgoings[i].auth,
-                                    'Content-Type': 'application/json'
+                                    'Content-Type': 'application/ application/x-www-form-urlencoded'
                                 },
                                 data: toSend
                             }

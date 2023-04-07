@@ -760,8 +760,13 @@ async function postInboxRequest(actor, obj, receiverAuthorId, type) {
     }
 
     const inbox = await Inbox.findOne({authorId: receiverAuthorId});
-    inbox.requests.push(request);
-    inbox.save();
+    let idx = inbox.requests.map(obj => obj.actor.id).indexOf(actor.id);
+    if (idx > -1) { 
+        return [{status: 'Already sent a request.' }, 200]
+    } else {
+        inbox.requests.push(request);
+        inbox.save();
+    }
 
     const jsonRequest = {
         summary: summary, 

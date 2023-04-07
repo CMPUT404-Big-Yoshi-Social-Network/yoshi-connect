@@ -130,8 +130,13 @@ async function senderAdded(authorId, foreignId, req, res) {
             }
         }
         if (follower) {
-            follower.followers.push(newFollower);
-            await follower.save();
+            let idx = follower.followers.map(obj => obj.id).indexOf(process.env.DOMAIN_NAME + "authors/" + actor._id);
+            if (idx > -1) { 
+                success = true;
+            } else {
+                follower.followers.push(newFollower);
+                await follower.save();
+            }
         } else {
             let uuidFollower = String(crypto.randomUUID()).replace(/-/g, "");
             var follower = new Follower({
@@ -205,8 +210,13 @@ async function sendRequest(authorId, foreignId, res) {
     }
 
     const inbox = await Inbox.findOne({authorId: foreignId});
-    inbox.requests.push(request);
-    inbox.save();
+    let idx = inbox.requests.map(obj => obj.actor.id).indexOf(process.env.DOMAIN_NAME + "authors/" + actor._id);
+    if (idx > -1) { 
+        return {status: 'Already sent a request.' }
+    } else {
+        inbox.requests.push(request);
+        inbox.save();
+    }
 
     return {
         type: type,

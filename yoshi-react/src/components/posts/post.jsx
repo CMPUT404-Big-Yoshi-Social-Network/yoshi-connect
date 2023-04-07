@@ -211,7 +211,7 @@ function Post({viewerId, post, author, realAuthor}) {
                     { post.title === "" ? null : <h1>{post.title}</h1> }
                     <hr/>
                     { post.description === "" ? null : <h3>{ post.description }</h3> }
-                    { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content}/> : null }
+                    { post.contentType === "text/plain" ? <p className="post-content">{ post.content }</p> : post.contentType === "text/markdown" ? <ReactCommonmark source={post.content} className={"commonmark"}/> : null }
                     { image === "" ? null : <a href={image} target="_blank" rel="noreferrer" ><img className={"image"} src={image} alt=""/></a>}
                     <p className="post-num-lc">{numLikes}</p>
                     { window.location.pathname === '/' ? <img className='post-images' alt='like' src='/images/public/icon_like.png' width={20}/> : !like ? <img className='post-images' alt='like' onClick={addLike} src='/images/public/icon_like.png' width={20}/> : <img className='post-images' alt='liked' src='/images/public/icon_liked.png' width={20}/>} 

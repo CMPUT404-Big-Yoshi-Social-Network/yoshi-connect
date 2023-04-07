@@ -89,6 +89,10 @@ Foundation; All Rights Reserved
     overflow-wrap: break-word;
 }
 
+.commonmark img {
+    width: 45vw
+}
+
 .post-userimg {
     border-radius: 50%;
     width: 2em;

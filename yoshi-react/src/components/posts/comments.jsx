@@ -67,9 +67,15 @@ function Comments(params) {
                 </div> : 
                 <div> 
                     <Pagination>
-                        {Object.keys(comments).map((comment, idx) => (
-                            <Comment key={idx} comment={comments[comment]} author={params.author} url={params.url}/>
-                        ))}  
+                        { comments !== undefined ?
+                            <div>
+                                {Object.keys(comments).map((comment, idx) => (
+                                    <Comment key={idx} comment={comments[comment]} author={params.author} url={params.url}/>
+                                ))}  
+                            </div> :
+                            null
+
+                        }
                     </Pagination>  
                 </div>
             }

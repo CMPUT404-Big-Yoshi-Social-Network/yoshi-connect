@@ -166,11 +166,7 @@ function SearchCard(props) {
             .delete('/authors/' + viewerId + '/followings/' + id)
             .then((response) => { })
             .catch(err => { });
-            axios
-            .delete('/authors/' + id + '/followers/' + viewerId)
-            .then((response) => { })
-            .catch(err => { });
-            setRequestButton('Add');
+            setRequestButton('Add')
         } 
     }
 

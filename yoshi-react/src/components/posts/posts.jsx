@@ -181,7 +181,6 @@ function Posts({url, userInfo}) {
             if (response.data.items.length === 0) { setSeeMore(true); }
         })
         .catch(err => {
-            console.log(err);
             if(err.response){
                 if (err.response.status === 404) {
                     setPosts(posts);

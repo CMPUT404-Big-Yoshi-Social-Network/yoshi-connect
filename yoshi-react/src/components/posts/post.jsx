@@ -56,9 +56,8 @@ function Post({viewerId, post, author, realAuthor}) {
     if (typeof id === 'object') {
         id = id.authorId;
     }
-    
-    const [numLikes, setNumLikes] = useState(post.likeCount);
-    const [numComments, setNumComments] = useState(post.count !== undefined ? post.count : post.commentCount);
+    const [numLikes, setNumLikes] = useState(post.likeCount || 0);
+    const [numComments, setNumComments] = useState(post.count !== undefined ? post.count : post.commentCount !== undefined ? post.commentCount : post.commentsSrc ? post.commentsSrc.comments ? post.commentsSrc.comments.length : 0 : 0);
     const [commentCreated, setCommentCreated] = useState(0);
     const [comment, setComment] = useState({ newComment: "" });
     const [showComment, setShowComment] = useState(false);
@@ -74,15 +73,25 @@ function Post({viewerId, post, author, realAuthor}) {
          */
         const getImage = () => {
             if (contentType.split("/")[0] === "image") {
-                if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
+                if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
                     setImage("data:" + contentType + "," + post.content)
-                } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
+                } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
                     setImage(post.content)
+                } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000") {
+                    axios
+                    .get("/author" + post.origin.split("author")[1] + "/image")
+                    .then((res) => {
+                        if (res.data.status === 200) {
+                            setImage(res.data.src)
+                        } else {
+                            setImage('')
+                        }
+                    })
                 }
-            } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.source.split('/authors/')[0].split("/")[2] === "localhost:3000") {
-                let link = post.id ? "/author" + post.id.split("author")[1] + "/image" : '/authors/' + id + '/posts/' + post._id + "/image"
+            // legacy support
+            } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000") {
                 axios
-                .get(link)
+                .get("/author" + post.origin.split("author")[1] + "/image")
                 .then((res) => {
                     if (res.data.status === 200) {
                         setImage(res.data.src)
@@ -93,7 +102,7 @@ function Post({viewerId, post, author, realAuthor}) {
             }
         }
         getImage();
-    }, [contentType, id, post._id, post.content, post.id, post.source])
+    }, [contentType, id, post._id, post.content, post.id, post.origin])
 
     useEffect(() => { 
         /**
@@ -102,7 +111,7 @@ function Post({viewerId, post, author, realAuthor}) {
          * Returns: N/A
          */ 
         const getLikes = () => {
-            axios.get((post.id) || ('/authors/' + id + '/posts/' + post._id) + '/likes')
+            axios.get(((post.id) || ('/authors/' + id + '/posts/' + post._id)) + '/likes')
             .then((response) => { 
                 setNumLikes(response.data.items.length);
                 let itemsCopy = response.data.items;
@@ -161,13 +170,16 @@ function Post({viewerId, post, author, realAuthor}) {
                 "X-Requested-With": "XMLHttpRequest"
             })
             .then((response) => {
+                if (response.data.status !== 'Liked') {
+                    setNumLikes(numLikes + 1);
+                }
                 setLike(true);
-                setNumLikes(numLikes + 1);
             })
             .catch((err) => {
                 if(err.response){ }});
         }
     }
+
     const makeComment = () => {
         /**
          * Description: Sends a Comment through a POST request
@@ -190,7 +202,7 @@ function Post({viewerId, post, author, realAuthor}) {
         })
         .catch((err) => { });
     }
-
+    
     return (
         <div>
             {(!post.unlisted || (post.id === window.location.href)) &&

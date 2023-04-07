@@ -206,7 +206,6 @@ async function getInbox(token, authorId, page, size){
             return response.data
         })
         .catch((err) => {
-            console.log(err);
         }))
     }
     for(let i = 0; i < posts.length; i++){
@@ -274,7 +273,7 @@ async function createPost(token, authorId, postId, newPost) {
     const description = newPost.description;
     const contentType = newPost.contentType;
     const content = newPost.content;
-    const categories = [''];
+    const categories = newPost.categories;
     const published = new Date().toISOString();
     const visibility = newPost.visibility;
     const unlisted = newPost.unlisted;
@@ -409,7 +408,6 @@ async function createPost(token, authorId, postId, newPost) {
                         console.log(request.data);
                     })
                     .catch((error) => {
-                        console.log(error)
                     })
                 }
             }
@@ -465,13 +463,12 @@ async function createPost(token, authorId, postId, newPost) {
         await axios.request(config)
         .then((res) => { })
         .catch((err) => { 
-            console.log(err)
         })
     }
     return await getPost(postId, authorId, author);
 }
 
-async function postInboxPost(post, recieverAuthorId){
+async function postInboxPost(post, recieverAuthorId, res){
     /**
     Description: Posts a post object into the Author's inbox
     Associated Endpoint: /authors/:authorId/inbox
@@ -485,29 +482,26 @@ async function postInboxPost(post, recieverAuthorId){
         let [newPost, status] = await createPost(null, post.authorId, post.id, {...post});
         post = newPost;
     }
-    const type = post.type;
-    const title = post.title;
     const id = post.id;
-    const source = post.source;
-    const origin = post.origin;
-    const description = post.description;
-    const contentType = post.contentType;
-    const content = post.content;
-    const published = post.published;
-    const visibility = post.visibility;
-    if( !type || !title || !id || !source || !origin || !description || !contentType || !content || 
-        !published || !visibility)
-    {
-        return [{}, 400];
-    }
 
     const inbox = await Inbox.findOne({authorId: recieverAuthorId}, '_id posts');
     if (inbox) {
         post._id = id
-        inbox.posts.push(post);
-        await inbox.save();
-        delete post._id;
+        if (typeof post.author === 'Array' || typeof post.author === 'array') {
+            post = JSON.parse(post);
+        }
+        try {
+            inbox.posts.push(post);
+            await inbox.save();
+        }
+        catch (e) {
+            return [{
+                message: "I could not insert this post into the inbox because it is formatted incorrectly.",
+                invalidPost: {...post}
+            }, 200]
+        }
     }
+    delete post._id;
     return [post, 200]
 }
 
@@ -525,8 +519,8 @@ async function postInboxLike(like, authorId){
     objectHost = like.object.split("authors/");
     objectHost = objectHost[0];
     let host = process.env.DOMAIN_NAME;
-    if (host === objectHost) {
-        const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
+    const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
+    if ((host === objectHost || 'https://yoshi-connect.herokuapp.com/') || inbox) {
         let author = like.author;
         author = {
             _id: author.id,
@@ -537,7 +531,7 @@ async function postInboxLike(like, authorId){
             profileImage: author.profileImage
         };
         if(await addLiked(author._id, like.object)){
-            return [like, 403];
+            return [{...like, status: 'Liked'}, 200];
         }
         await addLike(like, authorId); 
     
@@ -551,18 +545,18 @@ async function postInboxLike(like, authorId){
     
         inbox.save();
     } else {
-        let obj = (like.object.split('/authors/'))[(like.object.split('/authors/')).length - 1]
-        obj = obj.split('/posts/')
         const outgoings = await OutgoingCredentials.find().clone();
         let auth = ''
+        let host = ''
         for (let i = 0; i < outgoings.length; i++) {
-            if (outgoings[i].url === objectHost) {       
+            if (outgoings[i].url + '/' === objectHost) {       
                 auth = outgoings[i].auth;
+                host = outgoings[i].url;
             }
         }
         var config = {
-            host: objectHost,
-            url: objectHost + obj[obj.length - 1] + '/inbox',
+            host: host,
+            url: host + '/authors/' + authorId + '/inbox',
             method: 'POST',
             headers: {
                 'Authorization': auth,
@@ -570,12 +564,12 @@ async function postInboxLike(like, authorId){
             },
             data: like
         };
-
         await axios.request(config)
         .then( res => { })
-        .catch( error => { })
+        .catch( error => { 
+        })
     }
-
+    console.log('ahh')
     return [like, 200];
 }
 
@@ -604,9 +598,6 @@ async function postInboxComment(newComment, recieverAuthorId){
     }
     const type = newComment.type;
     const author = newComment.author;
-    if(!validateAuthorObject(author)){
-        return [{}, 500];
-    }
     author._id = author.id
     const commentContent = newComment.comment;
     const contentType = newComment.contentType;
@@ -632,54 +623,84 @@ async function postInboxComment(newComment, recieverAuthorId){
     }
 
     const postHistory = await PostHistory.findOne({authorId: authorId});
-    const post = postHistory.posts.id(postId);
-    if(!post){ return [{}, 404]; }
-    post.commentCount++;
-    await postHistory.save();
-
-    let like = new LikeHistory({
-        type: "comment",
-        Id: commentId,
-        likes: []
-    });
-    
-    await like.save();
-    
-    if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
-        let publicPost = await PublicPost.findOne({_id: postId});
-        if(publicPost){
-            publicPost.commentCount = post.commentCount;
-            await publicPost.save();
+    if(!postHistory){ 
+        // Must be remote
+        let obj = (newComment.object.split('/authors/'))[(newComment.object.split('/authors/')).length - 1]
+        obj = obj.split('/posts/')
+        let objectHost = newComment.object.split('/authors/')[0]
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        let host = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].url === objectHost) {       
+                auth = outgoings[i].auth;
+                host = outgoings[i].url;
+            }
         }
-    }
+        var config = {
+            host: host,
+            url: host + '/authors/' + obj[0] + '/inbox',
+            method: 'POST',
+            headers: {
+                'Authorization': auth,
+                'Content-Type': 'application/json'
+            },
+            data: newComment
+        };
+        await axios.request(config)
+        .then( res => { })
+        .catch( error => { 
+        })
+        return [newComment, 200];
+     } else {
+        const post = postHistory.posts.id(postId);
+        post.commentCount++;
+        await postHistory.save();
     
-    const commentHistory = await CommentHistory.findOne({postId: postId});
-    if(!commentHistory){ return [{}, 500]; }
-    if(commentHistory.comments.id(commentId)){ return [{}, 400]; }
+        let like = new LikeHistory({
+            type: "comment",
+            Id: commentId,
+            likes: []
+        });
+        
+        await like.save();
+        
+        if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
+            let publicPost = await PublicPost.findOne({_id: postId});
+            if(publicPost){
+                publicPost.commentCount = post.commentCount;
+                await publicPost.save();
+            }
+        }
+        
+        const commentHistory = await CommentHistory.findOne({postId: postId});
+        if(!commentHistory){ return [{}, 500]; }
+        if(commentHistory.comments.id(commentId)){ return [{}, 400]; }
+    
+        let comment = {
+            _id: commentId,
+            author: author,
+            likeCount: 0,
+            comment: commentContent,
+            contentType: contentType,
+            published: published,
+        }
+    
+        commentHistory.comments.push(comment);
+        await commentHistory.save();
+    
+        comment._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId;
+        comment.object = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
+    
+        const inbox = await Inbox.findOne({authorId: recieverAuthorId});
+    
+        inbox.comments.push(comment);
+        await inbox.save();
+    
+        delete comment.author._id;
 
-    let comment = {
-        _id: commentId,
-        author: author,
-        likeCount: 0,
-        comment: commentContent,
-        contentType: contentType,
-        published: published,
-    }
-
-    commentHistory.comments.push(comment);
-    await commentHistory.save();
-
-    comment._id = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId;
-    comment.object = process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId;
-
-    const inbox = await Inbox.findOne({authorId: recieverAuthorId});
-
-    inbox.comments.push(comment);
-    await inbox.save();
-
-    delete comment.author._id;
-
-    return [comment, 200];
+        return [comment, 200];
+     }
 }
 
 async function postInboxRequest(actor, obj, receiverAuthorId, type) {
@@ -814,7 +835,6 @@ async function sendToForeignInbox(url, auth, data){
         status = 200;
     })
     .catch((err) => {
-        console.log(err)
         status = 400;
      })
 

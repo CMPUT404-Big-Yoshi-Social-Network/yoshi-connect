@@ -44,6 +44,7 @@ function SharePost({viewerId, post}) {
         post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
         undefined : 
         undefined;
+    let contentType = post.contentType ? post.contentType : ""
 
     const numLikes = post.likeCount;
     const numComments = post.commentCount;
@@ -70,18 +71,24 @@ function SharePost({viewerId, post}) {
          */
         console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
-            if (authorId !== null && authorId !== undefined && postId !== null && postId !== undefined) {
+            if (contentType.split("/")[0] === "image") {
+                if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
+                    setItem(i => ({ ...i, image: "data:" + contentType + "," + post.content, exist: true}))
+                } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
+                    setItem(i => ({ ...i, image: post.content, exist: true}))
+                }
+            } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.source.split('/authors/')[0].split("/")[2] === "localhost:3000") {
                 axios
                 .get("/authors/" + authorId + "/posts/" + postId + "/image")
                 .then((res) => {
                     if (res.data.status === 200) {
-                        setItem({ ...item, image: res.data.src, exist: true})
+                        setItem(i => ({ ...i, image: res.data.src, exist: true}))
                     }
                 })
             }
         }
         getImage();
-    }, [item, postId, authorId])
+    }, [postId, authorId, post.content, post.source, contentType])
 
     const share = async () => {
         /**

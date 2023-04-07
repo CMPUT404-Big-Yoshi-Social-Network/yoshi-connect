@@ -36,19 +36,21 @@ function Comment({viewerId, comment, author, url, liked}) {
     const [numLikes, setNumLikes] = useState(0);
 
     const [like, setLike] = useState(false);
-    const commentSplit = comment.id.split("/")
-    const commentId = commentSplit[commentSplit.length - 1] 
-
+    const commentId = comment.id ? (comment.id.split("/"))[(comment.id.split("/")).length - 1] : comment._id
+    const authorId = comment.author.id ? (comment.author.id.split("/"))[(comment.author.id.split("/")).length - 1] : 
+        comment.author._id ? (comment.author._id.split("/"))[(comment.author._id.split("/")).length - 1] : undefined
+    console.log(comment)
     const addLike = () => {
-        if(author){
+        if(author && authorId !== undefined){
             let body = {
                 type: "like",
                 summary: author.displayName + " likes your comment",
                 author: author,
-                object: comment.id
+                object: comment.id || (comment.author.url + '/authors/comment/' + commentId)
             }
+            console.log(body)
 
-            axios.post('/authors/' + encodeURIComponent(comment.author.id) + '/inbox', body, {
+            axios.post('/authors/' + encodeURIComponent(authorId) + '/inbox', body, {
                 "X-Requested-With": "XMLHttpRequest"
             })
             .then((response) => {
@@ -83,7 +85,6 @@ function Comment({viewerId, comment, author, url, liked}) {
                 }
             })
             .catch((err) => {
-                console.log(err);
             });
         }
         getLikes();

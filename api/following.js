@@ -53,23 +53,23 @@ router.get('/', async (req, res) => {
     const following = followings[i];
 
     const followingProfile = await Author.findOne({_id: following.authorId}); 
-    if (!followingProfile) 
-      continue
-
+    if (followingProfile) {
       sanitizedObject = {
-      "type": "author",
-      "id" : process.env.DOMAIN_NAME + "authors/" + followingProfile._id,
-      "host": process.env.DOMAIN_NAME,
-      "displayname": followingProfile.username,
-      "url":  process.env.DOMAIN_NAME + "authors/" + followingProfile._id,
-      "github": "",
-      "profileImage": "",
-      "email": followingProfile.email,
-      "about": followingProfile.about,
-      "pronouns": followingProfile.pronouns
-    }
-
-    sanitizedObjects.push(sanitizedObject);
+        "type": "author",
+        "id" : process.env.DOMAIN_NAME + "authors/" + followingProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": followingProfile.username,
+        "url":  process.env.DOMAIN_NAME + "authors/" + followingProfile._id,
+        "github": "",
+        "profileImage": "",
+        "email": followingProfile.email,
+        "about": followingProfile.about,
+        "pronouns": followingProfile.pronouns
+      }
+      sanitizedObjects.push(sanitizedObject);
+     } else {
+      sanitizedObjects.push(following);
+     }
   }
 
   return res.json({

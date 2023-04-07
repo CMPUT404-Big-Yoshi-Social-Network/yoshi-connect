@@ -241,7 +241,7 @@ async function createPost(token, authorId, postId, newPost) {
         side: 5,
         post: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId,
         id: process.env.DOMAIN_NAME + "authors/" + authorId + "/posts/" + postId + '/comments/',
-        comments: [ ]
+        comments: []
     }
 
     postHistory.posts.push(post);
@@ -265,7 +265,7 @@ async function createPost(token, authorId, postId, newPost) {
 
     if (visibility == 'PUBLIC' && (unlisted == "false" || unlisted == false)) {
         post.author = {
-            _id: author.id,
+            id: author.id,
             host: author.host,
             displayName: author.displayName,
             url: author.url,
@@ -312,6 +312,7 @@ async function createPost(token, authorId, postId, newPost) {
                         "commentsSrc": commentsSrc,
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
@@ -325,7 +326,6 @@ async function createPost(token, authorId, postId, newPost) {
                                 },
                                 data: toSend
                             }
-        
                             axios.request(config)
                             .then((response) => { })
                             .catch((error) => { })
@@ -383,6 +383,7 @@ async function createPost(token, authorId, postId, newPost) {
                         "commentsSrc": commentsSrc,
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
@@ -396,7 +397,6 @@ async function createPost(token, authorId, postId, newPost) {
                                 },
                                 data: toSend
                             }
-        
                             axios.request(config)
                             .then((response) => { })
                             .catch((error) => { })
@@ -415,6 +415,7 @@ async function createPost(token, authorId, postId, newPost) {
         let local = true;
         let allowed = true;
         let auth = ''
+        let host = ''
         if (!authorTo) { 
             // Must be a private foreign (only to followers / followings)
             local = false;
@@ -435,6 +436,7 @@ async function createPost(token, authorId, postId, newPost) {
                     if (outgoings[i].url === objectHost[0]) { 
                         auth = outgoings[i].auth; 
                         allowed = outgoings[i].allowed;
+                        host = outgoings[i].url;
                         break;
                     }
                 }
@@ -509,7 +511,7 @@ async function createPost(token, authorId, postId, newPost) {
 
                 axios.request(config)
                 .then((response) => { })
-                .catch((error) => { console.log(error) })
+                .catch((error) => { })
             }
         }
     }
@@ -543,8 +545,6 @@ async function sharePost(authorId, token, newPost) {
     const sharedPostId = String(crypto.randomUUID()).replace(/-/g, "");
     const source = process.env.DOMAIN_NAME + 'authors/' + authorId + '/posts/' + sharedPostId;
     const origin = newPost.origin;
-
-    if (!title || !description || !contentType || !content) { return [[], 400]; }
 
     let postHistory = await PostHistory.findOne({authorId: authorId});
     if (!postHistory) { return [[], 404]; }
@@ -652,6 +652,7 @@ async function sharePost(authorId, token, newPost) {
                         },
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
@@ -730,6 +731,7 @@ async function sharePost(authorId, token, newPost) {
                         },
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
@@ -848,6 +850,7 @@ async function sharePost(authorId, token, newPost) {
                     },
                     "published": post.published,
                     "visibility": post.visibility,
+                    "unlisted": post.unlisted
                 }
                 let config = {
                     host: authorTo.host,
@@ -980,6 +983,7 @@ async function updatePost(token, authorId, postId, newPost) {
                             },
                             "published": post.published,
                             "visibility": post.visibility,
+                            "unlisted": post.unlisted
                         }
                         for (let i = 0; i < outgoings.length; i++) {
                             if (followerHost == outgoings[i].url && outgoings[i].allowed) {
@@ -1076,6 +1080,7 @@ async function updatePost(token, authorId, postId, newPost) {
                         },
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (followerHost == outgoings[i].url && outgoings[i].allowed) {
@@ -1156,6 +1161,7 @@ async function updatePost(token, authorId, postId, newPost) {
                         },
                         "published": post.published,
                         "visibility": post.visibility,
+                        "unlisted": post.unlisted
                     }
                     for (let i = 0; i < outgoings.length; i++) {
                         if (friendHost == outgoings[i].url && outgoings[i].allowed) {
@@ -1275,6 +1281,7 @@ async function updatePost(token, authorId, postId, newPost) {
                     },
                     "published": post.published,
                     "visibility": post.visibility,
+                    "unlisted": post.unlisted
                 }
                 let config = {
                     host: authorTo.host,

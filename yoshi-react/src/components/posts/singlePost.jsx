@@ -58,7 +58,6 @@ function SinglePost() {
                 }
             })
             .catch(err => { 
-                console.log(err)
             });
         }
         getId();

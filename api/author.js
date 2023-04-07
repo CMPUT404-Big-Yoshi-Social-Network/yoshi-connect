@@ -197,7 +197,13 @@ router.get('/:authorId', async (req, res) => {
 
 	if (status == 404 || status == 500) { return res.sendStatus(status); }
 
-	return res.json(author);
+	if (!author) {
+		return res.json({
+			message: "We are unable to fetch that author."
+		})
+	} else {
+		return res.json(author);
+	}
 })
 
 /**
@@ -428,22 +434,7 @@ router.get('/search/:username', async (req, res) => {
 			let outgoing = outgoings[i];
 			let config;
 			while(!error) {
-				if(outgoing.url === "http://www.distribution.social"){
-					config = {
-						host: outgoings[i].url,
-						url: outgoings[i].url + '/api/authors',
-						method: 'GET',
-						headers: {
-							'Authorization': outgoing.auth,
-							'Content-Type': 'application/json'
-						},
-						params: {
-							page: page,
-							size: 100,
-						}
-					};
-				}
-				else if(outgoing.url === "https://sociallydistributed.herokuapp.com"){
+				if(outgoing.url === "https://sociallydistributed.herokuapp.com"){
 					config = {
 						host: outgoings[i].url,
 						url: outgoings[i].url + '/authors',
@@ -453,8 +444,7 @@ router.get('/search/:username', async (req, res) => {
 							'Content-Type': 'application/json'
 						}
 					};
-				}
-				else if(outgoing.url === "https://bigger-yoshi.herokuapp.com/api"){
+				} else {
 					config = {
 						host: outgoings[i].url,
 						url: outgoings[i].url + '/authors',

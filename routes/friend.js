@@ -46,8 +46,11 @@ async function getFollowers(id){
     Return: 404 Status (Not Found) -- Follower associated with Author was not found
     */
     const followers = await Follower.findOne({authorId: id});
-    if (!followers) { return 404; }
-    return followers.followers;
+    if (!followers) { 
+        return [];
+    } else {
+        return followers.followers;
+    }
 }
 
 async function getFollowings(id){
@@ -229,67 +232,12 @@ async function isFriend(isLocal, authorId, foreignId, res) {
     let objectFollows = false;
 
     // Checking if the foreign author is a follower of author
-    const followerA = await Follower.findOne({authorId: authorId}, {followers: {$elemMatch: {authorId : {$eq: foreignId}}}});
-    if (followerA.followers.length != 0) { actorFollows = true; }
+    const follower = await Follower.findOne({authorId: authorId}, {followers: {$elemMatch: {authorId : {$eq: foreignId}}}});
+    if (follower.followers.length != 0) { actorFollows = true; }
 
     // Checking if the author is a follower of foreign author (remote / local)
-    if (isLocal) {
-        const followerB = await Follower.findOne({authorId: foreignId}, {followers: {$elemMatch: {authorId : {$eq: authorId}}}});
-        if (followerB.followers.length != 0) { objectFollows = true; }
-    } else {
-        const outgoings = await OutgoingCredentials.find().clone();
-    
-        let followers = [];
-        let found = false;
-    
-        for (let i = 0; i < outgoings.length; i++) {
-            if (outgoings[i].allowed) {
-                const auth = outgoings[i].auth
-                if (outgoings[i].url === 'https://bigger-yoshi.herokuapp.com/api') {
-                    var config = {
-                        host: outgoings[i].url,
-                        url: outgoings[i].url + '/authors' + foreignId + '/followers/',
-                        method: 'GET',
-                        headers: {
-                            'Authorization': auth,
-                            'Content-Type': 'application/json'
-                        }
-                    };              
-                } else {
-                    var config = {
-                        host: outgoings[i].url,
-                        url: outgoings[i].url + '/authors' + foreignId + '/followers',
-                        method: 'GET',
-                        headers: {
-                            'Authorization': auth,
-                            'Content-Type': 'application/json'
-                        }
-                    };
-                }
-                await axios.request(config)
-                .then( res => {
-                    if (!res.data && !found) {
-                        let items = res.data.items
-                        followers = items;  
-                        found = true;              
-                    }
-                })
-                .catch( error => {
-                    if (error.response.status == 404) {
-                        console.log('Debug: This is not the correct server that has this Author follower list.')
-                    }
-                })   
-            } 
-        }
-        if (found) {
-            let idx = followers.map(obj => obj.id.split('/')[(obj.id.split('/')).length - 1]).indexOf(authorId);
-            if (idx > -1) { 
-                objectFollows = true
-            } else {
-                objectFollows = false
-            }
-        }
-    }
+    const following = await Following.findOne({authorId: authorId}, {followings: {$elemMatch: {authorId : {$eq: foreignId}}}});
+    if (following.followings.length != 0) { objectFollows = true; }
     if (actorFollows && objectFollows) {
         return res.json({
             status: 'Friends'

@@ -158,8 +158,7 @@ async function addLiked(authorId, objectId){
     */
     //Add this object to the list of posts that the author has liked
     //extract author uuid from authorID
-    let authorUUID = authorId.split("/authors/")
-    authorUUID = authorUUID[authorUUID.length - 1]; 
+    let authorUUID = authorId.split("/authors/")[1]
     const liked = await LikedHistory.findOne({authorId: authorUUID});
     if (!liked) { return true; }
     if(liked.liked.id(objectId)){
@@ -172,91 +171,6 @@ async function addLiked(authorId, objectId){
     liked.numObjects++;
     await liked.save();
     return false;
-}
-
-async function fetchCommentLikes(authorId, postId, commentId) {
-    /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
-    */
-    // TODO Paging
-    const comments = getPost(authorId, postId).comments; 
-    let comment = null;
-
-    for (let i = 0; i < comments.length; i++) {
-        if (comments[i]._id === commentId) {
-            comment = comments[i];
-            break;
-        }
-    }
-
-    return comment.likes;
-}
-
-async function hasLiked(authorId, res) {
-    /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
-    */
-    const history = await LikedHistory.findOne({authorId: authorId});
-    for (let i = 0; i < likers.length; i++) {
-        if (likers[i].liker === req.body.data.viewerId) {
-            return res.json({ status: 'liked' })
-        }
-    }
-    return res.json({ status: 'unliked' })
-}
-
-
-async function fetchLikes(authorId, postId) {
-    /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
-    */
-    // TODO: Paginate
-    const posts = PostHistory.find(
-        {
-            $match: {'authorId': authorId}
-        },
-        {
-            $unwind: '$posts'
-        },
-        {
-            index: { $indexOfArray: ['_id', postId] }
-        },
-        {
-            $group: {
-                _id: null,
-                post_array: { $push: "$index" }
-            }
-        }
-    )
-
-    if (posts[0] != undefined) {
-        return posts[0].post_array.likes;
-    } else {
-        return [];
-    }   
-}
-
-async function getAuthorLikes(authorId) { 
-    /**
-    Description: 
-    Associated Endpoint: (for example: /authors/:authorid)
-    Request Type: 
-    Request Body: (for example: { username: kc, email: 123@aulenrta.ca })
-    Return: 200 Status (or maybe it's a JSON, specify what that JSON looks like)
-    */
-    return await Liked.findOne({authorId: authorId}); 
 }
 
 module.exports = {

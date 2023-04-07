@@ -112,6 +112,7 @@ async function getPublicLocalPosts(page, size) {
 
 async function getPublicPostsXServer(page, size){
     let [response, statusCode] = await getPublicLocalPosts(page, size)
+    console.log(response)
     const outgoings = await OutgoingCredentials.find().clone();
     
     let promiseQueue = [];
@@ -120,10 +121,10 @@ async function getPublicPostsXServer(page, size){
         const host = outgoing.url;
         let endpoint = "";
         var config = '';
-        const auth = outgoing.auth;
+        let auth = outgoing.auth;
         if (outgoings[i].allowed) {
-            if(host == "http://www.distribution.social"){
-                endpoint = "/api/posts/public"
+            if(host == "http://www.distribution.social/api"){
+                endpoint = "/posts/public"
                 var config = {
                     url: host + endpoint,
                     method: 'GET',

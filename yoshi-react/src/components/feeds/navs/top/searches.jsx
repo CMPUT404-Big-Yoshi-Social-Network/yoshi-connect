@@ -64,13 +64,6 @@ function SearchOutcomes({url}) {
             }
         })
         .catch(err => {
-            if (err.response.status === 404) {
-                setAuthors([]);
-            } else if (err.response.status === 401) {
-                console.log('401')
-            } else if (err.response.status === 500) {
-                console.log('500')
-            }
         });
     }, [setFindings, authors, url])
 

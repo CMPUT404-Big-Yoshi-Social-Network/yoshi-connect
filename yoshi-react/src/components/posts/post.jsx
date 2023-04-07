@@ -161,9 +161,7 @@ function Post({viewerId, post, author, realAuthor}) {
                 "X-Requested-With": "XMLHttpRequest"
             })
             .then((response) => {
-                if (response.data.status !== 'Liked') {
-                    setNumLikes(numLikes + 1);
-                }
+                setNumLikes(numLikes + 1);
                 setLike(true);
             })
             .catch((err) => {

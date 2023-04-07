@@ -55,37 +55,59 @@ async function getLikes(authorId, postId, commentId, type){
 
     let likes = await LikeHistory.findOne({Id: objectId, type: type}).clone();
     if(!likes){
-        return [{}, 404];
-    }
-    likes = likes.likes;
-    
-    const object = (type == "comment") ? "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId : "authors/" + authorId + "/posts/" + postId;
-    let sanitizedLikes = [];
-    for(let i = 0; i < likes.length; i++){
-        let liker = likes[i];
-
-        let author = {
-            "type": "author",
-            "id": liker._id,
-            "host": liker.host,
-            "displayName": liker.displayName,
-            "url": liker.url,
-            "github": liker.github,
-            "profileImage": liker.profileImage
+        // Must be remote
+        const outgoings = await OutgoingCredentials.find().clone();
+        let auth = ''
+        let host = ''
+        for (let i = 0; i < outgoings.length; i++) {
+            if (outgoings[i].allowed) {     
+                var config = {
+                    host: outgoings[i].url,
+                    url: outgoings[i].url + '/authors/' + authorId + '/' + type + 's/' + postId + '/likes',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': auth,
+                        'Content-Type': 'application/json'
+                    }
+                };
+                await axios.request(config)
+                .then( res => { 
+                    likes = res.data.items
+                })
+                .catch( error => { })
+            }
         }
-
-        let sanitizedLike = {
-            "@context": "https://www.w3.org/ns/activitystreams",
-            summary: liker.displayName + " likes your post",
-            type: "Like",
-            author: author,
-            object: process.env.DOMAIN_NAME + object 
-        };
-
-        sanitizedLikes.push(sanitizedLike);
+    } else {
+        likes = likes.likes;
+    
+        const object = (type == "comment") ? "authors/" + authorId + "/posts/" + postId + "/comments/" + commentId : "authors/" + authorId + "/posts/" + postId;
+        let sanitizedLikes = [];
+        for(let i = 0; i < likes.length; i++){
+            let liker = likes[i];
+    
+            let author = {
+                "type": "author",
+                "id": liker._id,
+                "host": liker.host,
+                "displayName": liker.displayName,
+                "url": liker.url,
+                "github": liker.github,
+                "profileImage": liker.profileImage
+            }
+    
+            let sanitizedLike = {
+                "@context": "https://www.w3.org/ns/activitystreams",
+                summary: liker.displayName + " likes your post",
+                type: "Like",
+                author: author,
+                object: process.env.DOMAIN_NAME + object 
+            };
+    
+            sanitizedLikes.push(sanitizedLike);
+        }
+    
+        return [sanitizedLikes, 200];
     }
-
-    return [sanitizedLikes, 200];
 }
 
 async function addLike(like, authorId, postId){

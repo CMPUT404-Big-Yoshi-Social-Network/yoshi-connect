@@ -14,7 +14,7 @@ const crypto = require('crypto');
 
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
-const { validateAuthorObject, getAuthor } = require('./author.js');
+const { getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');

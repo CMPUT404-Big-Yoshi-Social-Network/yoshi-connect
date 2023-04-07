@@ -20,7 +20,7 @@ Foundation; All Rights Reserved
 */  
 
 // Routing Functions 
-const { getInbox, postInboxLike, deleteInbox, postInboxPost, postInboxComment, postInboxRequest, sendToForeignInbox} = require('../routes/inbox')
+const { getInbox, postInboxLike, deleteInbox, postInboxPost, getNotifications, postInboxComment, postInboxRequest, sendToForeignInbox} = require('../routes/inbox')
 const { deleteRequest, getRequests, getRequest } = require('../routes/request');
 const { checkExpiry } = require('../routes/auth');
 
@@ -79,6 +79,23 @@ router.get('/', async (req, res) => {
 	if (status != 200) { return res.sendStatus(status); }
 
 	return res.json(posts);
+})
+
+router.get('/notifications', async (req, res) => {
+	const notifications = await getNotifications(req.params.authorId); 
+	console.log(notifications)
+	let likeSummaries = []
+	for (let i = 0; i < notifications.likes; i++) {
+		likeSummaries.push(notifications.likes[i].summary)
+	}
+	let commentSummaries = []
+	for (let i = 0; i < notifications.comments; i++) {
+		commentSummaries.push(notifications.comments[i].summary)
+	}
+	return res.json({
+		likes: likeSummaries,
+		comments: commentSummaries
+	})
 })
 
 router.get('/requests', async (req, res) => {

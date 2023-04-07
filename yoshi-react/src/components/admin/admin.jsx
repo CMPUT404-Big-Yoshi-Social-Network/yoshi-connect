@@ -105,7 +105,6 @@ export default function AdminLogin() {
         <div>
           <br/>
           <Button onClick={getAdmin} variant="warning" type="submit" className='login-button'>Next</Button>
-          {/* <button type="submit" onClick={getAdmin}>Submit</button> */}
         </div>
       </form>
       </div>

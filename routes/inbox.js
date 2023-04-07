@@ -104,6 +104,10 @@ async function getPost(postId, auth, author){
     return [post, 200]   
 }
 
+async function getNotifications(authorId) {
+    return await Inbox.findOne({authorId: authorId}).clone();
+}
+
 async function getInbox(token, authorId, page, size){
     /**
     Description: Gets an Author's inbox posts
@@ -852,5 +856,6 @@ module.exports = {
     postInboxLike,
     postInboxComment,
     postInboxRequest,
-    sendToForeignInbox
+    sendToForeignInbox,
+    getNotifications
 }

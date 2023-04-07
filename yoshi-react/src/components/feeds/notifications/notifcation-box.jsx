@@ -20,10 +20,11 @@ Foundation; All Rights Reserved
 */
 
 // Functionality
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // Child Component
 import Requests from './requests/requests.jsx';
+import axios from "axios";
 
 function Notifications(props) {
     /**
@@ -31,13 +32,45 @@ function Notifications(props) {
      * Functions: N/A
      * Returns: N/A
      */
+    const [likes, setLikes] = useState([]);
+    const [comments, setComments] = useState([]);
+    useEffect(() => {
+        axios
+        .get('/authors/' + props.authorId + '/inbox/notifications')
+        .then((response) => {
+            setLikes(prevLikes => response.data.likes);
+            setComments(prevComments => response.data.comments);
+        })
+        .catch(err => { });
+    }, [props.authorId]);
+
+    const clearInbox = (e) => {
+        /**
+           * Description:  
+           * Request: (if axios is used)    
+           * Returns: 
+           */
+        e.preventDefault()
+  
+        axios
+        .delete('/authors/' + props.authorId + '/inbox')
+        .then((response) => { })
+        .catch(err => { });
+      }
     return (
         <div className="notif-card">
             <h3>Notifications</h3>
             <hr/>
             <div><Requests authorId={props.authorId}/></div>
-            {/* Likes received from own posts from other users
-            Comments received from own posts from other users */}
+            <hr/>
+            {Object.keys(likes).map((like, idx) => (
+                <p key={idx}>{like}</p>
+            ))}
+            <hr/>
+            {Object.keys(comments).map((comment, idx) => (
+                <p key={idx}>{comment}</p>
+            ))}
+            <h2 onClick={clearInbox} type="submit">clear</h2>
         </div>
     )
 }

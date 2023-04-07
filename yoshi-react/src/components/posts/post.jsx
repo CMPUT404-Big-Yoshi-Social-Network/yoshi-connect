@@ -104,7 +104,6 @@ function Post({viewerId, post, author, realAuthor}) {
         const getLikes = () => {
             axios.get(((post.id) || ('/authors/' + id + '/posts/' + post._id)) + '/likes')
             .then((response) => { 
-                console.log(response)
                 setNumLikes(response.data.items.length);
                 let itemsCopy = response.data.items;
                 for(let i = 0; i < itemsCopy.length; i++){

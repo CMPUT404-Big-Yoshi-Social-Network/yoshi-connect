@@ -25,6 +25,7 @@ mongoose.set('strictQuery', true);
 // Schemas
 const { PostHistory, PublicPost } = require('../scheme/post.js');
 const { LikeHistory, LikedHistory, CommentHistory } = require('../scheme/interactions.js');
+const { OutgoingCredentials } = require('../scheme/server.js');
 
 async function getLikes(authorId, postId, commentId, type){
     /**

@@ -68,7 +68,7 @@ function Notifications(props) {
                 <p key={idx}>{like}</p>
             ))}
             <hr/>
-            <h3>Likes</h3>
+            <h3>Comments</h3>
             {Object.keys(comments).map((comment, idx) => (
                 <p key={idx}>{comment}</p>
             ))}

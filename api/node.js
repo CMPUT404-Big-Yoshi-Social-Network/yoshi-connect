@@ -252,7 +252,17 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
 			let outgoing = outgoings[i];
 			let config;
 			while(!error) {
-				if(outgoing.url === "http://www.distribution.social/api"){
+				if(outgoing.url === "https://sociallydistributed.herokuapp.com"){
+					config = {
+						host: outgoings[i].url,
+						url: outgoings[i].url + '/authors/' + authorId + '/posts',
+						method: 'GET',
+						headers: {
+							'Authorization': outgoing.auth,
+							'Content-Type': 'application/json'
+						}
+					};
+				} else {
 					config = {
 						host: outgoings[i].url,
 						url: outgoings[i].url + '/authors/' + authorId + '/posts',
@@ -266,33 +276,7 @@ router.get('/outgoing/authors/:authorId/posts', async (req, res) => {
 							size: 10,
 						}
 					};
-				}
-				else if(outgoing.url === "https://sociallydistributed.herokuapp.com"){
-					config = {
-						host: outgoings[i].url,
-						url: outgoings[i].url + '/authors/' + authorId + '/posts',
-						method: 'GET',
-						headers: {
-							'Authorization': outgoing.auth,
-							'Content-Type': 'application/json'
-						}
-					};
-				}
-				else if(outgoing.url === "https://bigger-yoshi.herokuapp.com/api"){
-					config = {
-						host: outgoings[i].url,
-						url: outgoings[i].url + '/authors/' + authorId + '/posts',
-						method: 'GET',
-						headers: {
-							'Authorization': outgoing.auth,
-							'Content-Type': 'application/json'
-						},
-						params: {
-							page: page,
-							size: 10,
-						}
-					};
-				}
+                }
 
 				await axios.request(config)
 				.then( res => {

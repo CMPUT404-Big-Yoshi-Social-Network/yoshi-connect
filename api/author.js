@@ -428,22 +428,7 @@ router.get('/search/:username', async (req, res) => {
 			let outgoing = outgoings[i];
 			let config;
 			while(!error) {
-				if(outgoing.url === "http://www.distribution.social/api"){
-					config = {
-						host: outgoings[i].url,
-						url: outgoings[i].url + '/api/authors',
-						method: 'GET',
-						headers: {
-							'Authorization': outgoing.auth,
-							'Content-Type': 'application/json'
-						},
-						params: {
-							page: page,
-							size: 100,
-						}
-					};
-				}
-				else if(outgoing.url === "https://sociallydistributed.herokuapp.com"){
+				if(outgoing.url === "https://sociallydistributed.herokuapp.com"){
 					config = {
 						host: outgoings[i].url,
 						url: outgoings[i].url + '/authors',
@@ -453,8 +438,7 @@ router.get('/search/:username', async (req, res) => {
 							'Content-Type': 'application/json'
 						}
 					};
-				}
-				else if(outgoing.url === "https://bigger-yoshi.herokuapp.com/api"){
+				} else {
 					config = {
 						host: outgoings[i].url,
 						url: outgoings[i].url + '/authors',

@@ -77,13 +77,13 @@ Foundation; All Rights Reserved
 .post-num-lc{
     display: inline-block;
 }
-/* .post-published{
-    position: absolute;
-    margin-top: 2em;
-    margin-left: 45em;
-} */
+
 .post-content{
     overflow-wrap: break-word;
+}
+
+.post-userimg {
+    border-radius: 50%;
 }
 
 .post-images{

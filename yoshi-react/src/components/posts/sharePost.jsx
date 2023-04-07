@@ -39,11 +39,12 @@ function SharePost({viewerId, post}) {
         post.id :
         post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : 
         undefined;
-    let authorId = post.author ? 
-        post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
-        post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
-        undefined : 
-        undefined;
+    let authorId = post.origin.split("author")[1].split("/")[0]
+    // let authorId = post.author ? 
+    //     post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
+    //     post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
+    //     undefined : 
+    //     undefined;
     let contentType = post.contentType ? post.contentType : ""
 
     const numLikes = post.likeCount;
@@ -72,14 +73,23 @@ function SharePost({viewerId, post}) {
         console.log('Debug: Checking if the viewer has already liked the post')
         const getImage = () => {
             if (contentType.split("/")[0] === "image") {
-                if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
+                if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ) {
                     setItem(i => ({ ...i, image: "data:" + contentType + "," + post.content, exist: true}))
-                } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
+                } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "bigger-yoshi") {
                     setItem(i => ({ ...i, image: post.content, exist: true}))
+                } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000") {
+                    axios
+                    .get("/author" + post.origin.split("author")[1] + "/image")
+                    .then((res) => {
+                        if (res.data.status === 200) {
+                            setItem(i => ({ ...i, image: res.data.src, exist: true}))
+                        }
+                    })
                 }
-            } else if (post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.source.split('/authors/')[0].split("/")[2] === "localhost:3000") {
+            // legacy code
+            } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000") {
                 axios
-                .get("/authors/" + authorId + "/posts/" + postId + "/image")
+                .get("/author" + post.origin.split("author")[1] + "/image")
                 .then((res) => {
                     if (res.data.status === 200) {
                         setItem(i => ({ ...i, image: res.data.src, exist: true}))
@@ -88,7 +98,7 @@ function SharePost({viewerId, post}) {
             }
         }
         getImage();
-    }, [postId, authorId, post.content, post.source, contentType])
+    }, [postId, authorId, post.content, post.origin, contentType])
 
     const share = async () => {
         /**

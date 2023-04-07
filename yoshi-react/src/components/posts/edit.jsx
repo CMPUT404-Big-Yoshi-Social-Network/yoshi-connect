@@ -79,17 +79,29 @@ function EditPost({viewerId, post}) {
          * Returns: N/A
          */
         const getImage = () => {
-            let postId = (post.id.split('/posts/'))[(post.id.split('/posts/')).length - 1]
-            axios
-            .get("/authors/" + post.author.authorId + "/posts/" + postId + "/image")
-            .then((res) => {
-                if (res.data.status === 200) {
-                    setItem({ ...item, image: res.data.src, exist: true})
-                }
-            })
+            if (post.contentType.split("/")[0] === "image") {
+                let postId = (post.id.split('/posts/'))[(post.id.split('/posts/')).length - 1]
+                axios
+                .get("/authors/" + post.author.authorId + "/posts/" + postId + "/image")
+                .then((res) => {
+                    if (res.data.status === 200) {
+                        setItem({ ...item, image: res.data.src, exist: true})
+                    }
+                })
+            // legacy code
+            } else {
+                let postId = (post.id.split('/posts/'))[(post.id.split('/posts/')).length - 1]
+                axios
+                .get("/authors/" + post.author.authorId + "/posts/" + postId + "/image")
+                .then((res) => {
+                    if (res.data.status === 200) {
+                        setItem({ ...item, image: res.data.src, exist: true})
+                    }
+                })
+            }
         }
         getImage();
-    }, [post.author.authorId, post.id, item])
+    }, [post.author.authorId, post.id, item, post.contentType])
 
     
     const [data, setData] = useState({

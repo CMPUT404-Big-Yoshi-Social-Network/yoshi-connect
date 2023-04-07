@@ -86,8 +86,13 @@ async function senderAdded(authorId, foreignId, req, res) {
                     github: object.github,
                     profileImage: object.profileImage
                 }
-                following.followings.push(newF);
-                await following.save();
+                let idx = following.followings.map(obj => obj.id).indexOf(process.env.DOMAIN_NAME + "authors/" + object._id);
+                if (idx > -1) { 
+                    success = true;
+                } else {
+                    following.followings.push(newF);
+                    await following.save();
+                }
             } else {
                 let uuidFollowing = String(crypto.randomUUID()).replace(/-/g, "");
                 var following = {
@@ -103,7 +108,12 @@ async function senderAdded(authorId, foreignId, req, res) {
                         profileImage: object.profileImage
                     }]
                 };
-                following.save(async (err, following, next) => { if (err) { success = false; } })
+                let idx = following.followings.map(obj => obj.id).indexOf(process.env.DOMAIN_NAME + "authors/" + object._id);
+                if (idx > -1) { 
+                    success = true;
+                } else {
+                    following.save(async (err, following, next) => { if (err) { success = false; } })
+                }
             }
         }).clone();
     }
@@ -145,7 +155,12 @@ async function senderAdded(authorId, foreignId, req, res) {
                 authorId: foreignId,
                 followers: [newFollower]
             });
-            follower.save(async (err, follower, next) => { if (err) { success = false; } })
+            let idx = follower.followers.map(obj => obj.id).indexOf(process.env.DOMAIN_NAME + "authors/" + actor._id);
+            if (idx > -1) { 
+                success = true;
+            } else {
+                follower.save(async (err, follower, next) => { if (err) { success = false; } })
+            }
         }
     }).clone()
 

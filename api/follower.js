@@ -55,7 +55,7 @@ const router = express.Router({mergeParams: true});
  *        description: id of an Author
  *    responses:
  *      404:
- *        description: Not Found, could not find any followers for the specific Author
+ *        description: Not Found, could not find the specific Author
  *      200:
  *        description: OK, successfully fetches and sanitizes followers
  *        content:
@@ -73,31 +73,24 @@ const router = express.Router({mergeParams: true});
  *                    type: object
  *                  description: array of followers
  *                  example: 
- *                    - type: author
+ *                    - _id: 895fa44f67be488d9123516e5a9b6285
  *                      id: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                      authorId: 29c546d45f564a27871838825e3dbecb
+ *                      authorId: bddddc62-a6d6-4f79-8a7d-4249719e1e61
  *                      host: https://yoshi-connect.herokuapp.com/
- *                      displayName: kc
- *                      url: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb
- *                      github: https://github.com/kezzayuno
- *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
- *                      about: i am a code monkey
- *                      pronouns: she/her
+ *                      displayName: hari
+ *                      github: ""
+ *                      profileImage: ""
  *                    - type: author
  *                      id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                      authorId: 3ec2a2a0685445509a3ea1dd3093639f
  *                      host: https://yoshi-connect.herokuapp.com/
  *                      displayName: allan
  *                      url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
  *                      github: https://github.com/Holy-Hero
- *                      profileImage: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                      profileImage: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
  *                      about: i love hatsune miku
  *                      pronouns: he/him
- *      401: 
- *        description: Unauthorized, Author does not have associated Login token or Login token has expired 
  */
 router.get('/', async (req, res) => {
-  //if (!req.cookies || await checkExpiry(req.cookies.token)) { return res.sendStatus(401) }
   
   const authorId = req.params.authorId;
   const followers = await getFollowers(authorId);
@@ -154,7 +147,7 @@ router.get('/', async (req, res) => {
  *        description: id of the foreign Author
  *    responses:
  *      404:
- *        description: Not Found, could not find any followers for Author associated with authorId or could not find the foreign Author following the Author associated with authorId
+ *        description: Not Found, could not find author associated to authorId
  *      200:
  *        description: OK, successfully fetches a specific follower
  *        content:
@@ -189,7 +182,7 @@ router.get('/', async (req, res) => {
  *                profileImage:
  *                  type: string
  *                  description: profile picture of follower
- *                  example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                  example: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
  *                pronouns: 
  *                  type: string
  *                  description: pronouns for a follower

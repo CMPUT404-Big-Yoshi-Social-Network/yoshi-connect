@@ -131,7 +131,7 @@ function CreatePost() {
         let body = {
             title: data.title,
             description: data.description,
-            contentType: data.contentType,
+            contentType: item.image === "" ? data.contentType : item.type,
             visibility: data.visibility,
             content: data.content,
             likes: data.likes,

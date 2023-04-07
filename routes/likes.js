@@ -120,20 +120,21 @@ async function addLike(like, authorId, postId){
         likes = await LikeHistory.findOne({type: "comment", Id: Id}).clone();
         let commentHistory = await CommentHistory.findOne({postId: postId});
         let comment = commentHistory.comments.id(Id);
-        comment.likeCount++;
+        comment.likeCount + 1;
         await commentHistory.save();
     }
     else if(objectType == "posts"){
         likes = await LikeHistory.findOne({type: "post", Id: Id}).clone();
         let postHistory = await PostHistory.findOne({authorId: authorId});
         let post = postHistory.posts.id(Id);
-        post.likeCount++;
+        console.log(post)
+        post.likeCount + 1;
         await postHistory.save();
 
         if(post.visibility === "PUBLIC" && (post.unlisted === "false" || post.unlisted === false)){
             let publicPost = await PublicPost.findOne({postId: postId});
             if(publicPost){
-                publicPost.likeCount++;
+                publicPost.likeCount + 1;
                 await publicPost.save();
             }
         }

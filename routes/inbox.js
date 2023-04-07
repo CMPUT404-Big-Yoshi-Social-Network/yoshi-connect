@@ -505,6 +505,10 @@ async function postInboxPost(post, recieverAuthorId, res){
             }, 200]
         }
     }
+    if (post.visibility === 'PUBLIC' && (post.unlisted !== true)) {
+        const publicPost = new PublicPost(post);
+        await publicPost.save();
+    }
     return [post, 200]
 }
 

@@ -109,23 +109,23 @@ router.get('/', async (req, res) => {
     const follower = followers[i];
 
     const followerProfile = await Author.findOne({_id: follower.authorId}); 
-    if (!followerProfile)
-      continue
-
+    if (!followerProfile) {
+      sanitizedObjects.push(follower);
+    } else {
       sanitizedObject = {
-      "type": "author",
-      "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
-      "host": process.env.DOMAIN_NAME,
-      "displayname": followerProfile.username,
-      "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
-      "github": "",
-      "profileImage": "",
-      "email": followerProfile.email,
-      "about": followerProfile.about,
-      "pronouns": followerProfile.pronouns
+        "type": "author",
+        "id" : process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
+        "host": process.env.DOMAIN_NAME,
+        "displayname": followerProfile.username,
+        "url":  process.env.DOMAIN_NAME + "authors/" + followerProfile._id,
+        "github": "",
+        "profileImage": "",
+        "email": followerProfile.email,
+        "about": followerProfile.about,
+        "pronouns": followerProfile.pronouns
+      }
+      sanitizedObjects.push(sanitizedObject);
     }
-
-    sanitizedObjects.push(sanitizedObject);
   }
 
   return res.json({

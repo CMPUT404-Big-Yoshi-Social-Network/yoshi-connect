@@ -51,6 +51,7 @@ function Messages() {
     const [page, setPage] = useState(1);
     const [seeMore, setSeeMore] = useState(false);
     const size = 5;
+    console.log(posts)
 
     useEffect(() => {
         /**

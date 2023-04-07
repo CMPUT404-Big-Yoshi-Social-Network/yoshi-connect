@@ -321,7 +321,7 @@ async function createPost(token, authorId, postId, newPost) {
                                 method: "POST",
                                 headers:{
                                     "Authorization": outgoings[i].auth,
-                                    'Content-Type': 'application/application/x-www-form-urlencoded'
+                                    'Content-Type': 'application/json'
                                 },
                                 data: toSend
                             }
@@ -391,14 +391,15 @@ async function createPost(token, authorId, postId, newPost) {
                                 method: "POST",
                                 headers:{
                                     "Authorization": outgoings[i].auth,
-                                    'Content-Type': 'application/application/x-www-form-urlencoded'
+                                    'Content-Type': 'application/json'
                                 },
                                 data: toSend
                             }
+                            console.log(config)
         
                             axios.request(config)
                             .then((response) => { })
-                            .catch((error) => { })
+                            .catch((error) => { console.log(error)})
                         }
                     }
                 }
@@ -501,7 +502,7 @@ async function createPost(token, authorId, postId, newPost) {
                     method: "POST",
                     headers:{
                         "Authorization": auth,
-                        'Content-Type': 'application/application/x-www-form-urlencoded'
+                        'Content-Type': 'application/json'
                     },
                     data: toSend
                 }
@@ -658,7 +659,7 @@ async function sharePost(authorId, token, newPost) {
                                 method: "POST",
                                 headers:{
                                     "Authorization": outgoings[i].auth,
-                                    'Content-Type': 'application/application/x-www-form-urlencoded'
+                                    'Content-Type': 'application/json'
                                 },
                                 data: toSend
                             }
@@ -736,7 +737,7 @@ async function sharePost(authorId, token, newPost) {
                                 method: "POST",
                                 headers:{
                                     "Authorization": outgoings[i].auth,
-                                    'Content-Type': 'application/application/x-www-form-urlencoded'
+                                    'Content-Type': 'application/json'
                                 },
                                 data: toSend
                             }
@@ -852,7 +853,7 @@ async function sharePost(authorId, token, newPost) {
                     method: "POST",
                     headers:{
                         "Authorization": auth,
-                        'Content-Type': 'application/application/x-www-form-urlencoded'
+                        'Content-Type': 'application/json'
                     },
                     data: toSend
                 }
@@ -986,7 +987,7 @@ async function updatePost(token, authorId, postId, newPost) {
                                     method: "POST",
                                     headers:{
                                         "Authorization": outgoings[i].auth,
-                                        'Content-Type': 'application/application/x-www-form-urlencoded'
+                                        'Content-Type': 'application/json'
                                     },
                                     data: toSend
                                 }
@@ -1082,7 +1083,7 @@ async function updatePost(token, authorId, postId, newPost) {
                                 method: "POST",
                                 headers:{
                                     "Authorization": outgoings[i].auth,
-                                    'Content-Type': 'application/application/x-www-form-urlencoded'
+                                    'Content-Type': 'application/json'
                                 },
                                 data: toSend
                             }
@@ -1162,7 +1163,7 @@ async function updatePost(token, authorId, postId, newPost) {
                                 method: "POST",
                                 headers:{
                                     "Authorization": outgoings[i].auth,
-                                    'Content-Type': 'application/application/x-www-form-urlencoded'
+                                    'Content-Type': 'application/json'
                                 },
                                 data: toSend
                             }
@@ -1279,7 +1280,7 @@ async function updatePost(token, authorId, postId, newPost) {
                     method: "POST",
                     headers:{
                         "Authorization": auth,
-                        'Content-Type': 'application/application/x-www-form-urlencoded'
+                        'Content-Type': 'application/json'
                     },
                     data: toSend
                 }

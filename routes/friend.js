@@ -104,7 +104,10 @@ async function getFriends(id){
         },
     ]);
 
-    const friends = following[0].follows.filter(follow => followers[0].followers.some(follower => follow.id === follower.id));
+    let friends = []
+    if (followers[0]?.followers !== undefined && following[0]?.follows !== undefined) {
+        friends = following[0].follows.filter(follow => followers[0].followers.some(follower => follow.id === follower.id));
+    }
 
     if (friends === undefined) {
         return []

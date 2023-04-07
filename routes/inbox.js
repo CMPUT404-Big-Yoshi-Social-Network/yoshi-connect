@@ -528,6 +528,7 @@ async function postInboxLike(like, authorId){
     objectHost = objectHost[0];
     let host = process.env.DOMAIN_NAME;
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
+    console.log(objectHost, host, inbox)
     if ((host === objectHost || 'https://yoshi-connect.herokuapp.com/') || inbox) {
         let author = like.author;
         author = {

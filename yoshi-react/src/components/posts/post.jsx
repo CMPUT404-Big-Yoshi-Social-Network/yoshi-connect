@@ -87,18 +87,8 @@ function Post({viewerId, post, author, realAuthor}) {
                             setImage('')
                         }
                     })
+                    .catch((e) => { console.log(e); })
                 }
-            // legacy support
-            } else if (post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "yoshi-connect" || post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000") {
-                axios
-                .get("/author" + post.origin.split("author")[1] + "/image")
-                .then((res) => {
-                    if (res.data.status === 200) {
-                        setImage(res.data.src)
-                    } else {
-                        setImage('')
-                    }
-                })
             }
         }
         getImage();

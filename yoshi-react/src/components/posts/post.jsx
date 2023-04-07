@@ -212,6 +212,7 @@ function Post({viewerId, post, author, realAuthor}) {
                     <p className="post-user">{(post?.author?.displayName === undefined || post?.author?.displayName === '' || post?.author?.displayName === null) ? null : post.author.displayName }</p>
                     { post.source !== post.origin ? 
                         <div>
+                            <br></br>
                             <h4 style={{marginTop:'-1em'}}>Shared Post</h4>
                             <br></br>
                         </div> : 

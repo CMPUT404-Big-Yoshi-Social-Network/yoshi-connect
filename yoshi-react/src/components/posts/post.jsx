@@ -42,9 +42,9 @@ function Post({viewerId, post, author, realAuthor}) {
         post._id ? (post._id.split('/'))[(post._id.split('/')).length - 1] : 
         undefined;
     let authorId = post.author ? 
-        post.author.id ? (post.author.id.split('/'))[(post.author.id.split('/')).length - 1] : 
-        post.author.url ? (post.author.url.split('/'))[(post.author.url.split('/')).length - 1] : 
-        undefined : 
+        post.author.id ? (post.author.id.split('/authors/'))[1] : 
+        post.author.url ? (post.author.url.split('/authors/'))[1] : 
+        post.author.authorId : 
         undefined;
     let h = post.source.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.source.split('/authors/')[0].split("/")[2] : post.source.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.source.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.source.split('/authors/')[0].split("/")[2].split(".")[2]: post.source.split('/authors/')[0].split("/")[2].split(".")[0];
     let o = post.origin.split('/authors/')[0].split("/")[2] === "localhost:3000" ? post.origin.split('/authors/')[0].split("/")[2] : post.origin.split('/authors/')[0].split("/")[2].split(".")[0] === "www" ? post.origin.split('/authors/')[0].split("/")[2].split(".")[1] + "." + post.origin.split('/authors/')[0].split("/")[2].split(".")[2]: post.origin.split('/authors/')[0].split("/")[2].split(".")[0];
@@ -65,6 +65,8 @@ function Post({viewerId, post, author, realAuthor}) {
     const [like, setLike] = useState(false);
     const [image, setImage] = useState("");
     const navigate = useNavigate();
+    const inboxUrl = '/authors/' + encodeURIComponent(authorId) + '/inbox'
+    const postUrl = post.id ? post.id : ('/authors/' + authorId + '/posts/' + post._id) 
 
     useEffect(() => {
         /**
@@ -126,7 +128,7 @@ function Post({viewerId, post, author, realAuthor}) {
         }
         getLikes();
     }, [id, post._id, post.id, viewerId]);
-    
+
     const toggleComments = () => { setShowComment(!showComment); }
 
     const deletePost = () => {
@@ -176,7 +178,6 @@ function Post({viewerId, post, author, realAuthor}) {
                 if(err.response){ }});
         }
     }
-
     const makeComment = () => {
         /**
          * Description: Sends a Comment through a POST request
@@ -188,9 +189,10 @@ function Post({viewerId, post, author, realAuthor}) {
             author: author,
             comment: comment.newComment,
             contentType: "text/plaintext",
-            object: post.id || ('/authors/' + id + '/posts/' + post._id)
+            object: postUrl
         };
-        axios.post('/authors/' + encodeURIComponent(id) + '/inbox', body, {
+        console.log(inboxUrl)
+        axios.post(inboxUrl, body, {
             "X-Requested-With": "XMLHttpRequest"
         })
         .then((response) => {

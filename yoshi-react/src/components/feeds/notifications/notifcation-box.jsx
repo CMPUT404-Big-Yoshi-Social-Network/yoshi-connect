@@ -67,7 +67,7 @@ function Notifications(props) {
             { likes.length !== 0 ?
                 <div>
                     {Object.keys(likes).map((like, idx) => (
-                        <p key={idx}>{like}</p>
+                        <p key={idx}>{likes[like]}</p>
                     ))}
                 </div> :
                 <p>No likes.</p>
@@ -77,7 +77,7 @@ function Notifications(props) {
             { comments.length !== 0 ?
                 <div>
                     {Object.keys(comments).map((comment, idx) => (
-                        <p key={idx}>{comment}</p>
+                        <p key={idx}>{comments[comment]}</p>
                     ))}
                 </div> :
                 <p>No comments.</p>

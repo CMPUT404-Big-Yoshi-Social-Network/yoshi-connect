@@ -203,7 +203,7 @@ router.get('/:foreignAuthorId', async (req, res) => {
   const followers = await getFollowers(authorId);
 
   if (!followers) {
-    return res.json({ status: "This author has no followers." });
+    return res.json({ "is_following": false });
   }
 
   const followerProfile = await Author.findOne({_id: foreignId}); 
@@ -253,10 +253,10 @@ router.get('/:foreignAuthorId', async (req, res) => {
   for (let i = 0; i < followers.length; i++) {
     const follower = followers[i];
     if (follower.authorId == foreignId) {
-      return res.json(foreign)
+      return res.json({...foreign, "is_following": true})
     }
   }
-  return res.json({ status: "This author has no followers." });
+  return res.json({ "is_following": false });
 })
 
 /**

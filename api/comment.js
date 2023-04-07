@@ -72,7 +72,7 @@ const router = express.Router({mergeParams: true});
  *        description: Number of Comments on a Page requested
  *    responses:
  *      404:
- *        description: Not Found, could not find any comments for the specific post
+ *        description: Post could not be found, therefore no comments were found
  *      200: 
  *        description: OK, successfully fetched and sanitized comments for a specific post from the database 
  *        content:
@@ -329,6 +329,14 @@ router.get('/:commentId', async (req, res) => {
  *            $ref: '#/components/schemas/NewComment'
  *          example:
  *            type: comment
+ *            author:
+ *              type: author
+ *              id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *              url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *              host: https://yoshi-connect.herokuapp.com/
+ *              displayName: allan
+ *              github: https://github.com/Holy-Hero
+ *              profileImage: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
  *            comment: Monkey, monkey!
  *            contentType: text/plain
  *    responses:
@@ -347,36 +355,35 @@ router.get('/:commentId', async (req, res) => {
  *                  example: comment
  *                author:
  *                    type: object
- *                    description: Author object
- *                    properties: 
- *                      type: 
- *                        type: string
- *                        description: JSON type
- *                        example: author
- *                      id: 
- *                        type: string
- *                        description: Author id
- *                        example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                      url: 
- *                        type: string
- *                        description: URL of Author
- *                        example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
- *                      host: 
- *                        type: string
- *                        description: host associated with Author
- *                        example: https://yoshi-connect.herokuapp.com/
- *                      displayName: 
- *                        type: string
- *                        description: username of Author
- *                        example: allan
- *                      github: 
- *                        type: string
- *                        description: associated GitHub of Author
- *                        example: https://github.com/Holy-Hero
- *                      profileImage: 
- *                        type: string
- *                        description: profile picture of Author
- *                        example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkIAAADIhkjhaDjkdHfkaSd
+ *                    description: Author Object
+ *                    type: 
+ *                      type: string
+ *                      description: JSON type
+ *                      example: author
+ *                    id: 
+ *                      type: string
+ *                      description: Author id
+ *                      example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                    url: 
+ *                      type: string
+ *                      description: URL of Author
+ *                      example: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *                    host: 
+ *                      type: string
+ *                      description: host associated with Author
+ *                      example: https://yoshi-connect.herokuapp.com/
+ *                    displayName: 
+ *                      type: string
+ *                      description: username of Author
+ *                      example: allan
+ *                    github: 
+ *                      type: string
+ *                      description: associated GitHub of Author
+ *                      example: https://github.com/Holy-Hero
+ *                    profileImage: 
+ *                      type: string
+ *                      description: profile picture of Author
+ *                      example: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
  *                comment: 
  *                  type: string
  *                  description: comment made by the Author
@@ -416,7 +423,7 @@ router.post('/', async (req, res) => {
 /**
  * @openapi
  * /authors/:authorId/posts/:postId/comments/:commentId/likes:
- *  post:
+ *  get:
  *    summary: Fetches likes of a specific Comment from a specific Post and specific Author
  *    tags:
  *      - comments

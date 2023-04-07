@@ -210,7 +210,7 @@ router.post('/', async (req, res) => {
 	let response, status;
 	if(type === "post"){
 		//For other servers to send their authors posts to us
-		[response, status] = await postInboxPost(req.body, req.params.authorId);
+		[response, status] = await postInboxPost(req.body, req.params.authorId, res);
 	}
 	else if(type === "follow"){
 		//For local/remote authors to server 

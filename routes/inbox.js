@@ -471,7 +471,7 @@ async function createPost(token, authorId, postId, newPost) {
     return await getPost(postId, authorId, author);
 }
 
-async function postInboxPost(post, recieverAuthorId){
+async function postInboxPost(post, recieverAuthorId, res){
     /**
     Description: Posts a post object into the Author's inbox
     Associated Endpoint: /authors/:authorId/inbox

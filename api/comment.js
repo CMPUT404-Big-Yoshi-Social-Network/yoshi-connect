@@ -143,30 +143,53 @@ router.get('/', async (req, res) => {
     size = 5;
 
   const postHistory = await PostHistory.findOne({authorId: authorId});
-
+  let forComments = null
   if(!postHistory){
-    return res.sendStatus(404);
+    // Remote
+    const outgoings = await OutgoingCredentials.find().clone();
+    for (let i = 0; i < outgoings.length; i++) {
+        if (outgoings[i].allowed) {     
+            var config = {
+                host: outgoings[i].url,
+                url: outgoings[i].url + '/authors/' + authorId + '/' + type + 's/' + postId + '/comments',
+                method: 'GET',
+                headers: {
+                    'Authorization': outgoings[i].auth,
+                    'Content-Type': 'application/json'
+                }
+            };
+            await axios.request(config)
+            .then( res => { 
+              forComments = res.data
+            })
+            .catch( error => { })
+            if (forComments) {
+                break
+            }
+        }
+    }
+    return res.json(forComments);
+  } else {
+    let post = postHistory.posts.id(postId);
+    if(!post){
+      return res.sendStatus(404);
+    }
+  
+    const [comments, commentStatus] = await getComments(postId, authorId, page, size);
+  
+    if(commentStatus != 200 && commentStatus != 404){
+      return res.sendStatus(commentStatus);
+    }
+  
+    return res.json({
+      "type": "comments",
+      "page": page,
+      "size": size,
+      "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
+      "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
+      "comments": comments
+      })
   }
-
-  let post = postHistory.posts.id(postId);
-  if(!post){
-    return res.sendStatus(404);
-  }
-
-  const [comments, commentStatus] = await getComments(postId, authorId, page, size);
-
-  if(commentStatus != 200 && commentStatus != 404){
-    return res.sendStatus(commentStatus);
-  }
-
-  return res.json({
-    "type": "comments",
-    "page": page,
-    "size": size,
-    "post": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId,
-    "id": process.env.DOMAIN_NAME + "/authors/" + authorId + "/posts/" + postId + "/comments",
-    "comments": comments
-    })
 })
 
 /**

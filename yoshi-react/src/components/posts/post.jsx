@@ -64,7 +64,6 @@ function Post({viewerId, post, author, realAuthor}) {
     const [like, setLike] = useState(false);
     const [image, setImage] = useState("");
     const navigate = useNavigate();
-    console.log(post)
 
     useEffect(() => {
         /**

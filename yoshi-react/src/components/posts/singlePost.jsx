@@ -61,17 +61,17 @@ function SinglePost() {
             });
         }
         getId();
-
-        let url = window.location.pathname.split('/users');
+        let url = window.location.pathname.split('/users/')[1];
 
         axios
-        .get('/authors' + url)
+        .get('/authors/' + url)
         .then((response) => {
             let post = response.data;
             setPost(prevPost => post);
         })
         .catch(err => { });
     }, []);
+    
     return (
         <div>
             <div>

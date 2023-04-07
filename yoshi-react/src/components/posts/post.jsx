@@ -201,7 +201,7 @@ function Post({viewerId, post, author, realAuthor}) {
 
     return (
         <div>
-            {(!post.unlisted || (post.id === window.location.href)) &&
+            {(!post.unlisted || (post.id === window.location.href) || window.location.pathname.split('/users/').length === 2) &&
                 <div className="post">
                     {<p className='post-host'>{h === "localhost:3000" ? 'yoshi-connect' : h}</p>}
                     <p className='post-vis'>{post.visibility}{post.unlisted ? ": Unlisted" : null}</p>

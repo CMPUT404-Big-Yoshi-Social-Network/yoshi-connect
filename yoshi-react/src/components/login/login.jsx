@@ -117,7 +117,7 @@ export default function Login() {
                       {error&&data.password.length<=0? <p className='login-error'>Password cannot be empty</p>:""}
                   </Form.Group>
                   <br></br>
-                  <Button href='/' type="button" className='login-button'>Back</Button>
+                  <Button href='/signup' type="button" className='login-button'>Back</Button>
                   <Button type="submit" className='login-button'>Next</Button>
               </Form>
           </Card.Body>

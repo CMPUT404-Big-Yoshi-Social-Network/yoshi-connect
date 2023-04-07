@@ -112,6 +112,7 @@ async function addLike(like, authorId, postId){
     object = object.split("/");
     let objectType = object[object.length - 2];
     let Id = object[object.length - 1];
+    console.log(objectType)
 
     let likes;
     if(objectType == "comments"){
@@ -127,7 +128,6 @@ async function addLike(like, authorId, postId){
         likes = await LikeHistory.findOne({type: "post", Id: Id}).clone();
         let postHistory = await PostHistory.findOne({authorId: authorId});
         let post = postHistory.posts.id(Id);
-        console.log(post)
         post.likeCount + 1;
         await postHistory.save();
 

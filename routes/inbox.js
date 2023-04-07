@@ -496,10 +496,10 @@ async function postInboxPost(post, recieverAuthorId, res){
             delete post._id;
         }
         catch (e) {
-            res.json({
+            return [{
                 message: "I could not insert this post into the inbox because it is formatted incorrectly.",
                 invalidPost: {...post}
-            })
+            }, 200]
         }
     }
     return [post, 200]

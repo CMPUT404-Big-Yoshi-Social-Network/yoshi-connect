@@ -553,14 +553,16 @@ async function postInboxLike(like, authorId){
         obj = obj.split('/posts/')
         const outgoings = await OutgoingCredentials.find().clone();
         let auth = ''
+        let host = ''
         for (let i = 0; i < outgoings.length; i++) {
-            if (outgoings[i].url === objectHost) {       
+            if (outgoings[i].url + '/' === objectHost) {       
                 auth = outgoings[i].auth;
+                host = outgoings[i].url;
             }
         }
         var config = {
-            host: objectHost,
-            url: objectHost + obj[obj.length - 1] + '/inbox',
+            host: host,
+            url: host + '/authors/' + obj[obj.length - 1] + '/inbox',
             method: 'POST',
             headers: {
                 'Authorization': auth,
@@ -568,6 +570,7 @@ async function postInboxLike(like, authorId){
             },
             data: like
         };
+        console.log(config)
 
         await axios.request(config)
         .then( res => { })

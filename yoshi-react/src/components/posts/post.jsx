@@ -56,8 +56,7 @@ function Post({viewerId, post, author, realAuthor}) {
     if (typeof id === 'object') {
         id = id.authorId;
     }
-    
-    const [numLikes, setNumLikes] = useState(post.likeCount);
+    const [numLikes, setNumLikes] = useState(post.likeCount || 0);
     const [numComments, setNumComments] = useState(post.count !== undefined ? post.count : post.commentCount);
     const [commentCreated, setCommentCreated] = useState(0);
     const [comment, setComment] = useState({ newComment: "" });

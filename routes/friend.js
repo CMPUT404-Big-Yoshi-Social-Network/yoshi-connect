@@ -135,8 +135,13 @@ async function addFollowing(actor, object){
                 github: object.github,
                 profileImage: object.profileImage
             }
-            following.followings.push(newF);
-            await following.save();
+            let idx = following.followings.map(obj => obj.id).indexOf(object.id);
+            if (idx > -1) { 
+                success = true;
+            } else {
+                following.followings.push(newF);
+                await following.save();
+            }
         } else {
             var following = {
                 _id: uuidF,
@@ -151,7 +156,12 @@ async function addFollowing(actor, object){
                     profileImage: object.profileImage
                 }]
             };
-            following.save(async (err, following, next) => { if (err) { } })
+            let idx = following.followings.map(obj => obj.id).indexOf(object.id);
+            if (idx > -1) { 
+                success = true;
+            } else {
+                following.save(async (err, following, next) => { if (err) { success = false; } })
+            }
         }
     }).clone();
 }

@@ -191,6 +191,7 @@ function Post({viewerId, post, author, realAuthor}) {
             contentType: "text/plaintext",
             object: postUrl
         };
+        console.log(inboxUrl)
         axios.post(inboxUrl, body, {
             "X-Requested-With": "XMLHttpRequest"
         })

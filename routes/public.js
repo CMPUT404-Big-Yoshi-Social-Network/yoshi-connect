@@ -79,20 +79,20 @@ async function getPublicLocalPosts(page, size) {
 
     for(let i = 0; i < publicPosts.length; i++){
         let post = publicPosts[i];
-        if (post.author != undefined) {
+        if (post.author.host === 'https://yoshi-connect.herokuapp.com/') { 
             let commentHistory = await CommentHistory.findOne({postId: post._id});
             post.author.authorId = post.author._id != undefined ? post.author._id.split("/") : post.author.authorId;
             post.author.authorId = post.author._id != undefined ? post.author.authorId[post.author.authorId.length - 1] : post.author.authorId;
             post.author.id = post.author._id;
-            post.id = process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id;
+            post.id = post.author.host + "authors/" + post.author.authorId + '/posts/' + post._id;
             post.comments = post.id + "/comments";
             post.count = post.commentCount;
             post.commentsSrc = {
                 type: "comments",
                 page: 1,
                 side: 5,
-                post: process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id,
-                id: process.env.DOMAIN_NAME + "authors/" + post.author.authorId + '/posts/' + post._id + '/comments/',
+                post: post.author.host + "authors/" + post.author.authorId + '/posts/' + post._id,
+                id: post.author.host + "authors/" + post.author.authorId + '/posts/' + post._id + '/comments/',
                 comments: commentHistory !== null ? commentHistory.comments : []
             }
             delete post.commentCount;

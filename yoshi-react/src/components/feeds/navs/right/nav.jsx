@@ -83,7 +83,6 @@ function RightNavBar() {
             { window.location.pathname !== '/' ? <Container>
                 <Nav>
                     <div className='rn-div'>
-                    {/* TODO: Needs to fetch username  */}
                     {profile.pic === "" ? <img className='rn-pubUserImg' alt='rn-pubUser' src='/images/public/icon_profile.png' width={40}/> : <img className='rn-pubUserImg' alt='rn-pubUser' src={profile.pic} width={40}/>}
                         <Nav.Link className='rn-user' href={`/users/${profile.username}`}>{profile.username}</Nav.Link> 
                     </div>

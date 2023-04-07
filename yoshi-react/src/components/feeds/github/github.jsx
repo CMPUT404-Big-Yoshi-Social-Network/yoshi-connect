@@ -98,7 +98,6 @@ function GitHub() {
             <TopNav authorId={data.viewer}/>
             <div className='pubRow'>
                 <div className='pubColL'>
-                    {/* <LeftNavBar authorId={data.viewer}/> */}
                     <LeftNavBar/>
                 </div>
                 <div className='pubColM'>

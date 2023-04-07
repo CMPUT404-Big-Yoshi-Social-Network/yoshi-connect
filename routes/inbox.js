@@ -14,7 +14,7 @@ const crypto = require('crypto');
 
 // Other routes functions
 const { addLike, addLiked } = require('./likes.js');
-const { validateAuthorObject, getAuthor } = require('./author.js');
+const { getAuthor } = require('./author.js');
 
 // Additional Functions
 const { authLogin } = require('./auth.js');
@@ -528,7 +528,6 @@ async function postInboxLike(like, authorId){
     objectHost = objectHost[0];
     let host = process.env.DOMAIN_NAME;
     const inbox = await Inbox.findOne({authorId: authorId}, '_id likes');
-    console.log(objectHost, host, inbox)
     if ((host === objectHost || 'https://yoshi-connect.herokuapp.com/') || inbox) {
         let author = like.author;
         author = {
@@ -542,17 +541,43 @@ async function postInboxLike(like, authorId){
         if(await addLiked(author._id, like.object)){
             return [{...like, status: 'Liked'}, 200];
         }
-        await addLike(like, authorId); 
+        let r = await addLike(like, authorId); 
+
+        if (r === 'Remote') {
+            const outgoings = await OutgoingCredentials.find().clone();
+            let auth = ''
+            let host = ''
+            for (let i = 0; i < outgoings.length; i++) {
+                if (outgoings[i].url + '/' === objectHost) {       
+                    auth = outgoings[i].auth;
+                    host = outgoings[i].url;
+                }
+            }
+            var config = {
+                host: host,
+                url: host + '/authors/' + authorId + '/inbox',
+                method: 'POST',
+                headers: {
+                    'Authorization': auth,
+                    'Content-Type': 'application/json'
+                },
+                data: like
+            };
+            await axios.request(config)
+            .then( res => { })
+            .catch( error => { 
+            })
+        } else {
+            const inboxLike = {
+                author: author,
+                object: like.object,
+                summary: like.summary
+            } 
+            
+            inbox.likes.push(inboxLike);
     
-        const inboxLike = {
-            author: author,
-            object: like.object,
-            summary: like.summary
+            inbox.save();
         }
-    
-        inbox.likes.push(inboxLike);
-    
-        inbox.save();
     } else {
         const outgoings = await OutgoingCredentials.find().clone();
         let auth = ''

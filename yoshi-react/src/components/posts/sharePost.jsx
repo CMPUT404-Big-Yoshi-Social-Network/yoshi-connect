@@ -24,6 +24,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ReactCommonmark from 'react-commonmark';
 import './create.css';
+import { useNavigate } from 'react-router-dom';
 
 
 function SharePost({viewerId, post}) {
@@ -34,6 +35,7 @@ function SharePost({viewerId, post}) {
      *     - share(): Shares the Post 
      * Returns: N/A
      */
+    const navigate = useNavigate();
     let postId = post.id ? 
         post.id.includes('/') ? (post.id.split('/'))[(post.id.split('/')).length - 1] : 
         post.id :
@@ -136,6 +138,7 @@ function SharePost({viewerId, post}) {
             }).then((res) => {}).catch((e) => { console.log(e); })  
         }
         setItem({ ...item, image: "" })
+        navigate(window.location.pathname);
     }
 
     return (

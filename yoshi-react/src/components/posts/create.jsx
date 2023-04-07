@@ -204,7 +204,7 @@ function CreatePost() {
                             <option value={"PRIVATE"}>Private</option>
                         </select>
                         { data.visibility === 'PUBLIC' ? 
-                            <div style={{display: 'inline-block'}}>
+                            <div>
                                 <label className='postLabel'><p style={{color:"white"}}>Unlisted:</p></label>
                                 <select className={"postMenuDropDown"} id={"unlisted"} name={"unlisted"} onChange={(e) =>{
                                     let bool;

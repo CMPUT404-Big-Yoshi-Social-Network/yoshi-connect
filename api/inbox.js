@@ -181,6 +181,167 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
 // TBA 200
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     post:
+ *       properties:
+ *         type:
+ *           type: string
+ *         title:
+ *           type: string
+ *         id: 
+ *           type: string
+ *         source:
+ *           type: string
+ *         origin: 
+ *           type: string
+ *         description: 
+ *           type: string
+ *         contentType: 
+ *           type: string
+ *         content: 
+ *           type: string
+ *         author:
+ *           type: object
+ *           properties:
+ *             type:
+ *               type: string
+ *             id: 
+ *               type: string
+ *             authorId:
+ *               type: string
+ *             url: 
+ *               type: string
+ *             host: 
+ *               type: string
+ *             displayName: 
+ *               type: string
+ *             github:
+ *               type: string
+ *             profileImage: 
+ *               type: string
+ *             about:
+ *               type: string
+ *             pronouns:
+ *               type: string
+ *         categories:
+ *           type: array
+ *         count: 
+ *           type: number
+ *         likeCount: 
+ *           type: number
+ *         comments: 
+ *           type: string
+ *         published: 
+ *           type: string
+ *         visibility:
+ *           type: string
+ *         unlisted:
+ *           type: string
+ *     comment:
+ *       properties:
+ *         type:
+ *           type: string
+ *         comment: 
+ *           type: string
+ *         contentType:
+ *           type: string
+ *         author:
+ *           type: object
+ *           properties:
+ *             type:
+ *               type: string
+ *             id: 
+ *               type: string
+ *             authorId:
+ *               type: string
+ *             url: 
+ *               type: string
+ *             host: 
+ *               type: string
+ *             displayName: 
+ *               type: string
+ *             github:
+ *               type: string
+ *             profileImage: 
+ *               type: string
+ *             about:
+ *               type: string
+ *             pronouns:
+ *               type: string
+ *     like:
+ *       properties:
+ *         type:
+ *           type: string
+ *         summary:
+ *           type: string
+ *         object:
+ *           type: string
+ *         author:
+ *           type: object
+ *           properties:
+ *             type:
+ *               type: string
+ *             id: 
+ *               type: string
+ *             authorId:
+ *               type: string
+ *             url: 
+ *               type: string
+ *             host: 
+ *               type: string
+ *             displayName: 
+ *               type: string
+ *             github:
+ *               type: string
+ *             profileImage: 
+ *               type: string
+ *             about:
+ *               type: string
+ *             pronouns:
+ *               type: string
+ *     follower:
+ *       properties:
+ *         type:
+ *            type: string
+ *            description: follow
+ *         actor:
+ *           type: object
+ *           description: author object, author who is going to be a follower
+ *           properties:
+ *             type:
+ *               type: string
+ *               description: author
+ *             id: 
+ *               type: string
+ *             url: 
+ *               type: string
+ *             host: 
+ *               type: string
+ *             displayName: 
+ *               type: string
+ *             github:
+ *               type: string
+ *             profileImage: 
+ *               type: string
+ *         object:
+ *           type: object
+ *           description: author object, author you want to follow
+ *           properties:
+ *             type:
+ *               type: string
+ *             id: 
+ *               type: string
+ *             url: 
+ *               type: string
+ *             host: 
+ *               type: string
+ *             displayName: 
+ *               type: string
+ *             github:
+ *               type: string
+ *             profileImage: 
+ *               type: string
  * /authors/:authorId/inbox:
  *  post:
  *    summary: posts an object into the Author's inbox (comment, post, like, follow)
@@ -192,6 +353,50 @@ router.delete('/requests/:foreignAuthorId', async (req, res) => {
  *        schema:
  *          type: string
  *        description: id of an Author
+ *    requestBody:
+ *      content:
+ *        application/x-www-form-urlencoded:
+ *          schema:
+ *            oneOf:
+ *              - $ref: '#/components/schemas/post'
+ *              - $ref: '#/components/schemas/comment'
+ *              - $ref: '#/components/schemas/like'
+ *              - $ref: '#/components/schemas/follow'
+ *          examples:
+ *            post:
+ *              type: post
+ *              title: I need to show the categories on the post somehow
+ *              id: https://yoshi-connect.herokuapp.com/authors/6151077f9ffb46aba8c9dab7b2ae375c/posts/9c5adbebda5044c994f3e18cef23134c
+ *              source: 
+ *              origin: 
+ *              description: 
+ *              contentType: 
+ *              content: 
+ *              author:
+ *                type: author
+ *                id: 
+ *                authorId: 
+ *                host:
+ *                displayName:
+ *                url: 
+ *                github: 
+ *                profileImage: 
+ *                about: 
+ *                pronouns: 
+ *              categories:
+ *                - cat
+ *              count: 
+ *              likeCount: 
+ *              comments: 
+ *              published: 
+ *              visibility: 
+ *              unlisted: 
+ *            comment:
+ *              type: comment
+ *            like:
+ *              type: like
+ *            follow:
+ *              type: follow
  *    responses:
  *      401:
  *        description: Unauthorized, no token or not authorized 
@@ -400,8 +605,10 @@ router.get('/requests/:foreignAuthorId', async (req, res) => {
  *    responses:
  *      200: 
  *        description: OK, successfully deletes the request from the Inbox
- *      500: 
- *        description: Internal Server Error, no Actor or Object Authors retrieved 
+ *      404: 
+ *        description: No author was found 
+ *      401: 
+ *        description: Token has expired or is not authenticated 
  */
 router.delete('/', async (req, res) => {
     const status = await deleteInbox(req.cookies.token, req.params.authorId);

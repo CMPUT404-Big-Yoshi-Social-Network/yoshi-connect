@@ -267,7 +267,7 @@ router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res
  *                likeCount:
  *                  type: integer
  *                  example: 0
- *                comments:
+ *                commentsSrc:
  *                  type: array
  *                  items:
  *                    type: object
@@ -287,7 +287,7 @@ router.get('/other/:other', async (req, res) => { await fetchOtherPosts(req, res
  *                      likeCount: 0
  *                      contentType: text/plain
  *                      published: 2023-03-27T06:43:18.423Z
- *                commentSrc:
+ *                comments:
  *                  type: string
  *                  example: https://yoshi-connect.herokuapp.com/authors/29c546d45f564a27871838825e3dbecb/posts/2a9887e9fb2c4296aada63cd80aa9f1c/comments
  *                published:
@@ -392,6 +392,8 @@ router.get('/:postId', async (req, res) => {
  *        description: Not Found, Post was not found
  *      200:
  *        description: OK, Returns a JSON of the updated post object
+ *      400:
+ *        description: Improper request body
  */
 router.post('/:postId', async (req, res) => {
   const authorId = req.params.authorId;
@@ -519,37 +521,42 @@ router.get('/', async (req, res) => {
  * components:
  *   schemas:
  *     Post:
- *         type: object
- *         properties: 
- *           title: 
+ *       properties: 
+ *         type: 
+ *           type: string
+ *           description: type of object, post
+ *         title:
+ *           type: string
+ *           description: title of post
+ *         description:
+ *           type: string
+ *           description: description of post
+ *         contentType: 
+ *           type: string
+ *           description: contentType of post 
+ *         content: 
+ *           type: array
+ *           description: content of the post
+ *           items: 
  *             type: string
- *             description: title of post
- *           description:
- *             type: string
- *             description: description of post
- *           contentType:
- *             type: string
- *             description: content type of post (text/plain or markdown)
- *           content: 
- *             type: string
- *             description: content of post 
- *           categories: 
- *             type: array
- *             description: categories associated with post
- *             items: 
+ *         author:
+ *           type: object
+ *           properties:
+ *             type:
  *               type: string
- *           published: 
- *             type: string
- *             description: date post was made
- *           visibility: 
- *             type: string
- *             description: level of visibility of a post (private or public)
- *           unlisted: 
- *             type: boolean
- *             description: dictates whether a post is unlisted or not
+ *               description: author
+ *         categoies:
+ *           type: array
+ *           description: array of strings that represent categories
+ *         visibility: 
+ *           type: string
+ *           description: level of visibility of a post (private or public)
+ *         unlisted: 
+ *           type: boolean
+ *           description: dictates whether a post is unlisted or not
  * /authors/:authorId/posts:
- *  post:
- *    summary: Sends the posts associated with authorId
+ *  put:
+ *    summary: Creates a new post
  *    tags:
  *      - post 
  *    parameters:
@@ -560,22 +567,31 @@ router.get('/', async (req, res) => {
  *          type: string
  *    requestBody: 
  *     content:
- *       application/x-wwwm-form-urlencoded:
+ *       application/x-www-form-urlencoded:
  *         schema:
- *           - $ref: '#/components/schemas/Post'
- *         examples:
- *           Post:
- *             value:
- *               title: MONKEY
- *               description: monkey yeah
- *               contentType: text/plain
- *               content: monkey
- *               categories: 
- *                 - tag1
- *                 - tag2
- *               published: 2023-03-24T06:53:47.567Z
- *               visibility: Public
- *               unlisted: false
+ *           $ref: '#/components/schemas/Post'
+ *         example:
+ *           type: post
+ *           title: I need to show the categories on the post somehow
+ *           description: sdjfh
+ *           contentType: text/plain
+ *           content: asdjh ugh
+ *           author:
+ *             type: author
+ *             id: https://yoshi-connect.herokuapp.com/authors/6151077f9ffb46aba8c9dab7b2ae375c
+ *             authorId: 6151077f9ffb46aba8c9dab7b2ae375c
+ *             host: https://yoshi-connect.herokuapp.com/
+ *             displayName: Kezziah
+ *             url: https://yoshi-connect.herokuapp.com/authors/6151077f9ffb46aba8c9dab7b2ae375c
+ *             github: https://github.com/kezzayuno
+ *             profileImage: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif 
+ *             about: I am part of T00. I coded a lot.
+ *             pronouns: she/her
+ *           cateogries:
+ *             - tag1
+ *             - tag2
+ *           visibility: PUBLIC
+ *           unlisted: false 
  *    responses:
  *      401:
  *        description: Unauthorized -- Author token is not authenticated

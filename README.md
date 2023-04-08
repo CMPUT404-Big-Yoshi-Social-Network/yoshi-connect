@@ -39,7 +39,9 @@ Foundation; All Rights Reserved
 - [CMPUT404W23T15](https://github.com/hbheesetti/CMPUT404-project-socialdistribution)
 
 ## Run Project
-0. Setup a mongodb database and create a .env with the contents ```ATLAS_URI = "the mongodb connection string"```
+0. Setup a mongodb database and create a .env with the contents ```ATLAS_URI = "the mongodb connection string"
+DATABASE = "yoshi-connect
+DOMAIN_NAME = "domain_name"```
 1. In the terminal run: ```npm install```
 2. Then run, ```npm start```. This will start up the server on http://localhost:8080/.
 3. After cd into ```cd yoshi-react``` and run, ```npm i react-scripts```.

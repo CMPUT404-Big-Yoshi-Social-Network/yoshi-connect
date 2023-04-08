@@ -295,7 +295,6 @@ router.get('/:commentId', async (req, res) => {
  * components:
  *   schemas:
  *     NewComment:
- *         type: object
  *         properties: 
  *           type: 
  *             type: string
@@ -324,7 +323,7 @@ router.get('/:commentId', async (req, res) => {
  *          type: string
  *    requestBody:
  *      content: 
- *        application/x-wwwm-form-urlencoded:
+ *        application/x-www-form-urlencoded:
  *          schema:
  *            $ref: '#/components/schemas/NewComment'
  *          example:

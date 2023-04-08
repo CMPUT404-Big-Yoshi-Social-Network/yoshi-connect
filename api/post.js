@@ -644,6 +644,33 @@ router.post('/:postId/share', async (req, res) => {
  *        description: id of post
  *        schema:
  *          type: string
+ *    responses:
+ *      404: 
+ *        description: The postId or authorId is not valid
+ *      200:
+ *        description: OK, returns JSON containing an array of like objects
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                type:
+ *                  type: string
+ *                  example: likes
+ *                likes:
+ *                  type: array
+ *                  example:
+ *                    - '@context': https://www.w3.org/ns/activitystreams
+ *                      summary: Tommy likes your post
+ *                      type: Like 
+ *                      author:
+ *                        type: author
+ *                        host: https://yoshi-connect.herokuapp.com/
+ *                        displayName: Tommy
+ *                        url: https://yoshi-connect.herokuapp.com/authors/a6da8f46dfdd4688bed1ec270d9b9eea
+ *                        github: https://github.com/Tommy-Sand
+ *                        profileImage: ""
+ *                      object: https://yoshi-connect.herokuapp.com/authors/6151077f9ffb46aba8c9dab7b2ae375c/posts/9c5adbebda5044c994f3e18cef23134c
  */
 router.get('/:postId/likes', async (req, res) => {
   const authorId = req.params.authorId;

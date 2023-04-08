@@ -254,6 +254,50 @@ router.get('/:foreignAuthorId', async (req, res) => {
 
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     follower:
+ *       properties:
+ *         type:
+ *            type: string
+ *            description: follow
+ *         actor:
+ *           type: object
+ *           description: author object, author who is going to be a follower
+ *           properties:
+ *             type:
+ *               type: string
+ *               description: author
+ *             id: 
+ *               type: string
+ *             url: 
+ *               type: string
+ *             host: 
+ *               type: string
+ *             displayName: 
+ *               type: string
+ *             github:
+ *               type: string
+ *             profileImage: 
+ *               type: string
+ *         object:
+ *           type: object
+ *           description: author object, author you want to follow
+ *           properties:
+ *             type:
+ *               type: string
+ *             id: 
+ *               type: string
+ *             url: 
+ *               type: string
+ *             host: 
+ *               type: string
+ *             displayName: 
+ *               type: string
+ *             github:
+ *               type: string
+ *             profileImage: 
+ *               type: string
  * /authors/:authorId/followers/:foreignAuthorId:
  *  put:
  *    summary: Adds a new follower associated with foreignAuthorId for the Author associated with authorId
@@ -270,6 +314,29 @@ router.get('/:foreignAuthorId', async (req, res) => {
  *        schema:
  *          type: string
  *        description: id of the foreign Author
+ *    requestBody:
+ *      content:
+ *        application/x-www-form-urlencoded:
+ *          schema:
+ *            $ref: '#/components/schemas/follower'
+ *          example:
+ *            type: follower
+ *            actor:
+ *              type: author
+ *              id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *              url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639f
+ *              host: https://yoshi-connect.herokuapp.com/
+ *              displayName: allan
+ *              github: https://github.com/Holy-Hero
+ *              profileImage: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
+ *            object:
+ *              type: author
+ *              id: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639e
+ *              url: https://yoshi-connect.herokuapp.com/authors/3ec2a2a0685445509a3ea1dd3093639e
+ *              host: https://yoshi-connect.herokuapp.com/
+ *              displayName: allan2
+ *              github: https://github.com/Holy-Hero2
+ *              profileImage: https://media.tenor.com/lFoIvXgBojsAAAAC/xayah-eye-roll.gif
  *    responses:
  *      401:
  *        description: Unauthorized, no associated cookies, Login token had expired, authorId was not authenticated 
